@@ -1,0 +1,134 @@
+library AxeThrow initializer Init requires xedamage, xemissile
+    /*
+     * Description: The Ogre Warrior throws his mighty axe at a target enemy, damaging and stunning anyone near where it lands.
+     * Last Update: 09.01.2014
+     * Changelog: 
+     *     09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     23.02.2014: Werte erhoeht von 80/160/240/320/400 auf 110/220/330/440/550
+     */
+    globals
+        private constant integer SPELL_ID = 'A09H' //The triggerer spell id.
+        
+        private constant real TARGET_RADIUS = 300.0 // In what range to look for child missile targets?
+        private constant real LAUNCH_PERIOD = 0.2   // How often to launch child missiles in flight?
+
+        // Main missile visual settings:
+        private constant string MAIN_MODEL = "Abilities\\Weapons\\RexxarMissile\\RexxarMissile.mdl"
+        private constant real SCALE = 2.5
+        private constant real ANGLE_SPEED = 0.3
+        private constant real SPEED = 700.0
+        private constant real MAX_SPEED = 1200.0
+        private constant real ACCELERATION = 1400.0
+        
+        //Stun Effect
+        private constant string STUN_EFFECT = "Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl"
+        private constant string STUN_ATT_POINT = "overhead"
+        private constant real STUN_DURATION = 2.0
+        
+        //KNOCK BACK
+        private constant integer DISTANCE = 100
+        private constant real KB_TIME = 0.35
+    endglobals
+    
+    private constant function Damage takes integer level returns real
+        return 110.0 * level 
+    endfunction
+
+    private function setupDamageOptions takes xedamage d returns nothing
+       set d.dtype = DAMAGE_TYPE_FIRE
+       set d.atype = ATTACK_TYPE_NORMAL
+
+       set d.exception = UNIT_TYPE_STRUCTURE
+       set d.damageEnemies = true  // This evil spell pretty much hits
+       set d.damageAllies  = false
+       set d.damageNeutral = false  // the casting hero himSelf... it would
+       set d.damageSelf    = false // be quite dumb if it was able to hit the hero...
+    endfunction
+
+    //**********************************************************************************
+    globals
+        private xedamage damageOptions
+    endglobals
+
+    struct HammerThrowMain extends xecollider
+        unit caster
+        unit target
+        integer level      
+        private static group g = CreateGroup()
+        private static HammerThrowMain current
+        
+        private static method group_filter_callback takes nothing returns boolean
+            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .current.caster ) ) and (GetFilterUnit() != .current.target) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)
+        endmethod
+        
+        private static method onStun takes nothing returns nothing
+            call Stun_UnitEx(GetEnumUnit(), STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
+            call GroupRemoveUnit(.current.g, GetEnumUnit())
+        endmethod
+
+        method onUnitHit takes unit hitunit returns nothing
+            local real x = 0.00
+            local real y = 0.00
+            local real ang = 0.00
+            
+            set .current = this
+            if (damageOptions.allowedTarget( this.caster  , hitunit ) ) then
+                set x = GetUnitX(this.caster) - GetUnitX(this.target)
+                set y = GetUnitY(this.caster) - GetUnitY(this.target)
+                set ang = Atan2(y, x) - bj_PI
+                call Knockback.create(this.caster, this.target, DISTANCE, KB_TIME, ang, 0, "", "")
+                call damageOptions.damageTarget(this.caster, hitunit, Damage(this.level))
+                call GroupEnumUnitsInRange(this.g, GetUnitX(hitunit), GetUnitY(hitunit), TARGET_RADIUS, function thistype.group_filter_callback)
+                call ForGroup( this.g, function thistype.onStun )
+                call this.terminate()
+            endif
+        endmethod
+        
+    endstruct
+
+    private function spellIdMatch takes nothing returns boolean
+        return GetSpellAbilityId() == SPELL_ID
+    endfunction
+
+    private function onSpellEffect takes nothing returns nothing
+        local unit caster = GetTriggerUnit()
+        local unit target = GetSpellTargetUnit()
+        local real cx = GetUnitX(caster) 
+        local real cy = GetUnitY(caster)
+        local real tx = GetUnitX(target)
+        local real ty = GetUnitY(target)
+        local real ang = Atan2( ty - cy, tx - cx) //the angle between the target and the unit
+        local HammerThrowMain ht = HammerThrowMain.create(cx, cy, ang)
+        
+        set ht.fxpath = MAIN_MODEL
+        set ht.scale = SCALE
+        set ht.speed = SPEED
+        set ht.acceleration = ACCELERATION
+        set ht.maxSpeed = MAX_SPEED
+        set ht.z = 50.0
+        set ht.angleSpeed = ANGLE_SPEED 
+        set ht.target = target
+        set ht.caster = caster 
+        set ht.level = GetUnitAbilityLevel(caster, SPELL_ID)
+        
+        set caster = null
+        set target = null
+    endfunction
+
+   private function Init takes nothing returns nothing
+        local trigger t = CreateTrigger()
+
+        // Initializing the damage options:
+        set damageOptions = xedamage.create()
+        call setupDamageOptions(damageOptions)
+        call Preload(MAIN_MODEL)
+        call Preload(STUN_EFFECT)
+
+        //Setting up the spell's trigger:
+        call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_EFFECT)
+        call TriggerAddCondition(t, Condition(function spellIdMatch))
+        call TriggerAddAction(t, function onSpellEffect)
+        
+        set t = null
+    endfunction
+endlibrary
