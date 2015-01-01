@@ -89,7 +89,7 @@ scope UsabilitySystem
          * index: Welche der Text soll ausgespielt werden?
          * playSound: Soll ein entsprechender Sound ausgespielt werden?
          * p: Welcher Spieler?
-         * clearMessages: Sollen alle bisher angezeigten Messages geloescht werden?
+         * clearMessages: Sollen alle bisher angezeigten Messages gelöscht werden?
          * delay: In wie viel Sekunden soll der Sound abgspielt werden?
         */
 		

@@ -27,7 +27,7 @@ scope Game
         // - Kameraeinstellungen werden hier initialisiert
         // - Gold und Holz werden fuer alle Spieler initialisiert
         // - Events:
-        //     * onLeave - Spieler verl?sst das Spiel
+        //     * onLeave - Spieler verlässt das Spiel
         //     * onInit - Spieleranzahl ermitteln
         //********************************\\
         static boolean array isBot
@@ -161,7 +161,7 @@ scope Game
             endif
         endmethod
         
-        //Gibt das akt. Gesamt Hero Level aller Helden zur?ck
+        //Gibt das akt. Gesamt Hero Level aller Helden zurück
         static method getCoalitionHeroLevelSum takes nothing returns integer
             local integer i = 0
             local integer level = 0
@@ -215,9 +215,7 @@ scope Game
         endmethod
         
         static method initPlayerCams takes integer pid returns nothing
-            call BJDebugMsg("Trying to init Cam for Player " + I2S(pid))
 			if (GetLocalPlayer() == .players[pid]) then
-				call BJDebugMsg("Initilialized Cam for Player " + I2S(pid) + "!")
                 call CameraSetupApplyForceDuration(gg_cam_MainCameraView, true, 0)
                 call SetCameraField(CAMERA_FIELD_TARGET_DISTANCE, CameraSetupGetField(gg_cam_MainCameraView, CAMERA_FIELD_TARGET_DISTANCE), 0)
             endif
@@ -266,8 +264,6 @@ scope Game
                 set i = i + 1
             endloop
         endmethod
-        
-        
         
         static method initRegionalFog takes nothing returns nothing
             local fogData fd1

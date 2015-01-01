@@ -66,6 +66,8 @@ scope HeroPickSystem
             local race h = GetUnitRace(FirstOfGroup(GetUnitsOfPlayerAndTypeId(Player(PLAYER_NEUTRAL_PASSIVE), GET_HERO(index))))
             local boolean b = false
             
+			call PingMinimap(GetUnitX(u), GetUnitY(u), 1.0)
+			call BJDebugMsg("Name: " + GetUnitName(u))
 			// General Condition
             if IsUnitType(u, UNIT_TYPE_PEON) and BaseMode.available[index] == true then
                 if ( r == RACE_UNDEAD ) then
@@ -160,34 +162,22 @@ scope HeroPickSystem
     
     struct HeroPickMode
     
-        static integer mode = 0
-        
         static method initialize takes nothing returns nothing
             local AllPick ap = 0
-            local AllRandom ar = 0
             local integer i = 0
 			
-			set .mode = GameMode.getCurrentMode()
-			
-			if (.mode == 0) then
-                call ap.init()
-                
-                //create Hero Pick Units
-                loop
-                    exitwhen i >= bj_MAX_PLAYERS
-                        if Game.isPlayerInGame(i) then
-                            call CREATE_HERO_PICK_UNIT(i)
-							if Game.isRealPlayer(i) then
-								call HeroPickTutorial.create(Player(i), ap.getHeroPickTimer())
-							endif
-                        endif
-                    set i = i + 1
-                endloop
-            elseif (.mode == 1) then
-				call ar.init()
-                //disable Repick
-                call Repick.setRepick(false)
-            endif
+			call ap.init()
+			//create Hero Pick Units
+			loop
+				exitwhen i >= bj_MAX_PLAYERS
+					if Game.isPlayerInGame(i) then
+						call CREATE_HERO_PICK_UNIT(i)
+						if Game.isRealPlayer(i) then
+							call HeroPickTutorial.create(Player(i), ap.getHeroPickTimer())
+						endif
+					endif
+				set i = i + 1
+			endloop
 		endmethod
     
     endstruct

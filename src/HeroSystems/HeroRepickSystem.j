@@ -112,12 +112,7 @@ scope HeroRepickSystem
                     endif
                 endif
             else
-                //is AP Mode?
-                if HeroPickMode.mode == 0 then
-                    call SimError(p, "                Repick is not possible anymore!")
-                else
-                    call SimError(p, "      Repick is not enabled for this Game Mode!")
-                endif
+                call SimError(p, "                Repick is not possible anymore!")
             endif
            
             set p = null

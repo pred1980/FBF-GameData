@@ -157,9 +157,9 @@ scope WeatherSystem
         loop
             exitwhen i >= bj_MAX_PLAYERS
             if Game.isPlayerInGame(i) then
-                if GameStart.getHost() == Player(i) then
+                //if GameStart.getHost() == Player(i) then
                     call TriggerRegisterPlayerChatEvent( t, Player(i), TYPE_WEATHER, false )
-                endif
+                //endif
             endif
             set i = i + 1
         endloop

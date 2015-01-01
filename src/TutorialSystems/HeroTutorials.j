@@ -91,11 +91,10 @@ scope HeroTutorials
             call cinematicOn(.p)
             call PanCameraToTimedForPlayer( .p, .x, .y, .5 )
             //Show Note Text Message
-            call Usability.getTextMessage(0, 0, true, .p, true, 3.0)
-            call Usability.getTextMessage(0, 1, true, .p, true, 7.0)
-            //
+            call Usability.getTextMessage(0, 0, true, .p, true, 5.0)
+            call Usability.getTextMessage(0, 1, true, .p, true, 15.0)
             call SetTimerData(t, this)
-            call TimerStart(t, 15.0 , false, function thistype.onFinishTutorial)
+            call TimerStart(t, 20.0 , false, function thistype.onFinishTutorial)
             
             return this
         endmethod

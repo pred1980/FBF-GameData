@@ -37,7 +37,7 @@ scope GameModules
 			call XPSystem.initialize()
 			
 			//Weather System
-			call IWS.initialize()
+			//call IWS.initialize()
 			
 			//Tower System
 			call TowerSystem.initialize()
@@ -81,7 +81,7 @@ scope GameModules
             call CoalitionShopSystem.initialize()
 			
             //init Final Mode
-            call FinalMode.initialize()
+            //call FinalMode.initialize()
 			
             //create first Coalition Teleporter in the AOS
             call CoalitionTeleport.initialize()

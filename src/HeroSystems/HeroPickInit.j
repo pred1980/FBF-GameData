@@ -27,7 +27,7 @@ scope HeroPickInit
         private real array PICK_UNIT_START_POS_Y[2]
         
         /*
-         * Globale Vars f?r das Disablen der Hero Abilities
+         * Globale Vars für das Disablen der Hero Abilities
          */
         // Orderid wenn der Held selected ist
         private constant integer CHOOSE_HERO_ORDER_ID = 1747988528 

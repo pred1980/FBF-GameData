@@ -6,7 +6,6 @@ scope HeroPickMods
     globals
         private constant string EFFECT = "Abilities\\Spells\\Human\\HolyBolt\\HolyBoltSpecialArt.mdl"
         private constant real ALL_PICK_HERO_PICK_END_DURATION = 15.00
-        private constant real ALL_RANDOM_HERO_PICK_END_DURATION = 18.00
         private constant real PICK_DURATION = 120.00
         private constant real TIMER_UPDATE = 1.00
     endglobals
@@ -278,113 +277,6 @@ scope HeroPickMods
             call TimerStart(.ticker2, PICK_DURATION, false, null)
         endmethod
         
-    endstruct
-    
-    /*
-     * GameMode: AllRandom
-     */
-     
-     struct AllRandom extends array
-     
-        static integer id
-        static player array p
-        static unit array heroPickUnit // Acolyte, Peon, Peasant and Wisp
-        static real array startLocX
-        static real array startLocY
-        static race r
-        
-        static timer main
-        
-        static method onGameInitMiscSystem takes nothing returns nothing
-            call ReleaseTimer(GetExpiredTimer())
-            set .main = null
-            call Game.initMiscSystem()
-        endmethod
-        
-        static method onHeroPickEndCallback takes nothing returns nothing
-            local integer i = 0
-            
-            loop
-                exitwhen i >= bj_MAX_PLAYERS
-                //if it's undead player, than create 1x the Acolyts for the Tower Build
-                if Game.isPlayerInGame(i) and GetPlayerRace(Player(i)) == RACE_UNDEAD and BaseMode.repickCount[i] == 0 then
-                    //create Acolyts Builder
-                    call TowerSystem.createBuilder(i)
-                endif
-                set i = i + 1
-            endloop
-            
-            call TimerStart(.main, 11.0, false, function thistype.onGameInitMiscSystem )
-        endmethod
-        
-        static method createRandomHero takes player p, unit pickUnit, integer randomIndex returns nothing
-            local unit u
-            
-            //Player ID
-            set .id = GetPlayerId(p)
-            //Hero Pick Unit of the Player ( ex. Acolyt, Peon... )
-            set .heroPickUnit[.id] = pickUnit
-            //Player
-            set .p[.id] = p
-            //Race
-            set .r = GetPlayerRace(.p[.id])
-            
-            set BaseMode.regionIndex[.id] = randomIndex
-            set BaseMode.selectableHero[.id] = GET_HERO(randomIndex)
-            set BaseMode.pickedHeroIndex[.id] = randomIndex
-            
-            //Start Position des Helden abh?ngig seiner Rasse
-            set .startLocX[.id] = GetRectCenterX(GET_HERO_RACE_START_RECT(.r))
-            set .startLocY[.id] = GetRectCenterY(GET_HERO_RACE_START_RECT(.r))
-            set BaseMode.hasPicked[.id] = true
-            set BaseMode.available[BaseMode.regionIndex[.id]] = false
-            
-            set u = FirstOfGroup(GetUnitsOfPlayerAndTypeId(Player(PLAYER_NEUTRAL_PASSIVE), BaseMode.selectableHero[.id]))
-            
-            call RemoveUnit(u)
-            call RemoveUnit(.heroPickUnit[.id])
-            set BaseMode.pickedHero[.id] = CreateUnit(.p[.id], BaseMode.selectableHero[.id], .startLocX[.id], .startLocY[.id], 0)
-            
-            //Change Playername to (PlayerName(HeroName))
-            call Game.changePlayerName(.p[.id])
-            call PanCameraToTimedForPlayer( .p[.id], .startLocX[.id], .startLocY[.id], 0.0 )
-            call SelectUnitForPlayerSingle(BaseMode.pickedHero[.id], .p[.id])
-            
-            call Game.playerAddGold(.id, BaseGoldSystem.RANDOM_GOLD)
-            set BaseMode.gotRandomGold[.id] = true
-            //Update Multiboard
-            call BaseMode.onUpdateMultiboard(.id)
-            
-            //starte einmal das Hero Base Tutorial
-            call HeroBaseTutorial.create(.p[.id], .startLocX[.id], .startLocY[.id], null)
-            
-            set u = null
-        endmethod
-        
-        static method init takes nothing returns nothing
-            local integer i = 0
-            local integer randomIndex = 0
-            
-            call ClearSelection()
-            loop
-                exitwhen i >= bj_MAX_PLAYERS
-                if Game.isPlayerInGame(i) then
-                    call CREATE_HERO_PICK_UNIT(i)
-                    call DisplayTimedTextToPlayer(Player(i), 0.00, 0.00, 7.00, "All Players got a random Hero. The Game starts in |cffffcc00" + I2S(R2I(ALL_RANDOM_HERO_PICK_END_DURATION)) + " seconds|r")
-                    set randomIndex = BaseMode.getRandomHero()
-                    loop
-                        exitwhen BaseMode.onEnterFilter(GET_HERO_PICK_UNIT(i), randomIndex)
-                        set randomIndex = BaseMode.getRandomHero()
-                    endloop
-                    call createRandomHero( Player(i), GET_HERO_PICK_UNIT(i), randomIndex )
-                endif
-                set i = i + 1
-            endloop
-            
-            set .main = NewTimer()
-            call TimerStart(.main, ALL_RANDOM_HERO_PICK_END_DURATION, false, function thistype.onHeroPickEndCallback )
-        endmethod
-   
     endstruct
      
 endscope
