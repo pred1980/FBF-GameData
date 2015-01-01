@@ -10,8 +10,10 @@ scope GameModules
 			call HeroPickInit.initialize()
 			call HeroPickSystem.initialize()
 			call HeroPickMode.initialize()
+			
 			//Hero Repick
 			call Repick.initialize()
+			
 			//Hero Stats
 			call HeroData.initialize()
 			call HeroStats.initialize()
