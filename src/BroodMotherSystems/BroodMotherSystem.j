@@ -328,13 +328,13 @@ scope BroodMotherSystem initializer init
                 call SetUnitMaxState(.child, UNIT_STATE_MAX_LIFE, female_hp)
                 call TDS.addDamage(.child, female_dmg)
             endif
-            call Sound.runSoundOnUnit(SOUND_2, .child)
+			call Sound.runSoundAtPoint(SOUND_2, GetUnitX(.child), GetUnitY(.child), .0)
             call SetUnitState(.child, UNIT_STATE_LIFE, GetUnitState(.child, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
             call GroupAddUnit(this.childs, .child)
             
             set t = NewTimer()
             call SetTimerData(t, this)
-            call TimerStart(t, 3.5, true, function thistype.onChildMove )
+            call TimerStart(t, 3.5, true, function thistype.onChildMove)
             
             //Clean up
             call RemoveUnit(this.egg)
@@ -349,11 +349,11 @@ scope BroodMotherSystem initializer init
 				call SetUnitAnimation(this.egg, "death")
 				call KillUnit(this.egg)
 				call ReleaseTimer(GetExpiredTimer())
-				call Sound.runSoundOnUnit(SOUND_1, this.egg)
+				call Sound.runSoundAtPoint(SOUND_1, GetUnitX(this.egg), GetUnitY(this.egg), .0)
 				
 				set t = NewTimer()
 				call SetTimerData(t, this)
-				call TimerStart(t, 1.90, false, function thistype.onChildBorn )
+				call TimerStart(t, 1.90, false, function thistype.onChildBorn)
 			else
 				call this.destroy()
 				call ReleaseTimer(GetExpiredTimer())

@@ -104,7 +104,7 @@ scope FBFMultiboard
 					endloop
 				endif
 				set i = i + 1
-				set k = 10
+				set k = 9
 			endloop
 		endmethod
         

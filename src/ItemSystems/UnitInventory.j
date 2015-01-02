@@ -30,6 +30,7 @@ scope UnitInventory
 			if i == null then
 				set i = GetManipulatedItem()
 			endif
+
 			if (i != null and IsUnitType(u, UNIT_TYPE_HERO) and (o == 851971 or o == 0 or (o > 852001 and o < 852008))) then
 				call SetTimerData(t, GetUnitId(u))
 				call TimerStart(t, .0, false, function thistype.onItemActionCallback)

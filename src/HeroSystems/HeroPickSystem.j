@@ -66,23 +66,22 @@ scope HeroPickSystem
             local race h = GetUnitRace(FirstOfGroup(GetUnitsOfPlayerAndTypeId(Player(PLAYER_NEUTRAL_PASSIVE), GET_HERO(index))))
             local boolean b = false
             
-			call PingMinimap(GetUnitX(u), GetUnitY(u), 1.0)
-			call BJDebugMsg("Name: " + GetUnitName(u))
 			// General Condition
-            if IsUnitType(u, UNIT_TYPE_PEON) and BaseMode.available[index] == true then
-                if ( r == RACE_UNDEAD ) then
-                    if ( h == r ) then
-                        set b = true
-                    endif
-                else
-                    if ( (h == r) or (h == RACE_OTHER) ) then
-                        set b = true
-                    else
-                        call Usability.getTextMessage(0, 7, true, p, true, 0.5)
-                    endif
-                endif 
-            endif
-            
+			if (IsUnitType(u, UNIT_TYPE_PEON) and BaseMode.available[index]) then
+				if ( r == RACE_UNDEAD ) then
+					if ( h == r ) then
+						set b = true
+					endif
+				else
+					if ( (h == r) or (h == RACE_OTHER) ) then
+						set b = true
+					else
+						call Usability.getTextMessage(0, 7, true, p, true, 0.5)
+					endif
+				endif 
+			endif
+
+			
             return b
         endmethod
     

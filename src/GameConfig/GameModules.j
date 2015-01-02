@@ -6,6 +6,9 @@ scope GameModules
 			//Multiboard
             call FBFMultiboard.create()
 			
+			//Camera System
+			call CameraSystem.initialize()
+			
 			//Hero Pick Systems
 			call HeroPickInit.initialize()
 			call HeroPickSystem.initialize()
@@ -58,9 +61,6 @@ scope GameModules
 			call SpikeTrap.initialize()
 			call SkeletonSystem.initialize()
 			call GravestoneSystem.initialize()
-			
-			//Camera System
-			call CameraSystem.initialize()
 			
 			//Usability System
 			call Usability.initialize()

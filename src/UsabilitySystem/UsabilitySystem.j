@@ -22,7 +22,7 @@ scope UsabilitySystem
         set TYPE[2] = "|cffff0000ERROR: |r"
     
 		set NOTE_MESSAGES[0] = TYPE[0] + "Click on a hero to see their stats and abilities."
-        set NOTE_MESSAGES[1] = "Walk into the selection circle in front of a hero to pick them. You can also walk in the random circle to get a random hero and recieve |cffffcc00" + I2S(BaseGoldSystem.RANDOM_GOLD) + "|r extra gold."
+        set NOTE_MESSAGES[1] = TYPE[0] + "Walk into the selection circle in front of a hero to pick them. You can also walk in the random circle to get a random hero and recieve |cffffcc00" + I2S(BaseGoldSystem.RANDOM_GOLD) + "|r extra gold."
 		set NOTE_MESSAGES[2] = TYPE[0] + "The units in your spawn zone offer equipment and consumables."
         set NOTE_MESSAGES[3] = TYPE[0] + "Walk through the teleporter to be transported to the front. Return between rounds to be healed by the fountain."
 	    set NOTE_MESSAGES[4] = TYPE[0] + "Build a Tower Defense on both sides of your lane with your Acolyte to hamper the Coalition's progress."

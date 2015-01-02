@@ -36,7 +36,7 @@ library SoundTools requires Table
             set time = null
         endmethod
        
-        static method runSoundAtPoint takes string snd, real pitch, real x, real y, real z returns nothing
+        static method runSoundAtPoint takes string snd, real x, real y, real z returns nothing
             local sound s = CreateSound(snd,false,true,true,12700,12700,"")
             
 			call SetSoundPosition(s,x,y,z)
