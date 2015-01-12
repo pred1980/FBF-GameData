@@ -23,7 +23,7 @@ library CreepRoundSystem /* v 1.1.0.0
 *
 *   private module CreepRoundSystemConfig
 *       - In this config module you can configure the following three methods. Add
-*         this module to the system like described in the example. If you don't
+*         this module to the system like described in the example. If you dont
 *         implement any module to the system, it will use a template module and
 *         stay in round 1 forever.
 *   
@@ -181,9 +181,9 @@ library CreepRoundSystem /* v 1.1.0.0
             call DestroyTimerDialog(.tiDialog)
             set .tiDialog = null
             call DestroyTimer(GetExpiredTimer())
-            
+            call BJDebugMsg("1")
             call Sound.runSound(SOUND_1)
-            
+            call BJDebugMsg("2")
             //Update Undead Defense System (Weight/Sigam)
             call DefenseCalc.update()
         endmethod

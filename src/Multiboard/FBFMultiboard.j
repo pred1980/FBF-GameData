@@ -90,21 +90,21 @@ scope FBFMultiboard
         endmethod
 		
 		private static method initItems takes nothing returns nothing
-			local integer i = 0
-			local integer k = 9
+			local integer row = 0
+			local integer column = 9
 			
 			loop
-				exitwhen i >= bj_MAX_PLAYERS
-				if Game.isPlayerInGame(i) then
+				exitwhen row >= bj_MAX_PLAYERS
+				if Game.isPlayerInGame(row) then
 					loop
-						exitwhen k > 15 
-						call board[PLAYER_IDS_2_ROW[i]][k].setStyle(false, true)
-						set board[PLAYER_IDS_2_ROW[i]][k].icon = "EmptyItemIcon.blp"
-						set k = k + 1
+						exitwhen column > 15 
+						call board[PLAYER_IDS_2_ROW[row]][column].setStyle(false, true)
+						set board[PLAYER_IDS_2_ROW[row]][column].icon = "EmptyItemIcon.blp"
+						set column = column + 1
 					endloop
 				endif
-				set i = i + 1
-				set k = 9
+				set row = row + 1
+				set column = 9
 			endloop
 		endmethod
         

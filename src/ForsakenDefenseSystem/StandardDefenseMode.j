@@ -9,26 +9,30 @@ scope StandardDefenseMode
         private constant integer INCREASED_HP_AOS_PER_ROUND = 55
         private constant integer INCREASED_DAMAGE_PER_ROUND = 7
         //private constant real MANA_MULTIPLIER = 0.02
-        private constant integer MAX_UNDEAD = 8 //How many undead defense units exsits?
+		//How many undead defense units exsits?
+        private constant integer MAX_UNDEAD = 8 
         private constant string SPAWN_EFFECT = "Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton.mdl"
 		private constant integer MAX_SPAWN_POINTS = 4
         private rect array SPAWN_RECTS[MAX_SPAWN_POINTS][MAX_SPAWN_POINTS]
-        private constant boolean REMOVE_CREEPS = true // Should the units be removed after every round?
+		//Should the units be removed after every round?
+        private constant boolean REMOVE_CREEPS = true 
         private constant string EFFECT = "Abilities\\Spells\\NightElf\\Blink\\BlinkCaster.mdl"
         
         private integer rounds = 0
         private integer array unitIds
         private integer array startHP
         private integer array startDamage
-        private string array bounty // Bounty je nach GameType -> GameConfig
+		// Bounty je nach GameType -> GameConfig
+        private string array bounty 
         
-        private real array INCREASE //prozentualler Wert zum erh?hen pro Forsaken Creep Einheit
+		//prozentualler Wert zum erhöhen pro Forsaken Creep Einheit
+        private real array INCREASE 
         
         //Ist die Verteidigung aktiviert oder nicht?
         private constant boolean ACTIVATED = true
     endglobals
     
-    //Diese Funktion gibt den Spawn Point zur?ck wo die Einheit gespawnt werden soll ( abh. von der Runde )
+    //Diese Funktion gibt den Spawn Point zurück wo die Einheit gespawnt werden soll ( abh. von der Runde )
     private function getSpawnPoint takes real rndVal returns integer
 		local integer i = 1
 		local integer index = 0
@@ -37,6 +41,7 @@ scope StandardDefenseMode
         loop
 			exitwhen i > MAX_SPAWN_POINTS or index > 0
 			set val = val + DefenseCalc.getValue(RoundSystem.actualRound, i)
+			call BJDebugMsg("getValue" + R2S(val))
             if rndVal <= val then
 				set index = i
 			endif
@@ -1216,34 +1221,43 @@ scope StandardDefenseMode
     /*
      * Berechnungsgrundlage fuer die Verteidigung durch die Untoten
      * Die math. Formel wurde von Richard Grosser geschrieben
-     * Structur der Hashtabel (UNIT_DATA):
+     * Struktur der Hashtabel (UNIT_DATA):
      * --------------------------------
      *    i0    i1    i2     i3    i4 
      * R1 -   81,76  12,42  1,24  0,04
      * R2 -   74,11 ... ... ... ...
      * R3 -   ... ... ... ... ... ...
      *
-     * Das bedeutet, das in der HT Prozentwerte stehen, die besagen, zu viele Prozent die chance besteht,
-     * dass eine Verteidigungseinheit an eine von der vier stellen gespawnt wird und das auf die akt. Runde
-     * gesehen.
+     * Das bedeutet, das in der HT Prozentwerte stehen, die besagen, zu wie viel Prozent die Chance besteht,
+     * dass eine Verteidigungseinheit an eine von den vier Stellen gespawnt wird bezogen auf die akt. Runde.
      */
      
     globals
         private constant hashtable WEIGHTS = InitHashtable() 
         private constant real array SIGMA
-        private constant boolean SHIFTED_ROUND = true //Verteidigung abh?ngig der Heldenlevel beider Teams
     endglobals
     
     struct DefenseCalc
         
         private static method weight takes integer round, integer column, integer coalitionHeroLevelSum, integer forsakenHeroLevelSum returns real
-            local real my = 0.00
+            local real my = (19 * column - 16) / 3
             local real weight = 0.00
-            local real shiftedRound = I2R(round) * GetMin(1.0, I2R(coalitionHeroLevelSum)/I2R(forsakenHeroLevelSum))
+			local real colHeroSum = coalitionHeroLevelSum
+			local real forHeroSum = forsakenHeroLevelSum
+			local real shiftedRound = 0.00
+			
+			if (forHeroSum > 0.00) then
+				set shiftedRound = I2R(round) * GetMin(1.0, I2R(coalitionHeroLevelSum)/I2R(forsakenHeroLevelSum))
+			else
+				set shiftedRound = I2R(round)
+			endif
+			
+			call BJDebugMsg("shiftedRound: " + R2S(shiftedRound))
+			call BJDebugMsg("my: " + R2S(my))
             
-            set my = (19 * column - 16) / 3
-            
-            static if SHIFTED_ROUND then
+			//Verteidigung abhängig der Heldenlevel beider Teams
+			//wenn größer 0.00 dann spielen mind. 1v1, also eine Spieler auf jeder Seite
+            if (shiftedRound > 0.00) then
                 set weight = 1/SquareRoot(2*bj_PI*Pow(SIGMA[column],2)) * Pow(bj_E, -Pow((shiftedRound - my), 2) / (2*Pow(SIGMA[column],2)))
             else
                 set weight = 1/SquareRoot(2*bj_PI*Pow(SIGMA[column],2)) * Pow(bj_E, -Pow((round - my), 2) / (2*Pow(SIGMA[column],2)))
@@ -1260,6 +1274,16 @@ scope StandardDefenseMode
             local integer coalitionHeroLevel = Game.getCoalitionHeroLevelSum()
             local integer forsakenHeroLevel = Game.getForsakenHeroLevelSum()
 			
+			/* Hier muss eine Weiche rein, die bestimmt ob nur auf einer Seite jemand spielt,
+			 * wobei da geschaut werden muss wie viele Spieler dort spielen!
+			 * Ist "coalitionHeroLevel" oder "forsakenHeroLevel" == 0, dann wird nur auf
+			 * einer Seite gespielt.
+			 * Die gloable Hashtable "WEIGHTS" wird in der nächsten Schleife mit den beiden
+			 * Variablen befüllt. bevor das geschiet muss die Bedingung rein, wenn eben nur
+			 * auf einer Seite gespielt wird!!!
+			 */
+			
+			call BJDebugMsg("3")
             loop
 				exitwhen column > MAX_SPAWN_POINTS
 				call SaveReal(WEIGHTS, column, row, weight(row, column, coalitionHeroLevel, forsakenHeroLevel))
@@ -1268,7 +1292,7 @@ scope StandardDefenseMode
 			endloop
             
 			set column = 1
-			
+			call BJDebugMsg("4")
             loop
 				exitwhen column > MAX_SPAWN_POINTS
 				set temp = LoadReal(WEIGHTS, column, row)

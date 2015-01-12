@@ -7,8 +7,12 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
         //sowie der Startpunkt für den AoS Teil
         private real AOS_START_LOC_X
         private real AOS_START_LOC_Y
+		
+		//Zuordnung Player-Id zu WAYPOINT-Index
+		//Wird benötigt, damit für P6-12 die Creeps an den richtigen Lanes loslaufen
+		private constant integer array PLAYER__X__WAYPOINT
         
-        //Berechnungsgrundlage f?r die HP, Mana und Damage Werte pro Runde
+        //Berechnungsgrundlage für die HP, Mana und Damage Werte pro Runde
         private constant integer INCREASED_HP_TD_PER_ROUND = 90
         private constant integer INCREASED_HP_AOS_PER_ROUND = 35
         private constant integer INCREASED_DAMAGE_PER_ROUND = 4
@@ -16,6 +20,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
     endglobals
     
     private function initLocations takes nothing returns nothing
+		/* Forsaken */
         //Player 1 (index 0) == StartLocation of Player 9 (index 8)
         set START_LOC_X[0] = GetStartLocationX(8)
         set START_LOC_Y[0] = GetStartLocationY(8)
@@ -34,6 +39,26 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
         //Player 6 (index 5) == StartLocation of Player 12 (index 11)
         set START_LOC_X[5] = GetStartLocationX(11)
         set START_LOC_Y[5] = GetStartLocationY(11)
+		
+		/* Coalition */
+		//Player 7 (index 0) == StartLocation of Player 9 (index 8)
+        set START_LOC_X[8] = GetStartLocationX(8)
+        set START_LOC_Y[8] = GetStartLocationY(8)
+        //Player 8 (index 1) == StartLocation of Player 10 (index 9)
+        set START_LOC_X[9] = GetStartLocationX(9)
+        set START_LOC_Y[9] = GetStartLocationY(9)
+        //Player 9 (index 2) == StartLocation of Player 7 (index 6)
+        set START_LOC_X[6] = GetStartLocationX(6)
+        set START_LOC_Y[6] = GetStartLocationY(6)
+        //Player 10 (index 3) == StartLocation of Player 8 (index 7)
+        set START_LOC_X[7] = GetStartLocationX(7)
+        set START_LOC_Y[7] = GetStartLocationY(7)
+        //Player 11 (index 4) == StartLocation of Player 11 (index 10)
+        set START_LOC_X[10] = GetStartLocationX(10)
+        set START_LOC_Y[10] = GetStartLocationY(10)
+        //Player 12 (index 5) == StartLocation of Player 12 (index 11)
+        set START_LOC_X[11] = GetStartLocationX(11)
+        set START_LOC_Y[11] = GetStartLocationY(11)
     endfunction
     
     
@@ -327,7 +352,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
                     endif
                     
                     //add Unit to the WayPointSystem ( TD Part )
-                    call WayPointSystem.addUnit(.pID, u)
+                    call WayPointSystem.addUnit(PLAYER__X__WAYPOINT[.pID], u)
                     
                     set i = i + 1
                 endloop
@@ -335,6 +360,21 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
             
             set u = null
         endmethod
+		
+		private static method onInit takes nothing returns nothing
+			set PLAYER__X__WAYPOINT[0] = 0
+			set PLAYER__X__WAYPOINT[1] = 1
+			set PLAYER__X__WAYPOINT[2] = 2
+			set PLAYER__X__WAYPOINT[3] = 3
+			set PLAYER__X__WAYPOINT[4] = 4
+			set PLAYER__X__WAYPOINT[5] = 5
+			set PLAYER__X__WAYPOINT[6] = 0
+			set PLAYER__X__WAYPOINT[7] = 1
+			set PLAYER__X__WAYPOINT[8] = 2
+			set PLAYER__X__WAYPOINT[9] = 3
+			set PLAYER__X__WAYPOINT[10] = 4
+			set PLAYER__X__WAYPOINT[11] = 5
+		endmethod
     endstruct
     
     /*******************************

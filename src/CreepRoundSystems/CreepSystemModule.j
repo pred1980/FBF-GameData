@@ -16,9 +16,7 @@ scope CreepSystemModule
             loop
                 exitwhen i >= bj_MAX_PLAYERS
                 if Game.isPlayerInGame(i) then
-                    if GetPlayerRace(Player(i)) == RACE_UNDEAD then
-                        set w = Wave.create(Player(bj_PLAYER_NEUTRAL_VICTIM), i, actualRound)
-                    endif
+                    set w = Wave.create(Player(bj_PLAYER_NEUTRAL_VICTIM), i, actualRound)
                     call SetPlayerState(Player(i), PLAYER_STATE_RESOURCE_FOOD_USED, actualRound )
                 endif
                 set i = i + 1
