@@ -41,7 +41,6 @@ scope StandardDefenseMode
         loop
 			exitwhen i > MAX_SPAWN_POINTS or index > 0
 			set val = val + DefenseCalc.getValue(RoundSystem.actualRound, i)
-			call BJDebugMsg("getValue" + R2S(val))
             if rndVal <= val then
 				set index = i
 			endif
@@ -1245,22 +1244,20 @@ scope StandardDefenseMode
 			local real colHeroSum = coalitionHeroLevelSum
 			local real forHeroSum = forsakenHeroLevelSum
 			local real shiftedRound = 0.00
+			local boolean isShiftedRound = false
 			
-			if (forHeroSum > 0.00) then
+			//Players on both sides?
+			if (colHeroSum > 0.00 and forHeroSum > 0.00) then
+				set isShiftedRound = true
 				set shiftedRound = I2R(round) * GetMin(1.0, I2R(coalitionHeroLevelSum)/I2R(forsakenHeroLevelSum))
-			else
-				set shiftedRound = I2R(round)
 			endif
-			
-			call BJDebugMsg("shiftedRound: " + R2S(shiftedRound))
-			call BJDebugMsg("my: " + R2S(my))
             
 			//Verteidigung abhängig der Heldenlevel beider Teams
-			//wenn größer 0.00 dann spielen mind. 1v1, also eine Spieler auf jeder Seite
-            if (shiftedRound > 0.00) then
+            if (isShiftedRound) then
                 set weight = 1/SquareRoot(2*bj_PI*Pow(SIGMA[column],2)) * Pow(bj_E, -Pow((shiftedRound - my), 2) / (2*Pow(SIGMA[column],2)))
             else
-                set weight = 1/SquareRoot(2*bj_PI*Pow(SIGMA[column],2)) * Pow(bj_E, -Pow((round - my), 2) / (2*Pow(SIGMA[column],2)))
+				//set weight = 1/SquareRoot(2*bj_PI*Pow(SIGMA[column],2)) * Pow(bj_E, -Pow((I2R(round) - my), 2) / (2*Pow(SIGMA[column],2)))
+				set weight = 1/SquareRoot(2*bj_PI*Pow(SIGMA[column],2)) * Pow(bj_E, -Pow(my, 2) / (2*Pow(SIGMA[column],2)))
             endif
             
             return weight
@@ -1283,7 +1280,6 @@ scope StandardDefenseMode
 			 * auf einer Seite gespielt wird!!!
 			 */
 			
-			call BJDebugMsg("3")
             loop
 				exitwhen column > MAX_SPAWN_POINTS
 				call SaveReal(WEIGHTS, column, row, weight(row, column, coalitionHeroLevel, forsakenHeroLevel))
@@ -1292,7 +1288,7 @@ scope StandardDefenseMode
 			endloop
             
 			set column = 1
-			call BJDebugMsg("4")
+			
             loop
 				exitwhen column > MAX_SPAWN_POINTS
 				set temp = LoadReal(WEIGHTS, column, row)

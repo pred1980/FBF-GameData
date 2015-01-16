@@ -368,10 +368,11 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
 			set PLAYER__X__WAYPOINT[3] = 3
 			set PLAYER__X__WAYPOINT[4] = 4
 			set PLAYER__X__WAYPOINT[5] = 5
-			set PLAYER__X__WAYPOINT[6] = 0
-			set PLAYER__X__WAYPOINT[7] = 1
-			set PLAYER__X__WAYPOINT[8] = 2
-			set PLAYER__X__WAYPOINT[9] = 3
+			
+			set PLAYER__X__WAYPOINT[6] = 2
+			set PLAYER__X__WAYPOINT[7] = 3
+			set PLAYER__X__WAYPOINT[8] = 0
+			set PLAYER__X__WAYPOINT[9] = 1
 			set PLAYER__X__WAYPOINT[10] = 4
 			set PLAYER__X__WAYPOINT[11] = 5
 		endmethod

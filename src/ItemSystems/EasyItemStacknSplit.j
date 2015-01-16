@@ -131,7 +131,10 @@ endglobals
                 loop
                     set ii = UnitItemInSlot( u, s )
                     if ii == null then
+						//Remove Item Shadow after creating an Item
+						call DestroyImage(null)
                         set ii = CreateItem( it, px, py )
+						call SetImageColor(null,0,0,0,0)
                         if USE_ITEM_LEVEL and il > 0 and ic > il then
                             call SetItemCharges( ii, il )
                             set ic = ic - il
@@ -142,7 +145,7 @@ endglobals
                         call DisableTrigger( trg )
                         call UnitAddItem( u, ii )
                         call EnableTrigger( trg )
-                    endif
+	                endif
                     set s = s + 1
                     exitwhen ic <= 0 or s >= is
                 endloop

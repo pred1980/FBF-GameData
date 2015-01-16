@@ -1,7 +1,7 @@
 scope FogOfDeath initializer init
     /*
      * Description: Akull partially evaporates into a bone-chilling mist that deals damage over time to all units inside. 
-                    As long as the spell is active, he's mostly formless, making 50% of the attacks on him miss.
+                    As long as the spell is active, hes mostly formless, making 50% of the attacks on him miss.
      * Last Update: 28.10.2013
      * Changelog: 
      *     28.10.2013: Abgleich mit OE und der Exceltabelle

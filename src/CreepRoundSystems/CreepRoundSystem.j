@@ -181,9 +181,7 @@ library CreepRoundSystem /* v 1.1.0.0
             call DestroyTimerDialog(.tiDialog)
             set .tiDialog = null
             call DestroyTimer(GetExpiredTimer())
-            call BJDebugMsg("1")
             call Sound.runSound(SOUND_1)
-            call BJDebugMsg("2")
             //Update Undead Defense System (Weight/Sigam)
             call DefenseCalc.update()
         endmethod

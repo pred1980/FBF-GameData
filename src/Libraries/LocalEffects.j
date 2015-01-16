@@ -16,9 +16,9 @@ library LocalEffects
         set eff = null
        
         if GetLocalPlayer() == p then
-             set eff = e
+            set eff = e
         endif
-       
+		
         return AddSpecialEffectTarget(eff, u, a)    
     endfunction
    
@@ -26,7 +26,7 @@ library LocalEffects
         set eff = null
        
         if GetLocalPlayer() == p then
-             set eff = e
+            set eff = e
         endif
        
         return AddSpecialEffect(eff, x, y)    

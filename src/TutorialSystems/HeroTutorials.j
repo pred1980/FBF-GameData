@@ -1,4 +1,4 @@
-scope HeroTutorials
+scope HeroTutorials initializer init
 
     globals
         private constant string EFFECT = "Abilities\\Spells\\Other\\TalkToMe\\TalkToMe.mdl"
@@ -162,7 +162,7 @@ scope HeroTutorials
             local thistype data = GetTimerData(t)
             local unit shop = ItemShops.getShop(data.raceType, data.count)
             
-            set data.effects[data.count] = addEffectToUnitForPlayer(data.p, shop, EFFECT, EFFECT_ATT_POINT)
+			set data.effects[data.count] = addEffectToUnitForPlayer(data.p, shop, EFFECT, EFFECT_ATT_POINT)
             
             set data.count = data.count + 1
             set shop = null
@@ -211,5 +211,9 @@ scope HeroTutorials
         endmethod
 
     endstruct
+	
+	private function init takes nothing returns nothing
+        call Preload(EFFECT)
+    endfunction
 
 endscope
