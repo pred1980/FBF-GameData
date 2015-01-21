@@ -1,6 +1,6 @@
 scope BroodMotherSystem initializer init
 	/*
-	 * HP=HPmax*Player_Alliance/6*(1+x*(6-Player_UD)) 
+	 * HP = HPmax * Player_Alliance/6 *(1 + factor * (6-Player_UD)) 
      * Diese Formel berechnet die HP/Damage Werte der Spiders je nach Spieleranzahl auf beiden Seiten. 
 	 * Es können ja wohl schlecht 2 Coaltion Heroes eine 8000HP starke Spinne legen xDDD
 	 *
@@ -42,7 +42,7 @@ scope BroodMotherSystem initializer init
         private string SOUND_2 = "Units\\Creeps\\Spider\\SpiderYes2.wav"
         private integer counter = 0
         
-        //Dieser Faktoren beschreiben die Erh?hung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
+        //Dieser Faktoren beschreiben die Erhöhung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
         private constant real HP_FACTOR = 0.10 //0.05
         private constant real DAMAGE_FACTOR = 0.12 //0.09
     endglobals

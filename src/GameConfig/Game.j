@@ -18,6 +18,8 @@ scope Game
         
         //Forsaken Heart
         private constant integer HEART_ID = 'H014'
+		//Forsaken Fountain
+		private constant integer FORSAKEN_FOUNTAIN = 'n006'
             
     endglobals
     
@@ -490,8 +492,9 @@ scope Game
 			call SetFloatGameState(GAME_STATE_TIME_OF_DAY, DAY_TIME)
             call SuspendTimeOfDay( false )
             
-            //Wechsel den Ownser der Forsaken Fountain, damit nur Undead dort sich heilen koennen
-            call SetUnitOwner( gg_unit_n006_0025, Player(bj_PLAYER_NEUTRAL_EXTRA), true )
+			call BJDebugMsg("Name: " + GetUnitName(GetUnitById(FORSAKEN_FOUNTAIN)))
+            //Wechsel den Besitzer der Forsaken Fountain, damit nur Undead dort sich heilen können
+            call SetUnitOwner( GetUnitById(FORSAKEN_FOUNTAIN), Player(bj_PLAYER_NEUTRAL_EXTRA), true )
 			
 			//activate user control for all players
             call SetUserControlForceOn(GetPlayersAll())

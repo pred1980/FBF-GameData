@@ -1271,16 +1271,7 @@ scope StandardDefenseMode
             local integer coalitionHeroLevel = Game.getCoalitionHeroLevelSum()
             local integer forsakenHeroLevel = Game.getForsakenHeroLevelSum()
 			
-			/* Hier muss eine Weiche rein, die bestimmt ob nur auf einer Seite jemand spielt,
-			 * wobei da geschaut werden muss wie viele Spieler dort spielen!
-			 * Ist "coalitionHeroLevel" oder "forsakenHeroLevel" == 0, dann wird nur auf
-			 * einer Seite gespielt.
-			 * Die gloable Hashtable "WEIGHTS" wird in der nächsten Schleife mit den beiden
-			 * Variablen befüllt. bevor das geschiet muss die Bedingung rein, wenn eben nur
-			 * auf einer Seite gespielt wird!!!
-			 */
-			
-            loop
+			loop
 				exitwhen column > MAX_SPAWN_POINTS
 				call SaveReal(WEIGHTS, column, row, weight(row, column, coalitionHeroLevel, forsakenHeroLevel))
 				set sum = sum + weight(row, column, coalitionHeroLevel, forsakenHeroLevel)

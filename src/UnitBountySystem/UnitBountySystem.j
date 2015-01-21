@@ -102,18 +102,6 @@ scope UnitBountySystem
         /* Naga */
         private constant integer CRUCHING_WAVE_EFFECT_ID = 'u00E'
         
-        /*
-         * Forsaken
-         */
-        //Undead Heroes
-        private constant unit BEHEMOT = gg_unit_U01N_0000
-        private constant unit NERUBIAN_WIDOW = gg_unit_U01O_0035
-        private constant unit ICE_AVATAR = gg_unit_U004_0036
-        private constant unit GHOUL = gg_unit_U00A_0037
-        private constant unit MASTER_BANSHEE = gg_unit_U01S_0038
-        private constant unit DEATH_MARCHER = gg_unit_U019_0039
-        private constant unit SKELETON_MAGE = gg_unit_U01P_0040
-        
         //Web System
         private constant integer WEB_SMALL = 'e008'
         private constant integer WEB_MEDIUM = 'e00A'
@@ -194,8 +182,8 @@ scope UnitBountySystem
         endmethod
     
     endstruct
-
-    private function Actions takes nothing returns nothing
+	
+	private function Actions takes nothing returns nothing
 		//Speicher den Bounty Wert je nach GameType (GameConfig) in der Spalte 0
         //in der Reihe der Unit_Id
 		
@@ -252,7 +240,7 @@ scope UnitBountySystem
 		call SaveStr(DATA, 0, ARCHNATHID_ID, "75,")
 		
         /*
-         * Ausnahmen: Einheiten, wie Dummys, die gekillt werden aber keinen Bounty haben sollen nicht ber?cksichtigt
+         * Ausnahmen: Einheiten, wie Dummys, die gekillt werden aber keinen Bounty haben sollen nicht berücksichtigt
          *            werden! Ausnahmen kommen in Spalte 1
          */
         call SaveBoolean(DATA, 1, XE_DUMMY, true)
@@ -260,13 +248,6 @@ scope UnitBountySystem
         call SaveBoolean(DATA, 1, PEASANT_ID, true)
         call SaveBoolean(DATA, 1, PEON_ID, true)
         call SaveBoolean(DATA, 1, WISP_ID, true)
-        call SaveBoolean(DATA, 1, GetUnitId(BEHEMOT), true)
-        call SaveBoolean(DATA, 1, GetUnitId(NERUBIAN_WIDOW), true)
-        call SaveBoolean(DATA, 1, GetUnitId(ICE_AVATAR), true)
-        call SaveBoolean(DATA, 1, GetUnitId(GHOUL), true)
-        call SaveBoolean(DATA, 1, GetUnitId(MASTER_BANSHEE), true)
-        call SaveBoolean(DATA, 1, GetUnitId(DEATH_MARCHER), true)
-        call SaveBoolean(DATA, 1, GetUnitId(SKELETON_MAGE), true)
         call SaveBoolean(DATA, 1, WEB_SMALL, true)
         call SaveBoolean(DATA, 1, WEB_MEDIUM, true)
         call SaveBoolean(DATA, 1, WEB_LARGE, true)

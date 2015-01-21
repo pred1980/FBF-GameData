@@ -217,8 +217,8 @@ scope HeroPickInit
         //Circle
         set HERO_PICK_RECT[0]  = gg_rct_HeroPick1
         //save Revive Position (x/y)
-        set HERO_REPICK_RECT[0][0] = GetUnitX(gg_unit_U01N_0000)
-        set HERO_REPICK_RECT[0][1] = GetUnitY(gg_unit_U01N_0000)
+        set HERO_REPICK_RECT[0][0] = GetRectCenterX(gg_rct_HeroRevive1)
+        set HERO_REPICK_RECT[0][1] = GetRectCenterY(gg_rct_HeroRevive1)
         //Abilities
         set HERO_ABILITIES[0][0] = 'A01L' //Explosive Tantrum
         set HERO_ABILITIES[0][1] = 'A00D' //Beast Stomp
@@ -227,8 +227,8 @@ scope HeroPickInit
         
         //Nerubian Widow
         set HERO_PICK_RECT[1]  = gg_rct_HeroPick2
-        set HERO_REPICK_RECT[1][0] = GetUnitX(gg_unit_U01O_0035)
-        set HERO_REPICK_RECT[1][1] = GetUnitY(gg_unit_U01O_0035)
+        set HERO_REPICK_RECT[1][0] = GetRectCenterX(gg_rct_HeroRevive2)
+        set HERO_REPICK_RECT[1][1] = GetRectCenterY(gg_rct_HeroRevive2)
         set HERO_ABILITIES[1][0] = 'A004' //Adolescence
         set HERO_ABILITIES[1][1] = 'A005' //Spider Web
         set HERO_ABILITIES[1][2] = 'A024' //Sprint
@@ -236,8 +236,8 @@ scope HeroPickInit
         
         //Ice Avatar
         set HERO_PICK_RECT[2]  = gg_rct_HeroPick3
-        set HERO_REPICK_RECT[2][0] = GetUnitX(gg_unit_U004_0036)
-        set HERO_REPICK_RECT[2][1] = GetUnitY(gg_unit_U004_0036)
+        set HERO_REPICK_RECT[2][0] = GetRectCenterX(gg_rct_HeroRevive3)
+        set HERO_REPICK_RECT[2][1] = GetRectCenterY(gg_rct_HeroRevive3)
         set HERO_ABILITIES[2][0] = 'A04J' //Ice Tornado
         set HERO_ABILITIES[2][1] = 'A04K' //Freezing Breath
         set HERO_ABILITIES[2][2] = 'A04Q' //Frost Aura
@@ -245,8 +245,8 @@ scope HeroPickInit
         
         //Ghoul
         set HERO_PICK_RECT[3]  = gg_rct_HeroPick4
-        set HERO_REPICK_RECT[3][0] = GetUnitX(gg_unit_U00A_0037)
-        set HERO_REPICK_RECT[3][1] = GetUnitY(gg_unit_U00A_0037)
+        set HERO_REPICK_RECT[3][0] = GetRectCenterX(gg_rct_HeroRevive4)
+        set HERO_REPICK_RECT[3][1] = GetRectCenterY(gg_rct_HeroRevive4)
         set HERO_ABILITIES[3][0] = 'A04N' //Claws Attack
         set HERO_ABILITIES[3][1] = 'A04R' //Cannibalize
         set HERO_ABILITIES[3][2] = 'A04T' //Flesh Wound
@@ -254,8 +254,8 @@ scope HeroPickInit
         
         //Master Banshee
         set HERO_PICK_RECT[4]  = gg_rct_HeroPick5
-        set HERO_REPICK_RECT[4][0] = GetUnitX(gg_unit_U01S_0038)
-        set HERO_REPICK_RECT[4][1] = GetUnitY(gg_unit_U01S_0038)
+        set HERO_REPICK_RECT[4][0] = GetRectCenterX(gg_rct_HeroRevive5)
+        set HERO_REPICK_RECT[4][1] = GetRectCenterY(gg_rct_HeroRevive5)
         set HERO_ABILITIES[4][0] = 'A04V' //Dark Obedience
         set HERO_ABILITIES[4][1] = 'A04W' //Spirit Burn
         set HERO_ABILITIES[4][2] = 'A04X' //Cursed Soul
@@ -263,8 +263,8 @@ scope HeroPickInit
         
         //Death Marcher
         set HERO_PICK_RECT[5]  = gg_rct_HeroPick6
-        set HERO_REPICK_RECT[5][0] = GetUnitX(gg_unit_U019_0039)
-        set HERO_REPICK_RECT[5][1] = GetUnitY(gg_unit_U019_0039)
+        set HERO_REPICK_RECT[5][0] = GetRectCenterX(gg_rct_HeroRevive6)
+        set HERO_REPICK_RECT[5][1] = GetRectCenterY(gg_rct_HeroRevive6)
         set HERO_ABILITIES[5][0] = 'A04Z' //Death Pact
         set HERO_ABILITIES[5][1] = 'A050' //Soul Trap
         set HERO_ABILITIES[5][2] = 'A052' //Mana Concentration
@@ -272,8 +272,8 @@ scope HeroPickInit
         
         //Skeleton Mage
         set HERO_PICK_RECT[6]  = gg_rct_HeroPick7
-        set HERO_REPICK_RECT[6][0] = GetUnitX(gg_unit_U01P_0040)
-        set HERO_REPICK_RECT[6][1] = GetUnitY(gg_unit_U01P_0040)
+        set HERO_REPICK_RECT[6][0] = GetRectCenterX(gg_rct_HeroRevive7)
+        set HERO_REPICK_RECT[6][1] = GetRectCenterY(gg_rct_HeroRevive7)
         set HERO_ABILITIES[6][0] = 'A054' //Plague Infection
         set HERO_ABILITIES[6][1] = 'A056' //Soul Extraction
         set HERO_ABILITIES[6][2] = 'A058' //Spawn Zombies
@@ -281,8 +281,8 @@ scope HeroPickInit
         
         //Master Necromancer
         set HERO_PICK_RECT[7]  = gg_rct_HeroPick8
-        set HERO_REPICK_RECT[7][0] = GetUnitX(gg_unit_U01Q_0041)
-        set HERO_REPICK_RECT[7][1] = GetUnitY(gg_unit_U01Q_0041)
+        set HERO_REPICK_RECT[7][0] = GetRectCenterX(gg_rct_HeroRevive8)
+        set HERO_REPICK_RECT[7][1] = GetRectCenterY(gg_rct_HeroRevive8)
         set HERO_ABILITIES[7][0] = 'A05D' //Necromancy
         set HERO_ABILITIES[7][1] = 'A064' //Malicious Curse
         set HERO_ABILITIES[7][2] = 'A068' //Despair
@@ -290,8 +290,8 @@ scope HeroPickInit
         
         //Crypt Lord
         set HERO_PICK_RECT[8]  = gg_rct_HeroPick9
-        set HERO_REPICK_RECT[8][0] = GetUnitX(gg_unit_U01U_0042)
-        set HERO_REPICK_RECT[8][1] = GetUnitY(gg_unit_U01U_0042)
+        set HERO_REPICK_RECT[8][0] = GetRectCenterX(gg_rct_HeroRevive9)
+        set HERO_REPICK_RECT[8][1] = GetRectCenterY(gg_rct_HeroRevive9)
         set HERO_ABILITIES[8][0] = 'A06A' //Burrow Strike
         set HERO_ABILITIES[8][1] = 'A06E' //Burrow Move
         set HERO_ABILITIES[8][2] = 'A06F' //Carrion Swarm
@@ -299,8 +299,8 @@ scope HeroPickInit
         
         //Abomination
         set HERO_PICK_RECT[9]  = gg_rct_HeroPick10
-        set HERO_REPICK_RECT[9][0] = GetUnitX(gg_unit_H00G_0043)
-        set HERO_REPICK_RECT[9][1] = GetUnitY(gg_unit_H00G_0043)
+        set HERO_REPICK_RECT[9][0] = GetRectCenterX(gg_rct_HeroRevive10)
+        set HERO_REPICK_RECT[9][1] = GetRectCenterY(gg_rct_HeroRevive10)
         set HERO_ABILITIES[9][0] = 'A06M' //Cleave
         set HERO_ABILITIES[9][1] = 'A06K' //Consume himself
         set HERO_ABILITIES[9][2] = 'A06G' //Plague Cloud
@@ -308,8 +308,8 @@ scope HeroPickInit
         
         //Destroyer
         set HERO_PICK_RECT[10]  = gg_rct_HeroPick11
-        set HERO_REPICK_RECT[10][0] = GetUnitX(gg_unit_H009_0044)
-        set HERO_REPICK_RECT[10][1] = GetUnitY(gg_unit_H009_0044)
+        set HERO_REPICK_RECT[10][0] = GetRectCenterX(gg_rct_HeroRevive11)
+        set HERO_REPICK_RECT[10][1] = GetRectCenterY(gg_rct_HeroRevive11)
         set HERO_ABILITIES[10][0] = 'A06N' //Arcane Swap
         set HERO_ABILITIES[10][1] = 'A06O' //Mind Burst
         set HERO_ABILITIES[10][2] = 'A06R' //Mana Steal
@@ -317,8 +317,8 @@ scope HeroPickInit
         
         //Dread Lord
         set HERO_PICK_RECT[11]  = gg_rct_HeroPick12
-        set HERO_REPICK_RECT[11][0] = GetUnitX(gg_unit_U01X_0045)
-        set HERO_REPICK_RECT[11][1] = GetUnitY(gg_unit_U01X_0045)
+        set HERO_REPICK_RECT[11][0] = GetRectCenterX(gg_rct_HeroRevive12)
+        set HERO_REPICK_RECT[11][1] = GetRectCenterY(gg_rct_HeroRevive12)
         set HERO_ABILITIES[11][0] = 'A06V' //Vampire Blood
         set HERO_ABILITIES[11][1] = 'A06T' //Purify
         set HERO_ABILITIES[11][2] = 'A06X' //Sleepy Dust
@@ -326,8 +326,8 @@ scope HeroPickInit
         
         //Archmage
         set HERO_PICK_RECT[12]  = gg_rct_HeroPick14
-        set HERO_REPICK_RECT[12][0] = GetUnitX(gg_unit_H00Y_0047)
-        set HERO_REPICK_RECT[12][1] = GetUnitY(gg_unit_H00Y_0047)
+        set HERO_REPICK_RECT[12][0] = GetRectCenterX(gg_rct_HeroRevive14)
+        set HERO_REPICK_RECT[12][1] = GetRectCenterY(gg_rct_HeroRevive14)
         set HERO_ABILITIES[12][0] = 'A08M' //Holy Chain
         set HERO_ABILITIES[12][1] = 'A07N' //Trappy Swap
         set HERO_ABILITIES[12][2] = 'A07M' //Refreshing Aura
@@ -335,8 +335,8 @@ scope HeroPickInit
         
         //Tauren Chieftain
         set HERO_PICK_RECT[13]  = gg_rct_HeroPick15
-        set HERO_REPICK_RECT[13][0] = GetUnitX(gg_unit_O00K_0048)
-        set HERO_REPICK_RECT[13][1] = GetUnitY(gg_unit_O00K_0048)
+        set HERO_REPICK_RECT[13][0] = GetRectCenterX(gg_rct_HeroRevive15)
+        set HERO_REPICK_RECT[13][1] = GetRectCenterY(gg_rct_HeroRevive15)
         set HERO_ABILITIES[13][0] = 'A078' //Fire Totem
         set HERO_ABILITIES[13][1] = 'A079' //Stomp Blaster
         set HERO_ABILITIES[13][2] = 'A07A' //Fervor
@@ -344,8 +344,8 @@ scope HeroPickInit
         
         //Priestess of the Moon
         set HERO_PICK_RECT[14]  = gg_rct_HeroPick16
-        set HERO_REPICK_RECT[14][0] = GetUnitX(gg_unit_E00P_0049)
-        set HERO_REPICK_RECT[14][1] = GetUnitY(gg_unit_E00P_0049)
+        set HERO_REPICK_RECT[14][0] = GetRectCenterX(gg_rct_HeroRevive16)
+        set HERO_REPICK_RECT[14][1] = GetRectCenterY(gg_rct_HeroRevive16)
         set HERO_ABILITIES[14][0] = 'A07E' //Life Vortex
         set HERO_ABILITIES[14][1] = 'A07F' //Moon Light
         set HERO_ABILITIES[14][2] = 'A07G' //Night Aura
@@ -353,8 +353,8 @@ scope HeroPickInit
         
         //Naga Matriarch
         set HERO_PICK_RECT[15]  = gg_rct_HeroPick17
-        set HERO_REPICK_RECT[15][0] = GetUnitX(gg_unit_N00K_0051)
-        set HERO_REPICK_RECT[15][1] = GetUnitY(gg_unit_N00K_0051)
+        set HERO_REPICK_RECT[15][0] = GetRectCenterX(gg_rct_HeroRevive17)
+        set HERO_REPICK_RECT[15][1] = GetRectCenterY(gg_rct_HeroRevive17)
         set HERO_ABILITIES[15][0] = 'A07O' //Tidal Shield
         set HERO_ABILITIES[15][1] = 'A07P' //Impaling Spine
         set HERO_ABILITIES[15][2] = 'A07R' //Crushing Wave
@@ -362,8 +362,8 @@ scope HeroPickInit
         
         //Orcish Warlock
         set HERO_PICK_RECT[16]  = gg_rct_HeroPick18
-        set HERO_REPICK_RECT[16][0] = GetUnitX(gg_unit_O000_0052)
-        set HERO_REPICK_RECT[16][1] = GetUnitY(gg_unit_O000_0052)
+        set HERO_REPICK_RECT[16][0] = GetRectCenterX(gg_rct_HeroRevive18)
+        set HERO_REPICK_RECT[16][1] = GetRectCenterY(gg_rct_HeroRevive18)
         set HERO_ABILITIES[16][0] = 'A07T' //Thunderbolt
         set HERO_ABILITIES[16][1] = 'A07U' //Spirit Link
         set HERO_ABILITIES[16][2] = 'A07W' //Mana Ward
@@ -371,8 +371,8 @@ scope HeroPickInit
         
         //Farseer
         set HERO_PICK_RECT[17]  = gg_rct_HeroPick19
-        set HERO_REPICK_RECT[17][0] = GetUnitX(gg_unit_O005_0053)
-        set HERO_REPICK_RECT[17][1] = GetUnitY(gg_unit_O005_0053)
+        set HERO_REPICK_RECT[17][0] = GetRectCenterX(gg_rct_HeroRevive19)
+        set HERO_REPICK_RECT[17][1] = GetRectCenterY(gg_rct_HeroRevive19)
         set HERO_ABILITIES[17][0] = 'A09D' //Lightning Balls
         set HERO_ABILITIES[17][1] = 'A09E' //Volty Crush
         set HERO_ABILITIES[17][2] = 'A09G' //
@@ -380,8 +380,8 @@ scope HeroPickInit
         
         //Fire Panda
         set HERO_PICK_RECT[18]  = gg_rct_HeroPick20
-        set HERO_REPICK_RECT[18][0] = GetUnitX(gg_unit_E009_0054)
-        set HERO_REPICK_RECT[18][1] = GetUnitY(gg_unit_E009_0054)
+        set HERO_REPICK_RECT[18][0] = GetRectCenterX(gg_rct_HeroRevive20)
+        set HERO_REPICK_RECT[18][1] = GetRectCenterY(gg_rct_HeroRevive20)
         set HERO_ABILITIES[18][0] = 'A08S' //Hack'n Slash
         set HERO_ABILITIES[18][1] = 'A08X' //High Jump
         set HERO_ABILITIES[18][2] = 'A08Y' //Bladethrow
@@ -389,8 +389,8 @@ scope HeroPickInit
         
         //Mountain Giant
         set HERO_PICK_RECT[19]  = gg_rct_HeroPick21
-        set HERO_REPICK_RECT[19][0] = GetUnitX(gg_unit_H01B_0055)
-        set HERO_REPICK_RECT[19][1] = GetUnitY(gg_unit_H01B_0055)
+        set HERO_REPICK_RECT[19][0] = GetRectCenterX(gg_rct_HeroRevive21)
+        set HERO_REPICK_RECT[19][1] = GetRectCenterY(gg_rct_HeroRevive21)
         set HERO_ABILITIES[19][0] = '0000' //Crag
         set HERO_ABILITIES[19][1] = '0000' //Taunt
         set HERO_ABILITIES[19][2] = '0000' //Craggy Skin
@@ -398,8 +398,8 @@ scope HeroPickInit
         
         //Cenarius
         set HERO_PICK_RECT[20]  = gg_rct_HeroPick22
-        set HERO_REPICK_RECT[20][0] = GetUnitX(gg_unit_E00K_0056)
-        set HERO_REPICK_RECT[20][1] = GetUnitY(gg_unit_E00K_0056)
+        set HERO_REPICK_RECT[20][0] = GetRectCenterX(gg_rct_HeroRevive22)
+        set HERO_REPICK_RECT[20][1] = GetRectCenterY(gg_rct_HeroRevive22)
         set HERO_ABILITIES[20][0] = 'A08D' //Natural Sphere
         set HERO_ABILITIES[20][1] = 'A08F' //Magic Seed
         set HERO_ABILITIES[20][2] = 'A08G' //Pollen Aura
@@ -407,8 +407,8 @@ scope HeroPickInit
         
         //Paladin
         set HERO_PICK_RECT[21]  = gg_rct_HeroPick23
-        set HERO_REPICK_RECT[21][0] = GetUnitX(gg_unit_H01Q_0057)
-        set HERO_REPICK_RECT[21][1] = GetUnitY(gg_unit_H01Q_0057)
+        set HERO_REPICK_RECT[21][0] = GetRectCenterX(gg_rct_HeroRevive23)
+        set HERO_REPICK_RECT[21][1] = GetRectCenterY(gg_rct_HeroRevive23)
         set HERO_ABILITIES[21][0] = 'A08K' //God's Seal
         set HERO_ABILITIES[21][1] = 'A08O' //Star Impact
         set HERO_ABILITIES[21][2] = 'A08P' //Holy Strike
@@ -416,8 +416,8 @@ scope HeroPickInit
         
         //Royal Knight
         set HERO_PICK_RECT[22]  = gg_rct_HeroPick24
-        set HERO_REPICK_RECT[22][0] = GetUnitX(gg_unit_H008_0058)
-        set HERO_REPICK_RECT[22][1] = GetUnitY(gg_unit_H008_0058)
+        set HERO_REPICK_RECT[22][0] = GetRectCenterX(gg_rct_HeroRevive24)
+        set HERO_REPICK_RECT[22][1] = GetRectCenterY(gg_rct_HeroRevive24)
         set HERO_ABILITIES[22][0] = 'A080' //Battle Fury
         set HERO_ABILITIES[22][1] = 'A08A' //Shattering Javelin
         set HERO_ABILITIES[22][2] = 'A081' //Animal War Training
@@ -425,8 +425,8 @@ scope HeroPickInit
         
         //Dark Ranger
         set HERO_PICK_RECT[23]  = gg_rct_HeroPick13
-        set HERO_REPICK_RECT[23][0] = GetUnitX(gg_unit_N00J_0046)
-        set HERO_REPICK_RECT[23][1] = GetUnitY(gg_unit_N00J_0046)
+        set HERO_REPICK_RECT[23][0] = GetRectCenterX(gg_rct_HeroRevive13)
+        set HERO_REPICK_RECT[23][1] = GetRectCenterY(gg_rct_HeroRevive13)
         set HERO_ABILITIES[23][0] = 'A071' //Ghost Form
         set HERO_ABILITIES[23][1] = 'A072' //Crippling Arrow
         set HERO_ABILITIES[23][2] = 'A075' //Snipe
@@ -434,8 +434,8 @@ scope HeroPickInit
         
         //Blood Mage
         set HERO_PICK_RECT[24]  = gg_rct_HeroPick25
-        set HERO_REPICK_RECT[24][0] = GetUnitX(gg_unit_H01S_0059)
-        set HERO_REPICK_RECT[24][1] = GetUnitY(gg_unit_H01S_0059)
+        set HERO_REPICK_RECT[24][0] = GetRectCenterX(gg_rct_HeroRevive25)
+        set HERO_REPICK_RECT[24][1] = GetRectCenterY(gg_rct_HeroRevive25)
         set HERO_ABILITIES[24][0] = 'A091' //Fire Blast
         set HERO_ABILITIES[24][1] = 'A094' //Boon and Bane
         set HERO_ABILITIES[24][2] = 'A092' //Burning Skin
@@ -443,8 +443,8 @@ scope HeroPickInit
         
         //Ogre Warrior
         set HERO_PICK_RECT[25]  = gg_rct_HeroPick26
-        set HERO_REPICK_RECT[25][0] = GetUnitX(gg_unit_H01C_0060)
-        set HERO_REPICK_RECT[25][1] = GetUnitY(gg_unit_H01C_0060)
+        set HERO_REPICK_RECT[25][0] = GetRectCenterX(gg_rct_HeroRevive26)
+        set HERO_REPICK_RECT[25][1] = GetRectCenterY(gg_rct_HeroRevive26)
         set HERO_ABILITIES[25][0] = 'A09H' //Axe Throw
         set HERO_ABILITIES[25][1] = 'A09K' //Decapitate
         set HERO_ABILITIES[25][2] = 'A09I' //Might Swing
@@ -452,8 +452,8 @@ scope HeroPickInit
         
         //Giant Turtle
         set HERO_PICK_RECT[26]  = gg_rct_HeroPick27
-        set HERO_REPICK_RECT[26][0] = GetUnitX(gg_unit_H002_0061)
-        set HERO_REPICK_RECT[26][1] = GetUnitY(gg_unit_H002_0061)
+        set HERO_REPICK_RECT[26][0] = GetRectCenterX(gg_rct_HeroRevive27)
+        set HERO_REPICK_RECT[26][1] = GetRectCenterY(gg_rct_HeroRevive27)
         set HERO_ABILITIES[26][0] = 'A082' //Surf
         set HERO_ABILITIES[26][1] = 'A083' //Fountain Blast
         set HERO_ABILITIES[26][2] = 'A086' //Scaled Shell

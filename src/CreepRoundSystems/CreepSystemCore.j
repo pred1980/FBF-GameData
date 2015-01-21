@@ -146,31 +146,38 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
         static integer current = 0
         
         //TD Types
-        static SCC_Low sccLow
-        static SCC_Medium sccMedium
-        static SCC_Full sccFull
+        static SCC_One sccOne
+        static SCC_Two sccTwo
+        static SCC_Three sccThree
+		static SCC_Four sccFour
+        static SCC_Five sccFive
+        static SCC_Six sccSix
         
         static IRound array CONFIG
         
-        /* Diese Methode wird vor jeder Runde aufgerufen und setzt die akt. Wert daf?r, welche Config verwendet werden soll. */
+        /* Diese Methode wird vor jeder Runde aufgerufen und setzt die akt. Wert dafür, welche Config verwendet werden soll. */
         static method updateRoundConfig takes nothing returns nothing
-            if Game.getForsakenPlayers() >= 4 then
-                set current = 2
-            elseif Game.getForsakenPlayers() == 3 then
-                set current = 1
-            else
-                set current = 0
-            endif
-        endmethod
+			if (Game.getForsakenPlayers() > 0) then
+				set current = Game.getForsakenPlayers() - 1
+			else
+				set current = Game.getCoalitionPlayers() - 1
+			endif
+		 endmethod
         
         static method onInit takes nothing returns nothing
-            set sccLow = SCC_Low.create()
-            set sccMedium = SCC_Medium.create()
-            set sccFull = SCC_Full.create()
+            set sccOne = SCC_One.create()
+            set sccTwo = SCC_Two.create()
+            set sccThree = SCC_Three.create()
+			set sccFour = SCC_Four.create()
+            set sccFive = SCC_Five.create()
+            set sccSix = SCC_Six.create()
             
-            set CONFIG[0] = sccLow
-            set CONFIG[1] = sccMedium
-            set CONFIG[2] = sccFull
+            set CONFIG[0] = sccOne
+            set CONFIG[1] = sccTwo
+            set CONFIG[2] = sccThree
+			set CONFIG[3] = sccFour
+            set CONFIG[4] = sccFive
+            set CONFIG[5] = sccSix
         endmethod
         
         static method getInterval takes nothing returns real
