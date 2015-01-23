@@ -81,7 +81,7 @@ scope GameModules
             call CoalitionShopSystem.initialize()
 			
             //init Final Mode
-            //call FinalMode.initialize()
+            call FinalMode.initialize()
 			
             //create first Coalition Teleporter in the AOS
             call CoalitionTeleport.initialize()

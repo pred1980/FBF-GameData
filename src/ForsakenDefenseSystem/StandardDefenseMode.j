@@ -223,12 +223,12 @@ scope StandardDefenseMode
              * Mit diesen Prozentwerden kann die Defense der Forsaken verstaerkt oder geschwaecht werden
              * 0.15 == 15% oder -0.10 == -10%
              */
-            set INCREASE[0] = 0.00 //Ghul
-            set INCREASE[1] = 0.00 //Fiends
+            set INCREASE[0] = -0.10 //Ghul
+            set INCREASE[1] = -0.10 //Fiends
             set INCREASE[2] = 0.00 //Abominations
             set INCREASE[3] = 0.00 //Necromancer
             set INCREASE[4] = 0.00 //Banshee
-            set INCREASE[5] = 0.00 //Gargoyl
+            set INCREASE[5] = -0.10 //Gargoyl
             set INCREASE[6] = 0.00 //Meat Wagon
             set INCREASE[7] = 0.00 //Frostwyrm
             set INCREASE[8] = 0.00 //Skeleton Warrior
