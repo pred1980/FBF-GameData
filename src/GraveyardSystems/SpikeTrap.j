@@ -8,7 +8,7 @@ scope SpikeTrap
         private constant string ATTACK_EFFECT = "Abilities\\Spells\\Undead\\AnimateDead\\AnimateDeadTarget.mdl"
         private constant real RADIUS = 45.
         private constant real INTERVAL = .01
-        private constant integer MAX_ARCHNATHID = 5
+        private constant integer MAX_ARCHNATHID = 6
         
         private rect array GRAVESTONE_SPAWN_RECTS
         private constant integer HP = 4000

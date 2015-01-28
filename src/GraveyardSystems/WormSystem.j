@@ -23,7 +23,7 @@ scope WormSystem initializer onInit
         private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL // The damage type
         private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL // The attack type
         
-        private constant integer WORM_COUNT = 3
+        private constant integer WORM_COUNT = 4
         private constant real SPAWN_INTERVAL_MIN = 10.0
         private constant real SPAWN_INTERVAL_MAX = 30.0
         private constant integer ATTACK_COUNT = 1

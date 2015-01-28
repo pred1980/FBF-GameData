@@ -40,6 +40,8 @@ scope Game
         static boolean started = false
         static string array playerName[12]
         static boolean forsakenHaveWon = false
+		//Nur Spieler auf einer Seite?
+		static boolean oneSidedGame = false 
         
         //*****************************************************\\
         //**************** PUBLIC METHODS *********************\\
@@ -51,6 +53,10 @@ scope Game
         
         static method getCoalitionPlayers takes nothing returns integer
             return .coalitionPlayers
+        endmethod
+		
+		static method isOneSidedGame takes nothing returns boolean
+            return .oneSidedGame
         endmethod
         
         //***********************************\\
@@ -253,18 +259,20 @@ scope Game
                         //start gold + lumber for Forsaken Players
                         call setPlayerGold(i, BaseGoldSystem.START_GOLD_FORSAKEN)
                         call setPlayerLumber(i, BaseGoldSystem.START_LUMBER_FORSAKEN)
-                        static if not TEST_MODE then
-                            set .forsakenPlayers = .forsakenPlayers + 1
-                        endif
+                        set .forsakenPlayers = .forsakenPlayers + 1
                     else
                         call setPlayerGold(i, BaseGoldSystem.START_GOLD_COALITION)
-                        static if not TEST_MODE then
-                            set .coalitionPlayers = .coalitionPlayers + 1
-                        endif
+						set .coalitionPlayers = .coalitionPlayers + 1
                     endif
                 endif
                 set i = i + 1
             endloop
+			
+			//Ab hier wissen wir ob es nur Spieler auf einer Seite 
+			//gibt oder ob auf beiden Seiten Spieler sind...
+			if (.forsakenPlayers == 0) or (.coalitionPlayers == 0) then
+				set .oneSidedGame = true
+			endif
         endmethod
         
         static method initRegionalFog takes nothing returns nothing

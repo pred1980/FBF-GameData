@@ -9,10 +9,10 @@ scope StandardDefenseMode
         private constant integer INCREASED_HP_AOS_PER_ROUND = 55
         private constant integer INCREASED_DAMAGE_PER_ROUND = 7
         //private constant real MANA_MULTIPLIER = 0.02
-		//How many undead defense units exsits?
+		//Wie viele Forsaken Verteidigungseinheiten gibt es?
         private constant integer MAX_UNDEAD = 8 
         private constant string SPAWN_EFFECT = "Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton.mdl"
-		private constant integer MAX_SPAWN_POINTS = 4
+		private constant integer MAX_SPAWN_POINTS = 6
         private rect array SPAWN_RECTS[MAX_SPAWN_POINTS][MAX_SPAWN_POINTS]
 		//Should the units be removed after every round?
         private constant boolean REMOVE_CREEPS = true 
@@ -61,20 +61,29 @@ scope StandardDefenseMode
         local unit u = null
         local integer unitLife = 0
         local integer damage = 0
-        local integer rnd1 = getSpawnPoint(GetRandomReal(0,100)) - 1
-		local integer rnd2 = GetRandomInt(0,3)
+        local integer rnd1 = 0
+		local integer rnd2 = GetRandomInt(0, MAX_SPAWN_POINTS-1)
         local boolean b = false
         local real x = 0.00
         local real y = 0.00
+		
+		//Wenn es nur Spieler auf einer Seite gibt...
+		if (Game.isOneSidedGame()) then
+			set rnd1 = GetRandomInt(0, MAX_SPAWN_POINTS-1)
+		else
+		//Wenn es Spieler auf beiden Seiten gibt...
+			set rnd1 = getSpawnPoint(GetRandomReal(0,100)) - 1
+		endif
         
         loop
             exitwhen b
             if SPAWN_RECTS[rnd1][rnd2] != null then
                 set b = true
             else
-                set rnd2 = GetRandomInt(0,3)
+                set rnd2 = GetRandomInt(0, MAX_SPAWN_POINTS-1)
             endif
         endloop
+		
         //Zufalls x/y postion ermitteln
         set x = GetRandomReal(GetRectMinX(SPAWN_RECTS[rnd1][rnd2]), GetRectMaxX(SPAWN_RECTS[rnd1][rnd2]))
         set y = GetRandomReal(GetRectMinY(SPAWN_RECTS[rnd1][rnd2]), GetRectMaxY(SPAWN_RECTS[rnd1][rnd2]))
@@ -223,12 +232,12 @@ scope StandardDefenseMode
              * Mit diesen Prozentwerden kann die Defense der Forsaken verstaerkt oder geschwaecht werden
              * 0.15 == 15% oder -0.10 == -10%
              */
-            set INCREASE[0] = -0.10 //Ghul
-            set INCREASE[1] = -0.10 //Fiends
+            set INCREASE[0] = 0.00 //Ghul
+            set INCREASE[1] = 0.30 //Fiends
             set INCREASE[2] = 0.00 //Abominations
-            set INCREASE[3] = 0.00 //Necromancer
+            set INCREASE[3] = 0.10 //Necromancer
             set INCREASE[4] = 0.00 //Banshee
-            set INCREASE[5] = -0.10 //Gargoyl
+            set INCREASE[5] = 0.00 //Gargoyl
             set INCREASE[6] = 0.00 //Meat Wagon
             set INCREASE[7] = 0.00 //Frostwyrm
             set INCREASE[8] = 0.00 //Skeleton Warrior
@@ -1104,29 +1113,41 @@ scope StandardDefenseMode
             call TriggerRegisterEnterRegion(t, rectRegion, null)
             call TriggerAddAction(t, function thistype.onEnterAction)
             
-            //First area
+            //1 area
             set SPAWN_RECTS[0][0] = gg_rct_spawnRect0
             set SPAWN_RECTS[0][1] = gg_rct_spawnRect1
             set SPAWN_RECTS[0][2] = gg_rct_spawnRect2
             set SPAWN_RECTS[0][3] = null
             
-            //second area ( Spiders Terrain )
+            //2 area ( Spiders Terrain )
             set SPAWN_RECTS[1][0] = gg_rct_spawnRect3
             set SPAWN_RECTS[1][1] = gg_rct_spawnRect4
             set SPAWN_RECTS[1][2] = gg_rct_spawnRect5
             set SPAWN_RECTS[1][3] = null
             
-            //third area ( Graveyard )
+            //3 area ( Graveyard )
             set SPAWN_RECTS[2][0] = gg_rct_spawnRect6
             set SPAWN_RECTS[2][1] = gg_rct_spawnRect7
             set SPAWN_RECTS[2][2] = gg_rct_spawnRect8
             set SPAWN_RECTS[2][3] = gg_rct_spawnRect9
             
-            //fourth area ( Abomination Way )
+            //4 area ( Abomination Way )
             set SPAWN_RECTS[3][0] = gg_rct_spawnRect10
             set SPAWN_RECTS[3][1] = gg_rct_spawnRect11
             set SPAWN_RECTS[3][2] = gg_rct_spawnRect12
             set SPAWN_RECTS[3][3] = null
+			
+			//5 area ( near the Broodmother )
+            set SPAWN_RECTS[4][0] = gg_rct_spawnRect13
+            set SPAWN_RECTS[4][1] = gg_rct_spawnRect14
+            set SPAWN_RECTS[4][2] = gg_rct_spawnRect15
+            set SPAWN_RECTS[4][3] = null
+			
+			//6 area ( vor dem Eingang zum Friedhof )
+            set SPAWN_RECTS[5][0] = gg_rct_spawnRect16
+            set SPAWN_RECTS[5][1] = gg_rct_spawnRect17
+            set SPAWN_RECTS[5][2] = gg_rct_spawnRect18
+            set SPAWN_RECTS[5][3] = null
             
         endmethod
         
@@ -1247,7 +1268,7 @@ scope StandardDefenseMode
 			local boolean isShiftedRound = false
 			
 			//Players on both sides?
-			if (colHeroSum > 0.00 and forHeroSum > 0.00) then
+			if not (Game.isOneSidedGame()) then
 				set isShiftedRound = true
 				set shiftedRound = I2R(round) * GetMin(1.0, I2R(coalitionHeroLevelSum)/I2R(forsakenHeroLevelSum))
 			endif
@@ -1265,7 +1286,7 @@ scope StandardDefenseMode
 		
 		static method update takes nothing returns nothing
 			local integer row = RoundSystem.actualRound
-			local integer column = 1 // 4 places for spawning Defense units ( SPAWN_RECTS )
+			local integer column = 1 // 5 places for spawning Defense units ( SPAWN_RECTS )
 			local real sum = 0.00
             local real temp = 0.00
             local integer coalitionHeroLevel = Game.getCoalitionHeroLevelSum()
@@ -1293,10 +1314,12 @@ scope StandardDefenseMode
             set SIGMA[1] = 3.5
             set SIGMA[2] = 1.5
             set SIGMA[3] = 2.0
-            set SIGMA[4] = 3.0
+            set SIGMA[4] = 2.8
+			set SIGMA[5] = 3.2
+			set SIGMA[6] = 2.2
         endmethod
         
-        //index is the spawn place from 1 to 4
+        //index is the spawn place from 1 to 5
         static method getValue takes integer round, integer index returns real
             return LoadReal(WEIGHTS, index, round)
         endmethod
