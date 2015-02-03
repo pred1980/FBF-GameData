@@ -11,8 +11,8 @@ scope SpikeTrap
         private constant integer MAX_ARCHNATHID = 6
         
         private rect array GRAVESTONE_SPAWN_RECTS
-        private constant integer HP = 4000
-        private constant integer DAMAGE = 135
+        private constant integer HP = 8000
+        private constant integer DAMAGE = 270
         //Diese Faktoren beschreibt die Erh?hung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
         private constant real HP_FACTOR = 0.10 //0.05
         private constant real DAMAGE_FACTOR = 0.12 //0.09
@@ -125,8 +125,8 @@ scope SpikeTrap
             set y = GetRandomReal(GetRectMinY(GRAVESTONE_SPAWN_RECTS[rectIndex]), GetRectMaxY(GRAVESTONE_SPAWN_RECTS[rectIndex]))
         endloop
         
-        set hp = GetTeamRatioValue(HP, HP_FACTOR)
-        set dmg = GetTeamRatioValue(DAMAGE, DAMAGE_FACTOR)
+        set hp = GetGameStartRatioValue(HP, HP_FACTOR)
+        set dmg = GetGameStartRatioValue(DAMAGE, DAMAGE_FACTOR)
         
         set archnathid = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), ARCHNATHID_ID, x, y, GetRandomInt(0,359))
         call SetUnitMaxState(archnathid, UNIT_STATE_MAX_LIFE, hp)

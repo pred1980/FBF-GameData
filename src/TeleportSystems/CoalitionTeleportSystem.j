@@ -1,7 +1,7 @@
 scope CoalitionTeleportSystem initializer init
 
     globals
-        private constant integer ID = 'n007'
+        private constant integer ID = 'n00M'
 		private constant rect array BASE_TELEPORTS_RECTS
 		private constant rect array AOS_TELEPORT_RECTS
         private constant integer MAX_TELEPORTER_PLACES = 4

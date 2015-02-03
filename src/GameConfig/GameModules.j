@@ -84,10 +84,14 @@ scope GameModules
             call FinalMode.initialize()
 			
             //create first Coalition Teleporter in the AOS
-            call CoalitionTeleport.initialize()
+            if (Game.getCoalitionPlayers() > 0) then
+				call CoalitionTeleport.initialize()
+			endif
 			
             //create first Forsaken Teleporter in the AOS
-            call ForsakenTeleport.initialize()
+			if (Game.getForsakenPlayers() > 0) then
+				call ForsakenTeleport.initialize()
+			endif
 			
 			//init Defense Mode
 			call StandardDefenseInit.initialize()

@@ -15,14 +15,14 @@ scope BroodMotherSystem initializer init
         private constant real FACING = 45.0
         private constant real X = -9558.6
         private constant real Y = 2086.2
-        private constant real LIFE_FACTOR = 300.0 //every 5min an egg splashs and a child comes out
+        private constant real LIFE_FACTOR = 240.0 //every 4min an egg splashs and a child comes out
         private constant integer CHANCE = 40 //40% to get a male child
         private constant string ORDER_ATTACKMOVE = "attack"
         
         //Brood Mother
-        private constant integer HP = 8000
-        private constant integer DAMAGE = 327
-        private constant real LAYING_TIME = 240.0 //Wann legt die Brood Mother ein neues Ei?
+        private constant integer HP = 15000
+        private constant integer DAMAGE = 520
+        private constant real LAYING_TIME = 180.0 //Wann legt die Brood Mother ein neues Ei?
         private constant real TARGET_TOLERANCE = 192.
 		
         //Egg
@@ -32,10 +32,10 @@ scope BroodMotherSystem initializer init
         private real array eggLifeTime
         
         //Male/Female
-        private constant integer MALE_HP = 6000
-        private constant integer MALE_DAMAGE = 235
-        private constant integer FEMALE_HP = 3000
-        private constant integer FEMALE_DAMAGE = 125
+        private constant integer MALE_HP = 8000
+        private constant integer MALE_DAMAGE = 335
+        private constant integer FEMALE_HP = 5000
+        private constant integer FEMALE_DAMAGE = 225
         
         private rect broodPlace
         private string SOUND_1 = "Units\\Critters\\SpiderCrab\\CrabDeath1.wav"
@@ -43,9 +43,9 @@ scope BroodMotherSystem initializer init
         private integer counter = 0
         
         //Dieser Faktoren beschreiben die Erhöhung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
-        private constant real HP_FACTOR = 0.10 //0.05
-        private constant real DAMAGE_FACTOR = 0.12 //0.09
-    endglobals
+        private constant real HP_FACTOR = 0.10
+        private constant real DAMAGE_FACTOR = 0.12
+	endglobals
     
     private function ResetCounter takes nothing returns nothing
         set counter = 0
@@ -112,8 +112,8 @@ scope BroodMotherSystem initializer init
         static method onUpdate takes nothing returns nothing
             if not IsUnitDead(.broodMother) then
                 //get new hp+dmg
-                set .hp = GetTeamRatioValue(HP, HP_FACTOR)
-                set .dmg = GetTeamRatioValue(DAMAGE, DAMAGE_FACTOR)
+                set .hp = GetDynamicRatioValue(HP, HP_FACTOR)
+                set .dmg = GetDynamicRatioValue(DAMAGE, DAMAGE_FACTOR)
                 call SetUnitMaxState(.broodMother, UNIT_STATE_MAX_LIFE, .hp)
                 call TDS.resetDamage(.broodMother)
 				call TDS.addDamage(.broodMother, .dmg)
@@ -126,8 +126,8 @@ scope BroodMotherSystem initializer init
             local real x = 0.0
             local real y = 0.0
             
-            set .hp = GetTeamRatioValue(HP, HP_FACTOR)
-            set .dmg = GetTeamRatioValue(DAMAGE, DAMAGE_FACTOR)
+            set .hp = GetGameStartRatioValue(HP, HP_FACTOR)
+            set .dmg = GetGameStartRatioValue(DAMAGE, DAMAGE_FACTOR)
             
             set .broodMother = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), SPIDER_ID, X, Y, FACING)
             call SetUnitMaxState(.broodMother, UNIT_STATE_MAX_LIFE, .hp)
@@ -201,7 +201,7 @@ scope BroodMotherSystem initializer init
             
             loop
                 exitwhen i >= EGG_COUNT
-                set eggLifeTime[i] = I2R(i+1) * LIFE_FACTOR
+				set eggLifeTime[i] = I2R(i+1) * LIFE_FACTOR
                 set i = i + 1
             endloop
         endmethod
@@ -227,13 +227,10 @@ scope BroodMotherSystem initializer init
                     set y = GetRandomReal(GetRectMinY(broodPlace), GetRectMaxY(broodPlace))
                 endloop
                 set .egg = Egg.create(x,y)
-                set counter = counter + 1
                 set i = i + 1
             endloop
-            //Reset Counter
-            call ResetCounter()
             
-            return this
+			return this
         endmethod
     
     endstruct
@@ -265,16 +262,16 @@ scope BroodMotherSystem initializer init
                 if not IsUnitDead(u) then
                     //Male
                     if GetUnitTypeId(u) == 'n00I' then
-                        set .male_hp = GetTeamRatioValue(MALE_HP, HP_FACTOR)
-                        set .male_dmg = GetTeamRatioValue(MALE_DAMAGE, DAMAGE_FACTOR)
+                        set .male_hp = GetDynamicRatioValue(MALE_HP, HP_FACTOR)
+                        set .male_dmg = GetDynamicRatioValue(MALE_DAMAGE, DAMAGE_FACTOR)
                         call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, .male_hp)
 						call TDS.resetDamage(u)
 						call TDS.addDamage(u, .male_dmg)
                     endif
                     //Female
                     if GetUnitTypeId(u) == 'n00H' then
-                        set .female_hp = GetTeamRatioValue(MALE_HP, HP_FACTOR)
-                        set .female_dmg = GetTeamRatioValue(MALE_DAMAGE, DAMAGE_FACTOR)
+                        set .female_hp = GetDynamicRatioValue(MALE_HP, HP_FACTOR)
+                        set .female_dmg = GetDynamicRatioValue(MALE_DAMAGE, DAMAGE_FACTOR)
                         call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, .female_hp)
 						call TDS.resetDamage(u)
 						call TDS.addDamage(u, .female_dmg)
@@ -310,12 +307,12 @@ scope BroodMotherSystem initializer init
 		
 		static method onChildBorn takes nothing returns nothing
             local thistype this = GetTimerData(GetExpiredTimer())
-            local timer t
+            local timer t = NewTimer()
             
-            set .male_hp = GetTeamRatioValue(MALE_HP, HP_FACTOR)
-            set .male_dmg = GetTeamRatioValue(MALE_DAMAGE, DAMAGE_FACTOR)
-            set .female_hp = GetTeamRatioValue(FEMALE_HP, HP_FACTOR)
-            set .female_dmg = GetTeamRatioValue(FEMALE_DAMAGE, DAMAGE_FACTOR)
+            set .male_hp = GetDynamicRatioValue(MALE_HP, HP_FACTOR)
+            set .male_dmg = GetDynamicRatioValue(MALE_DAMAGE, DAMAGE_FACTOR)
+            set .female_hp = GetDynamicRatioValue(FEMALE_HP, HP_FACTOR)
+            set .female_dmg = GetDynamicRatioValue(FEMALE_DAMAGE, DAMAGE_FACTOR)
             
             call ReleaseTimer(GetExpiredTimer())
             if this.male then
@@ -332,7 +329,6 @@ scope BroodMotherSystem initializer init
             call SetUnitState(.child, UNIT_STATE_LIFE, GetUnitState(.child, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
             call GroupAddUnit(this.childs, .child)
             
-            set t = NewTimer()
             call SetTimerData(t, this)
             call TimerStart(t, 3.5, true, function thistype.onChildMove)
             
@@ -362,7 +358,7 @@ scope BroodMotherSystem initializer init
 		
 		static method create takes real x, real y returns thistype
             local thistype this = thistype.allocate()
-            local timer t
+            local timer t = NewTimer()
             
             set .egg = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), EGG_ID, x, y, FACING)
             call SetUnitMaxState(.egg, UNIT_STATE_MAX_LIFE, EGG_HP)
@@ -375,8 +371,7 @@ scope BroodMotherSystem initializer init
             set .x = x
             set .y = y
             
-            set t = NewTimer()
-            call SetTimerData(t, this )
+			call SetTimerData(t, this )
             call TimerStart(t, eggLifeTime[counter], false, function thistype.onHatch)
             
             set counter = counter + 1

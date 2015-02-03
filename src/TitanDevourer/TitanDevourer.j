@@ -37,8 +37,8 @@ scope TitanDevourer
             static method onUpdate takes nothing returns nothing
                 if not IsUnitDead(.titan) then
                     //get new hp+dmg
-                    set .hp = GetTeamRatioValue(HP, HP_FACTOR)
-                    set .dmg = GetTeamRatioValue(DAMAGE, DAMAGE_FACTOR)
+                    set .hp = GetDynamicRatioValue(HP, HP_FACTOR)
+                    set .dmg = GetDynamicRatioValue(DAMAGE, DAMAGE_FACTOR)
                     call SetUnitMaxState(.titan, UNIT_STATE_MAX_LIFE, .hp)
                     call TDS.resetDamage(.titan)
 					call TDS.addDamage(.titan, .dmg)
@@ -52,8 +52,8 @@ scope TitanDevourer
 				set .titan = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), TITAN_ID, GetRectCenterX(titanRect), GetRectCenterY(titanRect), 180.00)
 				set .target = null
                 
-                set .hp = GetTeamRatioValue(HP, HP_FACTOR)
-                set .dmg = GetTeamRatioValue(DAMAGE, DAMAGE_FACTOR)
+                set .hp = GetGameStartRatioValue(HP, HP_FACTOR)
+                set .dmg = GetGameStartRatioValue(DAMAGE, DAMAGE_FACTOR)
                 
                 call SetUnitMaxState(.titan, UNIT_STATE_MAX_LIFE, .hp)
                 call SetUnitState(.titan, UNIT_STATE_LIFE, GetUnitState(.titan, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)

@@ -26,7 +26,7 @@ scope KingMithasMode
 		
 		static method create takes nothing returns thistype
 			local thistype this = thistype.allocate()
-            local integer hp = GetTeamRatioValue(HP, HP_FACTOR)
+            local integer hp = GetGameStartRatioValue(HP, HP_FACTOR)
             local timer t = NewTimer()
             
 			set thistype.heart = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), HEART_ID, X, Y, GetRandomReal(0., 359.))

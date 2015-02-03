@@ -184,8 +184,23 @@ scope Game
             
             return level
         endmethod
+		
+		static method getCoalitionHeroLevelSumPow takes real pow returns real
+            local integer i = 0
+            local real powVal = 0.00
+            
+            loop
+                exitwhen i >= bj_MAX_PLAYERS
+                if isPlayerInGame(i) and GetPlayerRace(Player(i)) != RACE_UNDEAD then
+                    set powVal = powVal + Pow(GetHeroLevel(BaseMode.pickedHero[i]), pow)
+                endif
+                set i = i + 1
+            endloop
+            
+            return powVal
+        endmethod
         
-        //Gibt das akt. Gesamt Hero Level aller Helden zur?ck
+        //Gibt das akt. Gesamt Hero Level aller Helden zurück
         static method getForsakenHeroLevelSum takes nothing returns integer
             local integer i = 0
             local integer level = 0

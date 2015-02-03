@@ -6,18 +6,18 @@ scope SkeletonSystem
 
     globals
         private integer array SKELETONS
-        private constant integer MAX_SKELETONS = 12
+        private constant integer MAX_SKELETONS = 18
         private constant real MIN_TIME = 90.0
         private constant real MAX_TIME = 150.0
-        private constant integer INCREASED_HP_PER_ROUND = 150
-        private constant integer INCREASED_DAMAGE_PER_ROUND = 15
+        private constant integer INCREASED_HP_PER_ROUND = 250
+        private constant integer INCREASED_DAMAGE_PER_ROUND = 30
         private constant string SPAWN_EFFECT = "Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton.mdl"
         private integer array START_HP
         private integer array START_DAMAGE
         private constant real LIFE_TIME = 120.0
         //Diese Faktoren beschreibt die Erhoehung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
-        private constant real HP_FACTOR = 0.05
-        private constant real DAMAGE_FACTOR = 0.09
+        private constant real HP_FACTOR = 0.10
+        private constant real DAMAGE_FACTOR = 0.18
         
         private rect array GRAVESTONE_SPAWN_RECTS
         private constant real GRAVESTONE_ATTACK_RANGE = 500
@@ -30,18 +30,18 @@ scope SkeletonSystem
         set SKELETONS[3] = 'u024'
         set SKELETONS[4] = 'u025'
         
-        set START_HP[0] = 100
-        set START_DAMAGE[0] = 35
-        set START_HP[1] = 125
-        set START_DAMAGE[1] = 32
-        set START_HP[2] = 150
-        set START_DAMAGE[2] = 40
-        set START_HP[3] = 165
-        set START_DAMAGE[3] = 37
-        set START_HP[4] = 80
-        set START_DAMAGE[4] = 30
-        set START_HP[5] = 110
-        set START_DAMAGE[5] = 33
+        set START_HP[0] = 130
+        set START_DAMAGE[0] = 45
+        set START_HP[1] = 155
+        set START_DAMAGE[1] = 42
+        set START_HP[2] = 180
+        set START_DAMAGE[2] = 50
+        set START_HP[3] = 195
+        set START_DAMAGE[3] = 47
+        set START_HP[4] = 110
+        set START_DAMAGE[4] = 40
+        set START_HP[5] = 140
+        set START_DAMAGE[5] = 43
         
         set GRAVESTONE_SPAWN_RECTS[0] = gg_rct_GravestoneRect0
         set GRAVESTONE_SPAWN_RECTS[1] = gg_rct_GravestoneRect1
@@ -83,10 +83,10 @@ scope SkeletonSystem
             set y = GetRandomReal(GetRectMinY(GRAVESTONE_SPAWN_RECTS[rectIndex]), GetRectMaxY(GRAVESTONE_SPAWN_RECTS[rectIndex]))
         endloop
         
-        set hp = GetTeamRatioValue(START_HP[skeletonIndex], HP_FACTOR)
-        set dmg = GetTeamRatioValue(START_DAMAGE[skeletonIndex], DAMAGE_FACTOR)
-        set incHp = GetTeamRatioValue(INCREASED_HP_PER_ROUND, HP_FACTOR)
-        set incDmg = GetTeamRatioValue(INCREASED_DAMAGE_PER_ROUND, DAMAGE_FACTOR)
+        set hp = GetDynamicRatioValue(START_HP[skeletonIndex], HP_FACTOR)
+        set dmg = GetDynamicRatioValue(START_DAMAGE[skeletonIndex], DAMAGE_FACTOR)
+        set incHp = GetDynamicRatioValue(INCREASED_HP_PER_ROUND, HP_FACTOR)
+        set incDmg = GetDynamicRatioValue(INCREASED_DAMAGE_PER_ROUND, DAMAGE_FACTOR)
         
         set skeleton = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), SKELETONS[skeletonIndex], x, y, GetRandomInt(0,359))
         call SetUnitMaxState(skeleton, UNIT_STATE_MAX_LIFE, hp + ( RoundSystem.actualRound * incHp))

@@ -126,10 +126,10 @@ scope GravestoneSystem
                 endloop
                 
                 //get new hp+dmg
-                set hp = GetTeamRatioValue(ZOMBIE_START_HP[index], HP_FACTOR)
-                set dmg = GetTeamRatioValue(ZOMBIE_START_DAMAGE[index], DAMAGE_FACTOR)
-                set incHp = GetTeamRatioValue(INCREASED_ZOMBIE_HP_PER_ROUND, HP_FACTOR)
-                set incDmg = GetTeamRatioValue(INCREASED_ZOMBIE_DAMAGE_PER_ROUND, DAMAGE_FACTOR)
+                set hp = GetDynamicRatioValue(ZOMBIE_START_HP[index], HP_FACTOR)
+                set dmg = GetDynamicRatioValue(ZOMBIE_START_DAMAGE[index], DAMAGE_FACTOR)
+                set incHp = GetDynamicRatioValue(INCREASED_ZOMBIE_HP_PER_ROUND, HP_FACTOR)
+                set incDmg = GetDynamicRatioValue(INCREASED_ZOMBIE_DAMAGE_PER_ROUND, DAMAGE_FACTOR)
                 
                 call SetUnitMaxState(zombie, UNIT_STATE_MAX_LIFE, hp + ( RoundSystem.actualRound * incHp))
                 call TDS.addDamage(zombie, dmg + ( RoundSystem.actualRound * incDmg))

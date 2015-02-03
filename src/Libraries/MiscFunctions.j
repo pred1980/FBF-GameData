@@ -526,11 +526,14 @@ library MiscFunctions requires GroupUtils
     function XE_Dummy_Conditions takes unit u returns boolean
         return GetUnitTypeId(u) != XE_DUMMY_UNITID
     endfunction
+	
+	globals
+		private constant real ALPHA = 1.0
+		private constant real BETA = 0.1
+	endglobals
     
-    /* Diese Funktion gibt den HP oder Damage Wert zurück je nach Spieleranzahl der beiden Teams*/
-    function GetTeamRatioValue takes integer value, real factor returns integer
-		//Wenn auf beiden Seiten mind. ein Spieler spielt...
-		if (Game.getCoalitionPlayers() > 0 and Game.getForsakenPlayers() > 0) then
+	function GetGameStartRatioValue takes integer value, real factor returns integer
+		if not (Game.isOneSidedGame()) then
 			return R2I(I2R(value) * I2R(Game.getCoalitionPlayers()) / I2R(6) * (I2R(1) + factor * (I2R(6) - I2R(Game.getForsakenPlayers()))))
 		//Wenn nur auf der Forsaken Seite Spieler sind...
 		elseif (Game.getCoalitionPlayers() == 0 and Game.getForsakenPlayers() > 0) then
@@ -539,7 +542,18 @@ library MiscFunctions requires GroupUtils
 		else
 			return R2I(I2R(value) * I2R(Game.getCoalitionPlayers()) / I2R(6) * (I2R(1) + factor))
 		endif
-        
+	endfunction
+	
+    function GetDynamicRatioValue takes integer value, real factor returns integer
+		if not (Game.isOneSidedGame()) then
+			return R2I(I2R(value) * I2R(Game.getCoalitionPlayers()) / I2R(6) * (I2R(1) + factor * (I2R(6) - I2R(Game.getForsakenPlayers()))))
+		//Wenn nur auf der Forsaken Seite Spieler sind...
+		elseif (Game.getCoalitionPlayers() == 0 and Game.getForsakenPlayers() > 0) then
+			return R2I(I2R(value) * I2R(Game.getForsakenPlayers()) / I2R(6))
+		//Wenn nur auf der Coalition Seite Spieler sind...
+		else
+			return R2I(I2R(value) * BETA * Game.getCoalitionHeroLevelSumPow(ALPHA))
+		endif
     endfunction
     
     //Zeige/Versteck des Timer Dialogs

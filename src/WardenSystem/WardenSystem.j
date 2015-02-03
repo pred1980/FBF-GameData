@@ -55,10 +55,10 @@ scope WardenSystem initializer init
                 set y = getRandomY(.index)
             endloop
             
-            set .hp = GetTeamRatioValue(WARDEN_START_HP, HP_FACTOR)
-            set .dmg = GetTeamRatioValue(WARDEN_START_DAMAGE, DAMAGE_FACTOR)
-            set .incHp = GetTeamRatioValue(INCREASED_WARDEN_HP_PER_ROUND, HP_FACTOR)
-            set .incDmg = GetTeamRatioValue(INCREASED_WARDEN_DAMAGE_PER_ROUND, DAMAGE_FACTOR)
+            set .hp = GetDynamicRatioValue(WARDEN_START_HP, HP_FACTOR)
+            set .dmg = GetDynamicRatioValue(WARDEN_START_DAMAGE, DAMAGE_FACTOR)
+            set .incHp = GetDynamicRatioValue(INCREASED_WARDEN_HP_PER_ROUND, HP_FACTOR)
+            set .incDmg = GetDynamicRatioValue(INCREASED_WARDEN_DAMAGE_PER_ROUND, DAMAGE_FACTOR)
              
             set .warden = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), WARDEN_ID, x, y, GetRandomInt(0,359))
 			call UnitApplyTimedLife(.warden, 'BTLF', LIFE_TIME + ARGB_DURATION )

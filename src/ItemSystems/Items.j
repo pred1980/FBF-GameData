@@ -13,6 +13,7 @@ scope Items
         Item INVULNERABILITY_POTION = 0
         Item POTION_OF_INVISIBILITY = 0
         Item SPEED_UP_POTION = 0
+		Item TELEPORT_STONE = 0
         
         /*
          * Undead Items
@@ -155,6 +156,8 @@ scope Items
 			set INVULNERABILITY_POTION = Item.create('I005', GetItemGold('I005'), ITEM_CLASS_BASIC, null, "ReplaceableTextures\\CommandButtons\\BTNPoTN_Sanctity_Potion.blp")
 			set POTION_OF_INVISIBILITY = Item.create('I002', GetItemGold('I002'), ITEM_CLASS_BASIC, null, "ReplaceableTextures\\CommandButtons\\BTNPotionred.blp")
 			set SPEED_UP_POTION = Item.create('I006', GetItemGold('I006'), ITEM_CLASS_BASIC, null, "ReplaceableTextures\\CommandButtons\\BTNPoTN_Chill_Potion.blp")
+			set TELEPORT_STONE = Item.create('I00L', GetItemGold('I00L'), ITEM_CLASS_BASIC, null, "ReplaceableTextures\\CommandButtons\\BTNGem_Of_Teleportation.blp")
+			 
 			 
 			/*
 			 * Init Undead Items
