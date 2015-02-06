@@ -5,29 +5,34 @@ library StoneOfTeleportation uses RegisterPlayerUnitEvent, HomeBase
 		private constant integer SPELL_ID = 'A00U'
 		private constant real TELEPORT_DELAY = 1.5
 		private constant string EFFECT = "Abilities\\Spells\\Human\\MassTeleport\\MassTeleportCaster.mdl"
-		
-		//Stun Effect
-        private constant string STUN_EFFECT = ""
-        private constant string STUN_ATT_POINT = "overhead"
-        private constant real STUN_DURATION = TELEPORT_DELAY
 	endglobals
 	
 	private struct TeleportStone
 		implement INITS
 		
 		integer pid = 0
+		real pause = 0.00
 		unit source
 		effect ef
+		player p
 		
 		method onDestroy takes nothing returns nothing
 			set .source = null
             set .ef = null
+			set .p = null
         endmethod
 		
 		private static method onReturnToBase takes nothing returns nothing
 			local thistype this = GetTimerData(GetExpiredTimer())
 			local real x = GetRectCenterX(Homebase.get(this.pid))
             local real y = GetRectCenterY(Homebase.get(this.pid))
+			
+			//Unpause Unit Alternative
+			call SetUnitPropWindow(this.source, this.pause)
+
+			if (GetLocalPlayer() == this.p) then
+				call PanCameraToTimed(x, y, 0.00)
+			endif			
 			
 			call SetUnitPosition(this.source, x, y)
 			call SetUnitInvulnerable(.source, false)
@@ -38,12 +43,17 @@ library StoneOfTeleportation uses RegisterPlayerUnitEvent, HomeBase
 		static method create takes unit source returns thistype
 			local thistype this = thistype.allocate()
 			local timer t = NewTimer()
+			local real pause = 0.00
 			
 			set .source = source
-			set .pid = GetPlayerId(GetOwningPlayer(.source))
+			set .p = GetOwningPlayer(.source)
+			set .pid = GetPlayerId(.p)
+			
+			//Pause Unit Alternative
+			set .pause = GetUnitPropWindow(.source)
+			call SetUnitPropWindow(.source, 0) 
 			
 			call SetUnitInvulnerable(.source, true)
-			call Stun_UnitEx(.source, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
 			call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(.source), GetUnitY(.source)))
 			call SetTimerData(t, this)
             call TimerStart(t, TELEPORT_DELAY, false, function thistype.onReturnToBase)

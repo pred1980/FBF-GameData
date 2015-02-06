@@ -20,7 +20,7 @@ scope WebSystem
         private integer array WEB_SPELL_IDS
         private real array WEB_AURA_SIZE
         
-        //TO-DO: Funktionalit?t bauen, wenn bestimmte Einheiten im Netz nicht verlangsamt werden sollen (z.b.Nerubian Widow)
+        //TO-DO: Funktionalität bauen, wenn bestimmte Einheiten im Netz nicht verlangsamt werden sollen (z.b.Nerubian Widow)
         //Exception Units 
         //private constant integer SPIDER_ID = 'n00G'
         //private constant integer MALE_ID = 'n00I'
@@ -144,6 +144,7 @@ scope WebSystem
 		static method initialize takes nothing returns nothing
 			local timer t = NewTimer()
 			
+			call MainSetup()
 			call TimerStart(t, GetRandomReal(MIN_TIME, MAX_TIME), true, function Actions )
 		endmethod
 	

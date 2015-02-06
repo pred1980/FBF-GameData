@@ -6,7 +6,7 @@ scope SkeletonSystem
 
     globals
         private integer array SKELETONS
-        private constant integer MAX_SKELETONS = 18
+        private constant integer MAX_SKELETONS = 15
         private constant real MIN_TIME = 90.0
         private constant real MAX_TIME = 150.0
         private constant integer INCREASED_HP_PER_ROUND = 250

@@ -56,7 +56,7 @@ scope HeroPickMods
             set BaseMode.selectableHero[.id] = GET_HERO(BaseMode.regionIndex[.id])
             set BaseMode.pickedHeroIndex[.id] = getRegionIndex(r)
             
-            //Start Position des Helden abh?ngig seiner Rasse
+            //Start Position des Helden abhängig seiner Rasse
             set .startLocX[.id] = GetRectCenterX(GET_HERO_RACE_START_RECT(.r))
             set .startLocY[.id] = GetRectCenterY(GET_HERO_RACE_START_RECT(.r))
             set BaseMode.hasPicked[.id] = true

@@ -545,15 +545,22 @@ library MiscFunctions requires GroupUtils
 	endfunction
 	
     function GetDynamicRatioValue takes integer value, real factor returns integer
+		local integer val = 0
 		if not (Game.isOneSidedGame()) then
-			return R2I(I2R(value) * I2R(Game.getCoalitionPlayers()) / I2R(6) * (I2R(1) + factor * (I2R(6) - I2R(Game.getForsakenPlayers()))))
+			set val = R2I(I2R(value) * I2R(Game.getCoalitionPlayers()) / I2R(6) * (I2R(1) + factor * (I2R(6) - I2R(Game.getForsakenPlayers()))))
 		//Wenn nur auf der Forsaken Seite Spieler sind...
 		elseif (Game.getCoalitionPlayers() == 0 and Game.getForsakenPlayers() > 0) then
-			return R2I(I2R(value) * I2R(Game.getForsakenPlayers()) / I2R(6))
+			set val = R2I(I2R(value) * I2R(Game.getForsakenPlayers()) / I2R(6))
 		//Wenn nur auf der Coalition Seite Spieler sind...
 		else
-			return R2I(I2R(value) * BETA * Game.getCoalitionHeroLevelSumPow(ALPHA))
+			set val = R2I(I2R(value) * BETA * Game.getCoalitionHeroLevelSumPow(ALPHA))
 		endif
+		
+		if (val == 0) then
+			set val = value
+		endif
+		
+		return val
     endfunction
     
     //Zeige/Versteck des Timer Dialogs

@@ -4,7 +4,7 @@ scope TitanDevourer
 		private constant integer SPELL_ID = 'A0AD'
         private constant integer BASE_DAMAGE = 12
         private constant real DAMAGE_MULTIPLIER = 6.5
-        //Diese Faktoren beschreibt die Erh?hung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
+        //Diese Faktoren beschreibt die Erhöhung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
         private constant real HP_FACTOR = 0.10 //0.05
         private constant real DAMAGE_FACTOR = 0.12 //0.09
         
@@ -21,8 +21,8 @@ scope TitanDevourer
 		globals
             private constant integer TITAN_ID = 'e00C'
             private constant real TITAN_ATTACK_ANIMATION = 0.967
-            private constant integer HP = 12000
-            private constant integer DAMAGE = 285
+            private constant integer HP = 20000
+            private constant integer DAMAGE = 650
             private constant real RADIUS = 380.0
 		endglobals
         

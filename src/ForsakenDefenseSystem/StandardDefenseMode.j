@@ -67,11 +67,11 @@ scope StandardDefenseMode
         local real x = 0.00
         local real y = 0.00
 		
-		//Wenn es nur Spieler auf einer Seite gibt...
+			//Wenn nur Spieler auf der Forsaken Seite sind...
 		if (Game.isOneSidedGame()) then
-			set rnd1 = GetRandomInt(0, MAX_SPAWN_POINTS-1)
+			set rnd1 = GetRandomInt(0, MAX_SPAWN_POINTS - 1)
 		else
-		//Wenn es Spieler auf beiden Seiten gibt...
+			//Wenn es Spieler auf beiden Seiten gibt...
 			set rnd1 = getSpawnPoint(GetRandomReal(0,100)) - 1
 		endif
         
@@ -233,9 +233,9 @@ scope StandardDefenseMode
              * 0.15 == 15% oder -0.10 == -10%
              */
             set INCREASE[0] = 0.00 //Ghul
-            set INCREASE[1] = 0.30 //Fiends
+            set INCREASE[1] = 0.00 //Fiends
             set INCREASE[2] = 0.00 //Abominations
-            set INCREASE[3] = 0.10 //Necromancer
+            set INCREASE[3] = 0.00 //Necromancer
             set INCREASE[4] = 0.00 //Banshee
             set INCREASE[5] = 0.00 //Gargoyl
             set INCREASE[6] = 0.00 //Meat Wagon
@@ -1180,44 +1180,46 @@ scope StandardDefenseMode
         
         /*
          * This function initializes the start values (HP + Damage) of all undead units
+		 * Changelog:
+		 * 		04.02.2015: Alle Werte (HP+Damage) um 20% erhöht
          */
         
         private static method initUnitStartValues takes nothing returns nothing
             //Ghuls
-            set startHP[0] = 240 //start HP Value
-            set startDamage[0] = 14 //start Damage Value
+            set startHP[0] = 288 //start HP Value
+            set startDamage[0] = 17 //start Damage Value
             set bounty[0] = "1,2,3,"
             //Fiends
-            set startHP[1] = 525 //start HP Value
-            set startDamage[1] = 26 //start Damage Value
+            set startHP[1] = 630 //start HP Value
+            set startDamage[1] = 31 //start Damage Value
             set bounty[1] = "3,4,5,"
             //Abomination
-            set startHP[2] = 1015 //start HP Value
-            set startDamage[2] = 31 //start Damage Value
+            set startHP[2] = 1218 //start HP Value
+            set startDamage[2] = 37 //start Damage Value
             set bounty[2] = "4,5,6,"
             //Necromancer
-            set startHP[3] = 275 //start HP Value
-            set startDamage[3] = 9 //start Damage Value
+            set startHP[3] = 330 //start HP Value
+            set startDamage[3] = 11 //start Damage Value
             set bounty[3] = "2,3,4,"
             //Banshee
-            set startHP[4] = 275 //start HP Value
-            set startDamage[4] = 8 //start Damage Value
+            set startHP[4] = 330 //start HP Value
+            set startDamage[4] = 10 //start Damage Value
             set bounty[4] = "2,3,4,"
             //Gargoyl
-            set startHP[5] = 495 //start HP Value
-            set startDamage[5] = 28 //start Damage Value
+            set startHP[5] = 594 //start HP Value
+            set startDamage[5] = 34 //start Damage Value
             set bounty[5] = "3,4,5,"
             //Meat Wagon
-            set startHP[6] = 405 //start HP Value
-            set startDamage[6] = 70 //start Damage Value
+            set startHP[6] = 486 //start HP Value
+            set startDamage[6] = 84 //start Damage Value
             set bounty[6] = "2,3,4,"
             //Frost Wyrm
-            set startHP[7] = 1215 //start HP Value
-            set startDamage[7] = 80 //start Damage Value
+            set startHP[7] = 1458 //start HP Value
+            set startDamage[7] = 96 //start Damage Value
             set bounty[7] = "5,6,7,"
             //Skeleton Warrior
-            set startHP[8] = 285 //start HP Value
-            set startDamage[8] = 18 //start Damage Value
+            set startHP[8] = 342 //start HP Value
+            set startDamage[8] = 22 //start Damage Value
             set bounty[8] = "3,4,5,"
         endmethod
         
