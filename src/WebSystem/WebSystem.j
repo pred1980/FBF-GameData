@@ -11,7 +11,7 @@ scope WebSystem
         private constant integer WEB_SPELL_LARGE = 'A0AC'
         private constant integer WEB_AURA_BUFF_ID = 'B02I'
         private constant real LIFE_TIME = 230.0
-		private constant integer WEB_PER_RECT = 2
+		private constant integer WEB_PER_RECT = 5 //Anzahl pro Gebiet
         private constant real MIN_TIME = 185.0
         private constant real MAX_TIME = 255.0
         
