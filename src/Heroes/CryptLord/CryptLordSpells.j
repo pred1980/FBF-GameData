@@ -15,9 +15,10 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
      * -----------
      * Description: His giant horn allows Dominus to inject his spawn into a unit. If the unit dies within the next 5 seconds, 
                     a Grub will spawn out of the corpse. There only can be a limited amount of grubs and beetles at the same time.
-     * Last Update: 06.11.2013
+     * Last Update: 10.02.2015
      * Changelog: 
      *     06.11.2013: Abgleich mit OE und der Exceltabelle
+	 *	   08.02.2015: Decreased max. swarms from 3/5/7/9/11 to 3/4/5/6/7
      *
      */
      
@@ -54,8 +55,8 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         private constant string START_BURROW_EFFECT = "Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl"
         private constant string FINISH_BURROW_EFFECT = "Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl"
         
-        private constant integer MAX_SWARM_BASE = 1
-        private constant integer MAX_SWARM_PER_LEVEL = 2
+        private constant integer MAX_SWARM_BASE = 2
+        private constant integer MAX_SWARM_PER_LEVEL = 1
         private constant real INFECTION_DURATION = 5.
         private constant real MORPH_DURATION = 60.
         private constant real BURROW_BASE_DURATION = 7.

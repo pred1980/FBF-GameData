@@ -153,15 +153,16 @@ library WayPointSystem uses AnaMoveSys, UnitMaxState
 			set WAY_POINTS_TD[3][1] = WayPoint.create(2899.0, -10075.5, 2921.4, -6955.2, 192.)
 			set WAY_POINTS_TD[3][2] = WayPoint.create(2921.4, -6955.2, .endPointTD_X, .endPointTD_Y, 192.)
 			
-			// Nightelf Base / Top lane
-			set WAY_POINTS_TD[4][0] = WayPoint.create(GetStartLocationX(10), GetStartLocationY(10), 6161.9, -1767.4, 192.)
-			set WAY_POINTS_TD[4][1] = WayPoint.create(6161.9, -1767.4, 341.3, -1857.3, 192.)
-			set WAY_POINTS_TD[4][2] = WayPoint.create(341.3, -1857.3, .endPointTD_X, .endPointTD_Y, 192.)
-			
 			// Nightelf Base / Bottom lane
-			set WAY_POINTS_TD[5][0] = WayPoint.create(GetStartLocationX(11), GetStartLocationX(11), 6227.8, -4406.6, 192.)
-			set WAY_POINTS_TD[5][1] = WayPoint.create(6227.8, -4406.6, 645.5, -4331.9, 192.)
-			set WAY_POINTS_TD[5][2] = WayPoint.create(645.5, -4331.9, .endPointTD_X, .endPointTD_Y, 192.)
+			set WAY_POINTS_TD[4][0] = WayPoint.create(GetStartLocationX(11), GetStartLocationX(11), 6227.8, -4406.6, 192.)
+			set WAY_POINTS_TD[4][1] = WayPoint.create(6227.8, -4406.6, 645.5, -4331.9, 192.)
+			set WAY_POINTS_TD[4][2] = WayPoint.create(645.5, -4331.9, .endPointTD_X, .endPointTD_Y, 192.)
+			
+			// Nightelf Base / Top lane
+			set WAY_POINTS_TD[5][0] = WayPoint.create(GetStartLocationX(10), GetStartLocationY(10), 6161.9, -1767.4, 192.)
+			set WAY_POINTS_TD[5][1] = WayPoint.create(6161.9, -1767.4, 341.3, -1857.3, 192.)
+			set WAY_POINTS_TD[5][2] = WayPoint.create(341.3, -1857.3, .endPointTD_X, .endPointTD_Y, 192.)
+			
 			
             /************************************
              * Way + Way Points of the AoS Part *

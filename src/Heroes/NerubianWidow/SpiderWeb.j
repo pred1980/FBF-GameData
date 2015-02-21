@@ -1,11 +1,12 @@
 scope SpiderWeb initializer init
     /*
      * Description: Spiders are known as the world best weavers. The Widow is no different, 
-                    with her webs she's able to both catch her enemies and keep them at a distance. 
+                    with her webs shes able to both catch her enemies and keep them at a distance. 
                     Once a vitcim is caught by her webs, it will be unable to even move a finger.
-     * Last Update: 27.10.2013
+     * Last Update: 20.02.2015
      * Changelog: 
      *     27.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     20.02.2015: Cooldown von 1s auf 0 gesetzt
      *
      */
     globals

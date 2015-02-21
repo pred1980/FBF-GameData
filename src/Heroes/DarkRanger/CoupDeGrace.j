@@ -1,10 +1,12 @@
 scope CoupDeGrace initializer Init
     /*
      * Description: Gabrielle fires an arrow at an allied hero and instantly kills it. 
-                    The energy released creates a powerful explosion that deals heavy area of effect damage to all enemy units.
-     * Last Update: 26.11.2013
+                    The energy released creates a powerful explosion that deals heavy area of 
+					effect damage to all enemy units.
+     * Last Update: 17.02.2015
      * Changelog: 
      *     26.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     17.02.2015: Kein Schaden auf umliegende gegnerische Einheiten beim Kill des Helden behoben
      */
     globals
         private constant integer SPELL_ID = 'A076'
@@ -48,7 +50,7 @@ scope CoupDeGrace initializer Init
             set this.target = target
             set this.level = level
             set this.g = NewGroup()
-            set this.tempthis = this
+            set .tempthis = this
             
             call this.launch(MISSILE_SPEED, GetRandomReal(ARC_MIN, ARC_MAX))
             
@@ -56,26 +58,35 @@ scope CoupDeGrace initializer Init
         endmethod
         
         method onHit takes nothing returns nothing
-            local real x = GetUnitX(this.target)
-            local real y = GetUnitY(this.target)
+            local real x = GetUnitX(.target)
+            local real y = GetUnitY(.target)
             
-            if (damageOptions.allowedTarget(this.caster, this.target )) then
-                call UnitAddAbility(this.target, REVIVE_ID)
-                call KillUnit(this.target)
+            if (damageOptions.allowedTarget(.caster, .target )) then
+                call UnitAddAbility(.target, REVIVE_ID)
+                call KillUnit(.target)
                 call DestroyEffect(AddSpecialEffect(EFFECT, x, y))
-                call GroupEnumUnitsInRange(this.g, x, y, RADIUS, function thistype.group_filter_callback)
-                call ForGroup( this.g, function thistype.onDealDamage )
+                call GroupEnumUnitsInRange(.tempthis.g, x, y, RADIUS, function thistype.group_filter_callback)
+                call ForGroup( .tempthis.g, function thistype.onDealDamage )
             endif
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not IsUnitDead(GetFilterUnit()) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)
+			local unit u = GetFilterUnit()
+			
+			if (IsUnitEnemy( u, GetOwningPlayer( .tempthis.caster ) ) and not /*
+			*/     IsUnitDead(u) and not /*
+			*/     IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/     IsUnitType(u, UNIT_TYPE_MECHANICAL)) then
+				return true
+			endif
+				
+			return false
         endmethod
         
         static method onDealDamage takes nothing returns nothing
-            local unit u = GetFilterUnit()
+            local unit u = GetEnumUnit()
             
-            set DamageType = SPELL
+			set DamageType = SPELL
             call UnitDamageTarget(.tempthis.caster, u, BASE_DAMAGE + DAMAGE_PER_LEVEL * .tempthis.level, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_UNKNOWN,WEAPON_TYPE_WHOKNOWS)
             call DestroyEffect(AddSpecialEffectTarget(DAMAGE_EFFECT, u, "chest"))
 
@@ -94,7 +105,6 @@ scope CoupDeGrace initializer Init
         endmethod
     endstruct
 
-  
     private function Conditions takes nothing returns boolean
         return (GetSpellAbilityId() == SPELL_ID)
     endfunction

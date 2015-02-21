@@ -418,8 +418,8 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
             set .interval = RoundType.getInterval()
             set .iterator = RoundType.getIterator(.round)
             set .count = RoundType.getCount()
-            
-            set t = NewTimer()
+			
+			set t = NewTimer()
             call SetTimerData(t, this)
             call TimerStart(t, .interval, true, function thistype.onSpawnInterval)
 

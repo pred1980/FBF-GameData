@@ -88,7 +88,7 @@ scope CreepConfigs
             
             // Round 4
             set thistype.ids[4] = "11,13,3,13,3,14,3,13,1,11,13,3,13,3,14,3,13,1,"
-            set thistype.amount[4] = "4,3,4,3,4,3,4,2,3,4,3,4,3,4,3,4,2,3,"
+            set thistype.amount[4] = "2,3,4,3,4,3,4,4,3,4,3,2,3,4,3,4,2,5,"
             set thistype.iterator[4] = 18
             
             // Round 5
@@ -248,7 +248,7 @@ scope CreepConfigs
             
             // Round 4
             set thistype.ids[4] = "11,13,3,13,3,14,3,13,1,"
-            set thistype.amount[4] = "4,3,4,3,4,3,4,2,3,"
+            set thistype.amount[4] = "2,5,4,3,4,3,4,2,3,"
             set thistype.iterator[4] = 9
             
             // Round 5

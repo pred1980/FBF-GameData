@@ -49,7 +49,7 @@ scope Game
         
         static method getForsakenPlayers takes nothing returns integer
             return .forsakenPlayers
-        endmethod
+		endmethod
         
         static method getCoalitionPlayers takes nothing returns integer
             return .coalitionPlayers
@@ -57,7 +57,7 @@ scope Game
 		
 		static method isOneSidedGame takes nothing returns boolean
             return .oneSidedGame
-        endmethod
+		endmethod
         
         //***********************************\\
         //****** GLOBAL HELPER METHODS ******\\

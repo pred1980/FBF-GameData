@@ -2,9 +2,6 @@ scope BroodMotherSystem initializer init
 	/*
 	 * HP = HPmax * Player_Alliance/6 *(1 + factor * (6-Player_UD)) 
      * Diese Formel berechnet die HP/Damage Werte der Spiders je nach Spieleranzahl auf beiden Seiten. 
-	 * Es können ja wohl schlecht 2 Coaltion Heroes eine 8000HP starke Spinne legen xDDD
-	 *
-	 * x = 0.05 == 5%
 	 */
     globals
         private constant integer SPIDER_ID = 'n00G'
@@ -21,8 +18,8 @@ scope BroodMotherSystem initializer init
         
         //Brood Mother
         private constant integer HP = 15000
-        private constant integer DAMAGE = 950
-        private constant real LAYING_TIME = 180.0 //Wann legt die Brood Mother ein neues Ei?
+        private constant integer DAMAGE = 550
+        private constant real LAYING_TIME = 240.0 //Wann legt die Brood Mother ein neues Ei?
         private constant real TARGET_TOLERANCE = 192.
 		
         //Egg
@@ -42,8 +39,8 @@ scope BroodMotherSystem initializer init
         private string SOUND_2 = "Units\\Creeps\\Spider\\SpiderYes2.wav"
         private integer counter = 0
         
-        //Dieser Faktoren beschreiben die Erhöhung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
-        private constant real HP_FACTOR = 0.10
+        //Dieser Faktoren beschreiben die Erhöhung der HP/Damage Werte je nach Spieleranzahl
+        private constant real HP_FACTOR = 0.10 //Prozentwert
         private constant real DAMAGE_FACTOR = 0.12
 	endglobals
     
@@ -286,16 +283,16 @@ scope BroodMotherSystem initializer init
             local thistype this = GetTimerData(GetExpiredTimer())
             local rect r = WebAreas.getArea(GetRandomInt(0,2))
             local unit u = this.child
-            local real x = GetRectCenterX(r)
-            local real y = GetRectCenterY(r)
+            local real x = GetRandomReal(GetRectMinX(r), GetRectMaxX(r))
+            local real y = GetRandomReal(GetRectMinY(r), GetRectMaxY(r))
             local string order = OrderId2String(GetUnitCurrentOrder(u))
             
             if not IsUnitDead(u) then
                 if order == null then
                     loop
                         exitwhen IsTerrainWalkable(x,y)
-                        set x = GetRectCenterX(r)
-                        set y = GetRectCenterY(r)
+                        set x = GetRandomReal(GetRectMinX(r), GetRectMaxX(r))
+                        set y = GetRandomReal(GetRectMinY(r), GetRectMaxY(r))
                     endloop
                     
                     call IssuePointOrder(u, ORDER_ATTACKMOVE, x, y)

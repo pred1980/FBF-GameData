@@ -10,11 +10,21 @@ scope CreepSystemModule
         endmethod
         
         static method OnRoundStart takes nothing returns nothing
-            local integer i = 0
+            local integer i
+			local integer max
             local Wave w = 0
+			
+			//Gibt es Spieler auf der Forsakenseite, dann werden nur dort Creeps laufen!
+			if (Game.getForsakenPlayers() > 0) then
+				set i = 0
+				set max = 5
+			else // Gibt es nur Spieler auf der Coalitionseite, dann lass die Creeps nur von dort laufen!
+				set i = 6
+				set max = 11
+			endif
             
             loop
-                exitwhen i >= bj_MAX_PLAYERS
+                exitwhen i > max
                 if Game.isPlayerInGame(i) then
                     set w = Wave.create(Player(bj_PLAYER_NEUTRAL_VICTIM), i, actualRound)
                     call SetPlayerState(Player(i), PLAYER_STATE_RESOURCE_FOOD_USED, actualRound )

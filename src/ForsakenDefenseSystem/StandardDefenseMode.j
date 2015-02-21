@@ -13,7 +13,8 @@ scope StandardDefenseMode
         private constant integer MAX_UNDEAD = 8 
         private constant string SPAWN_EFFECT = "Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton.mdl"
 		private constant integer MAX_SPAWN_POINTS = 6
-        private rect array SPAWN_RECTS[MAX_SPAWN_POINTS][MAX_SPAWN_POINTS]
+		private constant integer MAX_SPAWN_AREAS = 4
+        private rect array SPAWN_RECTS[MAX_SPAWN_POINTS][MAX_SPAWN_AREAS]
 		//Should the units be removed after every round?
         private constant boolean REMOVE_CREEPS = true 
         private constant string EFFECT = "Abilities\\Spells\\NightElf\\Blink\\BlinkCaster.mdl"
@@ -62,25 +63,28 @@ scope StandardDefenseMode
         local integer unitLife = 0
         local integer damage = 0
         local integer rnd1 = 0
-		local integer rnd2 = GetRandomInt(0, MAX_SPAWN_POINTS-1)
+		local integer rnd2 = GetRandomInt(0, MAX_SPAWN_AREAS - 1)
         local boolean b = false
         local real x = 0.00
         local real y = 0.00
 		
 			//Wenn nur Spieler auf der Forsaken Seite sind...
-		if (Game.isOneSidedGame()) then
+		//if (Game.isOneSidedGame()) then
 			set rnd1 = GetRandomInt(0, MAX_SPAWN_POINTS - 1)
-		else
+		//else
 			//Wenn es Spieler auf beiden Seiten gibt...
-			set rnd1 = getSpawnPoint(GetRandomReal(0,100)) - 1
-		endif
+			//set rnd1 = getSpawnPoint(GetRandomReal(0,100)) - 1
+		//endif
+		
+		//INFO: Mit Richard Grosser sprechen, wie genau ich die 2 zusätzlichen Defense Areas
+		//      in seiner Berechnung berücksichtigen muss
         
         loop
             exitwhen b
             if SPAWN_RECTS[rnd1][rnd2] != null then
                 set b = true
             else
-                set rnd2 = GetRandomInt(0, MAX_SPAWN_POINTS-1)
+                set rnd2 = GetRandomInt(0, MAX_SPAWN_AREAS - 1)
             endif
         endloop
 		
@@ -1113,40 +1117,40 @@ scope StandardDefenseMode
             call TriggerRegisterEnterRegion(t, rectRegion, null)
             call TriggerAddAction(t, function thistype.onEnterAction)
             
-            //1 area
+            //1 area 
             set SPAWN_RECTS[0][0] = gg_rct_spawnRect0
             set SPAWN_RECTS[0][1] = gg_rct_spawnRect1
             set SPAWN_RECTS[0][2] = gg_rct_spawnRect2
             set SPAWN_RECTS[0][3] = null
             
-            //2 area ( Spiders Terrain )
-            set SPAWN_RECTS[1][0] = gg_rct_spawnRect3
-            set SPAWN_RECTS[1][1] = gg_rct_spawnRect4
-            set SPAWN_RECTS[1][2] = gg_rct_spawnRect5
+            //2 area
+            set SPAWN_RECTS[1][0] = gg_rct_spawnRect13
+            set SPAWN_RECTS[1][1] = gg_rct_spawnRect14
+            set SPAWN_RECTS[1][2] = gg_rct_spawnRect15
             set SPAWN_RECTS[1][3] = null
             
-            //3 area ( Graveyard )
-            set SPAWN_RECTS[2][0] = gg_rct_spawnRect6
-            set SPAWN_RECTS[2][1] = gg_rct_spawnRect7
-            set SPAWN_RECTS[2][2] = gg_rct_spawnRect8
-            set SPAWN_RECTS[2][3] = gg_rct_spawnRect9
+            //3 area
+            set SPAWN_RECTS[2][0] = gg_rct_spawnRect3
+            set SPAWN_RECTS[2][1] = gg_rct_spawnRect4
+            set SPAWN_RECTS[2][2] = gg_rct_spawnRect5
+            set SPAWN_RECTS[2][3] = null
             
-            //4 area ( Abomination Way )
-            set SPAWN_RECTS[3][0] = gg_rct_spawnRect10
-            set SPAWN_RECTS[3][1] = gg_rct_spawnRect11
-            set SPAWN_RECTS[3][2] = gg_rct_spawnRect12
+            //4 area
+            set SPAWN_RECTS[3][0] = gg_rct_spawnRect16
+            set SPAWN_RECTS[3][1] = gg_rct_spawnRect17
+            set SPAWN_RECTS[3][2] = gg_rct_spawnRect18
             set SPAWN_RECTS[3][3] = null
 			
-			//5 area ( near the Broodmother )
-            set SPAWN_RECTS[4][0] = gg_rct_spawnRect13
-            set SPAWN_RECTS[4][1] = gg_rct_spawnRect14
-            set SPAWN_RECTS[4][2] = gg_rct_spawnRect15
-            set SPAWN_RECTS[4][3] = null
+			//5 area
+            set SPAWN_RECTS[4][0] = gg_rct_spawnRect6
+            set SPAWN_RECTS[4][1] = gg_rct_spawnRect7
+            set SPAWN_RECTS[4][2] = gg_rct_spawnRect8
+            set SPAWN_RECTS[4][3] = gg_rct_spawnRect9
 			
-			//6 area ( vor dem Eingang zum Friedhof )
-            set SPAWN_RECTS[5][0] = gg_rct_spawnRect16
-            set SPAWN_RECTS[5][1] = gg_rct_spawnRect17
-            set SPAWN_RECTS[5][2] = gg_rct_spawnRect18
+			//6 area
+            set SPAWN_RECTS[5][0] = gg_rct_spawnRect10
+            set SPAWN_RECTS[5][1] = gg_rct_spawnRect11
+            set SPAWN_RECTS[5][2] = gg_rct_spawnRect12
             set SPAWN_RECTS[5][3] = null
             
         endmethod
@@ -1262,7 +1266,7 @@ scope StandardDefenseMode
     struct DefenseCalc
         
         private static method weight takes integer round, integer column, integer coalitionHeroLevelSum, integer forsakenHeroLevelSum returns real
-            local real my = (19 * column - 16) / 3
+            local real my = (19 * column - (19-MAX_SPAWN_POINTS)) / MAX_SPAWN_POINTS - 1
             local real weight = 0.00
 			local real colHeroSum = coalitionHeroLevelSum
 			local real forHeroSum = forsakenHeroLevelSum
@@ -1272,7 +1276,7 @@ scope StandardDefenseMode
 			//Players on both sides?
 			if not (Game.isOneSidedGame()) then
 				set isShiftedRound = true
-				set shiftedRound = I2R(round) * GetMin(1.0, I2R(coalitionHeroLevelSum)/I2R(forsakenHeroLevelSum))
+				set shiftedRound = I2R(round) * GetMin(1.0, I2R(coalitionHeroLevelSum) / I2R(forsakenHeroLevelSum))
 			endif
             
 			//Verteidigung abhängig der Heldenlevel beider Teams
@@ -1313,12 +1317,12 @@ scope StandardDefenseMode
 		endmethod
         
         static method initialize takes nothing returns nothing
-            set SIGMA[1] = 3.5
-            set SIGMA[2] = 1.5
-            set SIGMA[3] = 2.0
-            set SIGMA[4] = 2.8
-			set SIGMA[5] = 3.2
-			set SIGMA[6] = 2.2
+            set SIGMA[1] = 3.5 
+            set SIGMA[2] = 3.0
+            set SIGMA[3] = 2.5
+            set SIGMA[4] = 2.0
+			set SIGMA[5] = 1.5 
+			set SIGMA[6] = 1.0
         endmethod
         
         //index is the spawn place from 1 to 5
