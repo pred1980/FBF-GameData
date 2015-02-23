@@ -12,12 +12,12 @@ scope BroodMotherSystem initializer init
         private constant real FACING = 180.0
         private constant real X = -5590.8
         private constant real Y = 5027.6
-        private constant real LIFE_FACTOR = 240.0 //every 4min an egg splashs and a child comes out
+        private constant real LIFE_FACTOR = 150.0 //every 4min an egg splashs and a child comes out
         private constant integer CHANCE = 40 //40% to get a male child
         private constant string ORDER_ATTACKMOVE = "attack"
         
         //Brood Mother
-        private constant integer HP = 15000
+        private constant integer HP = 20000
         private constant integer DAMAGE = 550
         private constant real LAYING_TIME = 240.0 //Wann legt die Brood Mother ein neues Ei?
         private constant real TARGET_TOLERANCE = 192.
