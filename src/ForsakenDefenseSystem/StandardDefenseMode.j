@@ -69,17 +69,14 @@ scope StandardDefenseMode
         local real y = 0.00
 		
 			//Wenn nur Spieler auf der Forsaken Seite sind...
-		//if (Game.isOneSidedGame()) then
+		if (Game.isOneSidedGame()) then
 			set rnd1 = GetRandomInt(0, MAX_SPAWN_POINTS - 1)
-		//else
+		else
 			//Wenn es Spieler auf beiden Seiten gibt...
-			//set rnd1 = getSpawnPoint(GetRandomReal(0,100)) - 1
-		//endif
+			set rnd1 = getSpawnPoint(GetRandomReal(0,100)) - 1
+		endif
 		
-		//INFO: Mit Richard Grosser sprechen, wie genau ich die 2 zusätzlichen Defense Areas
-		//      in seiner Berechnung berücksichtigen muss
-        
-        loop
+		loop
             exitwhen b
             if SPAWN_RECTS[rnd1][rnd2] != null then
                 set b = true
@@ -1124,33 +1121,33 @@ scope StandardDefenseMode
             set SPAWN_RECTS[0][3] = null
             
             //2 area
-            set SPAWN_RECTS[1][0] = gg_rct_spawnRect13
-            set SPAWN_RECTS[1][1] = gg_rct_spawnRect14
-            set SPAWN_RECTS[1][2] = gg_rct_spawnRect15
+            set SPAWN_RECTS[1][0] = gg_rct_spawnRect3
+            set SPAWN_RECTS[1][1] = gg_rct_spawnRect4
+            set SPAWN_RECTS[1][2] = gg_rct_spawnRect5
             set SPAWN_RECTS[1][3] = null
             
             //3 area
-            set SPAWN_RECTS[2][0] = gg_rct_spawnRect3
-            set SPAWN_RECTS[2][1] = gg_rct_spawnRect4
-            set SPAWN_RECTS[2][2] = gg_rct_spawnRect5
-            set SPAWN_RECTS[2][3] = null
+            set SPAWN_RECTS[2][0] = gg_rct_spawnRect6
+            set SPAWN_RECTS[2][1] = gg_rct_spawnRect7
+            set SPAWN_RECTS[2][2] = gg_rct_spawnRect8
+            set SPAWN_RECTS[2][3] = gg_rct_spawnRect9
             
             //4 area
-            set SPAWN_RECTS[3][0] = gg_rct_spawnRect16
-            set SPAWN_RECTS[3][1] = gg_rct_spawnRect17
-            set SPAWN_RECTS[3][2] = gg_rct_spawnRect18
+            set SPAWN_RECTS[3][0] = gg_rct_spawnRect10
+            set SPAWN_RECTS[3][1] = gg_rct_spawnRect11
+            set SPAWN_RECTS[3][2] = gg_rct_spawnRect12
             set SPAWN_RECTS[3][3] = null
 			
 			//5 area
-            set SPAWN_RECTS[4][0] = gg_rct_spawnRect6
-            set SPAWN_RECTS[4][1] = gg_rct_spawnRect7
-            set SPAWN_RECTS[4][2] = gg_rct_spawnRect8
-            set SPAWN_RECTS[4][3] = gg_rct_spawnRect9
+            set SPAWN_RECTS[4][0] = gg_rct_spawnRect13
+            set SPAWN_RECTS[4][1] = gg_rct_spawnRect14
+            set SPAWN_RECTS[4][2] = gg_rct_spawnRect15
+            set SPAWN_RECTS[4][3] = null
 			
 			//6 area
-            set SPAWN_RECTS[5][0] = gg_rct_spawnRect10
-            set SPAWN_RECTS[5][1] = gg_rct_spawnRect11
-            set SPAWN_RECTS[5][2] = gg_rct_spawnRect12
+            set SPAWN_RECTS[5][0] = gg_rct_spawnRect16
+            set SPAWN_RECTS[5][1] = gg_rct_spawnRect17
+            set SPAWN_RECTS[5][2] = gg_rct_spawnRect18
             set SPAWN_RECTS[5][3] = null
             
         endmethod
@@ -1266,7 +1263,7 @@ scope StandardDefenseMode
     struct DefenseCalc
         
         private static method weight takes integer round, integer column, integer coalitionHeroLevelSum, integer forsakenHeroLevelSum returns real
-            local real my = (19 * column - (19-MAX_SPAWN_POINTS)) / MAX_SPAWN_POINTS - 1
+            local real my = (19 * column - (19 - MAX_SPAWN_POINTS - 1)) / MAX_SPAWN_POINTS - 1
             local real weight = 0.00
 			local real colHeroSum = coalitionHeroLevelSum
 			local real forHeroSum = forsakenHeroLevelSum
@@ -1317,12 +1314,12 @@ scope StandardDefenseMode
 		endmethod
         
         static method initialize takes nothing returns nothing
-            set SIGMA[1] = 3.5 
-            set SIGMA[2] = 3.0
-            set SIGMA[3] = 2.5
-            set SIGMA[4] = 2.0
-			set SIGMA[5] = 1.5 
-			set SIGMA[6] = 1.0
+            set SIGMA[1] = 3.0 
+            set SIGMA[2] = 2.2
+            set SIGMA[3] = 1.5
+            set SIGMA[4] = 1.5
+			set SIGMA[5] = 2.2 
+			set SIGMA[6] = 3.0
         endmethod
         
         //index is the spawn place from 1 to 5

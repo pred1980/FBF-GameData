@@ -20,11 +20,11 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
 	globals
         //Gold Income
 		/*
-		 * Forsaken:  Alle 5s gibt es 3 Gold! Nach 1min == 36 | Nach 10min == 360 Gold
-		 * Coalition: Alle 5s gibt es 5 Gold! Nach 1min == 60 | Nach 10min == 600 Gold 
+		 * Forsaken:  Alle 5s gibt es 2 Gold! Nach 1min == 24 | Nach 10min == 240 Gold
+		 * Coalition: Alle 5s gibt es 10 Gold! Nach 1min == 120 | Nach 10min == 1200 Gold 
 		 */ 
-        private constant integer FORSAKEN_GOLD = 3
-        private constant integer COALITION_GOLD = 5
+        private constant integer FORSAKEN_GOLD = 2
+        private constant integer COALITION_GOLD = 10
         private constant real INCOME_INTERVAL = 5.00
     endglobals
     
