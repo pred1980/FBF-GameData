@@ -23,13 +23,13 @@ scope EvaluationSystem
 			set LUMBER[12] = 400 //-20
 			set LUMBER[13] = 370 //-30
 			
-			set LUMBER[14] = 470 //+100
-			set LUMBER[15] = 475 //+5
-			set LUMBER[16] = 460 //-15
-			set LUMBER[17] = 560 //+80
-			set LUMBER[18] = 600 //+40
-			set LUMBER[19] = 620 //+20
-			set LUMBER[20] = 630 //+10
+			set LUMBER[14] = 370 //0
+			set LUMBER[15] = 375 //+5
+			set LUMBER[16] = 385 //+10
+			set LUMBER[17] = 400 //+15
+			set LUMBER[18] = 420 //+20
+			set LUMBER[19] = 445 //+25
+			set LUMBER[20] = 475 //+30
 		endmethod
 		
 		static method getLumber takes integer round returns integer

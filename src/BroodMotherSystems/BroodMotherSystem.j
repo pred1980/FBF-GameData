@@ -104,6 +104,12 @@ scope BroodMotherSystem initializer init
         static integer hp = 0
         static integer dmg = 0
 		static MoveData data
+		
+		private static method onUnitDeath takes nothing returns nothing
+			if GetUnitTypeId(GetTriggerUnit()) == SPIDER_ID then
+				call TeleportSystem.create()
+			endif
+		endmethod
         
         //update HP+Damage if a player left game
         static method onUpdate takes nothing returns nothing
@@ -134,6 +140,9 @@ scope BroodMotherSystem initializer init
             set .t = NewTimer()
             call SetTimerData(.t, this )
             call TimerStart( .t, LAYING_TIME, true, function thistype.onMoveToHatchery )
+			
+			//on Death Event
+            call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, function thistype.onUnitDeath)
             
             return this
         endmethod

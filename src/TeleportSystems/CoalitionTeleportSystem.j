@@ -4,20 +4,11 @@ scope CoalitionTeleportSystem initializer init
         private constant integer ID = 'n00M'
 		private constant rect array BASE_TELEPORTS_RECTS
 		private constant rect array AOS_TELEPORT_RECTS
-        private constant integer MAX_TELEPORTER_PLACES = 4
+        private constant integer MAX_TELEPORTER_PLACES = 1
 		private constant string EFFECT = "Abilities\\Spells\\Human\\MassTeleport\\MassTeleportCaster.mdl"
 		private constant real MOVE_TELEPORTER_ANNOUNCMENT = 15.0
-        
         private integer array PLACE_BY_ROUND[MAX_TELEPORTER_PLACES][2]
-        private boolean array isActive
-        private unit array teleporter
-        private unit activeTeleport
-        
-        private integer active = 0
-        
-        /* Delay beim Teleport */
         private constant real TELEPORT_DELAY = 1.0
-        
     endglobals
     
     private struct TeleportData
@@ -36,6 +27,7 @@ scope CoalitionTeleportSystem initializer init
 
     struct CoalitionTeleport
 		static fogmodifier visibibleArea
+		static unit teleporter
 		
 		/* Nach kurzem Delay zur Basis zurueck teleportieren */
         static method onReturnToBaseDelay takes nothing returns nothing
@@ -66,7 +58,7 @@ scope CoalitionTeleportSystem initializer init
 			local unit u = GetTriggerUnit()
 			local boolean b = false
 			
-			if IsUnitInRegion(GetTriggeringRegion(), activeTeleport) then
+			if IsUnitInRegion(GetTriggeringRegion(), teleporter) then
 				if IsUnitType(u, UNIT_TYPE_HERO) and /*
 				*/ (IsUnitAlly(u, ConvertedPlayer(IMaxBJ(7, 8))) or /*
 				*/ IsUnitAlly(u, ConvertedPlayer(IMaxBJ(9, 10))) or /*
@@ -138,8 +130,8 @@ scope CoalitionTeleportSystem initializer init
         static method onLeaveBase takes nothing returns nothing
             local unit u = GetTriggerUnit()
             local player p = GetOwningPlayer(u)
-            local real x = GetRectCenterX(AOS_TELEPORT_RECTS[PLACE_BY_ROUND[active][1]])
-            local real y = GetRectCenterY(AOS_TELEPORT_RECTS[PLACE_BY_ROUND[active][1]])
+            local real x = GetRectCenterX(AOS_TELEPORT_RECTS[PLACE_BY_ROUND[0][1]])
+            local real y = GetRectCenterY(AOS_TELEPORT_RECTS[PLACE_BY_ROUND[0][1]])
             
 			call DestroyEffect(AddSpecialEffect(EFFECT,x,y))
             call SetUnitPosition(u, x, y)
@@ -156,81 +148,7 @@ scope CoalitionTeleportSystem initializer init
             set u = null
         endmethod
 		
-		static method onMoveTeleporter takes nothing returns nothing
-			local trigger t
-			local integer l = 0
-            local integer k = 0
-            local real x = 0.00
-            local real y = 0.00
-			local integer i = DefenseCalc.getMainSpawnPointIndex() //index
-			
-			call ReleaseTimer(GetExpiredTimer())
-			
-			//Destroy last active Teleporter
-			set isActive[active] = false
-			call KillUnit(teleporter[active])
-			call RemoveUnit(teleporter[active])
-			call DestroyFogModifier(.visibibleArea)
-			set teleporter[active] = null
-			
-			set x = GetRectCenterX(AOS_TELEPORT_RECTS[PLACE_BY_ROUND[i][0]])
-			set y = GetRectCenterY(AOS_TELEPORT_RECTS[PLACE_BY_ROUND[i][0]])
-			
-			set teleporter[i] = CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), ID, x, y, 0.00)
-			set activeTeleport = teleporter[i]
-			set active = i
-			set isActive[i] = true
-			//Sichtbarkeitsradius für die Spieler 6-12 erstellen, damit sie den Teleporter sehen
-			loop
-				exitwhen l >= bj_MAX_PLAYERS
-				if Game.isPlayerInGame(l) then
-					if GetPlayerRace(Player(l)) != RACE_UNDEAD then
-						set .visibibleArea = CreateFogModifierRectBJ(true, Player(l), FOG_OF_WAR_VISIBLE, AOS_TELEPORT_RECTS[PLACE_BY_ROUND[i][0]])	
-					endif
-				endif
-				
-				set l = l + 1
-			endloop
-			
-			call SetAltMinimapIcon("war3mapImported\\Minimap-Teleporter.blp")
-			call UnitSetUsesAltIcon(teleporter[i], true)
-			
-			set t = CreateTrigger()
-			call TriggerRegisterEnterRectSimple(t, AOS_TELEPORT_RECTS[PLACE_BY_ROUND[i][0]])
-			call TriggerAddCondition(t, Condition(function thistype.onReturnToBaseConditions))
-			call TriggerAddAction(t, function thistype.onReturnToBase)
-			
-			loop
-				exitwhen k >= bj_MAX_PLAYERS
-				//Checking for Players and Bots
-				if Game.isPlayerInGame(k) and GetPlayerRace(Player(k)) != RACE_UNDEAD and Game.started then
-					call PingMinimap(GetUnitX(teleporter[i]), GetUnitY(teleporter[i]), 3.00)
-					call Usability.getTextMessage(0, 9, true, Player(k), false, 0.5)
-				endif
-				set k = k + 1
-			endloop
-		endmethod
-        
-        static method update takes nothing returns nothing
-			local integer l = 0
-            local integer i = DefenseCalc.getMainSpawnPointIndex() //index
-            
-			if not isActive[i] then
-				//Kündige die Verschiebung des Teleporters für Coalition-Spieler an
-				loop
-					exitwhen l >= bj_MAX_PLAYERS
-					if Game.isPlayerInGame(l) and GetPlayerRace(Player(l)) != RACE_UNDEAD and Game.started then
-						call Usability.getTextMessage(1, 1, true, Player(l), true, 0.1)
-					endif
-										
-					set l = l + 1
-				endloop
-				
-				call TimerStart(NewTimer(), MOVE_TELEPORTER_ANNOUNCMENT, false, function thistype.onMoveTeleporter)
-            endif
-        endmethod
-        
-        static method initialize takes nothing returns nothing
+		static method initialize takes nothing returns nothing
             local trigger t = CreateTrigger()
             local real x = 0.00
             local real y = 0.00
@@ -238,9 +156,8 @@ scope CoalitionTeleportSystem initializer init
             
             set x = GetRectCenterX(AOS_TELEPORT_RECTS[0])
             set y = GetRectCenterY(AOS_TELEPORT_RECTS[0])
-			set teleporter[0] = CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), ID, x, y, 0.00)
-            set activeTeleport = teleporter[0]
-            set isActive[0] = true
+			set teleporter = CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), ID, x, y, 0.00)
+            
 			//Sichtbarkeitsradius für die Spieler 6-12 erstellen, damit sie den Teleporter sehen
 			loop
 				exitwhen l >= bj_MAX_PLAYERS
@@ -254,7 +171,7 @@ scope CoalitionTeleportSystem initializer init
 			endloop
 			
 			call SetAltMinimapIcon("war3mapImported\\Minimap-Teleporter.blp")
-			call UnitSetUsesAltIcon(teleporter[0], true)
+			call UnitSetUsesAltIcon(teleporter, true)
             
             call TriggerRegisterEnterRectSimple(t, AOS_TELEPORT_RECTS[0])
             call TriggerAddCondition(t, Condition(function thistype.onReturnToBaseConditions))
@@ -282,28 +199,10 @@ scope CoalitionTeleportSystem initializer init
         set PLACE_BY_ROUND[0][0] = 0 // AOS_TELEPORT_RECTS[0]
         set PLACE_BY_ROUND[0][1] = 1 // AOS_TELEPORT_RECTS[1]
         
-        set PLACE_BY_ROUND[1][0] = 2 // AOS_TELEPORT_RECTS[2]
-        set PLACE_BY_ROUND[1][1] = 3 // AOS_TELEPORT_RECTS[3]
-        
-        set PLACE_BY_ROUND[2][0] = 4 // AOS_TELEPORT_RECTS[4]
-        set PLACE_BY_ROUND[2][1] = 5 // AOS_TELEPORT_RECTS[5]
-        
-        set PLACE_BY_ROUND[3][0] = 6 // AOS_TELEPORT_RECTS[6]
-        set PLACE_BY_ROUND[3][1] = 7 // AOS_TELEPORT_RECTS[7]
-        
         set AOS_TELEPORT_RECTS[0] = gg_rct_CoalitionTeleport1x0
         set AOS_TELEPORT_RECTS[1] = gg_rct_CoalitionTeleport1x1
         
-        set AOS_TELEPORT_RECTS[2] = gg_rct_CoalitionTeleport2x0
-        set AOS_TELEPORT_RECTS[3] = gg_rct_CoalitionTeleport2x1
-        
-        set AOS_TELEPORT_RECTS[4] = gg_rct_CoalitionTeleport3x0
-        set AOS_TELEPORT_RECTS[5] = gg_rct_CoalitionTeleport3x1
-        
-        set AOS_TELEPORT_RECTS[6] = gg_rct_CoalitionTeleport4x0
-        set AOS_TELEPORT_RECTS[7] = gg_rct_CoalitionTeleport4x1
-		
-		call CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), ID, GetRectCenterX(BASE_TELEPORTS_RECTS[0]), GetRectCenterY(BASE_TELEPORTS_RECTS[0]), 0.00)
+        call CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), ID, GetRectCenterX(BASE_TELEPORTS_RECTS[0]), GetRectCenterY(BASE_TELEPORTS_RECTS[0]), 0.00)
         call CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), ID, GetRectCenterX(BASE_TELEPORTS_RECTS[2]), GetRectCenterY(BASE_TELEPORTS_RECTS[2]), 0.00)
         call CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), ID, GetRectCenterX(BASE_TELEPORTS_RECTS[4]), GetRectCenterY(BASE_TELEPORTS_RECTS[4]), 0.00)
         

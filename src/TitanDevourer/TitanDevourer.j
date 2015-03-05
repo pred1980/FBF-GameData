@@ -32,6 +32,12 @@ scope TitanDevourer
             static integer hp = 0
             static integer dmg = 0
             static thistype tempthis
+			
+			private static method onUnitDeath takes nothing returns nothing
+				if GetUnitTypeId(GetTriggerUnit()) == TITAN_ID then
+					call TeleportSystem.create()
+				endif
+			endmethod
             
             //update HP+Damage if a player left game
             static method onUpdate takes nothing returns nothing
@@ -62,6 +68,9 @@ scope TitanDevourer
                 call TriggerRegisterUnitInRangeSimple( t, RADIUS, .titan)
 				call TriggerAddCondition(t, Condition(function thistype.onDevourCond))
                 call TriggerAddAction(t, function thistype.onDevour)
+				
+				//on Death Event
+				call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, function thistype.onUnitDeath)
 				
 				set .tempthis = this
 				set t = null

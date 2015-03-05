@@ -60,10 +60,6 @@ scope CreepSystemModule
                 set i = i + 1
             endloop
             
-            //Update Forsaken Teleporter Places
-            call ForsakenTeleport.update()
-			//Update Coalition Teleporter Places
-            call CoalitionTeleport.update()
             //Create Wardens
             call SpawnWarden.create()
             //Remove the rest of the creeps?

@@ -53,6 +53,7 @@
 //! import "src\Libraries\UnitStatus.j"
 //! import "src\Libraries\ZUtils.j"
 //! import "src\Libraries\HomeBase.j"
+//! import "src\Libraries\RectUtils.j"
 
 /* XE Libraries */
 //! import "src\Libraries\XE\xepreload.j"
@@ -194,6 +195,7 @@
 //! import "src\TeleportSystems\CoalitionTeleportSystem.j"
 //! import "src\TeleportSystems\ForsakenTeleportSystem.j"
 //! import "src\TeleportSystems\StoneOfTeleportation.j"
+//! import "src\TeleportSystems\TeleportSystem.j"
 
 /* Coalition Unit Shop Systems */
 //! import "src\UnitShopSystems\CoalitionShopSystem.j"
