@@ -30,12 +30,11 @@ scope UsabilitySystem
         set NOTE_MESSAGES[6] = TYPE[0] + "The hero statistics are not avaiable for your faction. Please select a hero of your faction or a neutral."
         set NOTE_MESSAGES[7] = TYPE[0] + "You can only pick heroes that belong to your faction or are neutral."
         set NOTE_MESSAGES[8] = TYPE[0] + "Four new Towers are activated."
-		set NOTE_MESSAGES[9] = "The teleporter has been relocated."
+		set NOTE_MESSAGES[9] = TYPE[0] + "Two new Teleportes are avaiable. Use them to telepport from one point to the next."
 		set NOTE_MESSAGES[10] = TYPE[0] + "The repick time is over. You can't pick another hero anymore."
 		
-        set WARN_MESSAGES[0] = "" // Kann neu verwendet werden
-		set WARN_MESSAGES[1] = TYPE[1] + "Warning: The teleporter moves in a few seconds to a new point!"
-        
+        set WARN_MESSAGES[0] = ""
+		
         set ERROR_MESSAGES[0] = TYPE[2] + "No gold value set for killed Unit."
         
         /* Preload Sounds */

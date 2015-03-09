@@ -245,6 +245,10 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
 		set column = 0
 		set row = row + 1
+		
+		/*
+		 * Rare Towers
+		 */
         
         //Index: 12
         //****** Decayed Earth Tower *******
@@ -389,6 +393,10 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
 		set column = 0
 		set row = row + 1
+		
+		/*
+		 * Unique Towers
+		 */
         
         //Index: 25
         //****** Monolith of Hatred *******

@@ -4,8 +4,7 @@ scope TeleportSystem initializer init
 		private constant integer MAX_TELEPORTER_PLACES = 4
         private rect array TELEPORT_RECTS[MAX_TELEPORTER_PLACES][3]
 		private constant string EFFECT = "Abilities\\Spells\\Human\\MassTeleport\\MassTeleportCaster.mdl"
-		private constant real TELEPORTER_ANNOUNCMENT = 15.0
-        private constant real TELEPORT_DELAY = 0.5
+        private constant real TELEPORT_DELAY = 1.0
 		
 		private Table table
 		private integer index = 0
@@ -31,16 +30,18 @@ scope TeleportSystem initializer init
 		private static method onTeleport takes nothing returns nothing
             local TeleportData data = GetTimerData(GetExpiredTimer())
 			
-            call SetUnitPosition(data.target, data.x, data.y)
-            
-			if (GetLocalPlayer() == data.p) then
-				call PanCameraToTimed(data.x, data.y, 0.00)
+			if IsUnitInRegion(data.reg, data.target) and not IsUnitDead(data.target) then
+				call SetUnitPosition(data.target, data.x, data.y)
+				
+				if (GetLocalPlayer() == data.p) then
+					call PanCameraToTimed(data.x, data.y, 0.00)
+				endif
+				
+				call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(data.target), GetUnitY(data.target)))
+				call IssueImmediateOrder(data.target, "holdposition")
+				call ReleaseTimer(GetExpiredTimer())
+				call data.destroy()
 			endif
-			
-			call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(data.target), GetUnitY(data.target)))
-			call IssueImmediateOrder(data.target, "holdposition")
-			call ReleaseTimer(GetExpiredTimer())
-			call data.destroy()
         endmethod
 		
 		private static method onTeleporting takes nothing returns nothing
@@ -113,6 +114,7 @@ scope TeleportSystem initializer init
 			set x = GetRectCenterX(TELEPORT_RECTS[index][0])
             set y = GetRectCenterY(TELEPORT_RECTS[index][0])
             set teleporter = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), TELEPORTER_ID, x, y, 0.00)
+			call PingMinimap(x, y, 1.0)
 			
 			call SetAltMinimapIcon("war3mapImported\\Minimap-Teleporter.blp")
 			call UnitSetUsesAltIcon(teleporter, true)
@@ -135,6 +137,7 @@ scope TeleportSystem initializer init
             set x = GetRectCenterX(TELEPORT_RECTS[index][0])
             set y = GetRectCenterY(TELEPORT_RECTS[index][0])
             set teleporter = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), TELEPORTER_ID, x, y, 0.00)
+			call PingMinimap(x, y, 1.0)
 			
 			call SetAltMinimapIcon("war3mapImported\\Minimap-Teleporter.blp")
 			call UnitSetUsesAltIcon(teleporter, true)

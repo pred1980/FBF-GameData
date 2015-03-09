@@ -16,7 +16,7 @@ scope AuraOfRedemption initializer Init
         // LONG_RANGE = Indicates how long Long Range is.
         private constant real       LONG_RANGE              = 600
         // FULL_STR = Should it Include Bonuses from strength gain??
-        private constant boolean    FULL_STR                = TRUE
+        private constant boolean    FULL_STR                = false //true makes STR Heroes "God-Like"
         // SPELL_ID = ...
         private constant integer    ITEM_ID                = 'I02Y'
         // BUFF_ID = ...
@@ -73,7 +73,7 @@ scope AuraOfRedemption initializer Init
                     call SaveInteger(table, GetHandleId(u), 1, bonus)
                 endif
             endif
-            call SetHeroStr(u, GetHeroStr(u, FULL_STR)+bonus, FULL_STR)
+            call SetHeroStr(u, GetHeroStr(u, FULL_STR) + bonus, FULL_STR)
         endmethod
 
         static method GetUnitAuraBonus takes unit u returns integer 

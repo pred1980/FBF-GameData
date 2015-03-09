@@ -2,11 +2,11 @@ scope TitanDevourer
 
 	globals
 		private constant integer SPELL_ID = 'A0AD'
-        private constant integer BASE_DAMAGE = 12
+        private constant integer BASE_DAMAGE = 100
         private constant real DAMAGE_MULTIPLIER = 6.5
         //Diese Faktoren beschreibt die Erhöhung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
-        private constant real HP_FACTOR = 0.10 //0.05
-        private constant real DAMAGE_FACTOR = 0.12 //0.09
+        private constant real HP_FACTOR = 0.00 //Prozentwert
+        private constant real DAMAGE_FACTOR = 0.00 //Prozentwert
         
         private rect titanRect
         private group isDevoured
@@ -35,6 +35,7 @@ scope TitanDevourer
 			
 			private static method onUnitDeath takes nothing returns nothing
 				if GetUnitTypeId(GetTriggerUnit()) == TITAN_ID then
+					call Usability.getTextMessage(0, 9, true, GetLocalPlayer(), true, 0.00)
 					call TeleportSystem.create()
 				endif
 			endmethod

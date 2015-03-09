@@ -6,18 +6,18 @@ scope SkeletonSystem
 
     globals
         private integer array SKELETONS
-        private constant integer MAX_SKELETONS = 15
+        private constant integer MAX_SKELETONS = 12
         private constant real MIN_TIME = 90.0
         private constant real MAX_TIME = 150.0
-        private constant integer INCREASED_HP_PER_ROUND = 250
-        private constant integer INCREASED_DAMAGE_PER_ROUND = 30
+        private constant integer INCREASED_HP_PER_ROUND = 55
+        private constant integer INCREASED_DAMAGE_PER_ROUND = 7
         private constant string SPAWN_EFFECT = "Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton.mdl"
         private integer array START_HP
         private integer array START_DAMAGE
         private constant real LIFE_TIME = 120.0
         //Diese Faktoren beschreibt die Erhoehung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
         private constant real HP_FACTOR = 0.10
-        private constant real DAMAGE_FACTOR = 0.18
+        private constant real DAMAGE_FACTOR = 0.15
         
         private rect array GRAVESTONE_SPAWN_RECTS
         private constant real GRAVESTONE_ATTACK_RANGE = 500

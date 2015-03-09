@@ -12,14 +12,14 @@ scope BroodMotherSystem initializer init
         private constant real FACING = 180.0
         private constant real X = -5590.8
         private constant real Y = 5027.6
-        private constant real LIFE_FACTOR = 180.0 //every Xmin an egg splashs and a child comes out
+        private constant real LIFE_FACTOR = 240.0 //every Xmin an egg splashs and a child comes out
         private constant integer CHANCE = 40 //40% to get a male child
         private constant string ORDER_ATTACKMOVE = "attack"
         
         //Brood Mother
         private constant integer HP = 20000
         private constant integer DAMAGE = 550
-        private constant real LAYING_TIME = 240.0 //Wann legt die Brood Mother ein neues Ei?
+        private constant real LAYING_TIME = 360.0 //Wann legt die Brood Mother ein neues Ei?
         private constant real TARGET_TOLERANCE = 192.
 		
         //Egg
@@ -29,10 +29,10 @@ scope BroodMotherSystem initializer init
         private real array eggLifeTime
         
         //Male/Female
-        private constant integer MALE_HP = 8000
-        private constant integer MALE_DAMAGE = 335
-        private constant integer FEMALE_HP = 5000
-        private constant integer FEMALE_DAMAGE = 225
+        private constant integer MALE_HP = 7000
+        private constant integer MALE_DAMAGE = 275
+        private constant integer FEMALE_HP = 4500
+        private constant integer FEMALE_DAMAGE = 195
         
         private rect broodPlace
         private string SOUND_1 = "Units\\Critters\\SpiderCrab\\CrabDeath1.wav"
@@ -40,8 +40,8 @@ scope BroodMotherSystem initializer init
         private integer counter = 0
         
         //Dieser Faktoren beschreiben die Erhöhung der HP/Damage Werte je nach Spieleranzahl
-        private constant real HP_FACTOR = 0.10 //Prozentwert
-        private constant real DAMAGE_FACTOR = 0.12
+        private constant real HP_FACTOR = 0.00 //Prozentwert
+        private constant real DAMAGE_FACTOR = 0.00 //Prozentwert
 	endglobals
     
     private function ResetCounter takes nothing returns nothing
@@ -107,6 +107,7 @@ scope BroodMotherSystem initializer init
 		
 		private static method onUnitDeath takes nothing returns nothing
 			if GetUnitTypeId(GetTriggerUnit()) == SPIDER_ID then
+				call Usability.getTextMessage(0, 9, true, GetLocalPlayer(), true, 0.00)
 				call TeleportSystem.create()
 			endif
 		endmethod

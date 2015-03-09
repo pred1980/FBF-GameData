@@ -533,6 +533,7 @@ library MiscFunctions requires GroupUtils
 	endglobals
     
 	function GetGameStartRatioValue takes integer value, real factor returns integer
+		//Wenn auf beiden Seiten Spieler sind...
 		if not (Game.isOneSidedGame()) then
 			return R2I(I2R(value) * I2R(Game.getCoalitionPlayers()) / I2R(6) * (I2R(1) + factor * (I2R(6) - I2R(Game.getForsakenPlayers()))))
 		//Wenn nur auf der Forsaken Seite Spieler sind...
@@ -546,7 +547,7 @@ library MiscFunctions requires GroupUtils
 	
     function GetDynamicRatioValue takes integer value, real factor returns integer
 		local integer val = 0
-		
+		//Wenn auf beiden Seiten Spieler sind...
 		if not (Game.isOneSidedGame()) then
 			set val = R2I(I2R(value) * I2R(Game.getCoalitionPlayers()) / I2R(6) * (I2R(1) + factor * (I2R(6) - I2R(Game.getForsakenPlayers()))))
 		//Wenn nur auf der Forsaken Seite Spieler sind...

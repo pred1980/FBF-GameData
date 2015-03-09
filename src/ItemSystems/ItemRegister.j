@@ -9,7 +9,7 @@ scope ItemRegister
         
         private integer array ITEM_LIMIT
         
-        private constant boolean ALLOW_DOUBLE_ITEMS = false
+        private constant boolean ALLOW_DOUBLE_ITEMS = true
         private constant boolean ALLOW_ONLY_RACE_ITEMS = true
     endglobals
 
@@ -100,7 +100,7 @@ scope ItemRegister
             endif
             set i = 0
             set c = 0
-            //Pr?fen, ob die Einheit schon ein Item dieses Types hat
+            //Prüfen, ob die Einheit schon ein Item dieses Types hat
             static if not ALLOW_DOUBLE_ITEMS then
                 loop
                     exitwhen i >= UnitInventorySize(u)
@@ -119,7 +119,7 @@ scope ItemRegister
                     set i = i + 1
                 endloop
             endif
-            //Alle Items im Inventar z?hlen und deren maximales count verlgeichen
+            //Alle Items im Inventar zählen und deren maximales count verlgeichen
             set i = 0
             set c = 0
             loop
@@ -159,8 +159,8 @@ scope ItemRegister
             local trigger t = CreateTrigger()
             set .t = Table.create()
             set ITEM_LIMIT[ITEM_CLASS_BASIC] = 1000
-            set ITEM_LIMIT[ITEM_CLASS_ADVANCED] = 4
-            set ITEM_LIMIT[ITEM_CLASS_ANCIENT] = 2
+            set ITEM_LIMIT[ITEM_CLASS_ADVANCED] = 6
+            set ITEM_LIMIT[ITEM_CLASS_ANCIENT] = 6
             call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_PICKUP_ITEM)
             call TriggerAddCondition(t, Condition(function thistype.onPickup))
         endmethod

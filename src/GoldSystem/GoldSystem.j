@@ -14,7 +14,7 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
         private constant integer MAX_STREAK = 20
         private integer array STREAK_BONI
         
-        private constant integer GOLD_LOSS_MULTIPLIER = 35
+        private constant integer GOLD_LOSS_MULTIPLIER = 70
     endglobals
 	
 	globals
