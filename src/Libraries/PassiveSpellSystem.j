@@ -7,7 +7,7 @@ library PassiveSpellSystem requires ModuleListModule, AutoIndex
             
         Conditional Variables:
             - boolean isNoHeroSpell
-                This boolean has to be inside of the struct and set to true if you have an ability that can't
+                This boolean has to be inside of the struct and set to true if you have an ability that cant
                 be learned and is active by default.
             
             

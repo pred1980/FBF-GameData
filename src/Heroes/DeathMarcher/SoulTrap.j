@@ -11,10 +11,8 @@ scope SoulTrap initializer init
         private constant integer SPELL_ID = 'A050'
         private constant integer DUMMY_SPELL_ID = 'A051'
         private constant integer DUMMY_ID = 'e00R'
-        private constant real DMG_BASE = 50.0
-        private constant real DMG_INCR = 100.0
         private constant real DURATION = 8.0
-        private constant real DURATION_HERO = 5.0
+        private constant real DURATION_HERO = 4.0
         private constant string START_EFFECT = "Abilities\\Spells\\Items\\AIso\\AIsoTarget.mdl" 
         private constant string END_EFFECT = "Abilities\\Spells\\Items\\AIil\\AIilTarget.mdl"
         private constant rect DUMMY_RECT = gg_rct_SoulTrapDummyPosition
@@ -24,9 +22,17 @@ scope SoulTrap initializer init
         //Stun Effect for Pause Target
         private constant string STUN_EFFECT = ""
         private constant string STUN_ATT_POINT = ""
-        private constant real STUN_DURATION = 5.0
-
+		
+		private real array DAMAGE
     endglobals
+	
+	private function MainSetup takes nothing returns nothing
+        set DAMAGE[1] = 112
+        set DAMAGE[2] = 187
+        set DAMAGE[3] = 262
+        set DAMAGE[4] = 337
+        set DAMAGE[5] = 412
+	endfunction
     
     private struct SoulTrap
         unit caster
@@ -38,6 +44,17 @@ scope SoulTrap initializer init
         integer level = 0
         integer id = 0
         
+		static method onEnd takes nothing returns nothing
+            local thistype this = GetTimerData(GetExpiredTimer())
+            call ShowUnit(this.target, true)
+            call SetUnitX(this.target, this.x)
+            call SetUnitY(this.target, this.y)
+            set DamageType = 1
+            call UnitDamageTarget( this.caster, this.target, DAMAGE[this.level] * ManaConcentration_GET_MANA_AMOUNT(this.id), false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_DEATH, WEAPON_TYPE_WHOKNOWS )
+            call DestroyEffect(AddSpecialEffect(END_EFFECT, GetUnitX(this.target), GetUnitY(this.target)))
+        
+            call this.destroy()
+        endmethod
         
         static method create takes unit caster, unit target returns thistype
             local thistype this = thistype.allocate()
@@ -64,31 +81,19 @@ scope SoulTrap initializer init
             endif
             //Hide Unit
             call ShowUnit(.target, false)
-            //Pause Unit / Used Stun System
-            call Stun_UnitEx(.target, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
             
             set .t = NewTimer()
             call SetTimerData(.t, this)
             
             if IsUnitType(.target, UNIT_TYPE_HERO) then
                 call TimerStart(.t, DURATION_HERO, false, function thistype.onEnd)
+				call Stun_UnitEx(.target, DURATION_HERO, false, STUN_EFFECT, STUN_ATT_POINT)
             else
                 call TimerStart(.t, DURATION, false, function thistype.onEnd)
+				call Stun_UnitEx(.target, DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
             endif
             
             return this
-        endmethod
-        
-        static method onEnd takes nothing returns nothing
-            local thistype this = GetTimerData(GetExpiredTimer())
-            call ShowUnit(this.target, true)
-            call SetUnitX(this.target, this.x)
-            call SetUnitY(this.target, this.y)
-            set DamageType = 1
-            call UnitDamageTarget( this.caster, this.target, (DMG_BASE + ( DMG_INCR * this.level )) * ManaConcentration_GET_MANA_AMOUNT(this.id), false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_DEATH, WEAPON_TYPE_WHOKNOWS )
-            call DestroyEffect(AddSpecialEffect(END_EFFECT, GetUnitX(this.target), GetUnitY(this.target)))
-        
-            call this.destroy()
         endmethod
         
         method onDestroy takes nothing returns nothing
@@ -98,25 +103,28 @@ scope SoulTrap initializer init
             set .target = null
             set .dummy = null
         endmethod
-        
     endstruct
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
+    endfunction
 
     private function Actions takes nothing returns nothing
-        local SoulTrap st = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set st = SoulTrap.create( GetTriggerUnit(), GetSpellTargetUnit() )
-        endif
+        call SoulTrap.create( GetTriggerUnit(), GetSpellTargetUnit() )
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger trig = CreateTrigger()
+        local trigger t = CreateTrigger()
         
-        call TriggerRegisterAnyUnitEventBJ( trig, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( trig, function Actions )
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition(t, Condition( function Conditions))
+        call TriggerAddAction(t, function Actions )
         call XE_PreloadAbility(DUMMY_SPELL_ID)
         call Preload(START_EFFECT)
         call Preload(END_EFFECT)
+		call MainSetup()
+		
+		set t = null
     endfunction
 
 endscope

@@ -4,8 +4,9 @@ scope CripplingArrow initializer Init
                     It deals bonus damage if the target is already affected by an arrow.
      * Last Update: 24.11.2013
      * Changelog: 
-     *      24.11.2013: Abgleich mit OE und der Exceltabelle
+     * 		24.11.2013: Abgleich mit OE und der Exceltabelle
 	 *		28.03.2014: Missile Speed um 15% erhoeht
+	 *      18.03.2015: Added Immunity Check for the target unit
      */
     globals
         private constant integer SPELL_ID = 'A0AJ'
@@ -97,7 +98,7 @@ scope CripplingArrow initializer Init
    endstruct
 
     private function Conditions takes nothing returns boolean
-        return (GetSpellAbilityId() == SPELL_ID)
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 
     private function Actions takes nothing returns nothing

@@ -3,7 +3,7 @@ scope ConfusedSight initializer init
 	 * Item: Seeing Staff
 	 */ 
     globals
-        private constant integer SPELL_ID   = 'A03L'
+        private constant integer SPELL_ID= 'A03L'
         private constant integer WARD_ID = 'o002'
         private constant real WARD_LIFE_TIME = 30
         private constant integer DUMMY_ID = 'e00H'
@@ -112,10 +112,12 @@ scope ConfusedSight initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger trig = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ( trig, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( trig, function Actions )
+        local trigger t = CreateTrigger()
+        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
+        call TriggerAddAction( t, function Actions )
         call XE_PreloadAbility(DUMMY_SPELL_ID)
+		
+		set t = null
     endfunction
 
 endscope

@@ -6,6 +6,7 @@ scope SpiritArrows initializer init
      * Last Update: 09.01.2014
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
      */
     globals
         private constant integer SPELL_ID = 'A09J'
@@ -54,8 +55,8 @@ scope SpiritArrows initializer init
             endif
         endmethod
     endstruct
-
-    private function Conditions takes nothing returns boolean
+	
+	private function Actions takes nothing returns nothing
         local SpiritArrows arrow = 0
         local integer i = 0
         local integer max = 0
@@ -69,41 +70,41 @@ scope SpiritArrows initializer init
         local real anglefan = 0.00
         local real anglediff = 0.00
         
-        if( GetSpellAbilityId() == SPELL_ID ) then
-            set caster = GetTriggerUnit()
-            set tx = GetSpellTargetX()
-            set ty = GetSpellTargetY()
-            set cx = GetUnitX( caster )
-            set cy = GetUnitY( caster )
-            set spelllevel = GetUnitAbilityLevel( caster, SPELL_ID )
-            set max = ARROWS + ARROWSGAIN * spelllevel
-            set angle = Atan2( cy - ty, cx - tx )
-            
-            loop
-                exitwhen i >= max
-                set anglefan = bj_PI/GetRandomInt(1,10)
-                set anglediff = (bj_PI/GetRandomInt(2,6)/max)
-                set arrow = SpiritArrows.create( cx, cy, angle-anglefan+i*anglediff )
-                set arrow.speed = SPEEDSTART
-                set arrow.scale = SCALE
-                set arrow.acceleration = ACCELERATION - GetRandomReal(5.0, 85.0)
-                set arrow.maxSpeed = SPEEDMAX
-                set arrow.z = 80
-                set arrow.angleSpeed = ANGLESPEED
-                set arrow.expirationTime = EXPIRATIONTIME
-                set arrow.fxpath = MODEL_PATH
-                call arrow.setTargetPoint( tx, ty )
-                
-                set arrow.caster = caster
-                set arrow.level = spelllevel
-                set i = i + 1
-            endloop
-            
-            set caster = null
-        endif
-        
-        return false
+		set caster = GetTriggerUnit()
+		set tx = GetSpellTargetX()
+		set ty = GetSpellTargetY()
+		set cx = GetUnitX( caster )
+		set cy = GetUnitY( caster )
+		set spelllevel = GetUnitAbilityLevel( caster, SPELL_ID )
+		set max = ARROWS + ARROWSGAIN * spelllevel
+		set angle = Atan2( cy - ty, cx - tx )
+		
+		loop
+			exitwhen i >= max
+			set anglefan = bj_PI/GetRandomInt(1,10)
+			set anglediff = (bj_PI/GetRandomInt(2,6)/max)
+			set arrow = SpiritArrows.create( cx, cy, angle-anglefan+i*anglediff )
+			set arrow.speed = SPEEDSTART
+			set arrow.scale = SCALE
+			set arrow.acceleration = ACCELERATION - GetRandomReal(5.0, 85.0)
+			set arrow.maxSpeed = SPEEDMAX
+			set arrow.z = 80
+			set arrow.angleSpeed = ANGLESPEED
+			set arrow.expirationTime = EXPIRATIONTIME
+			set arrow.fxpath = MODEL_PATH
+			call arrow.setTargetPoint( tx, ty )
+			
+			set arrow.caster = caster
+			set arrow.level = spelllevel
+			set i = i + 1
+		endloop
+		
+		set caster = null
     endfunction
+
+    private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
+	endfunction
 
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
@@ -116,7 +117,9 @@ scope SpiritArrows initializer init
         call Preload(MODEL_PATH)
         
         call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddCondition( t, function Conditions )
+		call TriggerAddCondition(t, function Conditions)
+		call TriggerAddAction(t, function Actions)
+		
         set t = null
     endfunction
 

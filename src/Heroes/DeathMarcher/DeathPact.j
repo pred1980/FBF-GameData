@@ -3,9 +3,9 @@ scope DeathPact initializer init
      * Description: The Death Marcher sacrifices an allied organic unit to use their HP to fuel an Aura
                     that heals all allied Units nearby. Heroes get a further bonus to regeneration. 
                     Mana Concentration increases the healing and reduces the speed at which the HP is consumend.
-     * Last Update: 01.11.2013
      * Changelog: 
      *     01.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
      */
     globals
         private constant integer SPELL_ID = 'A04Z'
@@ -65,7 +65,7 @@ scope DeathPact initializer init
         group targets
         timer t
         timer main
-        static thistype tempthis
+        static thistype tempthis = 0
         
         static method create takes unit caster, unit target returns thistype
             local thistype this = thistype.allocate()
@@ -161,27 +161,27 @@ scope DeathPact initializer init
             call KillUnit(.target)
             set .target = null
         endmethod
-        
-        static method onInit takes nothing returns nothing
-            set .tempthis = 0
-        endmethod
     endstruct
 
     private function Actions takes nothing returns nothing
-        local DeathPact dp = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set dp = DeathPact.create( GetTriggerUnit(), GetSpellTargetUnit() )
-        endif
+        call DeathPact.create( GetTriggerUnit(), GetSpellTargetUnit() )
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+		
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+		call TriggerAddCondition(t, Condition( function Conditions))
+        call TriggerAddAction(t, function Actions)
         call MainSetup()
         call Preload(KILL_EFFECT)
         call Preload(HEAL_EFFECT)
+		
+		set t = null
     endfunction
 
 endscope

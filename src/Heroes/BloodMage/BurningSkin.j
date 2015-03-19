@@ -111,10 +111,6 @@ scope BurningSkin initializer init
             endif        
         endmethod
         
-        method onPassiveSpellDetectionCreate takes nothing returns nothing
-            debug call BJDebugMsg("Detected " + GetObjectName(spellId) + " on " + GetUnitName(owner) + ".")
-        endmethod
-    
         implement PassiveSpell
     endstruct
     

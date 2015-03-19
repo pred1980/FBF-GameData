@@ -10,17 +10,18 @@ scope Snack initializer init
      */
     globals
         private constant integer SPELL_ID = 'A06L'
+		private constant real INTERVAL = 1.0
+		//Stun Effect for Pause Target
+        private constant string STUN_EFFECT = ""
+        private constant string STUN_ATT_POINT = ""
+        private constant real STUN_DURATION = 5.0
+		
         private boolean cancel
         private hashtable unitSpellData = InitHashtable()
         private real baseDamage = 70
         private real damageModifier = 0.5
         private integer iteration = 5
-        private constant real INTERVAL = 1.0
-        
-        //Stun Effect for Pause Target
-        private constant string STUN_EFFECT = ""
-        private constant string STUN_ATT_POINT = ""
-        private constant real STUN_DURATION = 5.0
+
     endglobals
 
     private struct Snack
@@ -37,6 +38,7 @@ scope Snack initializer init
         
         static method create takes unit caster, unit target returns thistype
             local thistype data = thistype.allocate()
+			
             set data.caster = caster
             set data.target = target
             set data.count = iteration
@@ -53,7 +55,8 @@ scope Snack initializer init
         local timer t = GetExpiredTimer()
         local boolean dead
         local Snack data = LoadIntegerBJ(1,GetHandleId(t),unitSpellData)
-        set data.count = data.count - 1
+        
+		set data.count = data.count - 1
         
         set DamageType = SPELL
         call DamageUnit(data.caster,data.target,data.damage,false)
@@ -74,34 +77,36 @@ scope Snack initializer init
         endif
     endfunction
 
-    private function conditions takes nothing returns boolean
-        return GetSpellAbilityId()== SPELL_ID
+    private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 
-    private function actionsStart takes nothing returns nothing
+    private function ActionsStart takes nothing returns nothing
         local Snack s
         local timer t = CreateTimer()
-        
+		
         set s = Snack.create(GetTriggerUnit(),GetSpellTargetUnit())
         set cancel = false
-        call SaveIntegerBJ(s, 1 ,GetHandleId(t),unitSpellData)
+        call SaveIntegerBJ(s, 1 , GetHandleId(t), unitSpellData)
         call TimerStart(t,INTERVAL,false,function timer_callback)
     endfunction
 
-    private function actionsEnd takes nothing returns nothing
-        set cancel=true
+    private function ActionsEnd takes nothing returns nothing
+        set cancel = true
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger trig = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ(trig,EVENT_PLAYER_UNIT_SPELL_CHANNEL)
-        call TriggerAddCondition(trig,Condition(function conditions))
-        call TriggerAddAction(trig,function actionsStart)
-        set trig = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ(trig,EVENT_PLAYER_UNIT_SPELL_ENDCAST)
-        call TriggerAddCondition(trig,Condition(function conditions))
-        call TriggerAddAction(trig,function actionsEnd)
-        set trig = null
+        local trigger t = CreateTrigger()
+        call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_EFFECT)
+        call TriggerAddCondition(t, Condition(function Conditions))
+        call TriggerAddAction(t, function ActionsStart)
+        
+		set t = CreateTrigger()
+        call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_ENDCAST)
+        call TriggerAddCondition(t, Condition(function Conditions))
+        call TriggerAddAction(t, function ActionsEnd)
+        
+		set t = null
     endfunction
 
 endscope

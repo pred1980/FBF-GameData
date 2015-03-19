@@ -5,6 +5,7 @@ scope VoltyCrush initializer init
      * Last Update: 09.01.2014
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
      */
     globals
         private constant integer SPELL_ID = 'A09E'
@@ -166,18 +167,20 @@ scope VoltyCrush initializer init
     endstruct
     
     private function Actions takes nothing returns nothing
-        local VoltyStruct vs = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set vs = VoltyStruct.create( GetTriggerUnit(), GetSpellTargetUnit() )
-        endif
+        call VoltyStruct.create(GetTriggerUnit(), GetSpellTargetUnit())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
     
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
         
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+		call TriggerAddCondition(t, Condition( function Conditions))
+        call TriggerAddAction(t, function Actions)
+		
         call MainSetup()
         call XE_PreloadAbility(BUFF_SPELL_ID)
         call Preload(TICK_FX)

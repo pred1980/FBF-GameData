@@ -218,7 +218,10 @@ scope BurrowStrike initializer init
             local unit u = GetFilterUnit()
             local thistype this = temp
             
-            if not IsUnitDead(u) and not IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(u, UNIT_TYPE_MECHANICAL) and IsUnitEnemy(u, GetOwningPlayer(caster)) then
+            if not IsUnitDead(u) and not /*
+			*/     IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/	   IsUnitType(u, UNIT_TYPE_MECHANICAL) and /*
+			*/     IsUnitEnemy(u, GetOwningPlayer(caster)) then
                 set DamageType = 1
                 call damageTarget(caster, u, DAMAGE[lvl])
                 call StunUnitTimed(u, STUN_DURATION[lvl])

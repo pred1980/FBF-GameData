@@ -2,9 +2,9 @@ library ManaConcentration initializer init requires TimerUtils
     /*
      * Description: Dorian sacrifices half of his current Mana to amplify the effects of his spells. 
                     The bonus is greater the more Mana is sacrificed.
-     * Last Update: 01.11.2013
      * Changelog: 
      *     01.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
      *
      */
     globals
@@ -44,6 +44,20 @@ library ManaConcentration initializer init requires TimerUtils
         real maxMana
         real percent
         timer t
+		
+		static method onEnd takes nothing returns nothing
+            local thistype this = GetTimerData(GetExpiredTimer())
+            //Reset ManaAmout Multiplier
+            set ManaAmount[.id] = 1.0
+            call this.destroy()
+        endmethod
+		
+		method onDestroy takes nothing returns nothing
+            call ReleaseTimer( .t )
+            set .t = null
+            set .caster = null
+            set .dummy = null
+        endmethod
         
         static method create takes unit caster returns thistype
             local thistype this = thistype.allocate()
@@ -67,40 +81,26 @@ library ManaConcentration initializer init requires TimerUtils
             
             return this
         endmethod
-        
-        static method onEnd takes nothing returns nothing
-            local thistype this = GetTimerData(GetExpiredTimer())
-            //Reset ManaAmout Multiplier
-            set ManaAmount[.id] = 1.0
-            call this.destroy()
-        endmethod
-        
-        method onDestroy takes nothing returns nothing
-            call ReleaseTimer( .t )
-            set .t = null
-            set .caster = null
-            set .dummy = null
-        endmethod
-        
-        static method onInit takes nothing returns nothing
-            call MainSetup()
-        endmethod
-        
     endstruct
 
     private function Actions takes nothing returns nothing
-        local ManaConcentration mc = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set mc = ManaConcentration.create( GetTriggerUnit() )
-        endif
+        call ManaConcentration.create(GetTriggerUnit())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger trig = CreateTrigger()
+        local trigger t = CreateTrigger()
         
-        call TriggerRegisterAnyUnitEventBJ( trig, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( trig, function Actions )
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+		call TriggerAddCondition(t, Condition( function Conditions))
+        call TriggerAddAction(t, function Actions)
+		
+		call MainSetup()
+		
+		set t = null
     endfunction
 
 endlibrary

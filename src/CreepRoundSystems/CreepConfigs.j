@@ -970,7 +970,54 @@ scope CreepConfigs
 		set thistype.amount[20] = "1,1,1,1,1,1,1,1,1,1,"
 		set thistype.iterator[20] = 10
 		endmethod
-endstruct
+	endstruct
+	
+	/*
+	 * Custom Creep Config
+	 */
+	 //1 Spieler
+    /*struct CustomCreepConfig
+	
+		static integer array id
+        static integer array amount //How many Creeps should be spawn per Id?
+        static integer array iterator //Need for the amount of creep types
+        static integer count //How many spawns per Creep Unit
+        static real interval //delay between each spawned unit
+        
+        method getIterator takes integer round returns integer
+            return .iterator[round]
+        endmethod
+        
+        method getUnitIndex takes integer iterator, integer round returns integer
+            return S2I(getDataFromString(.id[round], iterator))
+        endmethod
+        
+        method getUnitAmount takes integer iterator, integer round returns integer
+            return S2I(getDataFromString(.amount[round], iterator))
+        endmethod
+        
+        method getInterval takes nothing returns real
+            return .interval
+        endmethod
+        
+        method getCount takes nothing returns integer
+            return .count
+        endmethod
+        
+        static method onInit takes nothing returns nothing
+            //Nach welchem Rythmus werden die Einheiten pro Lane gespawnt?
+            set .interval = 4.0
+            //Wie viele Creeps werden pro Interval gespawnt?
+            set .count = 1
+            
+            set .id[0] = 'o00F'
+            set .amount[0] = "1,"
+            set .iterator[0] = 3
+            
+            
+        endmethod
+        
+    endstruct*/
 
 
 endscope

@@ -2,9 +2,9 @@ scope ArcaneSwap initializer init
     /*
      * Description: Gundagar restores mana to an enemy but damages his health for the same amount. 
                     The target is damaged by half the spell cost if it has no mana.
-     * Last Update: 12.11.2013
      * Changelog: 
      *     12.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
      */
     globals
         private constant integer SPELL_ID = 'A06N'
@@ -51,21 +51,24 @@ scope ArcaneSwap initializer init
     endstruct
     
     private function Actions takes nothing returns nothing
-        local ArcaneSwap as = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set as = ArcaneSwap.create( GetTriggerUnit(), GetSpellTargetUnit() )
-        endif
+        call ArcaneSwap.create(GetTriggerUnit(), GetSpellTargetUnit())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
         
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+		call TriggerAddCondition(t, Condition( function Conditions))
+        call TriggerAddAction(t, function Actions)
         call MainSetup()
         call Preload(EFFECT_1)
         call Preload(EFFECT_2)
+		
+		set t = null
     endfunction
 
 endscope

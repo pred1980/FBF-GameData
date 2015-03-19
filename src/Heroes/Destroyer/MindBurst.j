@@ -2,9 +2,9 @@ scope MindBurst initializer Init
     /*
      * Description: The Mana Eater casts out two magical bolts towards a target. They deal damage and leave a mana 
                     draining debuff. If the target has mana, some of it will be transfered to Gundagar.
-     * Last Update: 12.11.2013
      * Changelog: 
      *     12.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     19.03.2015: Coderefactoring
      */
     globals
         //Rawcodes
@@ -78,17 +78,17 @@ scope MindBurst initializer Init
         return (GetUnitState(a,UNIT_STATE_MANA) > 0.0)
     endfunction
 
-    private function RunCondition takes nothing returns boolean
-        return GetSpellAbilityId() == SPELL_ID 
-        // The condition if the spell is casted
-    endfunction
-
     private function UnitFilter takes nothing returns boolean
-        local boolean ret = false
-        if not(IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)) and not(IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE)) then    
-            set ret = IsUnitType(GetFilterUnit(), UNIT_TYPE_GROUND) and not IsUnitDead(GetFilterUnit())
+        local boolean b = false
+		local unit u = GetFilterUnit()
+		
+        if not(IsUnitType(u, UNIT_TYPE_MECHANICAL)) and not(IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE)) then    
+            set b = IsUnitType(u, UNIT_TYPE_GROUND) and not IsUnitDead(GetFilterUnit())
         endif
-        return ret
+		
+		set u = null
+		
+        return b
     endfunction
 
 
@@ -233,16 +233,22 @@ scope MindBurst initializer Init
         set caster = null
         
     endfunction
+	
+	private function Conditions takes nothing returns boolean
+        return GetSpellAbilityId() == SPELL_ID 
+    endfunction
 
     //===========================================================================
     private function Init takes nothing returns nothing
-        local trigger tr = CreateTrigger()
-        set filter = Filter(function UnitFilter)
+        local trigger t = CreateTrigger()
+        
+		set filter = Filter(function UnitFilter)
         set Dummy = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),CAST_DUMMY_ID,0,0,0)
         call UnitAddAbility(Dummy,DUMMY_SPELL_ID)
-        call TriggerRegisterAnyUnitEventBJ(tr,EVENT_PLAYER_UNIT_SPELL_CAST)
-        call TriggerAddCondition( tr,Condition( function RunCondition ) )
-        call TriggerAddAction( tr, function Actions )
+        
+		call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_CAST)
+        call TriggerAddCondition(t, Condition( function Conditions ))
+        call TriggerAddAction(t, function Actions)
         
         //Preloading
         call XE_PreloadAbility(DUMMY_SPELL_ID)

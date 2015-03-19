@@ -51,27 +51,11 @@ scope Cleave initializer init
         group targets
         static thistype tempthis
         
-        static method create takes unit attacker, real damage returns thistype
-            local thistype this = thistype.allocate()
-            
-            set .caster = attacker
-            set .level = GetUnitAbilityLevel(.caster, SPELL_ID)
-            set .damage = damage
-            set .radius = .damage * RADIUS_MULTIPLIER
-            set .targets = NewGroup()
-            set .tempthis = this
-            
-            call GroupEnumUnitsInRange( .targets, GetUnitX(.caster), GetUnitY(.caster), .radius, function thistype.group_filter_callback )
-            call ForGroup( .targets, function thistype.onDamageTarget )
-            
-            return this
-        endmethod
-        
-        static method group_filter_callback takes nothing returns boolean
+        private  static method group_filter_callback takes nothing returns boolean
             return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not IsUnitDead(GetFilterUnit()) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL) and IsUnitType(GetFilterUnit(), UNIT_TYPE_GROUND)
         endmethod
         
-        static method onDamageTarget takes nothing returns nothing
+        private static method onDamageTarget takes nothing returns nothing
             local unit u = GetEnumUnit()
             local real x
             local real y
@@ -109,23 +93,37 @@ scope Cleave initializer init
             
             set u = null
         endmethod
+		
+		static method create takes unit attacker, real damage returns thistype
+            local thistype this = thistype.allocate()
+            
+            set .caster = attacker
+            set .level = GetUnitAbilityLevel(.caster, SPELL_ID)
+            set .damage = damage
+            set .radius = .damage * RADIUS_MULTIPLIER
+            set .targets = NewGroup()
+            set .tempthis = this
+            
+            call GroupEnumUnitsInRange( .targets, GetUnitX(.caster), GetUnitY(.caster), .radius, function thistype.group_filter_callback )
+            call ForGroup( .targets, function thistype.onDamageTarget )
+            
+            return this
+        endmethod
         
-        method onDestroy takes nothing returns nothing
+        private method onDestroy takes nothing returns nothing
             call ReleaseGroup( .targets )
             set .targets = null
             set .caster = null
         endmethod
         
-        static method onInit takes nothing returns nothing
+        private static method onInit takes nothing returns nothing
             set .tempthis = 0
         endmethod
     endstruct
     
     private function Actions takes unit damagedUnit, unit damageSource, real damage returns nothing
-        local Cleave c = 0
-        
         if ( GetUnitAbilityLevel(damageSource, BUFF_ID) > 0 and IsUnitEnemy(damagedUnit, GetOwningPlayer(damageSource)) and DamageType == 0 ) then
-            set c = Cleave.create(damageSource, damage)
+            call Cleave.create(damageSource, damage)
         endif
     endfunction
 

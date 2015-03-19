@@ -5,6 +5,7 @@ scope ReleaseMana initializer init
      * Last Update: 14.11.2013
      * Changelog: 
      *     14.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
      */
     globals
         private constant integer SPELL_ID = 'A06Q'
@@ -88,21 +89,25 @@ scope ReleaseMana initializer init
     endstruct
     
     private function Actions takes nothing returns nothing
-        local ReleaseMana rm = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set rm = ReleaseMana.create( GetTriggerUnit())
-        endif
+        call ReleaseMana.create(GetTriggerUnit())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
         
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
-        call XE_PreloadAbility(DUMMY_SPELL_ID)
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+		call TriggerAddCondition(t, Condition( function Conditions))
+        call TriggerAddAction(t, function Actions)
+        
+		call XE_PreloadAbility(DUMMY_SPELL_ID)
         call Preload(EFFECT_1)
         call Preload(EFFECT_2)
+		
+		set t = null
     endfunction
 
 endscope

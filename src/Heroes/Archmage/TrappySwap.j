@@ -1,18 +1,18 @@
 scope TrappySwap initializer init
     /*
-     * Description: Belenus uses his powerful magic to trick and enemys mind into attacking his peers, the Archmages foes.
-     * Last Update: 29.11.2013
+     * Description: Belenus uses his powerful magic to trick and enemys mind into attacking his peers, 
+	                the Archmages foes.
      * Changelog: 
      *     29.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     02.12.2013: Exceptionsfunktionalitaet eingebaut
      *     04.12.2013: ManaCost-Event verbaut
-	 *     28.03.2014: Skorpione auf dem Friedhof koennen nicht mehr verwendet werden 
+	 *     28.03.2014: Skorpione auf dem Friedhof können nicht mehr verwendet werden 
      */
     globals
         private constant integer SPELL_ID = 'A07N'
         private constant integer DUMMY_SPELL_ID_1 = 'Avul' //Unverwundbar
         private constant integer DUMMY_SPELL_ID_2 = 'Aloc' //Heuschrecke
-        private constant integer DUMMY_SPELL_ID_3 = 'ACmi' //Zauber-Imunit?t damit kein anderer Spell Probleme macht
+        private constant integer DUMMY_SPELL_ID_3 = 'ACmi' //Zauber-Imunität damit kein anderer Spell Probleme macht
         private constant integer DISTANCE = 250
         private constant string START_EFFECT = "GainLife.mdx"
         private constant string END_EFFECT = "HarvestLife.mdx"
@@ -45,13 +45,7 @@ scope TrappySwap initializer init
         private constant integer FEMALE_ID = 'n00H'
 		private constant integer WARDEN_ID = 'u02A'
 		private constant integer ARCHNATHID_ID = 'n00L'
-    endglobals
-    
-    globals
-        private ManaCost MC
-        private timer ManaT = CreateTimer()
-        private ManaCost array MCA
-        private integer ManaCostCount = -1
+		private constant integer EGG_ID = 'o00C'
     endglobals
     
 	private function MainSetup takes nothing returns nothing
@@ -61,28 +55,19 @@ scope TrappySwap initializer init
         set LIFE_TIME[4] = 45
         set LIFE_TIME[5] = 40
         
-        //Brood Mother + Childs
         call SaveBoolean(DATA, 0, SPIDER_ID, true)
         call SaveBoolean(DATA, 0, MALE_ID, true)
         call SaveBoolean(DATA, 0, FEMALE_ID, true)
 		call SaveBoolean(DATA, 0, WARDEN_ID, true)
 		call SaveBoolean(DATA, 0, ARCHNATHID_ID, true)
+		call SaveBoolean(DATA, 0, EGG_ID, true)
 		
     endfunction
 	
 	private function CheckTarget takes unit u returns boolean
 		return LoadBoolean(DATA, 0, GetUnitTypeId(u))
     endfunction
-    
-    struct ManaCost
-        unit SpellAbilityUnit
-        unit SpellTargetUnit
-        integer SpellRawcode
-        real SpellX
-        real SpellY
-        real Mana
-    endstruct
-    
+        
     private struct TrappySwap
         unit caster
         unit target
@@ -211,50 +196,32 @@ scope TrappySwap initializer init
         
     endstruct
     
-    private function ManaCostCallback takes nothing returns nothing
-        local TrappySwap ts = 0
-        
-        loop
-            set MC = MCA[ManaCostCount]
-            set MC.Mana = MC.Mana - GetUnitState(MC.SpellAbilityUnit, UNIT_STATE_MANA)
-            if( MC.SpellRawcode == SPELL_ID ) then
-				if not CheckTarget(MC.SpellTargetUnit) then
-					set ts = TrappySwap.create(MC.SpellAbilityUnit, MC.SpellTargetUnit)
-				else
-					//Error Message
-					call SimError(GetOwningPlayer(MC.SpellAbilityUnit), MESSAGE + GetUnitName(MC.SpellTargetUnit) + ".")
-					//restore Mana
-					call SetUnitState(MC.SpellAbilityUnit, UNIT_STATE_MANA, GetUnitState(MC.SpellAbilityUnit, UNIT_STATE_MANA) + MC.Mana)
-				endif
-            endif
-            call MC.destroy()
-            set ManaCostCount = ManaCostCount - 1
-            exitwhen ManaCostCount == -1
-        endloop
+    private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
-    
-    private function RunManaCost takes nothing returns boolean
-        local ManaCost M = ManaCost.create()
-        
-        set M.SpellAbilityUnit = GetTriggerUnit()
-        set M.SpellTargetUnit = GetSpellTargetUnit()
-        set M.SpellRawcode = GetSpellAbilityId()
-        set M.SpellX = GetSpellTargetX()
-        set M.SpellY = GetSpellTargetY()
-        set M.Mana = GetUnitState(M.SpellAbilityUnit,UNIT_STATE_MANA)
-        set ManaCostCount = ManaCostCount + 1
-        set MCA[ManaCostCount] = M
-        call TimerStart(ManaT, 0., false, function ManaCostCallback)
-        
-        return false
+	
+	private function Actions takes nothing returns nothing
+		local unit caster = GetTriggerUnit()
+		local unit target = GetSpellTargetUnit()
+		
+		if not CheckTarget(target) then
+			call TrappySwap.create(caster, target)
+		else
+			//Return Mana Costs
+			call RunManaCost(SPELL_ID, caster, target, GetSpellTargetX(), GetSpellTargetY())
+			//Error Message
+			call SimError(GetOwningPlayer(caster), MESSAGE + GetUnitName(target) + ".")
+			//Reset Cooldown of the Ability
+			call UnitResetSingleCooldown(caster, SPELL_ID)
+		endif
     endfunction
     
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
         
         call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddCondition(t,Condition(function RunManaCost))
-        //call TriggerAddAction(t, function Actions )
+        call TriggerAddCondition(t,Condition(function Conditions))
+		call TriggerAddAction(t, function Actions )
         call MainSetup()
         call Preload(START_EFFECT)
         call Preload(END_EFFECT)

@@ -472,7 +472,7 @@ library MiscFunctions requires GroupUtils
         endif
     endfunction
     
-    /*Mit der Funktion l?sst sich ein String, der Werte mit Komma getrennt enth?lt, auseinaderklam?sern ^^*/
+    /*Mit der Funktion lässt sich ein String, der Werte mit Komma getrennt enth?lt, auseinaderklam?sern ^^*/
     function getDataFromString takes string list, integer index returns string
         local string result = ""
         local string char
@@ -609,7 +609,6 @@ library MiscFunctions requires GroupUtils
         return count
     endfunction
 	
-	
 	function StopUnitsOfPlayer takes player p returns nothing
 		local group g = NewGroup()
 		local unit u
@@ -625,5 +624,14 @@ library MiscFunctions requires GroupUtils
 		set u = null
 		call ReleaseGroup(g)
 	endfunction
+	
+	//To reset a cooldown just use: call UnitResetSingleCooldown(Unit Targeted, Ability ID)
+	function UnitResetSingleCooldown takes unit u, integer a returns nothing
+		local integer i = GetUnitAbilityLevel(u, a)
+		if i > 0 and UnitRemoveAbility(u, a) then
+			call UnitAddAbility(u, a)
+			call SetUnitAbilityLevel(u, a, i)
+		endif
+    endfunction
 
 endlibrary

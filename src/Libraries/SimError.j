@@ -30,8 +30,8 @@ library SimError initializer init
     endfunction
 
     private function init takes nothing returns nothing
-         set error=CreateSoundFromLabel("InterfaceError",false,false,false,10,10)
-         //call StartSound( error ) //apparently the bug in which you play a sound for the first time
+         set error = CreateSoundFromLabel("InterfaceError",false,false,false,10,10)
+         call StartSound( error ) //apparently the bug in which you play a sound for the first time
                                     //and it doesn't work is not there anymore in patch 1.22
     endfunction
 

@@ -139,7 +139,10 @@ scope NaturalSphere initializer init
         endmethod
         
         method onUnitHit takes unit u returns nothing
-            if not IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitInGroup(u, targets) and not IsUnitType(u, UNIT_TYPE_FLYING) and IsUnitEnemy(u, GetOwningPlayer(caster)) then
+            if not IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/     IsUnitInGroup(u, targets) and not /*
+			*/     IsUnitType(u, UNIT_TYPE_FLYING) and /*
+			*/     IsUnitEnemy(u, GetOwningPlayer(caster)) then
                 set DamageType = 1
                 call damageTarget(caster, u, DAMAGE[lvl])
                 static if SLOW_WHEN_ENTANGLED then

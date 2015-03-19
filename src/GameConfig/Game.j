@@ -290,7 +290,7 @@ scope Game
 			endif
         endmethod
         
-        static method initRegionalFog takes nothing returns nothing
+        private static method initRegionalFog takes nothing returns nothing
             local fogData fd1
             local fogData fd2
             local fogData fd3
@@ -459,7 +459,7 @@ scope Game
         static method initialize takes nothing returns nothing
             local integer i = 0
 			local trigger leaveTrig = CreateTrigger()
-            
+			
 			call ReleaseTimer(GetExpiredTimer())
 			
 			//on Death Event
@@ -523,10 +523,10 @@ scope Game
 			
 			set .started = true
 			
-			//INIT GAME MODULES
-			call assignPlayerOptions()
 			call initRegionalFog()
-			call GameModule.initialize()
+			
+			//Show Tutorials Dialog
+			call ShowTutorialsDialog.initialize()
 		endmethod
         
     endstruct

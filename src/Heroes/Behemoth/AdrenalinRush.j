@@ -4,8 +4,10 @@ scope AdrenalinRush initializer init
      * Last Update: 25.10.2013
      * Changelog: 
      *     25.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
      *
-	 * Note: Dieser Spell verursacht in der MOVE method ohne Knockback und ohne IsTerrainWalkable einen hohen Anstieg beim HandleCounter
+	 * Note: Dieser Spell verursacht in der MOVE method ohne Knockback und ohne 
+	         IsTerrainWalkable einen hohen Anstieg beim HandleCounter
      */
     globals
         private constant integer SPELL_ID = 'A02L'
@@ -38,7 +40,11 @@ scope AdrenalinRush initializer init
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not IsUnitInGroup( GetFilterUnit(), .tempthis.temp) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)
+            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not /*
+			*/	   IsUnitInGroup( GetFilterUnit(), .tempthis.temp) and not /*
+			*/	   IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and not /*
+			*/     IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/     IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)
         endmethod
         
         static method onKnockback takes nothing returns nothing
@@ -112,19 +118,22 @@ scope AdrenalinRush initializer init
     endstruct
 
     private function Actions takes nothing returns nothing
-        local AdrenalinRush as = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set as = AdrenalinRush.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
-        endif
+        call AdrenalinRush.create(GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger trig = CreateTrigger()
+        local trigger t = CreateTrigger()
         
-        call TriggerRegisterAnyUnitEventBJ( trig, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( trig, function Actions )
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+		call TriggerAddCondition(t, Condition(function Conditions))
+        call TriggerAddAction(t, function Actions)
         call Preload(EFFECT)
+		
+		set t = null
     endfunction
 
 endscope

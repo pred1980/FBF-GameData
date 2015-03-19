@@ -170,9 +170,11 @@ scope HeroPickSystem
 			loop
 				exitwhen i >= bj_MAX_PLAYERS
 					if Game.isPlayerInGame(i) then
-						call CREATE_HERO_PICK_UNIT(i)
-						if Game.isRealPlayer(i) then
-							call HeroPickTutorial.create(Player(i), ap.getHeroPickTimer())
+						if (Game.isRealPlayer(i)) then
+							if (ShowTutorialsDialog.ForPlayer(i)) then
+								call HeroPickTutorial.create(Player(i), ap.getHeroPickTimer())
+							endif
+							call CREATE_HERO_PICK_UNIT(i)
 						endif
 					endif
 				set i = i + 1

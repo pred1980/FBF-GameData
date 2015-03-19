@@ -4,6 +4,7 @@ scope RefreshingAura initializer init
      * Last Update: 04.12.2013
      * Changelog: 
      *     04.12.2013: Abgleich mit OE und der Exceltabelle
+	 *     18.03.2015: Optimized Spell-Event-Handling (conditions/actions)
      */
     globals
         private constant integer SPELL_ID = 'A07M'
@@ -60,22 +61,36 @@ scope RefreshingAura initializer init
     endstruct
 
     private function Actions takes nothing returns nothing
-        local RefreshingAura ra = 0
-        local integer level = GetHighestAuraLevel(GetTriggerUnit(), RADIUS, SPELL_ID)
-        
-        if ( GetUnitAbilityLevel(GetTriggerUnit(), BUFF_ID) > 0 and GetRandomInt(1, 100) <= CHANCE[level] ) then
-            set ra = RefreshingAura.create(GetTriggerUnit())
-        endif
+        call RefreshingAura.create(GetTriggerUnit())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		local unit u = GetTriggerUnit()
+		local integer level = GetHighestAuraLevel(u, RADIUS, SPELL_ID)
+		local boolean b = false
+		
+		if ( GetUnitAbilityLevel(u, BUFF_ID) > 0 and GetRandomInt(1, 100) <= CHANCE[level] ) then
+			set b = true
+		else
+			set b = false
+		endif
+		
+		set u = null
+		
+		return b
     endfunction
     
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
         
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+		call TriggerAddCondition(t, Condition(function Conditions))
+        call TriggerAddAction(t, function Actions)
         call MainSetup()
         call Preload(EFFECT_1)
         call Preload(EFFECT_2)
+		
+		set t = null
     endfunction
 
 endscope

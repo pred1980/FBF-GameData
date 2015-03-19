@@ -2,7 +2,7 @@ library CreepSystemUnits uses MiscFunctions
 
     globals
         private hashtable UNIT_DATA = InitHashtable()
-        private integer MAX_CREEPS = 26
+        private integer MAX_CREEPS = 0
     endglobals
     
     function GET_UNIT_DATA takes integer column, integer row returns integer
@@ -34,10 +34,8 @@ library CreepSystemUnits uses MiscFunctions
             exitwhen i > MAX_CREEPS
             if (LoadInteger(UNIT_DATA, 0, i) ==  unitId) then
                 if value != -1 then
-                    //debug call BJDebugMsg("1.i: " + I2S(S2I((getDataFromString(LoadStr(UNIT_DATA, value, i), RoundType.current)))))
                     return S2I((getDataFromString(LoadStr(UNIT_DATA, value, i), RoundType.current)))
                 else
-                    //debug call BJDebugMsg("2.i: " + I2S(i))
                     return i
                 endif
             endif

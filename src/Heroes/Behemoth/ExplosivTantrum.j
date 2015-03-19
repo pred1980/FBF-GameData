@@ -1,9 +1,9 @@
 scope ExplosivTantrum initializer init
     /*
      * Description: Mundzuk orders Octar to thrust with his horn, damaging and knocking its target back.
-     * Last Update: 25.10.2013
      * Changelog: 
      *     25.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
      *
      */
     globals
@@ -26,7 +26,6 @@ scope ExplosivTantrum initializer init
     private struct ExplosivTantrum
         unit caster
         unit target
-        static thistype tempthis
         
         method damage takes nothing returns nothing
             local real dmg = START_DAMAGE + (GetUnitAbilityLevel(.caster, SPELL_ID) * DAMAGE_PER_LEVEL)
@@ -46,12 +45,7 @@ scope ExplosivTantrum initializer init
             call Knockback.create(.caster, .target, DISTANCE, KB_TIME, ang, 0, "", "")
             call damage()
             
-            set .tempthis = this
             return this
-        endmethod
-        
-        static method onInit takes nothing returns nothing
-            set thistype.tempthis = 0
         endmethod
         
         method onDestroy takes nothing returns nothing
@@ -61,19 +55,22 @@ scope ExplosivTantrum initializer init
     endstruct
 
     private function Actions takes nothing returns nothing
-        local ExplosivTantrum et = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set et = ExplosivTantrum.create( GetTriggerUnit(), GetSpellTargetUnit() )
-        endif
+        call ExplosivTantrum.create(GetTriggerUnit(), GetSpellTargetUnit())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
         
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+		call TriggerAddCondition(t, Condition(function Conditions))
+        call TriggerAddAction(t, function Actions)
         call Preload(EFFECT)
+		
+		set t = null
     endfunction
 
 endscope

@@ -3,10 +3,10 @@ scope CoupDeGrace initializer Init
      * Description: Gabrielle fires an arrow at an allied hero and instantly kills it. 
                     The energy released creates a powerful explosion that deals heavy area of 
 					effect damage to all enemy units.
-     * Last Update: 17.02.2015
      * Changelog: 
      *     26.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     17.02.2015: Kein Schaden auf umliegende gegnerische Einheiten beim Kill des Helden behoben
+	 *     18.03.2015: Added Immunity Check for the target unit
      */
     globals
         private constant integer SPELL_ID = 'A076'
@@ -106,7 +106,7 @@ scope CoupDeGrace initializer Init
     endstruct
 
     private function Conditions takes nothing returns boolean
-        return (GetSpellAbilityId() == SPELL_ID)
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 
     private function Actions takes nothing returns nothing

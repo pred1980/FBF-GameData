@@ -1,10 +1,11 @@
 scope NightDome initializer init
     /*
-     * Description: Snake Tongue Tristan increases the mana regeneration of friendly units by creating a great Dome around them. 
+     * Description: Snake Tongue Tristan increases the mana regeneration of friendly units by 
+	                creating a great Dome around them. 
                     It absorbs mana everytime a unit inside it casts a spell, increasing its own output.
-     * Last Update: 18.11.2013
      * Changelog: 
      *     18.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
      */
     globals
         private constant integer SPELL_ID = 'A06Z'
@@ -43,6 +44,22 @@ scope NightDome initializer init
         timer array chargetimers[AURA_MAXLVL]
         timer aniTimer
         timer durTimer
+		
+		method onDestroy takes nothing returns nothing
+            loop
+                set .charges = .charges - 1
+                call ReleaseTimer(.chargetimers[.charges])
+                exitwhen .charges == 0
+            endloop
+            call ReleaseTimer(.aniTimer)
+            set .aniTimer = null
+            call ReleaseTimer(.durTimer)
+            set .durTimer = null
+            call DisableTrigger(.castTrigger)
+            call TriggerClearConditions(.castTrigger)
+            call DestroyTrigger(.castTrigger)
+            set .dome = null
+        endmethod
         
         static method create takes unit c, real tx, real ty returns thistype
             local thistype this = thistype.allocate()
@@ -127,41 +144,29 @@ scope NightDome initializer init
             set u = null
             return false
         endmethod
-        
-        method onDestroy takes nothing returns nothing
-            loop
-                set .charges = .charges - 1
-                call ReleaseTimer(.chargetimers[.charges])
-                exitwhen .charges == 0
-            endloop
-            call ReleaseTimer(.aniTimer)
-            set .aniTimer = null
-            call ReleaseTimer(.durTimer)
-            set .durTimer = null
-            call DisableTrigger(.castTrigger)
-            call TriggerClearConditions(.castTrigger)
-            call DestroyTrigger(.castTrigger)
-            set .dome = null
-        endmethod
-        
+
     endstruct
 
     private function Actions takes nothing returns nothing
-        local NightDome nd = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set nd = NightDome.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
-        endif
+        call NightDome.create(GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
         
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+		call TriggerAddCondition(t, Condition( function Conditions))
+        call TriggerAddAction(t, function Actions )
+		
         call MainSetup()
         call XE_PreloadAbility(AURA_ID)
         call Preload(DRAIN_EFFECT)
+		
+		set t = null
     endfunction
 
 endscope

@@ -512,7 +512,10 @@ scope TowerSystem
         static method createBuilder takes integer id returns nothing
             set ACOLYTS[id] = CreateUnit(Player(id), ACOLYTE_I_ID, START_POS_X[id], START_POS_Y[id], bj_UNIT_FACING)
             call SelectUnitByPlayer(ACOLYTS[id], true, Player(id))
-            call TowerBuilderTutorial.create(Player(id), START_POS_X[id], START_POS_Y[id])
+			
+			if (ShowTutorialsDialog.ForPlayer(GetPlayerId(Player(id)))) then
+				call TowerBuilderTutorial.create(Player(id), START_POS_X[id], START_POS_Y[id])
+			endif
         endmethod
         
         static method changeBuilder takes nothing returns nothing

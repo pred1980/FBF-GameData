@@ -73,12 +73,19 @@ scope MagicSeed initializer init
         static method explosionFilterEnum takes nothing returns boolean
             local thistype this = temp
             local unit u = GetFilterUnit()
-            if not IsUnitType(u, UNIT_TYPE_DEAD) and not IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(u, UNIT_TYPE_FLYING) and not IsUnitType(u, UNIT_TYPE_MECHANICAL) and IsUnitEnemy(u, GetOwningPlayer(caster)) then
+            
+			if not IsUnitType(u, UNIT_TYPE_DEAD) and not /*
+			*/     IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/     IsUnitType(u, UNIT_TYPE_FLYING) and not /*
+			*/     IsUnitType(u, UNIT_TYPE_MECHANICAL) and /*
+			*/     IsUnitEnemy(u, GetOwningPlayer(caster)) then
                 set DamageType = 1
                 call damageTarget(caster, u, SEED_AREA_DAMAGE[lvl])
             endif
-            set u = null
-            return false
+            
+			set u = null
+            
+			return false
         endmethod
         
         method onHit takes nothing returns nothing

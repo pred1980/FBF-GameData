@@ -54,6 +54,8 @@
 //! import "src\Libraries\ZUtils.j"
 //! import "src\Libraries\HomeBase.j"
 //! import "src\Libraries\RectUtils.j"
+//! import "src\Libraries\CheckImmunity.j"
+//! import "src\Libraries\RestoreMana.j"
 
 /* XE Libraries */
 //! import "src\Libraries\XE\xepreload.j"
@@ -107,6 +109,7 @@
 //! import "src\ItemAbilities\MetalHand.j"
 //! import "src\ItemAbilities\MidnightArmor.j"
 //! import "src\ItemAbilities\DemonicAmulet.j"
+//! import "src\ItemAbilities\SkullRod.j"
 
 /* Tome Damage System */
 //! import "src\TomeDamageSystem\TomeDamageSystem.j"
@@ -249,6 +252,10 @@
 
 /* AI Systems */
 //! import "src\AI-Systems\AI-Creeps.j"
+
+/* Dialog System*/
+//! import "src\DialogSystem\DialogSystem.j"
+//! import "src\DialogSystem\Dialog.j"
 
 /* ------------------------------- */
 

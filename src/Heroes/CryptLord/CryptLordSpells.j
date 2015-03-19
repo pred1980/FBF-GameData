@@ -253,11 +253,13 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
     
     private function abilConds takes nothing returns boolean
         local integer abilID = GetSpellAbilityId()
+		
         if abilID == MORPH_ID_GRUB then
             call MorphUnit(GetTriggerUnit())
         elseif abilID == BURROW_ID then
             call BurrowMove.execute()
         endif
+		
         return false
     endfunction
     

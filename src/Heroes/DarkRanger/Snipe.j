@@ -1,10 +1,11 @@
 scope Snipe initializer Init
     /*
-     * Description: The Dark Ranger shoots an arrow at a target outside of her usual range. She takes 3 seconds to aim.
-     * Last Update: 26.11.2013
+     * Description: The Dark Ranger shoots an arrow at a target outside of her usual range. 
+	                She takes 3 seconds to aim.
      * Changelog: 
      *     26.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     28.03.2014: Missile Speed von 600 auf 1100 hocgesetzt 
+	 *     28.03.2014: Missile Speed von 600 auf 1100 hochgesetzt
+	 *     18.03.2015: Added Immunity Check for the target unit
      */
     private keyword Snipe
     
@@ -102,9 +103,8 @@ scope Snipe initializer Init
         endmethod
     endstruct
 
-  
-    private function Conditions takes nothing returns boolean
-        return (GetSpellAbilityId() == SPELL_ID)
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 
     private function Actions takes nothing returns nothing
@@ -131,9 +131,10 @@ scope Snipe initializer Init
         call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_CHANNEL)
         call TriggerAddCondition(t, Condition(function Conditions))
         call TriggerAddAction(t, function Actions)
-        set t = null
         
         call Preload(MISSILE_MODEL)
         call Preload(CROSS_MODEL)
+		
+		set t = null
     endfunction
 endscope

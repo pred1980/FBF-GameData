@@ -77,18 +77,21 @@ scope ConsumeHimself initializer init
      endstruct
 
     private function Actions takes nothing returns nothing
-        local ConsumeHimself ch = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set ch = ConsumeHimself.create( GetTriggerUnit() )
-        endif
+		call ConsumeHimself.create( GetTriggerUnit() )
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
         
         call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+        call TriggerAddCondition(t,Condition(function Conditions))
+		call TriggerAddAction(t, function Actions )
+		
+		set t = null
     endfunction
 
 endscope

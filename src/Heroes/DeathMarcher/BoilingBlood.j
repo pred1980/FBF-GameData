@@ -7,10 +7,12 @@ scope BoilingBlood initializer init
      * Last Update: 01.11.2013
      * Changelog: 
      *     01.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
      *
 	 * Note:
-	 *     EVENT_PLAYER_UNIT_SPELL_FINISH --> Das Event hatte Gerald noch zusätzlich drin aber es scheint besser ohne zu sein, 
-	 *      da sonst die onDestroy in der Actions nochmal aufgerufen wird, wenn der Spell zu ende ist.
+	 *     EVENT_PLAYER_UNIT_SPELL_FINISH --> Das Event hatte Gerald noch zusätzlich drin aber es scheint besser 
+											  ohne zu sein, da sonst die onDestroy in der Actions nochmal aufgerufen 
+											  wird, wenn der Spell zu ende ist.
      */
     private keyword BoilingBlood
     
@@ -133,22 +135,26 @@ scope BoilingBlood initializer init
             set .tempthis = 0
         endmethod
     endstruct
-
-    private function Conditions takes nothing returns boolean
-        return GetUnitTypeId(GetTriggerUnit()) != XE_DUMMY_UNITID
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID and not /*
+		*/     CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY()) and /*
+		*/     GetUnitTypeId(GetTriggerUnit()) != XE_DUMMY_UNITID
     endfunction
     
     private function Actions takes nothing returns nothing
         local BoilingBlood bb = 0
+		local unit u = GetTriggerUnit()
         
-        set bb = BoilingBlood.getForUnit(GetTriggerUnit())
-        if( GetSpellAbilityId() == SPELL_ID )then
-            if bb == null then
-                set bb = BoilingBlood.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
-			else
-                call bb.onDestroy()
-			endif
-        endif
+        set bb = BoilingBlood.getForUnit(u)
+		
+		if bb == null then
+			set bb = BoilingBlood.create(u, GetSpellTargetX(), GetSpellTargetY())
+		else
+			call bb.onDestroy()
+		endif
+		
+		set u = null
     endfunction
 
     private function init takes nothing returns nothing

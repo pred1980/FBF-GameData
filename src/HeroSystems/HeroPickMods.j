@@ -105,7 +105,7 @@ scope HeroPickMods
             call Game.changePlayerName(.p[this])
             
             //starte einmal das Hero Base Tutorial
-            if BaseMode.repickCount[this] == 0 then
+            if (BaseMode.repickCount[this] == 0 and ShowTutorialsDialog.ForPlayer(this)) then
                 call HeroBaseTutorial.create(.p[this], .startLocX[this], .startLocY[this], .tiDialog)
             endif
             
@@ -188,7 +188,7 @@ scope HeroPickMods
             call Game.changePlayerName(.p[.id])
             
             //starte einmal das Hero Base Tutorial
-            if BaseMode.repickCount[.id] == 0 then
+            if (BaseMode.repickCount[.id] == 0 and ShowTutorialsDialog.ForPlayer(.id)) then
                 call HeroBaseTutorial.create(.p[.id], .startLocX[.id], .startLocY[.id], .tiDialog)
             endif
             

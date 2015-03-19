@@ -1,10 +1,12 @@
 scope VampireBlood initializer Init
     /*
-     * Description: The Dread Lord spills his own blood into a target area, enchanting allied units with a life-draining attack.
+     * Description: The Dread Lord spills his own blood into a target area, 
+	                enchanting allied units with a life-draining attack.
      * Last Update: 26.11.2013
      * Changelog: 
      *     15.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     26.11.2013: Umbau auf xemissile 
+	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
      */
     globals
         private constant integer SPELL_ID = 'A06V'
@@ -39,6 +41,31 @@ scope VampireBlood initializer Init
         integer level = 0
 		static thistype tempthis
 		
+		method onDestroy takes nothing returns nothing
+			call ReleaseGroup(.targets)
+			set .targets = null
+		endmethod
+		
+		static method groupFilterCallback takes nothing returns boolean
+            local unit u = GetFilterUnit()
+			local boolean b = false
+			
+            if IsUnitAlly(u, GetOwningPlayer(.tempthis.caster)) and not /*
+			*/ IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+            */ IsUnitType(u,UNIT_TYPE_STRUCTURE) and not /*
+            */ IsUnitType(u,UNIT_TYPE_MECHANICAL) and not /*
+            */ IsUnitDead(u) and not /*
+            */ (.tempthis.numTargets >= NUM_DROPS[.tempthis.level]) then
+				set .tempthis.numTargets = .tempthis.numTargets + 1
+				set b = true
+            else
+				set b = false
+			endif
+            set u = null
+			
+            return b
+        endmethod
+		
 		static method create takes unit caster, real x, real y returns thistype
 			local thistype this = thistype.allocate()
 			local unit u
@@ -61,27 +88,6 @@ scope VampireBlood initializer Init
 			call this.destroy()
 			
 			return this
-		endmethod
-		
-		static method groupFilterCallback takes nothing returns boolean
-            local unit u = GetFilterUnit()
-			
-            if IsUnitAlly(u, GetOwningPlayer(.tempthis.caster)) and not /*
-            */ IsUnitType(u,UNIT_TYPE_STRUCTURE) and not /*
-            */ IsUnitType(u,UNIT_TYPE_MECHANICAL) and not /*
-            */ IsUnitDead(u) and not /*
-            */ (.tempthis.numTargets >= NUM_DROPS[.tempthis.level]) then
-                    set .tempthis.numTargets = .tempthis.numTargets + 1
-					return true
-            endif
-            set u = null
-			
-            return false
-        endmethod
-		
-		method onDestroy takes nothing returns nothing
-			call ReleaseGroup(.targets)
-			set .targets = null
 		endmethod
 	endstruct
 	
@@ -129,16 +135,6 @@ scope VampireBlood initializer Init
 			set .target = null
         endmethod
     endstruct
-
-    private function Conditions takes nothing returns boolean
-        return (GetSpellAbilityId() == SPELL_ID)
-    endfunction
-
-    private function Actions takes nothing returns nothing
-		local VampireBlood vb = 0
-        
-        set vb = VampireBlood.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
-    endfunction
 	
 	private function onLeech takes unit damagedUnit, unit damageSource, real damage returns nothing
         if ( GetUnitAbilityLevel(damageSource, BUFF_ID) > 0 and IsUnitEnemy(damagedUnit, GetOwningPlayer(damageSource)) and DamageType == 0 ) then
@@ -146,7 +142,15 @@ scope VampireBlood initializer Init
             call DestroyEffect(AddSpecialEffectTarget(EFFECT,damageSource,"origin"))
         endif
     endfunction
+
+    private function Actions takes nothing returns nothing
+		call VampireBlood.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
+    endfunction
 	
+	private function Conditions takes nothing returns boolean
+        return (GetSpellAbilityId() == SPELL_ID)
+    endfunction
+
     private function Init takes nothing returns nothing
         local trigger t = CreateTrigger()
 

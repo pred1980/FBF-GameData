@@ -2,9 +2,9 @@ scope Purify initializer init
      /*
      * Description: Tristan heals a friendly unit and removes negative buffs or, 
                     he damages an enemy unit and removes positive buffs. It deals bonus damage to summons.
-     * Last Update: 18.11.2013
      * Changelog: 
      *     18.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
      */
     globals
         private constant integer SPELL_ID = 'A06T'
@@ -73,23 +73,26 @@ scope Purify initializer init
     endstruct
 
     private function Actions takes nothing returns nothing
-        local Purify p = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set p = Purify.create( GetTriggerUnit(), GetSpellTargetUnit() )
-        endif
+        call Purify.create(GetTriggerUnit(), GetSpellTargetUnit())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
         
         call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
-        call MainSetup()
+		call TriggerAddCondition(t, Condition( function Conditions))
+        call TriggerAddAction(t, function Actions)
+        
+		call MainSetup()
         call XE_PreloadAbility(DUMMY_SPELL_ID)
         call Preload(ALLY_EFFECT)
         call Preload(FOE_EFFECT)
         call Preload(SUMMON_EFFECT)
+		
+		set t = null
     endfunction
-
 endscope

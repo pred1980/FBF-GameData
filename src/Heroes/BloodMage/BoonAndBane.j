@@ -5,6 +5,7 @@ scope BoonAndBane initializer init
      * Last Update: 03.01.2014
      * Changelog: 
      *     03.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     18.03.2015: removed all debug-messages
      */
 	//////////////////////////////////////////////////////////////////////////////////////////
 	//																						//
@@ -69,12 +70,7 @@ scope BoonAndBane initializer init
 		//Das sind die "Buff-Daten" vom Ziel
 		Main data = 0
         
-        //Wird nur im Debug-Mode aufgerufen für die Textausgabe, kann gelöscht werden...
-        debug method onDestroy takes nothing returns nothing
-            //debug call BJDebugMsg("Destroying DamageManipulator of " + GetUnitName(data.target) + ".")
-        debug endmethod
-	
-		//Es ist wirklich ganz einfach... Man muss nur diese Methode in dem Struct deklarieren, welche dann vom System aufgerufen wird
+        //Es ist wirklich ganz einfach... Man muss nur diese Methode in dem Struct deklarieren, welche dann vom System aufgerufen wird
 		//Die Variablen sollten selbsterklärend sein, der Rückgabewert gibt an, um welchen Wert der Schaden manipuliert werden soll.
 		//Ein positiver Wert erhöht den Schaden, ein negativer verringert den Schaden, den das Ziel anrichtet.
 		method onDamageDealt takes unit damagedUnit, real damage returns real
@@ -141,9 +137,7 @@ scope BoonAndBane initializer init
             //static method create takes unit u, integer priority returns DamageModifier
 			local thistype this = allocate(buffData.target, prio)
             
-            //debug call BJDebugMsg("Creating DamageManipulator for " + GetUnitName(buffData.target) + ".")
-			
-			set data = buffData
+        	set data = buffData
 			
 			return this
 		endmethod
@@ -192,8 +186,7 @@ scope BoonAndBane initializer init
 		
 		//Entfernt den Buff und zerstört daraufhin das Struct welches auch den Manipulator zerstört (siehe oben)
 		method releaseBuff takes nothing returns nothing
-            debug call BJDebugMsg("Releasing Inquisition of " + GetUnitName(target) + ".")
-			call buffData.destroy()
+            call buffData.destroy()
             call destroy()
 		endmethod
 		
@@ -201,13 +194,10 @@ scope BoonAndBane initializer init
 		method updateCounter takes real damage returns nothing
 			//den DamageCounter erhöhen
             set damageCounter = damageCounter + damage
-			//debug call BJDebugMsg("Current DamageCounter of Inquisition for " + GetUnitName(target) + ": " + R2SW(damageCounter, 2, 2) + ".")
-            
-            //debug call BJDebugMsg("Level: " + I2S(lvl))
+			
 			//checken, ob die Grenze erreicht ist
             if (isFriendly and damageCounter >= ALLY_MAX_DAMAGE_MODIF[lvl]) or (not isFriendly and damageCounter >= ENEMY_MAX_DAMAGE_MODIF[lvl]) then
                 //falls das zutrifft, den Buff releasen (und somit auch den DamageModifier und den Struct hier selbst)
-				//call BJDebugMsg("Limit of damage modification of Inquisition of " + GetUnitName(target) + " reached.")
                 call releaseBuff()
 			endif
         endmethod
@@ -230,21 +220,15 @@ scope BoonAndBane initializer init
             if b.isRefreshed then
                 //Der Buff wurde refreshed, also die alten Daten löschen, welche noch in der Variable "data" gespeichert sind.
                 call thistype(b.data).destroy()
-                //debug call BJDebugMsg(GetUnitName(b.target) + " already had Boon and Bane Buff, clearing old data.")
             endif
             
 			//neue Daten speichern
             set this = temp
             set b.data = integer(this)
             set buffData = b
-			//Nurnoch checken, ob das Ziel freundlich oder fendlich gesinnt ist
+			//Nur noch checken, ob das Ziel freundlich oder fendlich gesinnt ist
 			set isFriendly = IsUnitAlly(target, GetOwningPlayer(caster))
-                debug if isFriendly then
-                    //debug call BJDebugMsg(GetUnitName(target) + " is an ally of " + GetUnitName(caster) + ".")
-                debug else
-                    //debug call BJDebugMsg(GetUnitName(target) + " is an enemy of " + GetUnitName(caster) + ".")
-                debug endif
-			//Den DamageModificator erzeugen
+            //Den DamageModificator erzeugen
             set manipulator = DamageManipulator.create(this)
         endmethod
 	
@@ -252,7 +236,6 @@ scope BoonAndBane initializer init
 		method onCast takes nothing returns nothing
             set lvl = lvl
             set temp = this
-            //debug call BJDebugMsg("Adding Inquisition Buff to " + GetUnitName(target) + ".")
             call UnitAddBuff(caster, target, buffType, buffDuration, 1)
 		endmethod
 	

@@ -271,7 +271,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
         endmethod
         
         static method getUnitMaxLife takes integer index, boolean isAos returns integer
-            /* index: Das ist die row f?r den Trigger CS Units --> GET_UNIT_DATA, sprich der Creep f?r den
+            /* index: Das ist die row für den Trigger CS Units --> GET_UNIT_DATA, sprich der Creep für den
              *       die HP gesetzt werden soll
              * Die Berechnung erfolgt lt. der Exceltabelle, d.h.
              * ConfigMultipliers.getHpMultiplier() ist ein Faktor der mit der HP multipliziert wird um die HP hoch zu setzen, bei mehr Forsaken Spielern
@@ -390,7 +390,6 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
      *******************************/
      
     struct Wave extends SharedObjects
-        
         player owner = null
         integer pid = 0
         
@@ -450,6 +449,65 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
         endmethod
         
     endstruct
+	
+	/*struct CustomWave extends SharedObjects
+        player owner = null
+        integer pid = 0
+        
+        integer id
+        integer unitIndex
+        integer amount
+        integer count
+        integer iterator 
+        integer rounds
+        real interval
+        
+        UnitSpawn us = 0
+        integer i = 0
+        integer k = 1
+        
+        static method create takes player p, integer pid returns thistype
+            local thistype this = thistype.allocate()
+            local timer t
+            
+            set .owner = p
+            set .pid = pid
+            
+            set .interval = RoundType.getInterval()
+            set .iterator = RoundType.getIterator(.round)
+            set .count = RoundType.getCount()
+			
+			set t = NewTimer()
+            call SetTimerData(t, this)
+            call TimerStart(t, .interval, true, function thistype.onSpawnInterval)
+
+            return this
+        endmethod
+        
+        static method onSpawnInterval takes nothing returns nothing
+            local Wave this = GetTimerData(GetExpiredTimer())
+            
+            //get Unit Index of the spawing Unit
+            set this.unitIndex = RoundType.getUnitIndex(this.i, this.round)
+            //get Unit ID of the spawing Unit
+            set this.id = this.us.getUnitId(this.unitIndex)
+            set this.amount = RoundType.getUnitAmount(this.i, this.round)
+            set this.us = UnitSpawn.create(this.pid, this.id, this.count, 0, "")
+            
+            call this.us.spawn(this.owner, this.unitIndex, START_LOC_X[this.pid], START_LOC_Y[this.pid])
+            
+            if this.k < this.amount then
+                set this.k = this.k + 1
+            else
+                set this.k = 1
+                set this.i = this.i + 1
+                if this.i == this.iterator then
+                    call ReleaseTimer(GetExpiredTimer())
+                endif
+            endif
+        endmethod
+        
+    endstruct*/
      
     private function init takes nothing returns nothing
         call initLocations()

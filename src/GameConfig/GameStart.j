@@ -7,8 +7,8 @@ scope GameStart
 	    
 		//MAP SETTINGS
         public constant string NAME = "Forsaken Bastion's Fall"
-        public constant string VERSION = "0.3.3"
-        public constant string RELEASE_DATE = "08.03.2015"
+        public constant string VERSION = "0.3.4"
+        public constant string RELEASE_DATE = "xx.0x.2015"
 		
 		private string SOUND_1 = "Sound\\Interface\\Rescue.wav"
         private string SOUND_2 = "Sound\\Interface\\ItemReceived.wav"
@@ -21,11 +21,7 @@ scope GameStart
 		private static method onEnd takes nothing returns nothing
 			call Sound.runSound(SOUND_1)
 			
-			static if TEST_MODE then
-                call TimerStart(GetExpiredTimer(), 2.0, false, function Game.initialize)
-            else
-                call TimerStart(GetExpiredTimer(), OPTIONS_RESULT_DELAY, false, function Game.initialize)
-            endif
+			call TimerStart(GetExpiredTimer(), OPTIONS_RESULT_DELAY, false, function Game.initialize)
             
             call ClearTextMessages()
             call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, RESULT_TEXT_DURATION, "The game will be started with the following Options:")

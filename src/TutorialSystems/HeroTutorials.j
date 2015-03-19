@@ -4,8 +4,8 @@ scope HeroTutorials initializer init
         private constant string EFFECT = "Abilities\\Spells\\Other\\TalkToMe\\TalkToMe.mdl"
         private constant string EFFECT_ATT_POINT = "overhead"
     endglobals
-    
-    struct TowerBuilderTutorial
+	
+	struct TowerBuilderTutorial
         player p
         
         static method onFinishTutorial takes nothing returns nothing
