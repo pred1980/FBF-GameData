@@ -459,7 +459,7 @@ scope HeroStatsSystem
                 exitwhen i >= bj_MAX_PLAYERS
                 //Checking for Players and Bots
                 if ( Game.isPlayerInGame(i) ) then
-                    call RegisterPlayerUnitEventForPlayer(EVENT_PLAYER_UNIT_SELECTED, function thistype.onSelection, Player(i))
+                    call RegisterPlayerUnitEventForPlayer(EVENT_PLAYER_UNIT_SELECTED, null, function thistype.onSelection, Player(i))
                 endif
                 set i = i + 1
             endloop

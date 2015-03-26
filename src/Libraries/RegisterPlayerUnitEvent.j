@@ -30,33 +30,61 @@
 **************************************************************/
 library RegisterPlayerUnitEvent // Special Thanks to Bribe and azlier
     globals
-        private trigger array t
+        private trigger array ts
     endglobals
    
-    function RegisterPlayerUnitEvent takes playerunitevent p, code c returns nothing
-        local integer i = GetHandleId(p)
+    function RegisterPlayerUnitEvent takes playerunitevent p, code cond, code act returns nothing
+        local trigger t
+		local integer i = GetHandleId(p)
         local integer k = 15
-        if t[i] == null then
-            set t[i] = CreateTrigger()
-            loop
-                call TriggerRegisterPlayerUnitEvent(t[i], Player(k), p, null)
+		
+		if act != null then
+			set t = CreateTrigger()
+			loop
+                call TriggerRegisterPlayerUnitEvent(t, Player(k), p, null)
                 exitwhen k == 0
                 set k = k - 1
             endloop
-        endif
-        call TriggerAddCondition(t[i], Filter(c))
+			if cond != null then
+				call TriggerAddCondition(t, Filter(cond))
+			endif
+			call TriggerAddAction(t, act)
+			set t = null
+		else
+			if ts[i] == null then
+				set ts[i] = CreateTrigger()
+				loop
+					call TriggerRegisterPlayerUnitEvent(ts[i], Player(k), p, null)
+					exitwhen k == 0
+					set k = k - 1
+				endloop
+			endif
+			call TriggerAddCondition(ts[i], Filter(cond))
+		endif
     endfunction
-   
-    function RegisterPlayerUnitEventForPlayer takes playerunitevent p, code c, player pl returns nothing
+	
+	function RegisterPlayerUnitEventForPlayer takes playerunitevent p, code cond, code act, player pl returns nothing
         local integer i = 16 * GetHandleId(p) + GetPlayerId(pl)
-        if t[i] == null then
-            set t[i] = CreateTrigger()
-            call TriggerRegisterPlayerUnitEvent(t[i], pl, p, null)
-        endif
-        call TriggerAddCondition(t[i], Filter(c))
+		local trigger t
+		
+		if act != null then
+			set t = CreateTrigger()
+			call TriggerRegisterPlayerUnitEvent(t, pl, p, null)
+            if cond != null then
+				call TriggerAddCondition(t, Filter(cond))
+			endif
+			call TriggerAddAction(t, act)
+			set t = null
+		else
+			if ts[i] == null then
+				set ts[i] = CreateTrigger()
+				call TriggerRegisterPlayerUnitEvent(ts[i], pl, p, null)
+			endif
+			call TriggerAddCondition(ts[i], Filter(cond))
+		endif
     endfunction
    
     function GetPlayerUnitEventTrigger takes playerunitevent p returns trigger
-        return t[GetHandleId(p)]
+        return ts[GetHandleId(p)]
     endfunction
 endlibrary

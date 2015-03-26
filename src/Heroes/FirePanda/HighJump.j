@@ -5,6 +5,7 @@ scope HighJump initializer init
      * Last Update: 09.01.2014
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     19.03.2015: Added Conditions to the "knockbackFilter method" in the Jump struct
      */
     globals
         private constant integer SPELL_ID = 'A08X'
@@ -77,12 +78,18 @@ scope HighJump initializer init
             local real dx = GetUnitX(temp.caster) - GetUnitX(u)
             local real dy = GetUnitY(temp.caster) - GetUnitY(u)
             local real ang = Atan2(dy, dx) - bj_PI
-            if IsUnitEnemy(u, GetOwningPlayer(temp.caster)) and not IsUnitDead(u) then
+            
+			if (IsUnitEnemy(u, GetOwningPlayer(temp.caster)) and not /*
+			*/ IsUnitDead(u) and not /*
+			*/ IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/ IsUnitType(u, UNIT_TYPE_MECHANICAL)) then
                 call Knockback.create(temp.caster, u, KNOCKBACK_DISTANCE_ULTI[ArtOfFire_GetLevel(temp.caster) - 1], KNOCKBACK_DURATION_ULTI, ang, 0, "", "")
                 call Stun_UnitEx(u, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
             endif
-            set u = null
-            return false
+            
+			set u = null
+            
+			return false
         endmethod
         
         method onHit takes nothing returns nothing

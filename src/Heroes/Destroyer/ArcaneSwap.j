@@ -55,7 +55,7 @@ scope ArcaneSwap initializer init
     endfunction
 	
 	private function Conditions takes nothing returns boolean
-		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing

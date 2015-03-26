@@ -81,17 +81,11 @@ scope ConsumeHimself initializer init
     endfunction
 	
 	private function Conditions takes nothing returns boolean
-		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddCondition(t,Condition(function Conditions))
-		call TriggerAddAction(t, function Actions )
-		
-		set t = null
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
     endfunction
 
 endscope

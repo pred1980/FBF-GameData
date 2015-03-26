@@ -1,10 +1,13 @@
 library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils, PassiveSpellSystem, IntuitiveBuffSystem, xedamage, xebasic, xefx
     /*
-     * Description: The Fire Panda throws his blades in the target direction, damaging all enemies they hit. 
-                    Each blade can only hit an enemy once.
+     * Description: The Fire Panda enhances his weapons with fire and increases the effectiveness of his abilities. 
+	                Each enemy he attacks, hits with Hackn Slash or with Bladethrow, will be ignited, 
+					dealing damage over time for 3 seconds. High Jump will now also create a mighty 
+					fire nova on impact, dealing additional damage and knocks enemies away from the Firepanda.
      * Last Update: 09.01.2014
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     19.03.2015: Added Conditions to the damage method in the main struct
      */
     globals
         private constant integer SPELL_ID = 'A08U'
@@ -27,7 +30,6 @@ library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils,
         set IGNITION_DAMAGE[2] = 45.00
     endfunction
         
-
     public function GetLevel takes unit u returns integer
         return GetUnitAbilityLevel(u, SPELL_ID)
     endfunction
@@ -35,7 +37,6 @@ library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils,
     public function IgniteUnit takes unit caster, unit target returns nothing
         call Ignition.generate(caster, target, GetLevel(caster))
     endfunction
-    
     
     struct Ignition
     
@@ -97,8 +98,12 @@ library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils,
         static constant boolean useDamageEvents = true
         
         method onDamage takes unit target, real damage returns nothing
-            if IsUnitEnemy(target, GetOwningPlayer(owner)) and DamageType == 0 then
-                call Ignition.generate(owner, target, lvl)
+            if DamageType == 0 and /*
+			*/ IsUnitEnemy(target, GetOwningPlayer(owner)) and not /*
+			*/ IsUnitDead(target) and not /*
+			*/ IsUnitType(target, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/ IsUnitType(target, UNIT_TYPE_MECHANICAL) then
+			       call Ignition.generate(owner, target, lvl)
             endif
         endmethod
     

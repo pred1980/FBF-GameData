@@ -5,6 +5,7 @@ scope FogOfDeath initializer init
      * Last Update: 28.10.2013
      * Changelog: 
      *     28.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     20.03.2015: Added Spell-Immunity-Check in the "group_filter_callback method" 
      *
      */
     globals
@@ -42,27 +43,30 @@ scope FogOfDeath initializer init
         real mainTime = 0
         real intveralTime = 0
         static thistype tempthis
-        
-        static method create takes unit c returns thistype
-            local thistype this = thistype.allocate()
-            
-            set .caster = c
-            set .targets = NewGroup()
-            set .main = NewTimer()
-            set .i = NewTimer()
-            set .level = GetUnitAbilityLevel(.caster, SPELL_ID)
-            set .tempthis = this
-            
-            call SetTimerData(.main, this)
-            call TimerStart(.main, 1.0, true, function thistype.onMainPeriodic)
-            call SetTimerData(.i, this)
-            call TimerStart(.i, INTERVAL, true, function thistype.onIntervalPeriodic)
-            
-            return this
+		
+		static method damage takes nothing returns nothing
+            local unit u = GetEnumUnit()
+            if GetRandomInt(1,100) >= CHANCE_TO_HIT then
+                call DOT.start( .tempthis.caster , u , DAMAGE_PER_SECOND[.tempthis.level] , DOT_TIME , ATT_TYPE , DMG_TYPE , EFFECT , ATT_POINT )
+            endif
+            call GroupRemoveUnit(.tempthis.targets, u)
+            set u = null
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) )
+			local unit u = GetFilterUnit()
+			local boolean b = false
+		
+			if (IsUnitEnemy(u, GetOwningPlayer(.tempthis.caster)) and not /*
+			*/ IsUnitDead(u) and not /*
+			*/ IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/ IsUnitType(u, UNIT_TYPE_MECHANICAL)) then
+				set b = true
+			endif
+			
+			set u = null
+		
+            return b
         endmethod
         
         static method onMainPeriodic takes nothing returns nothing
@@ -97,15 +101,6 @@ scope FogOfDeath initializer init
             endif
         endmethod
         
-        static method damage takes nothing returns nothing
-            local unit u = GetEnumUnit()
-            if GetRandomInt(1,100) >= CHANCE_TO_HIT then
-                call DOT.start( .tempthis.caster , u , DAMAGE_PER_SECOND[.tempthis.level] , DOT_TIME , ATT_TYPE , DMG_TYPE , EFFECT , ATT_POINT )
-            endif
-            call GroupRemoveUnit(.tempthis.targets, u)
-            set u = null
-        endmethod
-        
         method onDestroy takes nothing returns nothing
             call ReleaseGroup( .targets )
             call ReleaseTimer( .main )
@@ -117,6 +112,24 @@ scope FogOfDeath initializer init
             set .caster = null
             set .dummy = null
             set .targets = null
+        endmethod
+		
+		static method create takes unit c returns thistype
+            local thistype this = thistype.allocate()
+            
+            set .caster = c
+            set .targets = NewGroup()
+            set .main = NewTimer()
+            set .i = NewTimer()
+            set .level = GetUnitAbilityLevel(.caster, SPELL_ID)
+            set .tempthis = this
+            
+            call SetTimerData(.main, this)
+            call TimerStart(.main, 1.0, true, function thistype.onMainPeriodic)
+            call SetTimerData(.i, this)
+            call TimerStart(.i, INTERVAL, true, function thistype.onIntervalPeriodic)
+            
+            return this
         endmethod
         
         static method onInit takes nothing returns nothing

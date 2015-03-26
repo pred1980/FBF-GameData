@@ -71,7 +71,7 @@ scope TitanDevourer
                 call TriggerAddAction(t, function thistype.onDevour)
 				
 				//on Death Event
-				call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, function thistype.onUnitDeath)
+				call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, null, function thistype.onUnitDeath)
 				
 				set .tempthis = this
 				set t = null

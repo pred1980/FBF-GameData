@@ -62,7 +62,10 @@ scope FrostAura initializer init
             local real dy = GetUnitY(u) - GetUnitY(temp.caster)
             local real dist = SquareRoot(dx * dx + dy * dy)
             
-            if not IsUnitDead(u) and not IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(u, UNIT_TYPE_MECHANICAL) and IsUnitEnemy(u, GetOwningPlayer(temp.caster)) then
+            if IsUnitEnemy(u, GetOwningPlayer(temp.caster)) and not /*
+			*/ IsUnitDead(u) and not /*
+			*/ IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/ IsUnitType(u, UNIT_TYPE_MECHANICAL) then
                 if dist <= SPELL_FULL_DEGENERATION_THRESHOLD[temp.lvl] then
                     if GetUnitState(u, UNIT_STATE_LIFE) - (LIFE_DEGENERATION[temp.lvl] * TIMER_INTERVAL) <= 1.00 then
                         call SetUnitState(u, UNIT_STATE_LIFE, 1.00)

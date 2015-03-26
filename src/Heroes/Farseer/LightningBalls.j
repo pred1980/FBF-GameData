@@ -171,8 +171,8 @@ library LightningBalls initializer init uses RegisterPlayerUnitEvent, TimerUtils
         endmethod
             
         private static method onInit takes nothing returns nothing
-            call RegisterPlayerUnitEvent( EVENT_PLAYER_UNIT_SPELL_EFFECT, function thistype.SpellEffect )
-            call RegisterPlayerUnitEvent( EVENT_PLAYER_UNIT_SPELL_CHANNEL, function thistype.Check )
+            call RegisterPlayerUnitEvent( EVENT_PLAYER_UNIT_SPELL_EFFECT, null, function thistype.SpellEffect )
+            call RegisterPlayerUnitEvent( EVENT_PLAYER_UNIT_SPELL_CHANNEL, null, function thistype.Check )
             
             //xecast options:
             set xec = xecast.create()

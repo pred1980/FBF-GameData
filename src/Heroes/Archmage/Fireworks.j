@@ -5,6 +5,8 @@ scope Fireworks initializer init
      * Last Update: 04.12.2013
      * Changelog: 
      *     04.12.2013: Abgleich mit OE und der Exceltabelle
+	 *     25.03.2015: Changed ATTACK_TYPE from Spells to Magic | Code refactoring
+	 *     26.03.2015: Integrated RegisterPlayerUnitEvent
      */
     globals
         private constant integer SPELL_ID = 'A07K' //fireworks ability rawcode
@@ -16,31 +18,30 @@ scope Fireworks initializer init
         private constant real RAIN_AOE = 700. //rain radius
         private constant real INTERVAL = 0.3 //how often new missiles are created
         private constant real SCALE = 1.0 //missile scale
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_UNIVERSAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+		
+		private xedamage xed
+        private xecast cast
     endglobals
 
-    private function IsUnitAlive takes nothing returns boolean
-        return not IsUnitDead(GetFilterUnit())
-    endfunction
-    
     private constant function GetDamage takes integer lvl returns real
         return 50. + 50. * lvl //deals 100/150/200 damage
     endfunction
     
     //damage filter
     private function DamageOptions takes xedamage spellDamage returns nothing
-        set spellDamage.dtype = DAMAGE_TYPE_UNIVERSAL
-        set spellDamage.atype = ATTACK_TYPE_NORMAL
+        set spellDamage.dtype = DAMAGE_TYPE
+        set spellDamage.atype = ATTACK_TYPE
+		set spellDamage.wtype = WEAPON_TYPE
         set spellDamage.exception = UNIT_TYPE_STRUCTURE
         set spellDamage.visibleOnly = true
         set spellDamage.damageAllies = false       
     endfunction
 
-    globals
-        private xedamage xed
-        private xecast cast
-        private boolexpr b
-    endglobals
-    
     //set xecast
     private function SetDummy takes xecast DummySpell returns nothing 
         set DummySpell.abilityid = DUMMY_SPELL
@@ -52,40 +53,51 @@ scope Fireworks initializer init
         timer t
         xefx fx
         integer lvl = 0
+		static thistype tempthis
         
-        static method create takes unit c, timer t returns thistype
-            local thistype d = thistype.allocate()
-            set d.caster = c
-            set d.t = t
-            set d.lvl = GetUnitAbilityLevel(c, SPELL_ID)
-        
-            return d
+        private method onDestroy takes nothing returns nothing
+			set .caster = null
+            call ReleaseTimer(.t)
+            call GroupRefresh(ENUM_GROUP)
+            /*if (.fx != null) then
+                call .fx.destroy()
+            endif*/
+        endmethod
+		
+		static method enumFilter takes nothing returns boolean
+			local thistype this = thistype.tempthis
+
+			return SpellHelper.isValidEnemy(GetFilterUnit(), this.caster)
         endmethod
         
         method createSparks takes real x, real y returns nothing
             if (.fx != null) then
                 call .fx.destroy()
                 
-                call GroupEnumUnitsInRange(ENUM_GROUP,x,y,AOE,b)
+                call GroupEnumUnitsInRange(ENUM_GROUP,x,y,AOE, Filter(function thistype.enumFilter))
                 set cast.owningplayer = GetOwningPlayer(.caster)
                 set cast.level=.lvl
                 //the unit group will get cleaned after calling this function
                 call cast.castOnGroup(ENUM_GROUP)
-                call GroupEnumUnitsInRange(ENUM_GROUP,x,y,AOE,b)
-                //the unit group will get cleaned after calling this function
+                call GroupEnumUnitsInRange(ENUM_GROUP,x,y,AOE, Filter(function thistype.enumFilter))
+                
+				set DamageType = SPELL
+				//the unit group will get cleaned after calling this function
                 call xed.damageGroup(.caster,ENUM_GROUP,GetDamage(.lvl))
             endif
             set .fx = xefx.create(x,y,0)
             set .fx.fxpath = FX
             set .fx.scale = SCALE
         endmethod
-        
-        private method onDestroy takes nothing returns nothing
-            call ReleaseTimer(.t)
-            call GroupRefresh(ENUM_GROUP)
-            /*if (.fx != null) then
-                call .fx.destroy()
-            endif*/
+		
+		static method create takes unit c, timer t returns thistype
+            local thistype this = thistype.allocate()
+            set this.caster = c
+            set this.t = t
+            set this.lvl = GetUnitAbilityLevel(c, SPELL_ID)
+			set thistype.tempthis = this
+
+            return this
         endmethod
     endstruct
 
@@ -107,28 +119,26 @@ scope Fireworks initializer init
         set t=null
     endfunction
     
-    private function SpellEffect takes nothing returns nothing
+    private function Actions takes nothing returns nothing
         local timer t
         local Fireworks f
-    
-        if GetSpellAbilityId() == SPELL_ID then
-            set t = NewTimer()
-            set f = Fireworks.create(GetSpellAbilityUnit(),t)
-            call SetTimerData(t, integer(f))
-            call TimerStart(t, INTERVAL,true, function Shower)
-        endif
-    
-        set t = null
+		
+        set t = NewTimer()
+		set f = Fireworks.create(GetSpellAbilityUnit(), t)
+		call SetTimerData(t, integer(f))
+		call TimerStart(t, INTERVAL, true, function Shower)
+		
+		
+        //set t = null
     endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
+	endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddAction(t,function SpellEffect)
-        
-        set b = Condition(function IsUnitAlive)
-        
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+		
         //init xedamage
         set xed = xedamage.create()
         call DamageOptions(xed)

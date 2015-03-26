@@ -6,7 +6,8 @@ scope HacknSlash initializer init
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
 	 *     28.02.2014: Damage Werte von 60/90/120/150/180 auf 50/80/110/140/170 reduziert
-	                   TARGET_DAMAGE_REDUCER von 10% auf 15% erh?ht
+	                   TARGET_DAMAGE_REDUCER von 10% auf 15% erhöht
+	 *     19.03.2015: Added Conditions to the "filter method" in the main struct				   
      */
     globals
         private constant integer SPELL_ID = 'A08S'
@@ -16,7 +17,7 @@ scope HacknSlash initializer init
         private constant real SLASH_INTERVAL = 0.25
         private constant real TARGET_DETECTION_RANGE = 350.00
         private constant real TARGET_DAMAGE_DISTANCE = 50.00
-        //Reduziert den Damage des n?chstens Targets um weitere X-Prozent
+        //Reduziert den Damage des nächsten Targets um weitere X-Prozent
         private constant real TARGET_DAMAGE_REDUCER = 15.00
         private constant string ATTACK_ANIMATION_ORDER = "attack"
         private constant integer CASTER_ALPHA = 125
@@ -129,7 +130,19 @@ scope HacknSlash initializer init
         endmethod
         
         private static method filter takes nothing returns boolean
-            return IsUnitEnemy(GetFilterUnit(), GetOwningPlayer(temp.caster)) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD)
+			local unit u = GetFilterUnit()
+			local boolean b = false
+			
+			if (IsUnitEnemy(u, GetOwningPlayer(temp.caster)) and not /*
+			*/	IsUnitDead(u) and not /*
+			*/  IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/  IsUnitType(u, UNIT_TYPE_MECHANICAL)) then
+				set b = true
+			endif
+			
+			set u = null
+			
+            return b
         endmethod
         
         method getTarget takes nothing returns nothing

@@ -1,11 +1,13 @@
 scope FreezingBreath initializer init
     /*
-     * Description: Akull's foul, freezing breath chills the air to a sub zero level, slowing enemy's movement and attack down.
+     * Description: Akulls foul, freezing breath chills the air to a sub zero level, 
+	                slowing enemys movement and attack down.
      * Last Update: 27.10.2013
      * Changelog: 
      *     27.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     20.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + 
+	                   Spell-Immunity-Check in the "group_filter_callback method" 
      *
-	 * To-Do: Die gesamten Actiona sus der "group_filter_callback" raus und in eine seperate methode auslagern. In der sollte nur geprüft werden ob es sich um ein valides Target handelt
      */
     globals
         private constant integer SPELL_ID = 'A04K'
@@ -31,17 +33,18 @@ scope FreezingBreath initializer init
         static method group_filter_callback takes nothing returns boolean
             local unit u = GetFilterUnit()
             local unit d = null
-            if IsUnitEnemy( u, GetOwningPlayer(.tempthis.caster) ) and not /*
-            */ (IsUnitType(u, UNIT_TYPE_STRUCTURE) or /*
-            */  IsUnitDead(u) or /*
-            */  IsUnitType(u,UNIT_TYPE_MAGIC_IMMUNE)) then
-                    set DamageType = SPELL
-                    call UnitDamageTarget(.tempthis.caster, u, DAMAGE_PER_LEVEL * .tempthis.level, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_MAGIC, WEAPON_TYPE_WHOKNOWS)
-                    set d = CreateUnit(GetOwningPlayer(.tempthis.caster), DUMMY_ID, GetUnitX(u), GetUnitY(u), GetUnitFacing(u))
-                    call UnitAddAbility(d, DEBUF_ID)
-                    call SetUnitAbilityLevel(d, DEBUF_ID, .tempthis.level)
-                    call IssueTargetOrder(d, "frostnova", u)
-                    call UnitApplyTimedLife(d, 'BTLF', 1)
+			
+			if (IsUnitEnemy(u, GetOwningPlayer(.tempthis.caster)) and not /*
+			*/	IsUnitDead(u) and not /*
+			*/  IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/  IsUnitType(u, UNIT_TYPE_MECHANICAL)) then
+				set DamageType = SPELL
+				call UnitDamageTarget(.tempthis.caster, u, DAMAGE_PER_LEVEL * .tempthis.level, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_MAGIC, WEAPON_TYPE_WHOKNOWS)
+				set d = CreateUnit(GetOwningPlayer(.tempthis.caster), DUMMY_ID, GetUnitX(u), GetUnitY(u), GetUnitFacing(u))
+				call UnitAddAbility(d, DEBUF_ID)
+				call SetUnitAbilityLevel(d, DEBUF_ID, .tempthis.level)
+				call IssueTargetOrder(d, "frostnova", u)
+				call UnitApplyTimedLife(d, 'BTLF', 1)
             endif
             //clean
             set d = null

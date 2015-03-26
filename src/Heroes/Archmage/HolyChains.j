@@ -6,6 +6,8 @@ scope HolyChains initializer init
      * Changelog: 
      *     28.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     17.02.2015: Code Refactoring
+	 *     26.03.2015: Changed ATTACK_TYPE from Spells to Magic
+	                   Integrated RegisterPlayerUnitEvent
 	 *
 	 * Info: 
 	 *     15.05.2013: Tab.flush(key) durch  Tab.remove(key) ersetzt da ich die neue Table + Table BC von 
@@ -50,6 +52,11 @@ scope HolyChains initializer init
 
         private constant real CLOCK_TICK = XE_ANIMATION_PERIOD
 		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_LIGHTNING
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+		
 		private missile array V
 		private throw array VT
 		private integer N = 0
@@ -63,6 +70,33 @@ scope HolyChains initializer init
 		private xecast Cast
 		private xedamage xeDamage = 0
 	endglobals
+	
+	private function MainSetup takes nothing returns nothing
+		set MAX_BOLTS[0] = 5
+		set MAX_BOLTS[1] = 6
+		set MAX_BOLTS[2] = 7
+		set MAX_BOLTS[3] = 8
+		set MAX_BOLTS[4] = 9
+	endfunction
+	
+	private function SetupDamage takes nothing returns nothing
+		set xeDamage = xedamage.create()
+	 
+		set xeDamage.damageNeutral = false
+		set xeDamage.dtype = DAMAGE_TYPE
+		set xeDamage.atype = ATTACK_TYPE
+		set xeDamage.wtype = WEAPON_TYPE
+		set xeDamage.exception = UNIT_TYPE_STRUCTURE
+		set xeDamage.tag = 666
+		set xeDamage.damageAllies = false //True if you want it to hurt allies.
+		call xeDamage.useSpecialEffect(GetAbilityEffectById('Afsh', EFFECT_TYPE_TARGET, 0), "origin") 
+	 
+		set DAMAGE[0] = 15
+		set DAMAGE[1] = 25
+		set DAMAGE[2] = 35
+		set DAMAGE[3] = 45
+		set DAMAGE[4] = 55
+	endfunction
 	
 	private struct missile
         group targetlog
@@ -275,12 +309,8 @@ scope HolyChains initializer init
 	   
 	   return false
 	endfunction
-	
-	private function spellIdMatch takes nothing returns boolean
-		return (SPELL_ID == GetSpellAbilityId())
-	endfunction
-	
-	private function onSpellEffect takes nothing returns nothing
+
+	private function ActionsStart takes nothing returns nothing
 		local unit u = GetTriggerUnit()
 		local throw th = throw.create()
 		
@@ -298,7 +328,7 @@ scope HolyChains initializer init
 		set u = null
 	endfunction
 	
-	private function onSpellEnd takes nothing returns nothing
+	private function ActionsEnd takes nothing returns nothing
 		local integer key = GetHandleId(GetTriggerUnit())
 		local throw th = throw(Tab[key])
 		
@@ -308,37 +338,11 @@ scope HolyChains initializer init
 		endif
 	endfunction
 	
-	private function MainSetup takes nothing returns nothing
-		set MAX_BOLTS[0] = 5
-		set MAX_BOLTS[1] = 6
-		set MAX_BOLTS[2] = 7
-		set MAX_BOLTS[3] = 8
-		set MAX_BOLTS[4] = 9
-	endfunction
-	
-	private function SetupDamage takes nothing returns nothing
-		set xeDamage = xedamage.create()
-	 
-		set xeDamage.damageNeutral = false
-		set xeDamage.dtype = DAMAGE_TYPE_LIGHTNING
-		set xeDamage.atype = ATTACK_TYPE_NORMAL // NORMAL (spell) attacktype
-		set xeDamage.exception = UNIT_TYPE_STRUCTURE
-		set xeDamage.tag = 666
-		set xeDamage.damageAllies = false //True if you want it to hurt allies.
-		call xeDamage.factor(UNIT_TYPE_STRUCTURE, 0.33) // does 1/3 damage to buildings.
-		
-		call xeDamage.useSpecialEffect(GetAbilityEffectById('Afsh', EFFECT_TYPE_TARGET, 0), "origin") 
-	 
-		set DAMAGE[0] = 15
-		set DAMAGE[1] = 25
-		set DAMAGE[2] = 35
-		set DAMAGE[3] = 45
-		set DAMAGE[4] = 55
+	private function Conditions takes nothing returns boolean
+		return (GetSpellAbilityId() == SPELL_ID)
 	endfunction
 
 	private function init takes nothing returns nothing
-		local trigger t = CreateTrigger()
-		
 		call MainSetup()
 		call SetupDamage()
 		
@@ -354,15 +358,7 @@ scope HolyChains initializer init
 		set Tab = Table.create()
 		set T = CreateTimer()
 		
-		call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_EFFECT)
-		call TriggerAddCondition(t, Condition(function spellIdMatch))
-		call TriggerAddAction(t, function onSpellEffect)
-		
-		set t = CreateTrigger()
-		call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_ENDCAST)
-		call TriggerAddCondition(t, Condition(function spellIdMatch))
-		call TriggerAddAction(t, function onSpellEnd)
-		
-		set t = null
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function ActionsStart)
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_ENDCAST, function Conditions, function ActionsEnd)
 	endfunction
 endscope

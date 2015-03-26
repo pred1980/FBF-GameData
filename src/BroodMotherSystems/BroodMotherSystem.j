@@ -143,7 +143,7 @@ scope BroodMotherSystem initializer init
             call TimerStart( .t, LAYING_TIME, true, function thistype.onMoveToHatchery )
 			
 			//on Death Event
-            call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, function thistype.onUnitDeath)
+            call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, null, function thistype.onUnitDeath)
             
             return this
         endmethod

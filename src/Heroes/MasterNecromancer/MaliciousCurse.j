@@ -13,12 +13,12 @@ scope MaliciousCurse initializer init
         private constant integer BUFF_ID = 'B00O' //The buff with which to differentiate between states
         private constant integer SWITCH_ID = 'A065' //The ability with which to switch between Life and Mana
         private constant integer LBUFF_ABI = 'A066'
-        private constant integer LBUFF_BUF = 'B00P'
+        private constant integer LBUFF_BUF = 'B00P'	
         private constant integer MBUFF_ABI = 'A067'
         private constant integer MBUFF_BUF = 'B00Q'
         private constant integer DUMMY_ID = 'e00T'
         
-        private constant boolean LBUFF_AGGRO = true //Whether the Lifedrain should draw aggro towards the Necromancer
+        private constant boolean LBUFF_AGGRO = false //Whether the Lifedrain should draw aggro towards the Necromancer
         private constant boolean MBUFF_AGGRO = false //Whether the Manadrain should draw aggro towards the Necromancer
         
         private constant real RADIUS = 350
@@ -28,7 +28,6 @@ scope MaliciousCurse initializer init
     endglobals
 
     private function MainSetup takes nothing returns nothing
-        
         set Drain[0] = 0.02
         set Drain[1] = 0.03
         set Drain[2] = 0.04
@@ -40,7 +39,6 @@ scope MaliciousCurse initializer init
         set Duration[2] = 8.0
         set Duration[3] = 7.0
         set Duration[4] = 6.0
-        
     endfunction
     
     private struct MaliciousCurse

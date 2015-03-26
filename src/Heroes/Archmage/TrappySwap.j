@@ -6,7 +6,8 @@ scope TrappySwap initializer init
      *     29.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     02.12.2013: Exceptionsfunktionalitaet eingebaut
      *     04.12.2013: ManaCost-Event verbaut
-	 *     28.03.2014: Skorpione auf dem Friedhof können nicht mehr verwendet werden 
+	 *     28.03.2014: Skorpione auf dem Friedhof können nicht mehr verwendet werden
+	 *     26.03.2015: Integrated RegisterPlayerUnitEvent
      */
     globals
         private constant integer SPELL_ID = 'A07N'
@@ -61,7 +62,6 @@ scope TrappySwap initializer init
 		call SaveBoolean(DATA, 0, WARDEN_ID, true)
 		call SaveBoolean(DATA, 0, ARCHNATHID_ID, true)
 		call SaveBoolean(DATA, 0, EGG_ID, true)
-		
     endfunction
 	
 	private function CheckTarget takes unit u returns boolean
@@ -195,11 +195,7 @@ scope TrappySwap initializer init
         endmethod
         
     endstruct
-    
-    private function Conditions takes nothing returns boolean
-		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
-    endfunction
-	
+
 	private function Actions takes nothing returns nothing
 		local unit caster = GetTriggerUnit()
 		local unit target = GetSpellTargetUnit()
@@ -212,17 +208,17 @@ scope TrappySwap initializer init
 			//Error Message
 			call SimError(GetOwningPlayer(caster), MESSAGE + GetUnitName(target) + ".")
 			//Reset Cooldown of the Ability
-			call UnitResetSingleCooldown(caster, SPELL_ID)
+			call SpellHelper.resetAbility(caster, SPELL_ID)
 		endif
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
     
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddCondition(t,Condition(function Conditions))
-		call TriggerAddAction(t, function Actions )
-        call MainSetup()
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+		call MainSetup()
         call Preload(START_EFFECT)
         call Preload(END_EFFECT)
         call XE_PreloadAbility(DUMMY_SPELL_ID_1)

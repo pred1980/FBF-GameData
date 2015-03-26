@@ -463,7 +463,7 @@ scope Game
 			call ReleaseTimer(GetExpiredTimer())
 			
 			//on Death Event
-            call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, function thistype.onUnitDeath)
+            call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, null, function thistype.onUnitDeath)
             
             //Setting Player Datas
             loop
@@ -479,7 +479,7 @@ scope Game
 						call TriggerAddAction(leaveTrig, function thistype.onLeave)
                     endif
 					//Adding Hero LevelUp Event
-					call RegisterPlayerUnitEventForPlayer(EVENT_PLAYER_HERO_LEVEL, function thistype.onHeroLevelUp, .players[i])
+					call RegisterPlayerUnitEventForPlayer(EVENT_PLAYER_HERO_LEVEL, null, function thistype.onHeroLevelUp, .players[i])
                     
                     if GetPlayerRace(Player(i)) == RACE_UNDEAD then
                         //Spieler Neutral-Extra ist Verbuendeter mit den Untoten

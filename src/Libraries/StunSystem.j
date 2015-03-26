@@ -135,13 +135,13 @@ library Stun
 
     //-------------------------------------------------------------------------------
     // call Stun_UnitEx(<YourUnit>, <YourDuration>, <IfCheckImmunity>, <YourEffect>, <YourAttachmentPos>)
-    public function UnitEx takes unit whichUnit, real whichDuration, boolean checkImmunity, string whichEffect, string whichPos returns nothing
+    public function UnitEx takes unit whichUnit, real whichDuration, boolean CheckImmunity, string whichEffect, string whichPos returns nothing
         local integer i = NSpells 
         local boolean b = true
         local Stuns s
         
         //debug call BJDebugMsg(GetUnitName(whichUnit) + " got stuned for " + R2S(whichDuration) + " seconds!")
-        if (checkImmunity) then //<- Check for magic immunity stuff.
+        if (CheckImmunity) then //<- Check for magic immunity stuff.
             loop  
                 exitwhen i < 0
                 if (GetUnitAbilityLevel(whichUnit, SpellIds[i]) > 0) then
@@ -165,9 +165,9 @@ library Stun
     endfunction
 
     //-------------------------------------------------------------------------------
-    // call Stun_Unit(<YourUnit>, <YourDuration>, <IfCheckImmunity>)
-    public function Unit takes unit whichUnit, real whichDuration, boolean checkImmunity returns nothing
-        call Stun_UnitEx(whichUnit, whichDuration, checkImmunity, "", "")
+    // call Stun_Unit(<YourUnit>, <YourDuration>, <IfSpellHelper.restoreMana>)
+    public function Unit takes unit whichUnit, real whichDuration, boolean CheckImmunity returns nothing
+        call Stun_UnitEx(whichUnit, whichDuration, CheckImmunity, "", "")
     endfunction
 
     //-------------------------------------------------------------------------------

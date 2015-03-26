@@ -1,9 +1,10 @@
 scope DarkObedience initializer init
     /*
-     * Description: The Grim Lady expels a magic orb that chases her target around, dealing damage to all units it passes through.
-     * Last Update: 28.10.2013
+     * Description: The Grim Lady expels a magic orb that chases her target around, 
+	                dealing damage to all units it passes through.
      * Changelog: 
      *     28.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     20.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
      *
      */
     globals
@@ -58,13 +59,11 @@ scope DarkObedience initializer init
         endmethod
     endstruct
                 
-    private function Conditions takes nothing returns boolean
-        return GetSpellAbilityId() == SPELL_ID
-    endfunction
+    
 
-    private function onSpellEffect takes nothing returns nothing
+    private function Actions takes nothing returns nothing
+		local unit hero = GetTriggerUnit()
         local unit tar = GetSpellTargetUnit()
-        local unit hero = GetTriggerUnit()
         local integer level = GetUnitAbilityLevel(hero, SPELL_ID)
         local real x
         local real y
@@ -86,15 +85,22 @@ scope DarkObedience initializer init
         set tar = null
         set hero = null
     endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
+    endfunction
     
     private function init takes nothing returns nothing
-        local trigger ArcaneMissileTrg = CreateTrigger()
-        set damageOptions=xedamage.create()
+        local trigger t = CreateTrigger()
+        
+		call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+        call TriggerAddCondition(t, Condition(function Conditions))
+        call TriggerAddAction(t, function Actions)
+        
+		set damageOptions=xedamage.create()
         call setupDamageOptions(damageOptions)
-        call TriggerRegisterAnyUnitEventBJ(ArcaneMissileTrg, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(ArcaneMissileTrg, Condition(function Conditions))
-        call TriggerAddAction(ArcaneMissileTrg, function onSpellEffect)
-        set ArcaneMissileTrg = null
+		
+		set t = null
         call Preload(missile)
         call Preload(SFX)
         call Preload(flashSFX)

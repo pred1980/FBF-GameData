@@ -16,6 +16,7 @@
 //! import "src\Libraries\ListModule.j"
 //! import "src\Libraries\SpellSystem.j"
 //! import "src\Libraries\SpellEvent.j"
+//! import "src\Libraries\SpellHelper.j"
 //! import "src\Libraries\IndexerUtils.j"
 //! import "src\Libraries\AbilityEvent.j"
 //! import "src\Libraries\GetClosestWidget.j"
@@ -54,8 +55,9 @@
 //! import "src\Libraries\ZUtils.j"
 //! import "src\Libraries\HomeBase.j"
 //! import "src\Libraries\RectUtils.j"
-//! import "src\Libraries\CheckImmunity.j"
 //! import "src\Libraries\RestoreMana.j"
+
+
 
 /* XE Libraries */
 //! import "src\Libraries\XE\xepreload.j"

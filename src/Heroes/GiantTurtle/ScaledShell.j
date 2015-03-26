@@ -105,10 +105,8 @@ scope ScaledShell initializer init
     endstruct
     
     private function Actions takes unit damagedUnit, unit damageSource, real damage returns nothing
-        local ScaledShell ss = 0
-        
         if ( GetUnitAbilityLevel(damagedUnit, SPELL_ID) > 0 and isBackAttack(damageSource, damagedUnit) and DamageType == 0 ) then
-            set ss = ScaledShell.create(damageSource, damagedUnit, damage)
+            call ScaledShell.create(damageSource, damagedUnit, damage)
         endif
     endfunction
 

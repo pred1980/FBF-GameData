@@ -1,6 +1,7 @@
 scope FleshWound initializer init
     /*
-     * Description: Every second hit weakens the enemys armor by 2 points for 3 seconds. The effect can stack several times.
+     * Description: Every second hit weakens the enemys armor by 2 points for 3 seconds. 
+	                The effect can stack several times.
      * Last Update: 28.10.2013
      * Changelog: 
      *     28.10.2013: Abgleich mit OE und der Exceltabelle

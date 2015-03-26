@@ -5,6 +5,7 @@ scope Barrage initializer Init
      * Last Update: 29.10.2013
      * Changelog: 
      *     29.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     21.03.2015: Code refactoring
      *
 	 * Note:
 	 *     Damgage pro Missile:
@@ -133,13 +134,16 @@ scope Barrage initializer Init
     endfunction
     
     private function Init takes nothing returns nothing
-        local trigger ArcaneBarrageTrg = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ(ArcaneBarrageTrg, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(ArcaneBarrageTrg, Condition(function Conditions))
-        call TriggerAddAction(ArcaneBarrageTrg, function Actions)
+        local trigger t = CreateTrigger()
+		
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+        call TriggerAddCondition(t, Condition(function Conditions))
+        call TriggerAddAction(t, function Actions)
+		
         set damageOptions=xedamage.create()
         call setupDamageOptions(damageOptions)
-        set ArcaneBarrageTrg = null
+		
+        set t = null
         call Preload(boomEffect)
         call Preload(missile)
     endfunction

@@ -65,13 +65,15 @@ library StoneOfTeleportation uses RegisterPlayerUnitEvent, HomeBase
 	private module INITS
 	
 		private static method onAction takes nothing returns nothing
-			if (GetSpellAbilityId() == SPELL_ID) then
-				call thistype.create(GetTriggerUnit())
-			endif
+			call thistype.create(GetTriggerUnit())
+		endmethod
+		
+		private static method onConditions takes nothing returns boolean
+			return GetSpellAbilityId() == SPELL_ID
 		endmethod
 	
 		private static method onInit takes nothing returns nothing
-			call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function thistype.onAction)
+			call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function thistype.onConditions, function thistype.onAction)
         endmethod
 	endmodule
 endlibrary

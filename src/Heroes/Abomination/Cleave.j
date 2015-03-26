@@ -5,6 +5,7 @@ scope Cleave initializer init
      * Last Update: 09.11.2013
      * Changelog: 
      *     09.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     22.03.2015: ATTACK_TYPE, DAMAGE_TYPE and WEAPON_TYPE specification
      *
      */
     globals
@@ -18,15 +19,23 @@ scope Cleave initializer init
         
         //Chance für STUN oder KNOCK BACK
         private constant integer array CHANCE
-        //prozentualer Schaden
+        
+		//prozentualer Schaden
         private constant integer array DAMAGE
-        //STUN
+        
+		//STUN
         private constant string STUN_EFFECT = "Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl"
         private constant string STUN_ATT_POINT = "overhead"
         private constant real STUN_DURATION = 1.5
-        //KNOCK BACK
+        
+		//KNOCK BACK
         private constant integer DISTANCE = 350
         private constant real KB_TIME = 0.75
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_METAL_HEAVY_CHOP
     endglobals
     
     private function MainSetup takes nothing returns nothing
@@ -64,8 +73,8 @@ scope Cleave initializer init
             
             //Damage
             if GetUnitState(u, UNIT_STATE_LIFE) > dmg then
-                set DamageType = 1
-                call DamageUnitPure(.tempthis.caster, u, dmg)
+                set DamageType = PHYSICAL
+				call SpellHelper.damageTarget(.tempthis.caster, u, dmg, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
             else
                 call SetUnitExploded(u, true)
                 call KillUnit(u) 

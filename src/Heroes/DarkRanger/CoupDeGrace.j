@@ -6,7 +6,7 @@ scope CoupDeGrace initializer Init
      * Changelog: 
      *     26.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     17.02.2015: Kein Schaden auf umliegende gegnerische Einheiten beim Kill des Helden behoben
-	 *     18.03.2015: Added Immunity Check for the target unit
+	 *     18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
      */
     globals
         private constant integer SPELL_ID = 'A076'
@@ -106,7 +106,7 @@ scope CoupDeGrace initializer Init
     endstruct
 
     private function Conditions takes nothing returns boolean
-		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function Actions takes nothing returns nothing

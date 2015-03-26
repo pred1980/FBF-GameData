@@ -420,18 +420,17 @@ library xedamage initializer init requires xebasic
             set .CurrentDamageTag  = .tag
             set .inUse = .inUse +1
             loop
-                set target=FirstOfGroup(targetGroup)
-                exitwhen (target==null)
+                set target = FirstOfGroup(targetGroup)
+                exitwhen (target == null)
                 call GroupRemoveUnit(targetGroup,target)
-                set f= this.getTargetFactorCore(source,target,false)
-                if (f!=0.0) then
-                    set count=count+1
+                set f = this.getTargetFactorCore(source,target,false)
+                if (f != 0.0) then
+                    set count = count + 1
                     if(usefx) then
                         set hp = GetWidgetLife(target)
                     endif
                     
-                    set DamageType = SPELL
-                    call UnitDamageTarget(source,target, f*damage, true, .ranged, .atype, .dtype, .wtype )
+                    call SpellHelper.damageTarget(source, target, f*damage, true, .ranged, atype, .dtype, .wtype)
                     if(usefx and (hp > GetWidgetLife(target)) ) then
                         call DestroyEffect(  AddSpecialEffectTarget(this.fxpath, target, this.fxattach) )
                     endif                 

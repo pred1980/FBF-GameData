@@ -624,14 +624,5 @@ library MiscFunctions requires GroupUtils
 		set u = null
 		call ReleaseGroup(g)
 	endfunction
-	
-	//To reset a cooldown just use: call UnitResetSingleCooldown(Unit Targeted, Ability ID)
-	function UnitResetSingleCooldown takes unit u, integer a returns nothing
-		local integer i = GetUnitAbilityLevel(u, a)
-		if i > 0 and UnitRemoveAbility(u, a) then
-			call UnitAddAbility(u, a)
-			call SetUnitAbilityLevel(u, a, i)
-		endif
-    endfunction
 
 endlibrary

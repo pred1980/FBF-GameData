@@ -4,6 +4,8 @@ scope BeastStomper initializer init
      * Changelog: 
      *     25.10.2013: Abgleich mit OE und der Exceltabelle
 	 *     18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     26.03.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for damaging and filtering
      *
      */
     globals
@@ -11,12 +13,18 @@ scope BeastStomper initializer init
         private constant real DAMAGE_PER_LEVEL = 50
         private constant integer RADIUS = 250
         private constant real JUMP_DURATION = 0.4
-        private string SOUND = "Abilities\\Spells\\Human\\ThunderClap\\ThunderClapCaster.wav"
-        
+
         //Stun Effect
         private constant string STUN_EFFECT = "Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl"
         private constant string STUN_ATT_POINT = "overhead"
         private constant real STUN_DURATION = 1.5
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_METAL_HEAVY_BASH
+		
+		private string SOUND = "Abilities\\Spells\\Human\\ThunderClap\\ThunderClapCaster.wav"
     endglobals
 
     private struct BeastStomper
@@ -24,11 +32,33 @@ scope BeastStomper initializer init
         group targets
         timer t
         static thistype tempthis = 0
-        
+		
+		method onDestroy takes nothing returns nothing
+            call ReleaseGroup( .targets )
+            call ReleaseTimer( .t )
+            set .targets = null
+            set .t = null
+            set .caster = null
+        endmethod
+		
+		static method stunTargets takes nothing returns nothing
+            call Stun_UnitEx(GetEnumUnit(), STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
+            
+            if ( CountUnitsInGroup(.tempthis.targets) == 0 ) then
+                call .tempthis.destroy()
+            endif
+        endmethod
+		
+		static method onJumpEnd takes nothing returns nothing
+            local thistype this = GetTimerData(GetExpiredTimer())
+            call ForGroup( this.targets, function thistype.stunTargets )
+        endmethod
+
         static method damage takes unit source, unit target returns nothing
             local real dmg = GetUnitAbilityLevel(source, SPELL_ID) * DAMAGE_PER_LEVEL
-            set DamageType = SPELL
-            call DamageUnitPhysical(source, target, dmg)
+            
+			set DamageType = PHYSICAL
+			call SpellHelper.damageTarget(source, target, dmg, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
         endmethod
         
         static method jump takes nothing returns nothing
@@ -51,10 +81,7 @@ scope BeastStomper initializer init
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not /*
-			*/	   IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and not /*
-			*/     IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/     IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)
+			return SpellHelper.isValidEnemy(GetFilterUnit(), .tempthis.caster)
         endmethod
         
         static method create takes unit caster returns thistype
@@ -73,27 +100,7 @@ scope BeastStomper initializer init
             
             return this
         endmethod
-        
-        static method onJumpEnd takes nothing returns nothing
-            local thistype this = GetTimerData(GetExpiredTimer())
-            call ForGroup( this.targets, function thistype.stunTargets )
-        endmethod
-        
-        static method stunTargets takes nothing returns nothing
-            call Stun_UnitEx(GetEnumUnit(), STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
-            
-            if ( CountUnitsInGroup(.tempthis.targets) == 0 ) then
-                call .tempthis.destroy()
-            endif
-        endmethod
-        
-        method onDestroy takes nothing returns nothing
-            call ReleaseGroup( .targets )
-            call ReleaseTimer( .t )
-            set .targets = null
-            set .t = null
-            set .caster = null
-        endmethod
+
     endstruct
 
     private function Actions takes nothing returns nothing
@@ -105,14 +112,8 @@ scope BeastStomper initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-		call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function Actions)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         call Preload(STUN_EFFECT)
 		call Sound.preload(SOUND)
-		
-		set t = null
     endfunction
 endscope

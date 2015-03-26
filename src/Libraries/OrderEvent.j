@@ -27,9 +27,9 @@ library OrderEvent requires RegisterPlayerUnitEvent
      
     //============================================================================
     function RegisterAnyOrderEvent takes code c returns nothing
-        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_ISSUED_ORDER, c)
-        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER, c)
-        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER, c)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_ISSUED_ORDER, null, c)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER, null, c)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER, null, c)
     endfunction
      
     //============================================================================

@@ -5,6 +5,8 @@ scope AdrenalinRush initializer init
      * Changelog: 
      *     25.10.2013: Abgleich mit OE und der Exceltabelle
 	 *     18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     26.03.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for damaging and filtering
      *
 	 * Note: Dieser Spell verursacht in der MOVE method ohne Knockback und ohne 
 	         IsTerrainWalkable einen hohen Anstieg beim HandleCounter
@@ -19,6 +21,12 @@ scope AdrenalinRush initializer init
         private constant real DAMAGE_PER_LEVEL = 160
         private constant integer KNOCKBACK_DISTANCE = 300
         private constant real KNOCKBACK_SPEED = 0.4
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_METAL_HEAVY_BASH
+		
         private string SOUND = "Abilities\\Spells\\Orc\\Shockwave\\Shockwave.wav"
     endglobals
 
@@ -35,16 +43,13 @@ scope AdrenalinRush initializer init
         
         static method damage takes unit source, unit target returns nothing
             local real dmg = START_DAMAGE + (GetUnitAbilityLevel(source, SPELL_ID) * DAMAGE_PER_LEVEL)
-            set DamageType = 1
-            call DamageUnitPhysical(source, target, dmg)
+            
+			set DamageType = PHYSICAL
+			call SpellHelper.damageTarget(source, target, dmg, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not /*
-			*/	   IsUnitInGroup( GetFilterUnit(), .tempthis.temp) and not /*
-			*/	   IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and not /*
-			*/     IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/     IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)
+			return SpellHelper.isValidEnemy(GetFilterUnit(), .tempthis.caster)
         endmethod
         
         static method onKnockback takes nothing returns nothing
@@ -126,14 +131,8 @@ scope AdrenalinRush initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-		call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function Actions)
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         call Preload(EFFECT)
-		
-		set t = null
     endfunction
 
 endscope

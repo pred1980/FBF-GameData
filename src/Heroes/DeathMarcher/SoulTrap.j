@@ -5,6 +5,7 @@ scope SoulTrap initializer init
      * Last Update: 01.11.2013
      * Changelog: 
      *     01.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     24.03.2015: Fixed a bug after the "Spell-End" (onEnd) that the target ran in different directions
      *
      */
     globals
@@ -49,7 +50,8 @@ scope SoulTrap initializer init
             call ShowUnit(this.target, true)
             call SetUnitX(this.target, this.x)
             call SetUnitY(this.target, this.y)
-            set DamageType = 1
+			call IssueImmediateOrder(this.target, "holdposition")
+            set DamageType = SPELL
             call UnitDamageTarget( this.caster, this.target, DAMAGE[this.level] * ManaConcentration_GET_MANA_AMOUNT(this.id), false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_DEATH, WEAPON_TYPE_WHOKNOWS )
             call DestroyEffect(AddSpecialEffect(END_EFFECT, GetUnitX(this.target), GetUnitY(this.target)))
         
@@ -106,7 +108,7 @@ scope SoulTrap initializer init
     endstruct
 	
 	private function Conditions takes nothing returns boolean
-		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function Actions takes nothing returns nothing

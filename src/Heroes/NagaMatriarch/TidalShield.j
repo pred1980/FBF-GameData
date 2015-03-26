@@ -31,7 +31,6 @@ scope TidalShield initializer init
     private function Actions takes nothing returns nothing
         local unit caster = GetTriggerUnit()
 		
-		call BJDebugMsg("Action")
 		call HOT.start(caster, HEAL[GetUnitAbilityLevel(caster, SPELL_ID)], SPELL_DURATION, EFFECT, ATT_POINT )
 		
 		set caster = null

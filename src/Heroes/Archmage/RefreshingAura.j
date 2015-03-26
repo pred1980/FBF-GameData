@@ -1,10 +1,12 @@
 scope RefreshingAura initializer init
     /*
-     * Description: The Aura gives all nearby friendly heroes a chance to fully replenish their mana when casting a spell.
+     * Description: The Aura gives all nearby friendly heroes a chance to fully replenish their mana when 
+	                casting a spell.
      * Last Update: 04.12.2013
      * Changelog: 
      *     04.12.2013: Abgleich mit OE und der Exceltabelle
 	 *     18.03.2015: Optimized Spell-Event-Handling (conditions/actions)
+	 *     26.03.2015: Integrated RegisterPlayerUnitEvent
      */
     globals
         private constant integer SPELL_ID = 'A07M'
@@ -81,16 +83,10 @@ scope RefreshingAura initializer init
     endfunction
     
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-		call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function Actions)
-        call MainSetup()
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+	    call MainSetup()
         call Preload(EFFECT_1)
         call Preload(EFFECT_2)
-		
-		set t = null
-    endfunction
+	endfunction
 
 endscope

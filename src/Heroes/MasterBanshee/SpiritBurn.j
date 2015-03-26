@@ -4,9 +4,9 @@ scope SpiritBurn initializer Init
                     If the units mana reaches 0 before the spell is over, the unit detonates violently, 
                     dealing damage equal to half of its current health in an area. Units that do not have mana, 
                     instantly detonate. Heroes detonate for only 10% of their current health.
-     * Last Update: 29.10.2013
      * Changelog: 
      *     29.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     20.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
      *
      */   
     globals
@@ -45,10 +45,6 @@ scope SpiritBurn initializer Init
 
     private function Pick takes nothing returns boolean
         return true
-    endfunction
-    
-    private function Conditions takes nothing returns boolean
-        return GetSpellAbilityId() == SPELL_ID
     endfunction
     
     private struct Data
@@ -108,21 +104,30 @@ scope SpiritBurn initializer Init
     private function Actions takes nothing returns nothing
         local Data D = Data.create(GetTriggerUnit(), GetSpellTargetUnit())
         local timer t = NewTimer()
-        call SetTimerData(t, integer(D))
+        
+		call SetTimerData(t, integer(D))
         call TimerStart(t, manaTimer, true, function Loop)
-        set t = null
+        
+		set t = null
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
     
     private function Init takes nothing returns nothing
-        local trigger SpiritBurnTrg = CreateTrigger()
-        set damageOptions=xedamage.create()
+        local trigger t = CreateTrigger()
+		
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+        call TriggerAddCondition(t, Condition(function Conditions))
+        call TriggerAddAction(t, function Actions)
+		
+		set damageOptions=xedamage.create()
         call setupDamageOptions(damageOptions)
-        call TriggerRegisterAnyUnitEventBJ(SpiritBurnTrg, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(SpiritBurnTrg, Condition(function Conditions))
-        call TriggerAddAction(SpiritBurnTrg, function Actions)
-        set all = CreateGroup()
+        
+		set all = CreateGroup()
         set b = Condition(function Pick)
-        set SpiritBurnTrg = null
+        set t = null
         call Preload(boomEffect)
     endfunction
 endscope

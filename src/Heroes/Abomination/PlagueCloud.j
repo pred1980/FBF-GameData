@@ -6,6 +6,7 @@ scope PlagueCloud initializer init
      * Last Update: 11.11.2013
      * Changelog: 
      *     11.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     24.03.2015: Integrated SpellHelper for detecting a valid target
      *
      */
     globals
@@ -25,7 +26,6 @@ scope PlagueCloud initializer init
         private group Infected = CreateGroup()
         private group g = CreateGroup()
         private timer t = CreateTimer()
-        private boolexpr filter = null
     endglobals
 
 
@@ -56,16 +56,9 @@ scope PlagueCloud initializer init
         return 0.12
     endfunction
 
-    //The conditions a unit can be infected 
-    private function InfectCondition takes unit a, player p returns boolean
-        return not IsUnitType(a, UNIT_TYPE_MECHANICAL) and not /*
-        */         IsUnitType(a, UNIT_TYPE_MAGIC_IMMUNE) and not/*
-        */         IsUnitDead(a) and IsPlayerEnemy(GetOwningPlayer(a),p) // The condition if a unit is infected
-    endfunction
-
-     //The condition if trigger should run (refers to the event : EVENT_PLAYER_HERO_SKILL)
-    private function RunCondition takes nothing returns boolean
-        return GetUnitAbilityLevel(GetTriggerUnit(), SPELL_ID) != 0
+    //The conditions "target" unit can be infected 
+    private function InfectCondition takes unit target, unit caster returns boolean
+		return SpellHelper.isValidEnemy(target, caster)
     endfunction
 
     //////////////////////////////////Main Struckt//Do not change//////////////////////////////////////////////
@@ -84,8 +77,6 @@ scope PlagueCloud initializer init
             return data
         endmethod
     endstruct
-
-    ////////////////////////////////Main script// Do not edit unless you understand it////////////////////////////////
 
     private function AddPlagueCloud takes unit target, integer level, player a returns nothing
         local unit dummy = CreateUnit(a,DUMMY,GetUnitX(target),GetUnitY(target), 0)
@@ -111,10 +102,6 @@ scope PlagueCloud initializer init
         return ret       
     endfunction
 
-    private constant function NullFilter takes nothing returns boolean
-        return true
-    endfunction
-
     private function Callback takes nothing returns nothing
         local Infection data
         local integer i = 0
@@ -138,9 +125,9 @@ scope PlagueCloud initializer init
                 set x = GetUnitX(a)
                 set y = GetUnitY(a)
                 if GetOwningPlayer(a) == data.p then
-                    call GroupEnumUnitsInRange(g, x, y,InfectionRange(I2R(data.level)), filter) 
+                    call GroupEnumUnitsInRange(g, x, y,InfectionRange(I2R(data.level)), null) 
                 else
-                    call GroupEnumUnitsInRange(g, x, y,InfectedInfectionRange(I2R(data.level)), filter) 
+                    call GroupEnumUnitsInRange(g, x, y,InfectedInfectionRange(I2R(data.level)), null) 
                 endif
                 call GroupRemoveUnit(g,a)
                 loop //looping through all units in range
@@ -149,7 +136,7 @@ scope PlagueCloud initializer init
                     call GroupRemoveUnit(g,b)
                     set ii = GetStructOfUnit(b)
                     set c = GetRandomReal(0.00, 1.00)
-                    if ((c < InfectionChance(data.level) and GetOwningPlayer(a) == data.p) or (c < InfectedInfectionChance(data.level) and GetOwningPlayer(a) != data.p)) and InfectCondition(b,data.p) == true and ((Infection.Data[ii].left != -1) or not(IsUnitInGroup(b,Infected)))then
+                    if ((c < InfectionChance(data.level) and GetOwningPlayer(a) == data.p) or (c < InfectedInfectionChance(data.level) and GetOwningPlayer(a) != data.p)) and InfectCondition(b, a) == true and ((Infection.Data[ii].left != -1) or not(IsUnitInGroup(b,Infected)))then
                         if not(IsUnitInGroup(b,Infected)) then
                             //Infecting the target 
                             call GroupAddUnit(Infected,b)   
@@ -219,24 +206,15 @@ scope PlagueCloud initializer init
         endif
         set u = null
     endfunction
+	
+	//The condition if trigger should run (refers to the event : EVENT_PLAYER_HERO_SKILL)
+    private function Conditions takes nothing returns boolean
+        return GetUnitAbilityLevel(GetTriggerUnit(), SPELL_ID) != 0
+    endfunction
 
-    //===========================================================================
     private function init takes nothing returns nothing
-        local integer index
-        local trigger tr = CreateTrigger()
-        local boolexpr cond = Condition( function RunCondition )
-        set filter = Filter(function NullFilter)
-        set index = 0
-        loop
-            call TriggerRegisterPlayerUnitEvent(tr, Player(index), EVENT_PLAYER_HERO_SKILL, filter)
-            set index = index + 1
-            exitwhen index == bj_MAX_PLAYER_SLOTS
-        endloop
-        call TriggerAddCondition( tr, cond )
-        call TriggerAddAction( tr, function Actions )
-        set cond = null
-        
-        call XE_PreloadAbility(DUMMY_SPELL_ID)
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_HERO_SKILL, function Conditions, function Actions)
+		call XE_PreloadAbility(DUMMY_SPELL_ID)
     endfunction
 
 endscope

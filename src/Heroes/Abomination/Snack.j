@@ -1,11 +1,13 @@
 scope Snack initializer init
     /*
-     * Description: Blight Cleaver joyfully feasts on an enemy hero, damaging him and healing himself for an equal amount. 
+     * Description: Blight Cleaver joyfully feasts on an enemy hero, damaging him and healing himself for an 
+	                equal amount. 
                     The enemy cannot move while being eaten. If the victim dies in the process, Blight Cleaver will 
                     permanently gain 3 points in Strength.
      * Last Update: 11.11.2013
      * Changelog: 
      *     11.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     24.03.2015: Check immunity on spell cast
      *
      */
     globals
@@ -78,7 +80,8 @@ scope Snack initializer init
     endfunction
 
     private function Conditions takes nothing returns boolean
-		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
+		return GetSpellAbilityId() == SPELL_ID and not /*
+		*/	   SpellHelper.isImmuneOnSpellCast(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 
     private function ActionsStart takes nothing returns nothing
@@ -96,17 +99,8 @@ scope Snack initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function ActionsStart)
-        
-		set t = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_ENDCAST)
-        call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function ActionsEnd)
-        
-		set t = null
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function ActionsStart)
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_ENDCAST, function Conditions, function ActionsEnd)
     endfunction
 
 endscope

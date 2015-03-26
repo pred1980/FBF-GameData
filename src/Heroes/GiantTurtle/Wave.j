@@ -8,6 +8,7 @@ scope Wave initializer init
      * Changelog: 
      *     08.01.2014: Spell konnte noch nicht überprüft werden. Siehe Excelliste!!!
      *     10.01.2014: Abgleich mit OE und der Exceltabelle + Bugfixing
+	 *     20.03.2015: Added Spell-Immunity-Check to the "doPushbackEnum method"
      */
     globals
         private constant integer SPELL_ID = 'A082'
@@ -67,13 +68,23 @@ scope Wave initializer init
         static boolexpr doPushback = null
         static delegate xedamage dmg = 0
         static HandleTable t = 0
-        
+		
+        method onDestroy takes nothing returns nothing
+            call ReleaseGroup(targets)
+            set t[root.caster] = 0
+            call root.destroy()
+        endmethod
+		
         static method doPushbackEnum takes nothing returns boolean
             local unit u = GetFilterUnit()
             local thistype this = temp
             local real ang = Atan2(GetUnitY(u) - GetUnitY(root.caster), GetUnitX(u) - GetUnitX(root.caster))
             
-            if IsUnitEnemy(root.caster, GetOwningPlayer(u)) and not IsUnitInGroup(u, targets) and not IsUnitDead(u) and not IsUnitType(u, UNIT_TYPE_MECHANICAL) then
+            if IsUnitEnemy(root.caster, GetOwningPlayer(u)) and not /*
+            */ IsUnitInGroup(u, targets) and not /*
+            */ IsUnitDead(u) and not /*
+			*/ IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
+			*/ IsUnitType(u, UNIT_TYPE_MECHANICAL) then
                 call GroupAddUnit(targets, u)
                 call Knockback.create(root.caster, u, WAVE_PUSHBACK_DISTANCE, WAVE_PUSHBACK_DURATION, ang, 0, "", "")
                 set DamageType = SPELL
@@ -81,12 +92,6 @@ scope Wave initializer init
             endif
             set u = null
             return false
-        endmethod
-        
-        method onDestroy takes nothing returns nothing
-            call ReleaseGroup(targets)
-            set t[root.caster] = 0
-            call root.destroy()
         endmethod
         
         method onHit takes nothing returns nothing

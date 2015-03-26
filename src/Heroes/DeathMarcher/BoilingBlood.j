@@ -137,8 +137,7 @@ scope BoilingBlood initializer init
     endstruct
 	
 	private function Conditions takes nothing returns boolean
-		return GetSpellAbilityId() == SPELL_ID and not /*
-		*/     CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY()) and /*
+		return GetSpellAbilityId() == SPELL_ID and /*
 		*/     GetUnitTypeId(GetTriggerUnit()) != XE_DUMMY_UNITID
     endfunction
     

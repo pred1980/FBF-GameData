@@ -98,7 +98,7 @@ scope CripplingArrow initializer Init
    endstruct
 
     private function Conditions takes nothing returns boolean
-		return GetSpellAbilityId() == SPELL_ID and not CheckImmunity(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function Actions takes nothing returns nothing

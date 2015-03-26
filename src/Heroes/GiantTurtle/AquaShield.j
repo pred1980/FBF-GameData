@@ -25,7 +25,6 @@ scope AquaShield initializer init
         private integer array AQUA_SHIELD_ARMOR_BONUS
     endglobals
 
-
     private function MainSetup takes nothing returns nothing
         set AQUA_SHIELD_DAMAGE[0] = 75.00
         set AQUA_SHIELD_DAMAGE[1] = 125.00
@@ -55,7 +54,6 @@ scope AquaShield initializer init
     integer lvl = -1
     boolean selfCast = false
 
-
     dbuff buff = 0
     ArmorBonus armorBonus = 0
 
@@ -83,14 +81,12 @@ scope AquaShield initializer init
         call destroy()
     endmethod
 
-
     static method onBuffEnd takes nothing returns nothing
         local dbuff b = GetEventBuff()
         if b.isExpired or b.isRemoved then
             call thistype(b.data).releaseShield(false)
         endif
     endmethod
-
 
     static method onBuffAdd takes nothing returns nothing
         local dbuff b = GetEventBuff()

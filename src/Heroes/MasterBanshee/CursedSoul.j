@@ -6,6 +6,7 @@ scope CursedSoul initializer init
      * Last Update: 29.10.2013
      * Changelog: 
      *     29.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     21.03.2015: Code refactoring
      *
      */ 
     globals
@@ -57,51 +58,31 @@ scope CursedSoul initializer init
         
         static thistype tempthis
         
-        static method create takes unit caster, unit target returns thistype
-            local thistype this = thistype.allocate()
-            
-            set .caster = caster
-            set .soul = CreateUnit(GetOwningPlayer(.caster), GetUnitTypeId(target), GetUnitX(target), GetUnitY(target), GetUnitFacing(target))
-            
-            call SetUnitMoveSpeed(.soul, NORMAL_MOVEMENT_SPEED)
-            call UnitApplyTimedLife( .soul, 'BTLF', MAX_LIFE_TIME_SOUL )
-            call DestroyEffect(AddSpecialEffect(START_EFFECT, GetUnitX(target), GetUnitY(target)))
-            call UnitAddAbility(.soul, DUMMY_SPELL_ID_1)
-            call UnitAddAbility(.soul, DUMMY_SPELL_ID_2)
-            set .fx = AddSpecialEffectTarget(SPIRIT_EFFECT, .soul, "origin")
-           
-            call UnitAddAbility(.soul, DUMMY_SPELL_ID_3)
-            call UnitRemoveAbility(.soul, DUMMY_SPELL_ID_3)
-            call SetUnitVertexColor(.soul, 100, 100, 100, 85)
-            call SetUnitFlyHeight(.soul, 75, 100.0)
-            
-            set .dx = RADIUS
-            set .dy = 0
-            set .t = NewTimer()
-            call SetTimerData(.t, this)
-            call TimerStart(.t, INTERVAL, true, function thistype.onWaitNearbyEnemy)
-            
-            set .tempthis = this
-            return this
+		method onDestroy takes nothing returns nothing
+            set .caster = null
+            set .target = null
+            set .soul = null
+            set .t = null
+            call DestroyEffect(.fx)
+            set .fx = null
         endmethod
-        
+
         method getRandomEnemy takes unit c, group g, real range returns unit
             local unit u = null
-            local boolean b1
-            local boolean b2
-            local boolean b3
-            local boolean b4
-            local boolean b5
+			local boolean b = false
+
             loop
+				exitwhen (u == null or b == true)
                 set u = FirstOfGroup(g)
-                set b1 = not IsUnitDead(u)
-                set b2 = IsUnitType(u, UNIT_TYPE_STRUCTURE) == false
-                set b3 = IsUnitType(u, UNIT_TYPE_FLYING) == false
-                set b4 = IsUnitEnemy(u, GetOwningPlayer(c))
-                set b5 = not IsUnitInGroup(u, taggedTargets)
-                exitwhen u == null or (b1 and b2 and b3 and b4 and b5)
+				if (SpellHelper.isValidEnemy(u, c) and not /*
+				*/  IsUnitInGroup(u, taggedTargets)) then
+					set b = true
+				endif
                 call GroupRemoveUnit(g, u)
             endloop
+			
+			call GroupRefresh(g)
+			
             return u
         endmethod
         
@@ -169,39 +150,59 @@ scope CursedSoul initializer init
             set ps = null
         endmethod
         
-        method onDestroy takes nothing returns nothing
-            set .caster = null
-            set .target = null
-            set .soul = null
-            set .t = null
-            call DestroyEffect(.fx)
-            set .fx = null
+		static method create takes unit caster, unit target returns thistype
+            local thistype this = thistype.allocate()
+            
+            set .caster = caster
+            set .soul = CreateUnit(GetOwningPlayer(.caster), GetUnitTypeId(target), GetUnitX(target), GetUnitY(target), GetUnitFacing(target))
+            
+            call SetUnitMoveSpeed(.soul, NORMAL_MOVEMENT_SPEED)
+            call UnitApplyTimedLife( .soul, 'BTLF', MAX_LIFE_TIME_SOUL )
+            call DestroyEffect(AddSpecialEffect(START_EFFECT, GetUnitX(target), GetUnitY(target)))
+            call UnitAddAbility(.soul, DUMMY_SPELL_ID_1)
+            call UnitAddAbility(.soul, DUMMY_SPELL_ID_2)
+            set .fx = AddSpecialEffectTarget(SPIRIT_EFFECT, .soul, "origin")
+           
+            call UnitAddAbility(.soul, DUMMY_SPELL_ID_3)
+            call UnitRemoveAbility(.soul, DUMMY_SPELL_ID_3)
+            call SetUnitVertexColor(.soul, 100, 100, 100, 85)
+            call SetUnitFlyHeight(.soul, 75, 100.0)
+            
+            set .dx = RADIUS
+            set .dy = 0
+            set .t = NewTimer()
+            call SetTimerData(.t, this)
+            call TimerStart(.t, INTERVAL, true, function thistype.onWaitNearbyEnemy)
+            
+            set .tempthis = this
+            return this
         endmethod
-        
-        static method onInit takes nothing returns nothing
-            call MainSetup()
-        endmethod
-        
+              
     endstruct
 
    private function Actions takes nothing returns nothing
-        local CursedSoul cs = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set cs = CursedSoul.create( GetTriggerUnit(), GetSpellTargetUnit() )
-        endif
+        call CursedSoul.create( GetTriggerUnit(), GetSpellTargetUnit() )
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger trig = CreateTrigger()
+        local trigger t = CreateTrigger()
         
-        call TriggerRegisterAnyUnitEventBJ( trig, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( trig, function Actions )
+        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
+		call TriggerAddCondition(t, Condition(function Conditions))
+        call TriggerAddAction(t, function Actions)
+		
+		call MainSetup()
         call Preload(START_EFFECT)
         call Preload(SPIRIT_EFFECT)
         call Preload(SPIRIT_EFFECT_DEAD)
         call Preload(SPIRIT_EFFECT_TARGET)
         call Preload(SPIRIT_EFFECT_POSSESSION)
+		
+		set t = null
     endfunction
 
 endscope
