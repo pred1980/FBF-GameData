@@ -2,11 +2,12 @@ scope VampireBlood initializer Init
     /*
      * Description: The Dread Lord spills his own blood into a target area, 
 	                enchanting allied units with a life-draining attack.
-     * Last Update: 26.11.2013
      * Changelog: 
      *     15.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     26.11.2013: Umbau auf xemissile 
-	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
+	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     04.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for filtering and damaging
      */
     globals
         private constant integer SPELL_ID = 'A06V'
@@ -50,17 +51,11 @@ scope VampireBlood initializer Init
             local unit u = GetFilterUnit()
 			local boolean b = false
 			
-            if IsUnitAlly(u, GetOwningPlayer(.tempthis.caster)) and not /*
-			*/ IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-            */ IsUnitType(u,UNIT_TYPE_STRUCTURE) and not /*
-            */ IsUnitType(u,UNIT_TYPE_MECHANICAL) and not /*
-            */ IsUnitDead(u) and not /*
+			if (SpellHelper.isValidAlly(u, .tempthis.caster)) and not /*
             */ (.tempthis.numTargets >= NUM_DROPS[.tempthis.level]) then
 				set .tempthis.numTargets = .tempthis.numTargets + 1
 				set b = true
-            else
-				set b = false
-			endif
+            endif
             set u = null
 			
             return b
@@ -69,22 +64,22 @@ scope VampireBlood initializer Init
 		static method create takes unit caster, real x, real y returns thistype
 			local thistype this = thistype.allocate()
 			local unit u
-			local BloodMissile bm = 0
 	
             set this.caster = caster
 			set this.level = GetUnitAbilityLevel(caster, SPELL_ID) - 1
 			set this.targets = NewGroup()
 			set this.tempthis = this
 			
-			call GroupEnumUnitsInArea(this.targets, x, y, RADIUS, Condition( function thistype.groupFilterCallback) )
+			call GroupEnumUnitsInArea(this.targets, x, y, RADIUS, Condition( function thistype.groupFilterCallback))
 			
 			loop
 				set u = FirstOfGroup(this.targets)
 				exitwhen u == null
-				set bm = BloodMissile.create(caster, u, GetUnitX(u), GetUnitY(u))
+				call BloodMissile.create(caster, u, GetUnitX(u), GetUnitY(u))
 				call GroupRemoveUnit(this.targets, u)
 			endloop
 			
+			set u = null
 			call this.destroy()
 			
 			return this
@@ -95,6 +90,11 @@ scope VampireBlood initializer Init
 		unit caster
         unit target
         integer level = 0
+		
+		method onDestroy takes nothing returns nothing
+            set .caster = null
+			set .target = null
+        endmethod
 		
         static method create takes unit caster, unit target, real x, real y returns thistype
             local thistype this = thistype.allocate(GetUnitX(caster), GetUnitY(caster), 0.0, x, y, 0.0)
@@ -127,24 +127,24 @@ scope VampireBlood initializer Init
                 call UnitApplyTimedLife(d, 'BTLF', 1.0)
             endif
 			
-			 call this.terminate()
+			set d = null
+			
+			call this.terminate()
         endmethod
 		
-		method onDestroy takes nothing returns nothing
-            set .caster = null
-			set .target = null
-        endmethod
     endstruct
 	
 	private function onLeech takes unit damagedUnit, unit damageSource, real damage returns nothing
-        if ( GetUnitAbilityLevel(damageSource, BUFF_ID) > 0 and IsUnitEnemy(damagedUnit, GetOwningPlayer(damageSource)) and DamageType == 0 ) then
-            call SetUnitState(damageSource, UNIT_STATE_LIFE, GetUnitState(damageSource,UNIT_STATE_LIFE) + LIFE_LEECH)
-            call DestroyEffect(AddSpecialEffectTarget(EFFECT,damageSource,"origin"))
+        if (GetUnitAbilityLevel(damageSource, BUFF_ID) > 0 and /*
+		*/ SpellHelper.isValidEnemy(damagedUnit, damageSource) and /*
+		*/  DamageType == PHYSICAL ) then
+				call SetUnitState(damageSource, UNIT_STATE_LIFE, GetUnitState(damageSource,UNIT_STATE_LIFE) + LIFE_LEECH)
+				call DestroyEffect(AddSpecialEffectTarget(EFFECT,damageSource,"origin"))
         endif
     endfunction
 
     private function Actions takes nothing returns nothing
-		call VampireBlood.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
+		call VampireBlood.create(GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 	
 	private function Conditions takes nothing returns boolean
@@ -152,14 +152,9 @@ scope VampireBlood initializer Init
     endfunction
 
     private function Init takes nothing returns nothing
-        local trigger t = CreateTrigger()
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function Actions)
-        set t = null
-        
-		call RegisterDamageResponse( onLeech )
+        call RegisterDamageResponse( onLeech )
 		call MainSetup()
         call Preload(MISSILE_MODEL)
         call Preload(EFFECT)

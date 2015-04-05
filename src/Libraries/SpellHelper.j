@@ -17,7 +17,8 @@ library SpellHelper uses SimError, MiscFunctions, RestoreMana
 			return IsUnitAlly(target, GetOwningPlayer(caster)) and not /*
 				*/ isUnitDead(target) and not /*
 				*/ IsUnitType(target, UNIT_TYPE_STRUCTURE) and not /*
-				*/ IsUnitType(target, UNIT_TYPE_MECHANICAL)
+				*/ IsUnitType(target, UNIT_TYPE_MECHANICAL) and /*
+				*/ target != caster
 		endmethod
 		
 		static method isUnitDead takes unit target returns boolean
@@ -61,6 +62,11 @@ library SpellHelper uses SimError, MiscFunctions, RestoreMana
 		//Note: attack == true->Angriff, false->Zauber 
 		static method damageTarget takes unit source, unit target, real damage, boolean attack, boolean ranged, attacktype attackType, damagetype damageType, weapontype weaponType returns nothing
 			call UnitDamageTarget(source, target, damage, attack, ranged, attackType, damageType, weaponType)        
+		endmethod
+		
+		static method explodeUnit takes unit target returns nothing
+			call SetUnitExploded(target, true)
+			call KillUnit(target)
 		endmethod
 	endstruct
 endlibrary

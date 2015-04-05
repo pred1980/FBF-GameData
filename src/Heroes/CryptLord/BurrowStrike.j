@@ -3,9 +3,10 @@ scope BurrowStrike initializer init
      * Description: The Crypt Lord burrows himself below the earth, becoming invisible and magic immune. 
                     He digs with 650 speed to the target location, creating a dangerous spike when coming out from 
                     that deals damage to enemies and throws them in the air.
-     * Last Update: 06.11.2013
      * Changelog: 
      *     06.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     29.03.2015: Integrated SpellHelper for damaging and filtering
+	                   Changed ATTACK_TYPE and DAMAGE_TYPE to Spells
      *
      */
     globals
@@ -33,23 +34,24 @@ scope BurrowStrike initializer init
         
         //If true, a circle of spikes is created in the impact area too
         private constant boolean CREATE_SPIKE_CIRCLE = true
-        private constant integer SPIKE_CIRCLE_AMOUNT = 6
+        private constant integer SPIKE_CIRCLE_AMOUNT = 10
         private real array SPIKE_CIRCLE_DISTANCE
         //Animation played by the hero while digging
         private constant integer CASTER_ANIMATION = 9
         //Animation played when the hero comes out from the earth
         private constant integer CASTER_END_ANIMATION = 8
    
-        //Damage Options
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
-        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        // Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+		
         private real array DAMAGE
         private real array DAMAGE_AREA
         private real array STUN_DURATION
     endglobals
 
     private function MainSetup takes nothing returns nothing
-    
         set BURROW_SPEED[0] = 650.00
         set BURROW_SPEED[1] = 650.00
         set BURROW_SPEED[2] = 650.00
@@ -218,12 +220,9 @@ scope BurrowStrike initializer init
             local unit u = GetFilterUnit()
             local thistype this = temp
             
-            if not IsUnitDead(u) and not /*
-			*/     IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/	   IsUnitType(u, UNIT_TYPE_MECHANICAL) and /*
-			*/     IsUnitEnemy(u, GetOwningPlayer(caster)) then
-                set DamageType = 1
-                call damageTarget(caster, u, DAMAGE[lvl])
+			if (SpellHelper.isValidEnemy(u, caster)) then
+                set DamageType = PHYSICAL
+				call SpellHelper.damageTarget(caster, u, DAMAGE[lvl], true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
                 call StunUnitTimed(u, STUN_DURATION[lvl])
                 call BurrowStrike.create(caster, u, lvl)
             endif
@@ -342,6 +341,7 @@ scope BurrowStrike initializer init
             set dmg = xedamage.create()
             set dtype = DAMAGE_TYPE
             set atype = ATTACK_TYPE
+			set wtype = WEAPON_TYPE
             
             loop
                 exitwhen i >= bj_MAX_PLAYERS

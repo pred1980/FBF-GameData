@@ -2,9 +2,9 @@ scope Fireblast initializer Init
     /*
      * Description: The Blood Mage launches a Fire Blast that spits smaller fireballs at the closest enemy unit. 
                     When the Blast lands, it fires one last wave of fireballs at all nearby enemies.
-     * Last Update: 03.01.2014
      * Changelog: 
      *     03.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     27.03.2015: Changed AttackType from spells to magic
      */
     globals
         private constant integer SPELL_ID = 'A091'
@@ -13,7 +13,7 @@ scope Fireblast initializer Init
         private constant real LAUNCH_PERIOD = 0.2   // How often to launch child missiles in flight?
 
         // Main missile visual settings:
-        private constant string MAIN_MODEL =  "Models\\Fireblast.mdx"
+        private constant string MAIN_MODEL = "Models\\Fireblast.mdx"
         private constant real MAIN_SCALE = 2.0
         private constant real MAIN_LAUNCH_OFFSET = 60.0
         private constant real MAIN_SPEED = 500.0
@@ -24,6 +24,11 @@ scope Fireblast initializer Init
         private constant real CHILD_SCALE = 0.5
         private constant real CHILD_SPEED = 1000.0
         private constant real CHILD_ARC = 0.15
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_FIRE
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
     
     private constant function Damage takes integer level returns real
@@ -35,8 +40,9 @@ scope Fireblast initializer Init
     // which something else probably instantiated and we would like to configure.
     //
     private function setupDamageOptions takes xedamage d returns nothing
-        set d.dtype = DAMAGE_TYPE_FIRE   // Do spell, fire (magic) damage
-        set d.atype = ATTACK_TYPE_NORMAL //
+        set d.dtype = DAMAGE_TYPE   // Do spell, fire (magic) damage
+        set d.atype = ATTACK_TYPE
+		set d.wtype = WEAPON_TYPE
 
         set d.damageEnemies = true
         set d.damageNeutral = false
@@ -135,9 +141,9 @@ scope Fireblast initializer Init
         private static FireblastMain current
      
         private static method targetEnum takes nothing returns boolean
-            local unit u        = GetFilterUnit()
-            local real dx       = GetUnitX(u) - current.x
-            local real dy       = GetUnitY(u) - current.y
+            local unit u = GetFilterUnit()
+            local real dx = GetUnitX(u) - current.x
+            local real dy = GetUnitY(u) - current.y
             local real distance = dx * dx + dy * dy
                 if distance < .closestDistance and (damageOptions.allowedTarget( current.caster, u ) ) then
                     set .closestDistance = distance
@@ -201,36 +207,28 @@ scope Fireblast initializer Init
         endmethod
     endstruct
 
-    private function spellIdMatch takes nothing returns boolean
+    
+
+    private function Actions takes nothing returns nothing
+        local unit hero = GetTriggerUnit()
+        local integer level = GetUnitAbilityLevel(hero, SPELL_ID)
+
+        call FireblastMain.create(hero, level, GetSpellTargetX(), GetSpellTargetY())
+
+        set hero = null // it is good to null handle variables at the end of a function...
+    endfunction
+
+	private function Conditions takes nothing returns boolean
         return (GetSpellAbilityId()==SPELL_ID)
     endfunction
-
-    private function onSpellEffect takes nothing returns nothing
-        local real tx = GetSpellTargetX()                   //The spell's target, since a recent patch
-        local real ty = GetSpellTargetY()                   //we no longer need to use locations for this.
-        local unit hero = GetTriggerUnit()                    //The spell's caster
-        local integer level = GetUnitAbilityLevel(hero, SPELL_ID) //The level of the spell
-
-        local FireblastMain fb = FireblastMain.create(hero, level, tx,ty)
-
-        set hero=null // it is good to null handle variables at the end of a function...
-    endfunction
-
-   //=====================================================================================================
-   // Init stuff:
-   //
+	
    private function Init takes nothing returns nothing
-        local trigger t=CreateTrigger()
-
-        // Initializing the damage options:
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+		
+		// Initializing the damage options:
         set damageOptions=xedamage.create()    // first instanciate a xeobject.
         call setupDamageOptions(damageOptions) // now call the function we saw before.
 
-        //Setting up the spell's trigger:
-        call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(t, Condition(function spellIdMatch))
-        call TriggerAddAction(t, function onSpellEffect)
         call Preload(MAIN_MODEL)
-        set t=null
     endfunction
 endscope

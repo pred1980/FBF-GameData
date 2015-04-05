@@ -5,7 +5,8 @@ scope Snipe initializer Init
      * Changelog: 
      *     26.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     28.03.2014: Missile Speed von 600 auf 1100 hochgesetzt
-	 *     18.03.2015: Added Immunity Check for the target unit
+	 *     29.03.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for damaging
      */
     private keyword Snipe
     
@@ -22,15 +23,20 @@ scope Snipe initializer Init
         private constant real CHANNEL_DURATION = 3.0
         private constant integer BASE_DAMAGE = 25
         private constant integer DAMAGE_PER_LEVEL = 50
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_PIERCE
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private xedamage damageOptions
         private Snipe array spellForUnit
     endglobals
     
     private function setupDamageOptions takes xedamage d returns nothing
-        set d.dtype = DAMAGE_TYPE_FIRE   
-        set d.atype = ATTACK_TYPE_NORMAL 
-        
+        set d.dtype = DAMAGE_TYPE   
+        set d.atype = ATTACK_TYPE 
+        set d.wtype = WEAPON_TYPE
         set d.exception = UNIT_TYPE_STRUCTURE 
     endfunction
     
@@ -46,25 +52,14 @@ scope Snipe initializer Init
         static method getForUnit takes unit u returns thistype
 			return spellForUnit[GetUnitId(u)]
 		endmethod
-        
-        static method create takes unit caster, unit target, integer level returns thistype
-            local thistype this = thistype.allocate(GetWidgetX(caster), GetWidgetY(caster), Z_START, target, Z_END)
-            local timer t = NewTimer()
-            
-            set this.fxpath = MISSILE_MODEL
-            set this.scale = MISSILE_SCALE
-            set this.caster = caster
-            set this.target = target
-            set this.level = level
-            set this.oriDist = DistanceBetweenCords(GetUnitX(caster), GetUnitY(caster), GetUnitX(target), GetUnitY(target))
-            set .cross = AddSpecialEffectTarget(CROSS_MODEL, .target, "head")
-            
-            call SetTimerData(t , this )
-            call TimerStart(t, CHANNEL_DURATION, false, function thistype.onLaunch)
-            
-            return this
+		
+		 method onDestroy takes nothing returns nothing
+            call DestroyEffect(.cross)
+            set .cross = null
+            set .caster = null
+            set .target = null
         endmethod
-        
+
         static method onLaunch takes nothing returns nothing
             local thistype this = GetTimerData(GetExpiredTimer())
             
@@ -87,20 +82,32 @@ scope Snipe initializer Init
         
         method onHit takes nothing returns nothing
             //Damage Unit depending on distance
-            if (damageOptions.allowedTarget(this.caster, this.target )) then
+            if (damageOptions.allowedTarget(this.caster, this.target)) then
                 if GetRandomReal(0.00, 100.00) <= this.percent then
-                    set DamageType = SPELL
-                    call UnitDamageTarget(this.caster, this.target,(BASE_DAMAGE + this.level * DAMAGE_PER_LEVEL), false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_UNKNOWN,WEAPON_TYPE_WHOKNOWS)
+                    set DamageType = PHYSICAL
+					call SpellHelper.damageTarget(this.caster, this.target, (BASE_DAMAGE + this.level * DAMAGE_PER_LEVEL), true, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
                 endif
             endif
         endmethod
        
-        method onDestroy takes nothing returns nothing
-            call DestroyEffect(.cross)
-            set .cross = null
-            set .caster = null
-            set .target = null
+		static method create takes unit caster, unit target, integer level returns thistype
+            local thistype this = thistype.allocate(GetWidgetX(caster), GetWidgetY(caster), Z_START, target, Z_END)
+            local timer t = NewTimer()
+            
+            set this.fxpath = MISSILE_MODEL
+            set this.scale = MISSILE_SCALE
+            set this.caster = caster
+            set this.target = target
+            set this.level = level
+            set this.oriDist = DistanceBetweenCords(GetUnitX(caster), GetUnitY(caster), GetUnitX(target), GetUnitY(target))
+            set .cross = AddSpecialEffectTarget(CROSS_MODEL, .target, "head")
+            
+            call SetTimerData(t , this )
+            call TimerStart(t, CHANNEL_DURATION, false, function thistype.onLaunch)
+            
+            return this
         endmethod
+       
     endstruct
 
 	private function Conditions takes nothing returns boolean
@@ -123,18 +130,12 @@ scope Snipe initializer Init
     endfunction
    
     private function Init takes nothing returns nothing
-        local trigger t = CreateTrigger()
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_CHANNEL, function Conditions, function Actions)
 
         set damageOptions = xedamage.create()
         call setupDamageOptions(damageOptions)
-
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_CHANNEL)
-        call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function Actions)
         
         call Preload(MISSILE_MODEL)
         call Preload(CROSS_MODEL)
-		
-		set t = null
     endfunction
 endscope

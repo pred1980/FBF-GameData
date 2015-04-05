@@ -2,16 +2,12 @@ scope MagicSeed initializer init
     /*
      * Description: Cenarius throws a magic seed at the target unit, dealing damage. If the target is entangled, 
                     the target will receive additional damage and creates an explosion that damages other enemies around it.
-     * Last Update: 08.01.2014
      * Changelog: 
      *     08.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     28.03.2015: Integrated SpellHelper for damaging and filtering
      */
     globals
         private constant integer SPELL_ID = 'A08F'
-    endglobals
-
-    //Magic Seed Options
-    globals
         private constant string MAGIC_SEED_MODEL_PATH = "Models\\MagicSeedMissile.mdl"
         private constant real MAGIC_SEED_MODEL_SIZE = 1.65
         private constant real MAGIC_SEED_SPEED = 675.00
@@ -20,13 +16,13 @@ scope MagicSeed initializer init
         private constant real MAGIC_SEED_RADIUS = 225.00
         private constant string MAGIC_SEED_EXPLOSION_PATH = "Models\\MagicSeedExplosion.mdl"
         private constant real MAGIC_SEED_EXPLOSION_MODEL_SIZE = 0.50
-    endglobals
-    
-    //Damage Options
-    globals
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        
+		// Dealt damage configuration
         private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
-        private real array MAGIC_SEED_MAIN_DAMAGE
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_POISON
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+        
+		private real array MAGIC_SEED_MAIN_DAMAGE
         private real array MAGIC_SEED_ENTANGLED_DAMAGE
         private real array SEED_AREA_DAMAGE
     endglobals
@@ -74,13 +70,10 @@ scope MagicSeed initializer init
             local thistype this = temp
             local unit u = GetFilterUnit()
             
-			if not IsUnitType(u, UNIT_TYPE_DEAD) and not /*
-			*/     IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/     IsUnitType(u, UNIT_TYPE_FLYING) and not /*
-			*/     IsUnitType(u, UNIT_TYPE_MECHANICAL) and /*
-			*/     IsUnitEnemy(u, GetOwningPlayer(caster)) then
-                set DamageType = 1
-                call damageTarget(caster, u, SEED_AREA_DAMAGE[lvl])
+			if (SpellHelper.isValidEnemy(u, caster) and not /*
+			*/  SpellHelper.isUnitImmune(u)) then
+                set DamageType = SPELL
+				call SpellHelper.damageTarget(caster, u, SEED_AREA_DAMAGE[lvl], false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
             endif
             
 			set u = null
@@ -91,7 +84,8 @@ scope MagicSeed initializer init
         method onHit takes nothing returns nothing
             local xefx explosion = 0
             call terminate()
-            if not IsUnitType(targetUnit, UNIT_TYPE_DEAD) then
+            if not SpellHelper.isUnitDead(targetUnit) then
+				set DamageType = SPELL
                 if CenariusMain_IsUnitEntangled(targetUnit) then
                     if MAGIC_SEED_EXPLOSION_PATH != "" then
                         set explosion = xefx.create(GetUnitX(targetUnit), GetUnitY(targetUnit), GetRandomReal(0.00, bj_PI * 2))
@@ -99,13 +93,11 @@ scope MagicSeed initializer init
                         set explosion.scale = MAGIC_SEED_EXPLOSION_MODEL_SIZE
                         call explosion.destroy()
                     endif
-                    set DamageType = 1
-                    call damageTarget(caster, targetUnit, MAGIC_SEED_MAIN_DAMAGE[lvl] + MAGIC_SEED_ENTANGLED_DAMAGE[lvl])
+                    call SpellHelper.damageTarget(caster, targetUnit, MAGIC_SEED_MAIN_DAMAGE[lvl] + MAGIC_SEED_ENTANGLED_DAMAGE[lvl], false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
                     set temp = this
                     call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(targetUnit), GetUnitY(targetUnit), MAGIC_SEED_RADIUS, explosionFilter)
                 else
-                    set DamageType = 1
-                    call damageTarget(caster, targetUnit, MAGIC_SEED_MAIN_DAMAGE[lvl])
+					call SpellHelper.damageTarget(caster, targetUnit, MAGIC_SEED_MAIN_DAMAGE[lvl], false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
                 endif
             endif
         endmethod
@@ -115,6 +107,7 @@ scope MagicSeed initializer init
             set dmg = xedamage.create()
             set dtype = DAMAGE_TYPE
             set atype = ATTACK_TYPE
+			set wtype = WEAPON_TYPE
         endmethod
     endstruct
 

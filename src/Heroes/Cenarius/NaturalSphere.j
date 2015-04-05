@@ -2,18 +2,14 @@ scope NaturalSphere initializer init
     /*
      * Description: Cenarius summons a natural sphere flying in the target direction, dealing damage to enemies 
                     it passes through. Whenever the sphere hits an enemy, there is a chance of 20%, that the target 
-                    gets entangled for a short time, which disables the target. If the target isnt rooted, 
+                    gets entangled for a short time, which disables the target. If the target is rooted, 
                     its movement speed is decreased by 30% for 5 seconds.
-     * Last Update: 08.01.2014
      * Changelog: 
      *     08.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     28.03.2015: Integrated SpellHelper for damaging and filtering
      */
     globals
         private constant integer SPELL_ID = 'A08D'
-    endglobals
-
-    //Missile Options
-    globals
         private constant string MISSILE_MODEL_PATH = "Abilities\\Spells\\Undead\\DarkSummoning\\DarkSummonMissile.mdl" 
         private constant real MISSILE_MODEL_SIZE = 1.50
         private constant real MISSILE_SPEED = 350.00
@@ -21,32 +17,24 @@ scope NaturalSphere initializer init
         private constant real MISSILE_MAX_SPEED = 850.00
         private constant real MISSILE_Z_OFFSET = 75.00
         private constant real MISSILE_AREA = 225.00
-        private real array MISSILE_DISTANCE
-    endglobals
-    
-    //Entangle Options
-    globals
+        
+		//Wenn true, wird die Einheit slowed, wenn sie eingewurzelt wird
+        private constant boolean SLOW_WHEN_ENTANGLED = false
+		private constant integer NATURAL_SPHERE_SLOW_BUFF_PLACER_ID = 'A08E'
+        private constant integer NATURAL_SPHERE_SLOW_BUFF_ID = 'B01O'
+        
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_SLOW_POISON
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+	
+        private real array DAMAGE
+		private real array SLOW_DURATION
+		private real array MISSILE_DISTANCE
         private real array ENTANGLE_CHANCE
         private real array ENTANGLE_DURATION
-        //Wenn true, wird die Einheit slowed, wenn sie eingewurzelt wird
-        private constant boolean SLOW_WHEN_ENTANGLED = false
-    endglobals
-    
-    //Slow Options
-    globals
-        private constant integer NATURAL_SPHERE_SLOW_BUFF_PLACER_ID = 'A08E'
-        private constant integer NATURAL_SPHERE_SLOW_BUFF_ID = 'B01O'
-        private real array SLOW_DURATION
-    endglobals
-    
-    //Damage Options
-    globals
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
-        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
-        private real array DAMAGE
     endglobals
 
-    
     private function MainSetup takes nothing returns nothing
         set MISSILE_DISTANCE[0] = 550
         set MISSILE_DISTANCE[1] = 700
@@ -119,7 +107,6 @@ scope NaturalSphere initializer init
     endstruct
     
     private struct NaturalSphere extends xecollider
-    
         unit caster = null
         integer lvl = 0
         group targets = null
@@ -139,19 +126,20 @@ scope NaturalSphere initializer init
         endmethod
         
         method onUnitHit takes unit u returns nothing
-            if not IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/     IsUnitInGroup(u, targets) and not /*
-			*/     IsUnitType(u, UNIT_TYPE_FLYING) and /*
-			*/     IsUnitEnemy(u, GetOwningPlayer(caster)) then
-                set DamageType = 1
-                call damageTarget(caster, u, DAMAGE[lvl])
-                static if SLOW_WHEN_ENTANGLED then
-                    if not IsUnitType(u, UNIT_TYPE_DEAD) and GetRandomReal(0.00, 1.00) <= ENTANGLE_CHANCE[lvl] then
+		
+			if (SpellHelper.isValidEnemy(u, caster) and not /*
+			*/  SpellHelper.isUnitImmune(u)) and not /*
+			*/	IsUnitInGroup(u, targets) then
+			    set DamageType = SPELL
+                call SpellHelper.damageTarget(caster, u, DAMAGE[lvl], false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+				
+				static if SLOW_WHEN_ENTANGLED then
+                    if not SpellHelper.isUnitDead(u) and GetRandomReal(0.00, 1.00) <= ENTANGLE_CHANCE[lvl] then
                         call CenariusMain_EntangleUnit(caster, u, ENTANGLE_DURATION[lvl], lvl)
                         call Slow.apply(caster, u, SLOW_DURATION[lvl], lvl)
                     endif
                 else
-                    if not IsUnitType(u, UNIT_TYPE_DEAD) then
+                    if not SpellHelper.isUnitDead(u) then
                         if GetRandomReal(0.00, 1.00) <= ENTANGLE_CHANCE[lvl] then
                             call CenariusMain_EntangleUnit(caster, u, ENTANGLE_DURATION[lvl], lvl)
                         else

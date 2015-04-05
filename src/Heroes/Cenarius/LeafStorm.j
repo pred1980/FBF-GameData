@@ -3,22 +3,22 @@ scope LeafStorm initializer init
      * Description: Cenarius starts to channel and creates a Leaf Storm moving from her in the target direction. 
                     The storm deals damage to every enemy that is trapped inside of it and slowly drags them in 
                     the target direction.
-     * Last Update: 08.01.2014
      * Changelog: 
      *     08.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     28.03.2015: Integrated SpellHelper for damaging and filtering
      */
     globals
         private constant integer SPELL_ID = 'A08J'
         private constant real TIMER_INTERVAL = 0.05
-    endglobals
-    
-    //Storm Options
-    globals
-        private constant damagetype STORM_DAMAGE_TYPE = DAMAGE_TYPE_COLD
-        private constant attacktype STORM_ATTACK_TYPE = ATTACK_TYPE_MAGIC
         private constant string STORM_EFFECT_MODEL = "Models\\LeafStorm.mdl"
         private constant real STORM_EFFECT_MODEL_HEIGHT = 60.00
-        private real array STORM_RADIUS
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_DISEASE
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+        
+		private real array STORM_RADIUS
         private real array STORM_EFFECT_MODEL_SIZE
         private real array STORM_DAMAGE_PER_SECOND
         private real array STORM_PUSH_PER_SECOND
@@ -63,10 +63,11 @@ scope LeafStorm initializer init
         static method targetFilter takes nothing returns boolean
             local unit u = GetFilterUnit()
             
-            if not IsUnitType(u, UNIT_TYPE_DEAD) and not IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(u, UNIT_TYPE_MECHANICAL) and IsUnitEnemy(u, GetOwningPlayer(temp.caster)) then
-                set DamageType = 1
-                call damageTarget(temp.caster, u, STORM_DAMAGE_PER_SECOND[temp.lvl] * TIMER_INTERVAL)
-                call SetUnitX(u, GetUnitX(u) + (STORM_PUSH_PER_SECOND[temp.lvl] * TIMER_INTERVAL) * temp.cos)
+			if (SpellHelper.isValidEnemy(u, temp.caster) and not /*
+			*/  SpellHelper.isUnitImmune(u)) then
+			    set DamageType = SPELL
+				call SpellHelper.damageTarget(temp.caster, u, STORM_DAMAGE_PER_SECOND[temp.lvl] * TIMER_INTERVAL, false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+				call SetUnitX(u, GetUnitX(u) + (STORM_PUSH_PER_SECOND[temp.lvl] * TIMER_INTERVAL) * temp.cos)
                 call SetUnitY(u, GetUnitY(u) + (STORM_PUSH_PER_SECOND[temp.lvl] * TIMER_INTERVAL) * temp.sin)
             endif
             
@@ -133,8 +134,7 @@ scope LeafStorm initializer init
             endif
             return this
         endmethod
-    
-    
+
         private static method channelStart takes nothing returns nothing
             call create()
         endmethod
@@ -146,7 +146,6 @@ scope LeafStorm initializer init
         endmethod
         
         private static method onInit takes nothing returns nothing
-        
             call RegisterSpellEffectResponse(SPELL_ID, channelStart)
             call RegisterSpellEndCastResponse(SPELL_ID, channelEnd)
             
@@ -155,9 +154,9 @@ scope LeafStorm initializer init
             set t = HandleTable.create()
             
             set damage = xedamage.create()
-            set dtype = STORM_DAMAGE_TYPE
-            set atype = STORM_ATTACK_TYPE
-            
+            set dtype = DAMAGE_TYPE
+            set atype = ATTACK_TYPE
+			set wtype = WEAPON_TYPE
         endmethod
     endstruct
     

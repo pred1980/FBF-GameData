@@ -2,11 +2,11 @@ scope FireStorm initializer Init
     /*
      * Description: Joos Ignos proves hes a master of magic by summoning a raging Storm of fire that damages his enemies. 
                     The Storm lasts for 6 seconds.
-     * Last Update: 05.01.2014
      * Changelog: 
      *     05.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     27.03.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for damaging and filtering
 	 *
-	 * To-Do: TriggerSleepAction ausbauen!
      */
     globals
         private constant integer SPELL_ID = 'A096'
@@ -18,9 +18,15 @@ scope FireStorm initializer Init
         private constant real MaxHeight = 600
         private constant real UnitTime = 6
         private constant real DetectDist = 100
+		private constant integer MAX_FIRE_MISSILES = 20
         private constant string ModelPath = "Models\\SunfireMissile.mdx"
         private constant string Effect = "Models\\FireBall.mdx"
         private constant string BirthEffect = "Models\\SunfireMissile.mdx"
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_FIRE
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
             
         private integer counter = 0
         private timer TIM = CreateTimer()
@@ -65,57 +71,52 @@ scope FireStorm initializer Init
             return dat
         endmethod
         
-        static method damageArea takes unit u, real x, real y returns nothing
+        static method damageArea takes unit source, real x, real y returns nothing
             local group g = CreateGroup()
-            local unit n = null  
-            local real d = (GetUnitAbilityLevel(u, SPELL_ID) * LvlInc) + InitDamage
+            local unit target = null  
+            local real dmg = (GetUnitAbilityLevel(source, SPELL_ID) * LvlInc) + InitDamage
         
             call GroupEnumUnitsInRange(g, x, y, DetectDist, null)
         
             loop
-                set n = FirstOfGroup(g)
-                exitwhen n == null
-                if IsUnitEnemy(n, GetOwningPlayer(u)) == true then
+                set target = FirstOfGroup(g)
+                exitwhen target == null
+				if (SpellHelper.isValidEnemy(target, source)) then
                     set DamageType = SPELL
-                    call UnitDamageTarget(u, n, d, true, false, ATTACK_TYPE_MAGIC, DAMAGE_TYPE_NORMAL, null)
-                    call DestroyEffect(AddSpecialEffectTarget(Effect, n, "chest"))
+					call SpellHelper.damageTarget(source, target, dmg, true, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+                    call DestroyEffect(AddSpecialEffectTarget(Effect, target, "chest"))
                 endif
-                call GroupRemoveUnit(g, n)
+                call GroupRemoveUnit(g, target)
             endloop
+			
             call DestroyGroup(g)
             set g = null
+			set target = null
         endmethod
         
-        static method detectUnit takes unit u, real x, real y returns integer
+        static method detectUnit takes unit source, real x, real y returns integer
             local group g = CreateGroup()
             local integer i = 0
-            local unit n = null   
+            local unit target = null   
         
             call GroupEnumUnitsInRange(g, x, y, DetectDist, null)
             loop
-                set n = FirstOfGroup(g)
-                exitwhen n == null
-                if IsUnitEnemy(n, GetOwningPlayer(u)) == true then
-                    if GetUnitState(n, UNIT_STATE_LIFE) > 0 then
-                        call DestroyGroup(g)
-                        set g = null
-                        set n = null
-                        return 0
-                    endif
+                set target = FirstOfGroup(g)
+                exitwhen target == null
+				if (SpellHelper.isValidEnemy(target, source)) then
+					call DestroyGroup(g)
+					set g = null
+					set target = null
+					return 0
                 endif
-                call GroupRemoveUnit(g, n)
-                
-                call DestroyGroup(g)
-                set n = null
-                set g = null
-        
+                call GroupRemoveUnit(g, target)
             endloop
         
             call DestroyGroup(g)
-            set g = null
+			set target = null
+			set g = null
         
             return 1
-        
         endmethod
         
         static method onLoop takes nothing returns nothing
@@ -143,7 +144,7 @@ scope FireStorm initializer Init
                 endif
                 
                 //End of onLoop actions
-                if GetWidgetLife(dat.entity) < 0.405 then
+				if (SpellHelper.isUnitDead(dat.entity)) then
                     set Data[i] = Data[counter - 1]
                     set counter = counter - 1
                     call DestroyEffect(AddSpecialEffectTarget(Effect, dat.entity, "origin"))
@@ -161,46 +162,31 @@ scope FireStorm initializer Init
         endmethod
         
         method onDestroy takes nothing returns nothing
-            local unit u = .entity
             call DestroyEffect(.s)
-            call TriggerSleepAction(.1)
-            call RemoveUnit(u)
-            
-            set u = null
+            call RemoveUnit(.entity)
         endmethod
 
     endstruct
 
-    private function FireStormConditions takes nothing returns boolean
-        return GetSpellAbilityId() == SPELL_ID
+    private function Actions takes nothing returns nothing
+		local integer i = 0
+		
+		loop
+			exitwhen i == MAX_FIRE_MISSILES
+			call Firedata.create(GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
+			set i = i + 1
+		endloop
     endfunction
-
-    private function FireStormActions takes nothing returns nothing
-        local integer i = 0
-        local unit u = GetTriggerUnit()
-        local real x = GetSpellTargetX()
-        local real y = GetSpellTargetY()
-        
-        loop
-            exitwhen i == 20
-            set i = i + 1
-            call TriggerSleepAction(.1)
-            call Firedata.create(u, x, y)
-        endloop
-        
-        set u = null
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function Init takes nothing returns nothing
-        local trigger MainTrigger = CreateTrigger()
-
-        call TriggerRegisterAnyUnitEventBJ( MainTrigger, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddCondition( MainTrigger, Condition( function FireStormConditions ) )
-        call TriggerAddAction( MainTrigger, function FireStormActions )
-
-        call Preload(ModelPath)
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+        
+		call Preload(ModelPath)
         call Preload(Effect)
-        set MainTrigger = null
     endfunction
     
 endscope

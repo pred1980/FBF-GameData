@@ -5,6 +5,7 @@ library ManaConcentration initializer init requires TimerUtils
      * Changelog: 
      *     01.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     31.03.2015: Integrated RegisterPlayerUnitEvent
      *
      */
     globals
@@ -45,20 +46,20 @@ library ManaConcentration initializer init requires TimerUtils
         real percent
         timer t
 		
-		static method onEnd takes nothing returns nothing
-            local thistype this = GetTimerData(GetExpiredTimer())
-            //Reset ManaAmout Multiplier
-            set ManaAmount[.id] = 1.0
-            call this.destroy()
-        endmethod
-		
 		method onDestroy takes nothing returns nothing
             call ReleaseTimer( .t )
             set .t = null
             set .caster = null
             set .dummy = null
         endmethod
-        
+		
+		static method onEnd takes nothing returns nothing
+            local thistype this = GetTimerData(GetExpiredTimer())
+            //Reset ManaAmout Multiplier
+            set ManaAmount[.id] = 1.0
+            call this.destroy()
+        endmethod
+
         static method create takes unit caster returns thistype
             local thistype this = thistype.allocate()
             
@@ -92,15 +93,9 @@ library ManaConcentration initializer init requires TimerUtils
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-		call TriggerAddCondition(t, Condition( function Conditions))
-        call TriggerAddAction(t, function Actions)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 		
 		call MainSetup()
-		
-		set t = null
     endfunction
 
 endlibrary

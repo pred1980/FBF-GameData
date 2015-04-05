@@ -1,12 +1,10 @@
 //! zinc
-
 library SpellSystem requires SpellEvent, optional AbilityPreload{
 
-    public constant integer SPELL_TYPE_TARGET_UNIT         = 1;
-    public constant integer SPELL_TYPE_TARGET_GROUND       = 2;
-    public constant integer SPELL_TYPE_NO_TARGET           = 3;
-    public constant integer SPELL_TYPE_SELF_CAST           = 4;
-    
+    public constant integer SPELL_TYPE_TARGET_UNIT = 1;
+    public constant integer SPELL_TYPE_TARGET_GROUND = 2;
+    public constant integer SPELL_TYPE_NO_TARGET = 3;
+    public constant integer SPELL_TYPE_SELF_CAST = 4;
     
     /*Required Variables:
         - integer spellId
@@ -19,8 +17,8 @@ library SpellSystem requires SpellEvent, optional AbilityPreload{
         - boolean adjustSubSkillLevel
     */
     
-    public module Spell{
-        public{
+    public module Spell {
+        public {
             unit caster, target;
             integer lvl;
             real x, y, cx, cy, dist, angle;
@@ -28,8 +26,7 @@ library SpellSystem requires SpellEvent, optional AbilityPreload{
             string order = "";
             static trigger learn = null;
         }
-        
-        
+
         private static method create(boolean subSkill, integer usedSkill) -> thistype{
             thistype this = allocate();
             real dx = 0.00, dy = 0.00; 
@@ -72,7 +69,8 @@ library SpellSystem requires SpellEvent, optional AbilityPreload{
         private static method onAbilityLearn()->boolean{
             unit u = GetLearningUnit();
             integer l = GetLearnedSkillLevel();
-            if(GetLearnedSkill() == spellId){
+			
+			if(GetLearnedSkill() == spellId){
                 static if(thistype.onLearn.exists){
                     if(l == 1){
                         thistype.onLearn(u);
@@ -111,11 +109,8 @@ library SpellSystem requires SpellEvent, optional AbilityPreload{
             TriggerRegisterAnyUnitEventBJ(learn, EVENT_PLAYER_HERO_SKILL);
             TriggerAddCondition(learn, Condition(static method thistype.onAbilityLearn));
         }
-        
     }
-    
-}
-        
+}    
 //! endzinc
             
             

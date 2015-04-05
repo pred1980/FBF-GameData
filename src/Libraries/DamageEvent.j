@@ -73,10 +73,6 @@ library DamageEvent initializer Init requires optional DamageModifiers, optional
     // for user reference only and should not be changed in any way.
     public function interface Response takes unit damagedUnit, unit damageSource, real damage returns nothing
 
-    function SET_DAMAGE_TYPE takes integer dmgtype returns nothing
-        set DamageType = dmgtype
-    endfunction
-    
 // END OF CALIBRATION SECTION    
 // ================================================================
 

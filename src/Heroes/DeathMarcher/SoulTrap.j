@@ -2,10 +2,11 @@ scope SoulTrap initializer init
     /*
      * Description: The Gatekeeper traps a unit in within his tormented soul, removing it from the battlefield 
                     and damaging it in the process. Mana Concentration increases the damage done.
-     * Last Update: 01.11.2013
      * Changelog: 
      *     01.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     24.03.2015: Fixed a bug after the "Spell-End" (onEnd) that the target ran in different directions
+	 *     30.03.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for damaging
      *
      */
     globals
@@ -23,6 +24,11 @@ scope SoulTrap initializer init
         //Stun Effect for Pause Target
         private constant string STUN_EFFECT = ""
         private constant string STUN_ATT_POINT = ""
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
 		
 		private real array DAMAGE
     endglobals
@@ -44,6 +50,14 @@ scope SoulTrap initializer init
         real y
         integer level = 0
         integer id = 0
+		
+		method onDestroy takes nothing returns nothing
+            call ReleaseTimer(.t)
+            set .t = null
+            set .caster = null
+            set .target = null
+            set .dummy = null
+        endmethod
         
 		static method onEnd takes nothing returns nothing
             local thistype this = GetTimerData(GetExpiredTimer())
@@ -51,8 +65,9 @@ scope SoulTrap initializer init
             call SetUnitX(this.target, this.x)
             call SetUnitY(this.target, this.y)
 			call IssueImmediateOrder(this.target, "holdposition")
-            set DamageType = SPELL
-            call UnitDamageTarget( this.caster, this.target, DAMAGE[this.level] * ManaConcentration_GET_MANA_AMOUNT(this.id), false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_DEATH, WEAPON_TYPE_WHOKNOWS )
+            
+			set DamageType = SPELL
+			call SpellHelper.damageTarget(this.caster, this.target, DAMAGE[this.level] * ManaConcentration_GET_MANA_AMOUNT(this.id), false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
             call DestroyEffect(AddSpecialEffect(END_EFFECT, GetUnitX(this.target), GetUnitY(this.target)))
         
             call this.destroy()
@@ -97,14 +112,6 @@ scope SoulTrap initializer init
             
             return this
         endmethod
-        
-        method onDestroy takes nothing returns nothing
-            call ReleaseTimer(.t)
-            set .t = null
-            set .caster = null
-            set .target = null
-            set .dummy = null
-        endmethod
     endstruct
 	
 	private function Conditions takes nothing returns boolean
@@ -112,21 +119,16 @@ scope SoulTrap initializer init
     endfunction
 
     private function Actions takes nothing returns nothing
-        call SoulTrap.create( GetTriggerUnit(), GetSpellTargetUnit() )
+        call SoulTrap.create(GetTriggerUnit(), GetSpellTargetUnit())
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition(t, Condition( function Conditions))
-        call TriggerAddAction(t, function Actions )
-        call XE_PreloadAbility(DUMMY_SPELL_ID)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+		
+		call XE_PreloadAbility(DUMMY_SPELL_ID)
         call Preload(START_EFFECT)
         call Preload(END_EFFECT)
 		call MainSetup()
-		
-		set t = null
     endfunction
 
 endscope

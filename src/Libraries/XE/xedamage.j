@@ -239,12 +239,12 @@ library xedamage initializer init requires xebasic
 
 
         private method getTargetFactorCore takes unit source, unit target, boolean usetypes returns real
-         local player p=GetOwningPlayer(source)
-         local boolean allied=IsUnitAlly(target,p)
-         local boolean enemy =IsUnitEnemy(target,p)
-         local boolean neutral=allied
-         local real   f
-         local real   negf=1.0
+         local player p = GetOwningPlayer(source)
+         local boolean allied = IsUnitAlly(target,p)
+         local boolean enemy = IsUnitEnemy(target,p)
+         local boolean neutral = allied
+         local real f
+         local real negf = 1.0
          local integer i
 
             if(this.damageAllies != this.damageNeutral) then
@@ -269,9 +269,9 @@ library xedamage initializer init requires xebasic
                 return 0.0
             elseif( this.visibleOnly and not IsUnitVisible(target,p) ) then
                 return 0.0
-            elseif ( this.deadOnly and not IsUnitType(target,UNIT_TYPE_DEAD) ) then
+            elseif ( this.deadOnly and not SpellHelper.isUnitDead(target) ) then
                 return 0.0
-            elseif ( not(this.alsoDead) and IsUnitType(target,UNIT_TYPE_DEAD) ) then
+            elseif ( not(this.alsoDead) and SpellHelper.isUnitDead(target) ) then
                 return 0.0               
             endif
 
@@ -361,7 +361,6 @@ library xedamage initializer init requires xebasic
                 
                 set .inUse = .inUse +1
                 set pl=GetWidgetLife(target)
-                set DamageType = SPELL
                 call UnitDamageTarget(source,target,  f*damage, true, .ranged, .atype, .dtype, .wtype )
                 set .inUse = .inUse -1
                 set .CurrentDamageTag = tg

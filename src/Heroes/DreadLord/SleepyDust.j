@@ -2,10 +2,11 @@ scope SleepyDust initializer init
     /*
      * Description: The Snake Tongue summons an invisible Dust Bag on the floor that releases Sleep Powder 
                     when an enemy steps on it, effectively putting the unit to sleep.
-     * Last Update: 18.11.2013
      * Changelog: 
      *     18.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
+	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     04.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for filtering
      */
     globals
         private constant integer DUMMY_ID = 'e00Y'
@@ -56,10 +57,8 @@ scope SleepyDust initializer init
 		*/      attId == BAG_IDS[2] or /*
 		*/      attId == BAG_IDS[3] or /*
 		*/      attId == BAG_IDS[4] and /*
-		*/      IsUnitEnemy( u, GetOwningPlayer(a)) and not /*
-		*/	    IsUnitType(u, UNIT_TYPE_DEAD) and not /*
-		*/      IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-		*/      IsUnitType(u, UNIT_TYPE_MECHANICAL)
+		*/ 		SpellHelper.isValidEnemy(u, a) and not /*
+		*/		SpellHelper.isUnitImmune(u)
 		
 		set a = null
 		set u = null
@@ -68,16 +67,11 @@ scope SleepyDust initializer init
     endfunction
     
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger(  )
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_ATTACKED, function Conditions, function Actions)
         
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_ATTACKED)
-        call TriggerAddCondition(t, Condition( function Conditions))
-        call TriggerAddAction(t, function Actions)
         call MainSetup()
         call XE_PreloadAbility(DUMMY_SPELL_ID)
         call Preload(EFFECT)
-		
-		set t = null
-    endfunction
+	endfunction
     
 endscope

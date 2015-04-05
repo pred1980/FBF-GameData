@@ -4,9 +4,9 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
      * -----------
      * Description: Dominus and all his minions burrow for a limited time, after which, if there is a unit in the target area, 
                     they will come out of the earth close to it, else they will unburrow at the Crypt Lords position.
-     * Last Update: 06.11.2013
      * Changelog: 
      *     06.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     29.03.2015: Integrated RegisterPlayerUnitEvent
      *
      */
      
@@ -15,10 +15,11 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
      * -----------
      * Description: His giant horn allows Dominus to inject his spawn into a unit. If the unit dies within the next 5 seconds, 
                     a Grub will spawn out of the corpse. There only can be a limited amount of grubs and beetles at the same time.
-     * Last Update: 10.02.2015
      * Changelog: 
      *     06.11.2013: Abgleich mit OE und der Exceltabelle
 	 *	   08.02.2015: Decreased max. swarms from 3/5/7/9/11 to 3/4/5/6/7
+	 *     29.03.2015: Integrated RegisterPlayerUnitEvent
+					   Integrated SpellHelper filtering
      *
      */
      
@@ -27,9 +28,9 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
      * -----------
      * Description: Gives your Grubs the ability to develop into the more powerful Carrion Beetles over 1 minute. 
                     They deal double damage and have more hp.
-     * Last Update: 06.11.2013
      * Changelog: 
      *     06.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     29.03.2015: Integrated RegisterPlayerUnitEvent
      *
      */
     globals
@@ -107,53 +108,13 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
     endfunction
 
     function CarrionSwarmAttack takes unit damagedUnit, unit damageSource, real damage returns nothing
-        if damageSource == lord and UnitTargetable(damageSource, damagedUnit) and DamageType == 0 then
+        if damageSource == lord and SpellHelper.isValidEnemy(damagedUnit, damageSource) and DamageType == PHYSICAL then
             call infectUnit.execute(damagedUnit)
         endif
     endfunction
     
-    private function deathConds takes nothing returns boolean
-        local unit u = GetTriggerUnit()
-        local unit grub
-        
-        if IsGrub(u) then
-            call GroupRemoveUnit(grubs,u)
-            set swarmCount = swarmCount - 1
-        elseif IsCocoon(u) then
-            call GroupRemoveUnit(cocoons,u)
-            set swarmCount = swarmCount - 1
-        elseif IsBeetle(u) then
-            call GroupRemoveUnit(beetles,u)
-            set swarmCount = swarmCount - 1
-        elseif GetUnitAbilityLevel(lord,SWARM_ID) > 0 and stackCount[GetUnitId(u)] > 0 and swarmCount < MAX_SWARM_PER_LEVEL * GetUnitAbilityLevel(lord,SWARM_ID) + MAX_SWARM_BASE then
-            set grub = CreateUnit(lordOwner, GRUB_ID[GetUnitAbilityLevel(lord,SWARM_ID)], GetUnitX(u), GetUnitY(u), GetRandomReal(0,360))
-            set swarmCount = swarmCount + 1
-            call SelectUnitAddForPlayer(grub,lordOwner)
-            if morphLearned then
-                call UnitAddAbility(grub,MORPH_ID_GRUB)
-            endif
-            call GroupAddUnit(grubs,grub)
-            set grub = null
-        endif
-        set u = null
-        return false
-    endfunction
-    
     private function AddMorphAbility takes nothing returns nothing
         call UnitAddAbility(GetEnumUnit(),MORPH_ID_GRUB)
-    endfunction
-    
-    private function learnConds takes nothing returns boolean
-        local unit u = GetTriggerUnit()
-        local integer lid = GetLearnedSkill()
-        if (lid == BURROW_ID or lid == SWARM_ID) and lord == null then
-            set lord = GetTriggerUnit()
-            set lordOwner = GetOwningPlayer(lord)
-        elseif lid == MORPH_ID and not(morphLearned) then
-            set morphLearned = true
-            call ForGroup(grubs,function AddMorphAbility)
-        endif
-        return false
     endfunction
     
     private struct saveCocoon
@@ -169,8 +130,8 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
     private function eMorph takes unit cocoon, real x, real y returns nothing
         call GroupRemoveUnit(cocoons,cocoon)
         call RemoveUnit(cocoon)
-        call ec(x,y,FINISH_MORPH_EFFECT)
-        call GroupAddUnit(beetles,CreateUnit(lordOwner,BEETLE_ID[GetUnitAbilityLevel(lord,MORPH_ID)],x,y,GetRandomReal(0,360)))
+		call DestroyEffect(AddSpecialEffect(FINISH_MORPH_EFFECT, x, y))
+        call GroupAddUnit(beetles,CreateUnit(lordOwner,BEETLE_ID[GetUnitAbilityLevel(lord,MORPH_ID)], x, y, GetRandomReal(0,360)))
     endfunction
     
     private function morph_callback takes nothing returns nothing
@@ -191,7 +152,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         set sc.y = GetUnitY(grub)
         call GroupRemoveUnit(grubs,grub)
         call RemoveUnit(grub)
-        call ec(sc.x,sc.y,START_MORPH_EFFECT)
+		call DestroyEffect(AddSpecialEffect(START_MORPH_EFFECT, sc.x, sc.y))
         set sc.cocoon = CreateUnit(lordOwner,COCOON_ID,sc.x,sc.y,GetRandomReal(0,360))
         call GroupAddUnit(cocoons,sc.cocoon)
         call SetTimerData(t,sc)
@@ -200,14 +161,16 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
     
     private function startMorph takes nothing returns nothing
         local unit u = GetEnumUnit()
-        call ec(GetUnitX(u),GetUnitY(u),START_BURROW_EFFECT)
+		
+		call DestroyEffect(AddSpecialEffect(START_BURROW_EFFECT, GetUnitX(u), GetUnitY(u)))
         call ShowUnit(u,false)
         set u = null
     endfunction
     
     private function finishMorph takes nothing returns nothing
         local unit u = GetEnumUnit()
-        call ec(tempX,tempY,FINISH_BURROW_EFFECT)
+		
+		call DestroyEffect(AddSpecialEffect(FINISH_BURROW_EFFECT, tempX, tempY))
         call SetUnitX(u,tempX)
         call SetUnitY(u,tempY)
         call ShowUnit(u,true)
@@ -251,7 +214,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         set u = null
     endfunction
     
-    private function abilConds takes nothing returns boolean
+    private function Conditions takes nothing returns boolean
         local integer abilID = GetSpellAbilityId()
 		
         if abilID == MORPH_ID_GRUB then
@@ -262,18 +225,51 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
 		
         return false
     endfunction
-    
-    private function init takes nothing returns nothing
-        local trigger death = CreateTrigger()
-        local trigger learn = CreateTrigger()
-        local trigger abil = CreateTrigger()
+	
+	private function DeathConditions takes nothing returns boolean
+        local unit u = GetTriggerUnit()
+        local unit grub
         
-        call TriggerRegisterAnyUnitEventBJ(death,EVENT_PLAYER_UNIT_DEATH)
-        call TriggerAddCondition(death,Condition(function deathConds))
-        call TriggerRegisterAnyUnitEventBJ(learn,EVENT_PLAYER_HERO_SKILL)
-        call TriggerAddCondition(learn,Condition(function learnConds))
-        call TriggerRegisterAnyUnitEventBJ(abil,EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(abil,Condition(function abilConds))
+        if IsGrub(u) then
+            call GroupRemoveUnit(grubs,u)
+            set swarmCount = swarmCount - 1
+        elseif IsCocoon(u) then
+            call GroupRemoveUnit(cocoons,u)
+            set swarmCount = swarmCount - 1
+        elseif IsBeetle(u) then
+            call GroupRemoveUnit(beetles,u)
+            set swarmCount = swarmCount - 1
+        elseif GetUnitAbilityLevel(lord,SWARM_ID) > 0 and stackCount[GetUnitId(u)] > 0 and swarmCount < MAX_SWARM_PER_LEVEL * GetUnitAbilityLevel(lord,SWARM_ID) + MAX_SWARM_BASE then
+            set grub = CreateUnit(lordOwner, GRUB_ID[GetUnitAbilityLevel(lord,SWARM_ID)], GetUnitX(u), GetUnitY(u), GetRandomReal(0,360))
+            set swarmCount = swarmCount + 1
+            call SelectUnitAddForPlayer(grub,lordOwner)
+            if morphLearned then
+                call UnitAddAbility(grub,MORPH_ID_GRUB)
+            endif
+            call GroupAddUnit(grubs,grub)
+            set grub = null
+        endif
+        set u = null
+        return false
+    endfunction
+	
+	private function LearnConditions takes nothing returns boolean
+        local unit u = GetTriggerUnit()
+        local integer lid = GetLearnedSkill()
+        if (lid == BURROW_ID or lid == SWARM_ID) and lord == null then
+            set lord = GetTriggerUnit()
+            set lordOwner = GetOwningPlayer(lord)
+        elseif lid == MORPH_ID and not(morphLearned) then
+            set morphLearned = true
+            call ForGroup(grubs,function AddMorphAbility)
+        endif
+        return false
+    endfunction
+	
+    private function init takes nothing returns nothing
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, function DeathConditions, null)
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_HERO_SKILL, function LearnConditions, null)
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, null)
         
         set BEETLE_ID[1] = BEETLE1_ID
         set BEETLE_ID[2] = BEETLE2_ID
@@ -292,7 +288,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         call Preload(START_BURROW_EFFECT)
         call Preload(FINISH_BURROW_EFFECT)
         
-        call RegisterDamageResponse( CarrionSwarmAttack )
+        call RegisterDamageResponse(CarrionSwarmAttack)
     endfunction
     
 endlibrary

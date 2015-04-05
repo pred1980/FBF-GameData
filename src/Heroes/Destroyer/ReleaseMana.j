@@ -4,8 +4,10 @@ scope ReleaseMana initializer init
                     and slows every enemy it hits. The AoE depends on the amount of mana used.
      * Last Update: 14.11.2013
      * Changelog: 
-     *     14.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+     *      14.11.2013: Abgleich mit OE und der Exceltabelle
+	 *      19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     	03.04.2015: Integrated RegisterPlayerUnitEvent
+	                    Integrated SpellHelper for filtering and damaging
      */
     globals
         private constant integer SPELL_ID = 'A06Q'
@@ -14,6 +16,11 @@ scope ReleaseMana initializer init
         private constant real DAMAGE = 240
         private constant string EFFECT_1 = "Abilities\\Spells\\Undead\\ReplenishMana\\ReplenishManaCaster.mdl"
         private constant string EFFECT_2 = "Abilities\\Spells\\NightElf\\Blink\\BlinkTarget.mdl"
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_SONIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
     
     private struct ReleaseMana
@@ -27,9 +34,36 @@ scope ReleaseMana initializer init
         real radius = 0.00
         real x = 0.00
         real y = 0.00
-        static thistype tempthis
+        static thistype tempthis = 0
+		
+		method onDestroy takes nothing returns nothing
+            call ReleaseGroup( .targets )
+            set .targets = null
+            set .caster = null
+            set .dummy = null
+        endmethod
         
-        static method create takes unit caster returns thistype
+        static method group_filter_callback takes nothing returns boolean
+			return SpellHelper.isValidEnemy(GetFilterUnit(), .tempthis.caster)
+		endmethod
+        
+        static method onDamageTarget takes nothing returns nothing
+            local unit u = GetEnumUnit()
+            
+            set .tempthis.dummy = CreateUnit(Player(.tempthis.id), DUMMY_ID, .tempthis.x, .tempthis.y, 0)
+            call UnitApplyTimedLife(.tempthis.dummy, 'BTLF', 12)
+            call SetUnitAbilityLevel(.tempthis.dummy, DUMMY_SPELL_ID, .tempthis.level)
+            call IssueTargetOrder(.tempthis.dummy, "slow", u)
+            
+			set DamageType = SPELL
+			call SpellHelper.damageTarget(.tempthis.caster, u, I2R(.tempthis.level) * DAMAGE, false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+            call DestroyEffect(AddSpecialEffect(EFFECT_2, GetUnitX(u), GetUnitY(u)))
+            call GroupRemoveUnit(.tempthis.targets, u)
+            
+            set u = null
+        endmethod
+
+		static method create takes unit caster returns thistype
             local thistype this = thistype.allocate()
             
             set .caster = caster
@@ -56,36 +90,6 @@ scope ReleaseMana initializer init
             call destroy()
             return this
         endmethod
-        
-        static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not IsUnitDead(GetFilterUnit()) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL) and IsUnitType(GetFilterUnit(), UNIT_TYPE_GROUND)
-        endmethod
-        
-        static method onDamageTarget takes nothing returns nothing
-            local unit u = GetEnumUnit()
-            
-            set .tempthis.dummy = CreateUnit(Player(.tempthis.id), DUMMY_ID, .tempthis.x, .tempthis.y, 0)
-            call UnitApplyTimedLife(.tempthis.dummy, 'BTLF', 12)
-            call SetUnitAbilityLevel(.tempthis.dummy, DUMMY_SPELL_ID, .tempthis.level)
-            call IssueTargetOrder(.tempthis.dummy, "slow", u)
-            set DamageType = SPELL
-            call DamageUnit(.tempthis.caster, u, I2R(.tempthis.level) * DAMAGE, true)
-            call DestroyEffect(AddSpecialEffect(EFFECT_2, GetUnitX(u), GetUnitY(u)))
-            call GroupRemoveUnit(.tempthis.targets, u)
-            
-            set u = null
-        endmethod
-        
-        method onDestroy takes nothing returns nothing
-            call ReleaseGroup( .targets )
-            set .targets = null
-            set .caster = null
-            set .dummy = null
-        endmethod
-        
-        static method onInit takes nothing returns nothing
-            set .tempthis = 0
-        endmethod
     endstruct
     
     private function Actions takes nothing returns nothing
@@ -97,17 +101,11 @@ scope ReleaseMana initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-		call TriggerAddCondition(t, Condition( function Conditions))
-        call TriggerAddAction(t, function Actions)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         
 		call XE_PreloadAbility(DUMMY_SPELL_ID)
         call Preload(EFFECT_1)
         call Preload(EFFECT_2)
-		
-		set t = null
     endfunction
 
 endscope

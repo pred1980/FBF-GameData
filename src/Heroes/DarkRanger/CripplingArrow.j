@@ -2,11 +2,11 @@ scope CripplingArrow initializer Init
     /*
      * Description: Gabrielle shoots a poisoned arrow that slows down the targeted unit. 
                     It deals bonus damage if the target is already affected by an arrow.
-     * Last Update: 24.11.2013
      * Changelog: 
-     * 		24.11.2013: Abgleich mit OE und der Exceltabelle
-	 *		28.03.2014: Missile Speed um 15% erhoeht
-	 *      18.03.2015: Added Immunity Check for the target unit
+     *     24.11.2013: Abgleich mit OE und der Exceltabelle
+	 *	   28.03.2014: Missile Speed um 15% erhoeht
+	 *     29.03.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for damaging
      */
     globals
         private constant integer SPELL_ID = 'A0AJ'
@@ -28,14 +28,20 @@ scope CripplingArrow initializer Init
         private constant string STUN_EFFECT = ""
         private constant string STUN_ATT_POINT = ""
         private constant real STUN_DURATION = 0.5
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_PIERCE
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_POISON
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private xedamage damageOptions
     endglobals
   
     private function setupDamageOptions takes xedamage d returns nothing
-       set d.dtype = DAMAGE_TYPE_POISON
-       set d.atype = ATTACK_TYPE_PIERCE
-       
+       set d.dtype = DAMAGE_TYPE
+       set d.atype = ATTACK_TYPE
+	   set d.wtype = WEAPON_TYPE
+	   
        set d.exception = UNIT_TYPE_STRUCTURE 
     endfunction
 
@@ -63,12 +69,12 @@ scope CripplingArrow initializer Init
             local unit u
             
             if (damageOptions.allowedTarget(this.caster, hitunit )) then
-                set DamageType = SPELL
+                set DamageType = PHYSICAL
                 
                 if GetUnitAbilityLevel(hitunit, BUFF_ID) > 0 then
-                    call UnitDamageTarget(this.caster, hitunit, MULTIPLIER *(BASE_DAMAGE + this.level * DAMAGE_PER_LEVEL), false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_UNKNOWN,WEAPON_TYPE_WHOKNOWS)
+					call SpellHelper.damageTarget(this.caster, hitunit, MULTIPLIER *(BASE_DAMAGE + this.level * DAMAGE_PER_LEVEL), true, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
                 else
-                    call UnitDamageTarget(this.caster, hitunit, BASE_DAMAGE + this.level * DAMAGE_PER_LEVEL, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_UNKNOWN,WEAPON_TYPE_WHOKNOWS)
+					call SpellHelper.damageTarget(this.caster, hitunit, BASE_DAMAGE + this.level * DAMAGE_PER_LEVEL, true, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
                 endif
                 
                 set u = CreateUnit(GetOwningPlayer(this.caster), DUMMY_ID, GetUnitX(hitunit), GetUnitY(hitunit), 0)
@@ -114,16 +120,11 @@ scope CripplingArrow initializer Init
 
   
     private function Init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-
-        set damageOptions = xedamage.create()
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+		
+		set damageOptions = xedamage.create()
         call setupDamageOptions(damageOptions)
 
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function Actions)
-        set t = null
-        
         call Preload(MAIN_MODEL)
     endfunction
 endscope

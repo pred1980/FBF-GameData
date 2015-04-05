@@ -235,7 +235,7 @@ library PassiveSpellSystem requires ModuleListModule, AutoIndex
             private static method onUnitEntersMap takes unit u returns nothing
                 local thistype this = u:thistype
                 if this != 0 then
-                    call BJDebugMsg("Detected a passive spell!")
+                    debug call BJDebugMsg("Detected a passive spell!")
                     static if thistype.onPassiveSpellDetectionCreate.exists then
                         call onPassiveSpellDetectionCreate()
                     endif

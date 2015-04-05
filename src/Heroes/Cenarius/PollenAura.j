@@ -4,20 +4,20 @@ scope PollenAura initializer init
                     in 700 range. The pollen also reduce the life regeneration of enemies depending on how close they 
                     are to Cenarius. The pollen can also negate the life regeneration of enemies causing them to lose 
                     life over time. However, these pollen cannot kill any units.
-     * Last Update: 08.01.2014
      * Changelog: 
      *     08.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     28.03.2015: Integrated SpellHelper for damaging and filtering
      */
     globals
         private constant integer SPELL_ID = 'A08G'
         private constant integer SLOW_SPELL_ID = 'A08H'
         private constant integer CASTER_EFFECT_SPELL_ID = 'A08I'
         private constant real TIMER_INTERVAL = 0.20
-        private real array LIFE_DEGENERATION
+        
+		private real array LIFE_DEGENERATION
         private real array SPELL_RADIUS
         //Erklärung: Wenn eine Einheit innerhalb dieses Radius ist, wird direkt der volle Schaden ausgeteilt.
         private real array SPELL_FULL_DEGENERATION_THRESHOLD
-    
     endglobals
 
     private function MainSetup takes nothing returns nothing
@@ -40,7 +40,6 @@ scope PollenAura initializer init
         set SPELL_FULL_DEGENERATION_THRESHOLD[4] = 200.00
     endfunction
 
-
     private struct Main
         static constant integer spellId = SPELL_ID
         static constant integer subSkillId = SLOW_SPELL_ID
@@ -62,11 +61,8 @@ scope PollenAura initializer init
             local real dy = GetUnitY(u) - GetUnitY(temp.caster)
             local real dist = SquareRoot(dx * dx + dy * dy)
             
-            if not IsUnitType(u, UNIT_TYPE_DEAD) and not /*
-			*/	   IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-            */     IsUnitType(u, UNIT_TYPE_MECHANICAL) and /*
-			*/     IsUnitEnemy(u, GetOwningPlayer(temp.caster)) then
-                if dist <= SPELL_FULL_DEGENERATION_THRESHOLD[temp.lvl] then
+			if (SpellHelper.isValidEnemy(u, temp.caster)) then
+				if dist <= SPELL_FULL_DEGENERATION_THRESHOLD[temp.lvl] then
                     if GetUnitState(u, UNIT_STATE_LIFE) - (LIFE_DEGENERATION[temp.lvl] * TIMER_INTERVAL) <= 1.00 then
                         call SetUnitState(u, UNIT_STATE_LIFE, 1.00)
                     else
@@ -79,7 +75,7 @@ scope PollenAura initializer init
                         call SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_LIFE) - ((LIFE_DEGENERATION[temp.lvl] * TIMER_INTERVAL) * (1 - (dist / SPELL_RADIUS[temp.lvl]))))
                     endif
                 endif
-            endif
+			endif
             
             set u = null
             return false
@@ -90,7 +86,7 @@ scope PollenAura initializer init
             
             loop
                 exitwhen this == 0
-                if not IsUnitType(caster, UNIT_TYPE_DEAD) then
+                if not SpellHelper.isUnitDead(caster) then
                     set temp = this
                     call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(caster), GetUnitY(caster), SPELL_RADIUS[lvl], filter)
                 endif    

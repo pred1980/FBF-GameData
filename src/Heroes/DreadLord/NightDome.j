@@ -6,6 +6,8 @@ scope NightDome initializer init
      * Changelog: 
      *     18.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     05.04.2015: Integrated RegisterPlayerUnitEvent
+					   Code-Refactoring
      */
     globals
         private constant integer SPELL_ID = 'A06Z'
@@ -60,49 +62,8 @@ scope NightDome initializer init
             call DestroyTrigger(.castTrigger)
             set .dome = null
         endmethod
-        
-        static method create takes unit c, real tx, real ty returns thistype
-            local thistype this = thistype.allocate()
-            local integer level = GetUnitAbilityLevel(c,SPELL_ID)-1            
-            
-            set .dome = CreateUnit(GetOwningPlayer(c),EFFECT_ID,tx,ty,270)
-            set .x = tx
-            set .y = ty
-            set .level = AURA_START[level]
-            call SetUnitAbilityLevel(.dome, AURA_ID, .level)
-            set .charges = 0
-            
-            set .aniTimer = NewTimer()
-            call SetTimerData(.aniTimer, this)
-            call TimerStart(.aniTimer, BUILDUP, false, function thistype.AniStop)
-            
-            set .durTimer = NewTimer()
-            call SetTimerData(.durTimer, this)
-            call TimerStart(.durTimer, DURATION[level]-DEATH, false, function thistype.TimeOut)
-            
-            set .castTrigger = CreateTrigger()
-            call TriggerRegisterAnyUnitEventBJ( .castTrigger, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-            call TriggerAddCondition(.castTrigger, Condition(function thistype.DomeUp))
-            call SaveIntegerBJ(this, 6, GetHandleId(.castTrigger), unitSpellData)
-            
-            return this
-        endmethod
-        
-        static method TimeOut takes nothing returns nothing
-            local thistype this= GetTimerData(GetExpiredTimer())
-            
-            call SetUnitTimeScale(this.dome,1.0)
-            call UnitApplyTimedLife(this.dome,'BTLF',DEATH)
-            call this.destroy()
-        endmethod
-        
-        static method AniStop takes nothing returns nothing
-            local thistype this = GetTimerData(GetExpiredTimer())
-            
-            call SetUnitTimeScale(this.dome,0.0)
-        endmethod
-        
-        static method DomeDown takes nothing returns nothing
+		
+		static method DomeDown takes nothing returns nothing
             local thistype this = GetTimerData(GetExpiredTimer())
             local integer t = 0
             
@@ -123,8 +84,8 @@ scope NightDome initializer init
             set this.level = this.level - 1
             call SetUnitAbilityLevel(this.dome, AURA_ID, this.level)
         endmethod
-        
-        static method DomeUp takes nothing returns boolean
+		
+		static method DomeUp takes nothing returns boolean
             local unit u = GetTriggerUnit()
             local real x = GetUnitX(u)
             local real y = GetUnitY(u)
@@ -144,7 +105,47 @@ scope NightDome initializer init
             set u = null
             return false
         endmethod
-
+		
+		static method TimeOut takes nothing returns nothing
+            local thistype this= GetTimerData(GetExpiredTimer())
+            
+            call SetUnitTimeScale(this.dome,1.0)
+            call UnitApplyTimedLife(this.dome,'BTLF',DEATH)
+            call this.destroy()
+        endmethod
+		
+		static method AniStop takes nothing returns nothing
+            local thistype this = GetTimerData(GetExpiredTimer())
+            
+            call SetUnitTimeScale(this.dome,0.0)
+        endmethod
+        
+        static method create takes unit c, real tx, real ty returns thistype
+            local thistype this = thistype.allocate()
+            local integer level = GetUnitAbilityLevel(c,SPELL_ID)-1            
+            
+            set .dome = CreateUnit(GetOwningPlayer(c),EFFECT_ID,tx,ty,270)
+            set .x = tx
+            set .y = ty
+            set .level = AURA_START[level]
+            call SetUnitAbilityLevel(.dome, AURA_ID, .level)
+            set .charges = 0
+            
+            set .aniTimer = NewTimer()
+            call SetTimerData(.aniTimer, this)
+            call TimerStart(.aniTimer, BUILDUP, false, function thistype.AniStop)
+            
+            set .durTimer = NewTimer()
+            call SetTimerData(.durTimer, this)
+            call TimerStart(.durTimer, DURATION[level]-DEATH, false, function thistype.TimeOut)
+            
+			set .castTrigger = CreateTrigger()
+            call TriggerRegisterAnyUnitEventBJ( .castTrigger, EVENT_PLAYER_UNIT_SPELL_EFFECT )
+            call TriggerAddCondition(.castTrigger, Condition(function thistype.DomeUp))
+            call SaveIntegerBJ(this, 6, GetHandleId(.castTrigger), unitSpellData)
+            
+            return this
+        endmethod
     endstruct
 
     private function Actions takes nothing returns nothing
@@ -156,17 +157,11 @@ scope NightDome initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-		call TriggerAddCondition(t, Condition( function Conditions))
-        call TriggerAddAction(t, function Actions )
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 		
         call MainSetup()
         call XE_PreloadAbility(AURA_ID)
         call Preload(DRAIN_EFFECT)
-		
-		set t = null
-    endfunction
+	endfunction
 
 endscope

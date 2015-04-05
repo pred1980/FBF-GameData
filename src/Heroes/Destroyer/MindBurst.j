@@ -5,6 +5,8 @@ scope MindBurst initializer Init
      * Changelog: 
      *     12.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     19.03.2015: Coderefactoring
+	 *     04.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for filtering and damaging
      */
     globals
         //Rawcodes
@@ -43,10 +45,14 @@ scope MindBurst initializer Init
         private constant string  DamageEffect  = "Abilities\\Weapons\\WingedSerpentMissile\\WingedSerpentMissile.mdl" 
         private constant string  HealEffect = "Abilities\\Spells\\Items\\AIma\\AImaTarget.mdl"                     
         private constant string  MissilesDeath = "Abilities\\Spells\\Orc\\LightningBolt\\LightningBoltMissile.mdl" 
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_SONIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
 
         //System Variables , Do not change
         private timer t = CreateTimer()
-        private boolexpr filter = null
         private unit Dummy = null
         private group ENUM_GROUP = CreateGroup()
     endglobals
@@ -68,31 +74,9 @@ scope MindBurst initializer Init
         return 30.00 + level * 20.00
     endfunction
 
-    private function DealDamageCondition takes unit enemy , unit caster returns boolean
-        // The condition if a unit is damaged
-        return IsPlayerEnemy(GetOwningPlayer(enemy),GetOwningPlayer(caster)) // The condition if a unit is damaged 
-    endfunction
-
     private function ManaDrainCondition takes unit a  returns boolean
-        // Additional condition (including DealDamageCondition) if the caster can directly steal mana 
         return (GetUnitState(a,UNIT_STATE_MANA) > 0.0)
     endfunction
-
-    private function UnitFilter takes nothing returns boolean
-        local boolean b = false
-		local unit u = GetFilterUnit()
-		
-        if not(IsUnitType(u, UNIT_TYPE_MECHANICAL)) and not(IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE)) then    
-            set b = IsUnitType(u, UNIT_TYPE_GROUND) and not IsUnitDead(GetFilterUnit())
-        endif
-		
-		set u = null
-		
-        return b
-    endfunction
-
-
-    ///////////////////////////////////Main Struckt//Do not change//////////////////////////////////////////////
 
     private struct Missiles
         static integer Index = 0
@@ -152,35 +136,38 @@ scope MindBurst initializer Init
             set data.rangeleft = data.rangeleft - MissileSpeed
             set a = 0
             // looping through all units in range
-            call GroupEnumUnitsInRange(ENUM_GROUP, data.x, data.y,radius + AdditionalDamageRange, filter) 
+            call GroupEnumUnitsInRange(ENUM_GROUP, data.x, data.y,radius + AdditionalDamageRange, null) 
             loop
                 set b = FirstOfGroup(ENUM_GROUP)
                 exitwhen b == null
                 call GroupRemoveUnit(ENUM_GROUP,b)
                 //checking if they are alrady damaged
-                if IsUnitInGroup(b, data.DamagedUnits) == false and DealDamageCondition(b, data.caster) then
-                    //damaging + casting buff
-
-                    call GroupAddUnit(data.DamagedUnits,b)
-                    set DamageType = SPELL
-                    call UnitDamageTarget(data.caster,b,DamagePerLevel(data.level),true, false,ATTACK_TYPE_NORMAL,DAMAGE_TYPE_NORMAL,WEAPON_TYPE_WHOKNOWS)
-                    call DestroyEffect(AddSpecialEffectTarget(DamageEffect, b, "chest") )
-                    call SetUnitX(Dummy,GetUnitX(b))
-                    call SetUnitY(Dummy,GetUnitY(b))
-                    call SetUnitAbilityLevel(Dummy,DUMMY_SPELL_ID,data.level)
-                    call IssueTargetOrder( Dummy,  EffectOrderID,b )
-                    // Checking if unit has mana to steal it
-                    if ManaDrainCondition(b) then
-                        call DestroyEffect(AddSpecialEffectTarget(HealEffect, data.caster, "origin") )
-                        if (GetUnitState(b,UNIT_STATE_MANA) > StolenManaPerLevel(data.level)) then
-                            call SetUnitState(b, UNIT_STATE_MANA,GetUnitState(b,UNIT_STATE_MANA)-StolenManaPerLevel(data.level))
-                            call SetUnitState(data.caster, UNIT_STATE_MANA,GetUnitState(data.caster,UNIT_STATE_MANA)+StolenManaPerLevel(data.level))
-                        else
-                            call SetUnitState(data.caster, UNIT_STATE_MANA,GetUnitState(data.caster,UNIT_STATE_MANA)+GetUnitState(b,UNIT_STATE_MANA))
-                            call SetUnitState(b, UNIT_STATE_MANA,0)
-                        endif
-                    endif
-                endif
+				if SpellHelper.isValidEnemy(b, data.caster) then
+					if IsUnitInGroup(b, data.DamagedUnits) == false then
+						//damaging + casting buff
+						call GroupAddUnit(data.DamagedUnits, b)
+						
+						set DamageType = SPELL
+						call SpellHelper.damageTarget(data.caster, b, DamagePerLevel(data.level), false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+						
+						call DestroyEffect(AddSpecialEffectTarget(DamageEffect, b, "chest") )
+						call SetUnitX(Dummy,GetUnitX(b))
+						call SetUnitY(Dummy,GetUnitY(b))
+						call SetUnitAbilityLevel(Dummy,DUMMY_SPELL_ID,data.level)
+						call IssueTargetOrder( Dummy,  EffectOrderID,b )
+						// Checking if unit has mana to steal it
+						if ManaDrainCondition(b) then
+							call DestroyEffect(AddSpecialEffectTarget(HealEffect, data.caster, "origin") )
+							if (GetUnitState(b,UNIT_STATE_MANA) > StolenManaPerLevel(data.level)) then
+								call SetUnitState(b, UNIT_STATE_MANA,GetUnitState(b,UNIT_STATE_MANA)-StolenManaPerLevel(data.level))
+								call SetUnitState(data.caster, UNIT_STATE_MANA,GetUnitState(data.caster,UNIT_STATE_MANA)+StolenManaPerLevel(data.level))
+							else
+								call SetUnitState(data.caster, UNIT_STATE_MANA,GetUnitState(data.caster,UNIT_STATE_MANA)+GetUnitState(b,UNIT_STATE_MANA))
+								call SetUnitState(b, UNIT_STATE_MANA,0)
+							endif
+						endif
+					endif
+				endif
             endloop
             call GroupClear(ENUM_GROUP)
             
@@ -230,8 +217,8 @@ scope MindBurst initializer Init
         if Missiles.Data[i].Index == 1 then
             call TimerStart(t, TimerPeriod, true, function callback)
         endif
+		
         set caster = null
-        
     endfunction
 	
 	private function Conditions takes nothing returns boolean
@@ -240,15 +227,10 @@ scope MindBurst initializer Init
 
     //===========================================================================
     private function Init takes nothing returns nothing
-        local trigger t = CreateTrigger()
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         
-		set filter = Filter(function UnitFilter)
         set Dummy = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),CAST_DUMMY_ID,0,0,0)
         call UnitAddAbility(Dummy,DUMMY_SPELL_ID)
-        
-		call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_CAST)
-        call TriggerAddCondition(t, Condition( function Conditions ))
-        call TriggerAddAction(t, function Actions)
         
         //Preloading
         call XE_PreloadAbility(DUMMY_SPELL_ID)

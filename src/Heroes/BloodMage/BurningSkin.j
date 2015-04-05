@@ -2,17 +2,21 @@ scope BurningSkin initializer init
     /*
      * Description: FireLord Ignos covers himself with fire. Attacking enemies are hurt by a portion of the damage 
                     they deal to Ignos over a short period of time.
-     * Last Update: 05.01.2014
      * Changelog: 
      *     05.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     27.03.2015: Integrated SpellHelper for damaging and filtering
+	 *
      */
     globals
         private constant integer BURNING_SKIN_SPELL_ID = 'A092'
         private constant integer BURN_BUFF_PLACER_ID = 'A090'
         private constant integer BURN_BUFF_ID = 'B01U'
         private constant real BURN_DAMAGE_INTERVAL = 0.05
-        private constant damagetype BURN_DAMAGE_TYPE = DAMAGE_TYPE_FIRE
-        private constant attacktype BURN_ATTACK_TYPE = ATTACK_TYPE_MAGIC
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_FIRE
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private real array BURN_DURATION
         private real array BURNING_SKIN_PROC_CHANCE
@@ -62,8 +66,9 @@ scope BurningSkin initializer init
         
         static method onLoop takes nothing returns nothing
             local thistype this = thistype(GetEventBuff().data)
-            set DamageType = 1
-            call damageTarget(caster, target, damage * BURN_DAMAGE_INTERVAL / BURN_DURATION[lvl])
+            
+			set DamageType = SPELL
+			call SpellHelper.damageTarget(caster, target, damage * BURN_DAMAGE_INTERVAL / BURN_DURATION[lvl], false, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
         endmethod
         
         static method onBuffAdd takes nothing returns nothing
@@ -91,8 +96,9 @@ scope BurningSkin initializer init
         static method onInit takes nothing returns nothing
             set buffType = DefineBuffType(BURN_BUFF_PLACER_ID, BURN_BUFF_ID, BURN_DAMAGE_INTERVAL, true, false, thistype.onBuffAdd, thistype.onLoop, thistype.onBuffEnd)
             set dmg = xedamage.create()
-            set dtype = BURN_DAMAGE_TYPE
-            set atype = BURN_ATTACK_TYPE
+            set dmg.dtype = DAMAGE_TYPE
+			set dmg.atype = ATTACK_TYPE
+			set dmg.wtype = WEAPON_TYPE
         endmethod
     
     endstruct
@@ -103,10 +109,12 @@ scope BurningSkin initializer init
         private static constant boolean useDamageEvents = true
         private static constant boolean isNoHeroSpell = true
     
-        method onDamaged takes unit source, real damage returns nothing
-            if IsUnitEnemy(source, GetOwningPlayer(owner)) and DamageType == 0 and IsUnitType(source, UNIT_TYPE_MELEE_ATTACKER) then
-                if GetRandomReal(0.00, 1.00) <= BURNING_SKIN_PROC_CHANCE[lvl - 1] then
-                    call BurnBuff.apply(owner, source, damage * BURNING_SKIN_DAMAGE_FACTOR[lvl - 1], lvl)
+        method onDamaged takes unit target, real damage returns nothing
+			if (SpellHelper.isValidEnemy(target, owner)) and not /*
+			*/ SpellHelper.isUnitImmune(target) and /*
+			*/ DamageType == PHYSICAL then
+				if GetRandomReal(0.00, 1.00) <= BURNING_SKIN_PROC_CHANCE[lvl - 1] then
+                    call BurnBuff.apply(owner, target, damage * BURNING_SKIN_DAMAGE_FACTOR[lvl - 1], lvl)
                 endif
             endif        
         endmethod

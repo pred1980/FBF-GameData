@@ -9,13 +9,13 @@ library DamageOverTime initializer Init requires DamageEvent
     
     struct DOT
         unit Attacker
-        widget Target
+        unit Target
 
         real Damage
         integer EndCount
 
-        attacktype AttackType
-        damagetype DamageType
+        attacktype Attack_Type
+        damagetype Damage_Type
         
         effect Effect
         
@@ -36,14 +36,14 @@ library DamageOverTime initializer Init requires DamageEvent
                 exitwhen i >= DOT.Total
                 set dat = DOT.Index[i]
                 
-                if DOT.Count > dat.EndCount or GetWidgetLife(dat.Target) <= .405 then
+                if DOT.Count > dat.EndCount or SpellHelper.isUnitDead(dat.Target) then
                     call DestroyEffect(dat.Effect)
 
                     set dat.Effect     = null
                     set dat.Attacker   = null
                     set dat.Target     = null
-                    set dat.AttackType = null
-                    set dat.DamageType = null
+                    set dat.Attack_Type = null
+                    set dat.Damage_Type = null
                     
                     call dat.destroy()
                     
@@ -52,8 +52,11 @@ library DamageOverTime initializer Init requires DamageEvent
 
                     set i = i - 1
                 else
-                    call SET_DAMAGE_TYPE(1)
-                    call UnitDamageTarget(dat.Attacker, dat.Target, dat.Damage, false, false, dat.AttackType, dat.DamageType, null)
+					if (DamageType == PHYSICAL) then
+						call SpellHelper.damageTarget(dat.Attacker, dat.Target, dat.Damage, true, false, dat.Attack_Type, dat.Damage_Type, null)
+					else
+						call SpellHelper.damageTarget(dat.Attacker, dat.Target, dat.Damage, false, false, dat.Attack_Type, dat.Damage_Type, null)
+					endif
                 endif
                 
                 set i = i + 1
@@ -64,13 +67,13 @@ library DamageOverTime initializer Init requires DamageEvent
             endif
         endmethod
         
-        static method start takes unit Attacker, widget Target, real Damage, real Time, attacktype AttackType, damagetype DamageType, string Effect, string EffectAttach returns DOT
+        static method start takes unit Attacker, unit Target, real Damage, real Time, attacktype AttackType, damagetype DamageType, string Effect, string EffectAttach returns DOT
             local DOT dat = DOT.allocate()
             
             set dat.Attacker   = Attacker
             set dat.Target     = Target
-            set dat.AttackType = AttackType
-            set dat.DamageType = DamageType
+            set dat.Attack_Type = AttackType
+            set dat.Damage_Type = DamageType
             
             if Effect != "" and Effect != null then
                 if EffectAttach != "" and EffectAttach != null then

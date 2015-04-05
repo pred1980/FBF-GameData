@@ -2,7 +2,6 @@ scope BoonAndBane initializer init
     /*
      * Description: The Blood Mage launches a Fire Blast that spits smaller fireballs at the closest enemy unit. 
                     When the Blast lands, it fires one last wave of fireballs at all nearby enemies.
-     * Last Update: 03.01.2014
      * Changelog: 
      *     03.01.2014: Abgleich mit OE und der Exceltabelle
 	 *     18.03.2015: removed all debug-messages

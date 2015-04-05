@@ -36,7 +36,6 @@ scope TrappySwap initializer init
 		/************** 
 		 * EXCEPTIONS *
 		 * ************/
-         //*********************\\
         private hashtable DATA = InitHashtable()
         private constant string MESSAGE = "You cannot swap the "
         
@@ -47,6 +46,12 @@ scope TrappySwap initializer init
 		private constant integer WARDEN_ID = 'u02A'
 		private constant integer ARCHNATHID_ID = 'n00L'
 		private constant integer EGG_ID = 'o00C'
+		private constant integer TITAN_ID = 'e00C'
+		private constant integer HEART_ID = 'H014'
+		private constant integer KING_MITHAS_SMALL_ID = 'U02C'
+		private constant integer KING_MITHAS_MEDIUM_ID = 'U02D'
+		private constant integer KING_MITHAS_LARGE_ID = 'U02E'
+		private constant integer WORM_DUMMY_ID = 'h001'
     endglobals
     
 	private function MainSetup takes nothing returns nothing
@@ -62,6 +67,12 @@ scope TrappySwap initializer init
 		call SaveBoolean(DATA, 0, WARDEN_ID, true)
 		call SaveBoolean(DATA, 0, ARCHNATHID_ID, true)
 		call SaveBoolean(DATA, 0, EGG_ID, true)
+		call SaveBoolean(DATA, 0, TITAN_ID, true)
+		call SaveBoolean(DATA, 0, HEART_ID, true)
+		call SaveBoolean(DATA, 0, KING_MITHAS_SMALL_ID, true)
+		call SaveBoolean(DATA, 0, KING_MITHAS_MEDIUM_ID, true)
+		call SaveBoolean(DATA, 0, KING_MITHAS_LARGE_ID, true)
+		call SaveBoolean(DATA, 0, WORM_DUMMY_ID, true)
     endfunction
 	
 	private function CheckTarget takes unit u returns boolean
@@ -210,6 +221,9 @@ scope TrappySwap initializer init
 			//Reset Cooldown of the Ability
 			call SpellHelper.resetAbility(caster, SPELL_ID)
 		endif
+		
+		set caster = null
+		set target = null
     endfunction
 	
 	private function Conditions takes nothing returns boolean
