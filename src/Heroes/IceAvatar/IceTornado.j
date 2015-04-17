@@ -5,7 +5,9 @@ scope IceTornado initializer init
      * Changelog: 
      *     27.10.2013: Abgleich mit OE und der Exceltabelle
 	 *     20.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + 
-	                   Spell-Immunity-Check in the "DamageTargets method" 
+	                   Spell-Immunity-Check in the "DamageTargets method"
+	 *     17.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for damaging and filtering					   
      *
 	 * Note: Might still leak somewhere (~ 4 Handles per cast)
      */
@@ -18,9 +20,14 @@ scope IceTornado initializer init
         private constant real TMR_INTERVAL = 0.03 //Timer interval in seconds
         private constant real CRCL_PERIOD = 3.6 //Time in seconds needed for one revolution
         private constant boolean CLOCKWISE = true //Whether the Tornado revolves clockwise or counter-clockwise
-        private real array DURATION
+        
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_ICE
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+		
+		private real array DURATION
         private real array DAMAGE
-        //---------------
         private real MATRIX_MAJOR //Entries of the Rotational Matrix
         private real MATRIX_MINOR
     endglobals
@@ -66,23 +73,19 @@ scope IceTornado initializer init
         
         static method DamageTargets takes nothing returns boolean
             local unit u = GetFilterUnit()
-            local boolean b = false
             
-			if (IsUnitEnemy(u, GetOwningPlayer(.tempthis.caster)) and not /*
-			*/	IsUnitDead(u) and not /*
-			*/  IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/  IsUnitType(u, UNIT_TYPE_MECHANICAL)) and not /*
+			if (SpellHelper.isValidEnemy(u, .tempthis.caster)) and not /*
 			*/  IsUnitInGroup(u, .tempthis.targets) then
-				set DamageType = 1
-				call UnitDamageTarget(.tempthis.caster, u, DAMAGE[.tempthis.level], false, false,ATTACK_TYPE_NORMAL,DAMAGE_TYPE_MAGIC,WEAPON_TYPE_WHOKNOWS)
+				set DamageType = PHYSICAL
+				call SpellHelper.damageTarget(.tempthis.caster, u, DAMAGE[.tempthis.level], true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
 				call DestroyEffect(AddSpecialEffect(EFFECT_ID, GetUnitX(u), GetUnitY(u)))
 				
-				set b = true
+				return true
 			endif
 
             set u = null
 			
-            return b
+            return false
         endmethod
         
         static method RenewGroup takes nothing returns nothing
@@ -93,10 +96,13 @@ scope IceTornado initializer init
             local thistype this = GetTimerData(GetExpiredTimer())
             local real rxold = this.rx
             local real ryold = this.ry
-            if IsUnitType(this.caster,UNIT_TYPE_DEAD) then //Stop when caster dies
-                call this.destroy()
+            
+			//Stop when caster dies
+			if (SpellHelper.isUnitDead(this.caster)) then
+			    call this.destroy()
                 return
             endif
+			
             //Set Dummy to new position
             set this.rx = rxold * MATRIX_MAJOR - ryold * MATRIX_MINOR
             set this.ry = ryold * MATRIX_MAJOR + rxold * MATRIX_MINOR
@@ -138,6 +144,8 @@ scope IceTornado initializer init
         endmethod
         
         method onDestroy takes nothing returns nothing
+			set .caster = null
+			set .dummy = null
             call ReleaseGroup( .targets )
             call RemoveUnit( .dummy )
             call ReleaseTimer( .durationTimer )
@@ -159,16 +167,9 @@ scope IceTornado initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-		call TriggerAddCondition(t, Condition( function Conditions))
-        call TriggerAddAction(t, function Actions)
-		
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         call Preload(EFFECT_ID)
 		call MainSetup()
-		
-		set t = null
     endfunction
 
 endscope

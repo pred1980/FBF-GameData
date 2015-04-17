@@ -2,10 +2,11 @@ scope FogOfDeath initializer init
     /*
      * Description: Akull partially evaporates into a bone-chilling mist that deals damage over time to all units inside. 
                     As long as the spell is active, hes mostly formless, making 50% of the attacks on him miss.
-     * Last Update: 28.10.2013
      * Changelog: 
      *     28.10.2013: Abgleich mit OE und der Exceltabelle
-	 *     20.03.2015: Added Spell-Immunity-Check in the "group_filter_callback method" 
+	 *     20.03.2015: Added Spell-Immunity-Check in the "group_filter_callback method"
+	 *     17.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for filtering
      *
      */
     globals
@@ -19,8 +20,10 @@ scope FogOfDeath initializer init
         private constant real DOT_TIME = .75
         private constant string EFFECT = "Abilities\\Spells\\Other\\FrostDamage\\FrostDamage.mdl"
         private constant string ATT_POINT = "chest"
-        private constant attacktype ATT_TYPE = ATTACK_TYPE_NORMAL
-        private constant damagetype DMG_TYPE = DAMAGE_TYPE_UNIVERSAL
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_ICE
         
         private real array DAMAGE_PER_SECOND
         private real RADIUS = 700
@@ -42,32 +45,36 @@ scope FogOfDeath initializer init
         integer level = 0
         real mainTime = 0
         real intveralTime = 0
-        static thistype tempthis
+        static thistype tempthis = 0
+		
+		method onDestroy takes nothing returns nothing
+            call ReleaseGroup( .targets )
+            call ReleaseTimer( .main )
+            call ReleaseTimer( .i )
+            call ReleaseTimer( .gi )
+            set .main = null
+            set .i = null
+            set .gi = null
+            set .caster = null
+            set .dummy = null
+            set .targets = null
+        endmethod
 		
 		static method damage takes nothing returns nothing
             local unit u = GetEnumUnit()
+			
             if GetRandomInt(1,100) >= CHANCE_TO_HIT then
-                call DOT.start( .tempthis.caster , u , DAMAGE_PER_SECOND[.tempthis.level] , DOT_TIME , ATT_TYPE , DMG_TYPE , EFFECT , ATT_POINT )
+				set DamageType = SPELL
+                call DOT.start( .tempthis.caster , u , DAMAGE_PER_SECOND[.tempthis.level] , DOT_TIME , ATTACK_TYPE , DAMAGE_TYPE_ICE , EFFECT , ATT_POINT )
             endif
+			
             call GroupRemoveUnit(.tempthis.targets, u)
             set u = null
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-			local unit u = GetFilterUnit()
-			local boolean b = false
-		
-			if (IsUnitEnemy(u, GetOwningPlayer(.tempthis.caster)) and not /*
-			*/ IsUnitDead(u) and not /*
-			*/ IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/ IsUnitType(u, UNIT_TYPE_MECHANICAL)) then
-				set b = true
-			endif
-			
-			set u = null
-		
-            return b
-        endmethod
+			return SpellHelper.isValidEnemy(GetFilterUnit(), .tempthis.caster)
+		endmethod
         
         static method onMainPeriodic takes nothing returns nothing
             local thistype this = GetTimerData(GetExpiredTimer())
@@ -100,20 +107,7 @@ scope FogOfDeath initializer init
                 set this.intveralTime = 0
             endif
         endmethod
-        
-        method onDestroy takes nothing returns nothing
-            call ReleaseGroup( .targets )
-            call ReleaseTimer( .main )
-            call ReleaseTimer( .i )
-            call ReleaseTimer( .gi )
-            set .main = null
-            set .i = null
-            set .gi = null
-            set .caster = null
-            set .dummy = null
-            set .targets = null
-        endmethod
-		
+
 		static method create takes unit c returns thistype
             local thistype this = thistype.allocate()
             
@@ -131,25 +125,20 @@ scope FogOfDeath initializer init
             
             return this
         endmethod
-        
-        static method onInit takes nothing returns nothing
-            set thistype.tempthis = 0
-        endmethod
-    endstruct
 
-    private function Actions takes nothing returns nothing
-        local FogOfDeath fod = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set fod = FogOfDeath.create( GetTriggerUnit() )
-        endif
+    endstruct
+	
+	private function Actions takes nothing returns nothing
+        call FogOfDeath.create( GetTriggerUnit() )
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         call MainSetup()
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
         call Preload(EFFECT)
     endfunction
 

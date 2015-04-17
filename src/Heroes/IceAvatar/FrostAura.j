@@ -2,9 +2,9 @@ scope FrostAura initializer init
     /*
      * Description: He freezes the air around him, creating solid particles of ice that slows enemies 
                     within a 500 range around him and hinders their healing processes.
-     * Last Update: 28.10.2013
      * Changelog: 
-     *     28.10.2013: Abgleich mit OE und der Exceltabelle
+     *      28.10.2013: Abgleich mit OE und der Exceltabelle
+	 *		17.04.2015: Integrated SpellHelper for filtering
      *
      */
     globals
@@ -62,10 +62,7 @@ scope FrostAura initializer init
             local real dy = GetUnitY(u) - GetUnitY(temp.caster)
             local real dist = SquareRoot(dx * dx + dy * dy)
             
-            if IsUnitEnemy(u, GetOwningPlayer(temp.caster)) and not /*
-			*/ IsUnitDead(u) and not /*
-			*/ IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/ IsUnitType(u, UNIT_TYPE_MECHANICAL) then
+			if (SpellHelper.isValidEnemy(u, temp.caster)) then
                 if dist <= SPELL_FULL_DEGENERATION_THRESHOLD[temp.lvl] then
                     if GetUnitState(u, UNIT_STATE_LIFE) - (LIFE_DEGENERATION[temp.lvl] * TIMER_INTERVAL) <= 1.00 then
                         call SetUnitState(u, UNIT_STATE_LIFE, 1.00)
@@ -90,7 +87,7 @@ scope FrostAura initializer init
             
             loop
                 exitwhen this == 0
-                if not IsUnitType(caster, UNIT_TYPE_DEAD) then
+                if not SpellHelper.isUnitDead(caster) then
                     set temp = this
                     call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(caster), GetUnitY(caster), SPELL_RADIUS[lvl], filter)
                 endif    

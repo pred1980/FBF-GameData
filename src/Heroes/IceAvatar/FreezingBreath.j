@@ -2,11 +2,13 @@ scope FreezingBreath initializer init
     /*
      * Description: Akulls foul, freezing breath chills the air to a sub zero level, 
 	                slowing enemys movement and attack down.
-     * Last Update: 27.10.2013
      * Changelog: 
      *     27.10.2013: Abgleich mit OE und der Exceltabelle
 	 *     20.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + 
-	                   Spell-Immunity-Check in the "group_filter_callback method" 
+	                   Spell-Immunity-Check in the "group_filter_callback method"
+	 *     17.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for damaging and filtering
+					   Code Refactoring
      *
      */
     globals
@@ -16,13 +18,18 @@ scope FreezingBreath initializer init
         private constant string EFFECT = "Models\\AnthraxBetaBomb.mdx"
         private constant real RADIUS = 350
         private constant real DAMAGE_PER_LEVEL = 10
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_ICE
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
 
     private struct FreezingBreath
         unit caster
         group targets
-        integer level
-        static thistype tempthis
+        integer level = 0
+        static thistype tempthis = 0
         
         method onDestroy takes nothing returns nothing
             call ReleaseGroup( .targets )
@@ -34,12 +41,10 @@ scope FreezingBreath initializer init
             local unit u = GetFilterUnit()
             local unit d = null
 			
-			if (IsUnitEnemy(u, GetOwningPlayer(.tempthis.caster)) and not /*
-			*/	IsUnitDead(u) and not /*
-			*/  IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/  IsUnitType(u, UNIT_TYPE_MECHANICAL)) then
+			if (SpellHelper.isValidEnemy(u, .tempthis.caster)) then
 				set DamageType = SPELL
-				call UnitDamageTarget(.tempthis.caster, u, DAMAGE_PER_LEVEL * .tempthis.level, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_MAGIC, WEAPON_TYPE_WHOKNOWS)
+				call SpellHelper.damageTarget(.tempthis.caster, u, DAMAGE_PER_LEVEL * .tempthis.level, false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+				
 				set d = CreateUnit(GetOwningPlayer(.tempthis.caster), DUMMY_ID, GetUnitX(u), GetUnitY(u), GetUnitFacing(u))
 				call UnitAddAbility(d, DEBUF_ID)
 				call SetUnitAbilityLevel(d, DEBUF_ID, .tempthis.level)
@@ -49,6 +54,7 @@ scope FreezingBreath initializer init
             //clean
             set d = null
             set u = null
+			
             return false
         endmethod
         
@@ -57,37 +63,27 @@ scope FreezingBreath initializer init
             
             set .caster = c
             set .targets = NewGroup()
-            set .level = GetUnitAbilityLevel(c,SPELL_ID)
+            set .level = GetUnitAbilityLevel(c, SPELL_ID)
             
             set .tempthis = this
             call GroupEnumUnitsInRange( .targets, tx, ty, RADIUS, function thistype.group_filter_callback )
             call DestroyEffect(AddSpecialEffect(EFFECT,tx,ty))
             call destroy()
+			
             return this
-        endmethod
-        
-        
-        
-        
-        
-        static method onInit takes nothing returns nothing
-            set thistype.tempthis = 0
         endmethod
     endstruct
 
-    private function Actions takes nothing returns nothing
-        local FreezingBreath fb = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set fb = FreezingBreath.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
-        endif
+	private function Actions takes nothing returns nothing
+        call FreezingBreath.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         call XE_PreloadAbility(DEBUF_ID)
         call Preload(EFFECT)
     endfunction
