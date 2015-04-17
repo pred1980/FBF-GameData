@@ -5,7 +5,9 @@ scope VoltyCrush initializer init
      * Last Update: 09.01.2014
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
-	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
+	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     06.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for filtering and damaging
      */
     globals
         private constant integer SPELL_ID = 'A09E'
@@ -20,9 +22,12 @@ scope VoltyCrush initializer init
         private constant string TARGET_AP = "chest"
         private constant string MAIN_TARGET_AP = "origin"
         private constant real TICK = 0.50
-        private constant attacktype AT = ATTACK_TYPE_MAGIC
-        private constant damagetype DT = DAMAGE_TYPE_MAGIC
         private constant boolean ExUponDeath = false
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_LIGHTNING
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private Table VoltyTab
         private real array EXPLODE_DELAY
@@ -68,7 +73,6 @@ scope VoltyCrush initializer init
     
     private struct VoltyStruct
         static thistype data
-        static thistype datum
         static thistype datab
         static group dgroup
         unit target
@@ -77,6 +81,17 @@ scope VoltyCrush initializer init
         integer level
         real time
         effect sfx
+		
+		method onDestroy takes nothing returns nothing
+            call UnitRemoveAbility(.target, BUFF_SPELL_ID)
+            call UnitRemoveAbility(.target, BUFF_ID)
+            call DestroyEffect(.sfx)
+            set .sfx = null
+            call ReleaseGroup( .dgroup )
+            set .dgroup = null
+            set .caster = null
+            set .target = null
+        endmethod
         
         //This method runs when a curse finishes and checks if the unit has other instances of the spell, if none it removes the buff
         method RemoveBuff takes nothing returns nothing
@@ -90,19 +105,22 @@ scope VoltyCrush initializer init
             set DamageType = SPELL
             if fu != this.target then
                 call DestroyEffect(AddSpecialEffectTarget(TARGET_FX, fu, TARGET_AP))
-                call UnitDamageTarget(this.caster, fu, EXPLODE_AOE_DAMAGE[this.level], false, false, AT, DT, null)
+				call SpellHelper.damageTarget(this.caster, fu, EXPLODE_AOE_DAMAGE[this.level], false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
             else
-                call UnitDamageTarget(this.caster, fu, EXPLODE_TARGET_DAMAGE[this.level], false, false, AT, DT, null)
+				call SpellHelper.damageTarget(this.caster, fu, EXPLODE_TARGET_DAMAGE[this.level], false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
             endif
         endmethod
         
         //The filter for the group pick, I merged the actions to the group filter for better performance
         static method OnHitFilter takes nothing returns boolean
-            local unit fu = GetFilterUnit()
-            if IsUnitEnemy(fu, datab.owner) and GetWidgetLife(fu) > .405 and (not IsUnitType(fu, UNIT_TYPE_DEAD)) and not IsUnitType(fu, UNIT_TYPE_STRUCTURE) then
-                call datab.OnHit(fu)
+            local unit u = GetFilterUnit()
+			
+			if (SpellHelper.isValidEnemy(u, datab.caster)) then
+				call datab.OnHit(u)
             endif
-            set fu = null
+			
+            set u = null
+			
             return false
         endmethod
         
@@ -124,7 +142,7 @@ scope VoltyCrush initializer init
             
             call DestroyEffect(AddSpecialEffectTarget(TICK_FX, datab.target, TICK_AP))
             set DamageType = SPELL
-            call UnitDamageTarget(datab.caster, datab.target, TICK_DAMAGE[datab.level], false, false, AT, DT, null)
+			call SpellHelper.damageTarget(datab.caster, datab.target, TICK_DAMAGE[datab.level], false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
             
             if datab.time <= 0.00 or dead then
                 set VoltyTab[GetHandleId(datab.target)] = VoltyTab[GetHandleId(datab.target)] - 1
@@ -137,7 +155,8 @@ scope VoltyCrush initializer init
         //The method run when the spell VoltyCrush is used
         static method create takes unit caster, unit target returns thistype
             local timer t = NewTimer()
-            set data = thistype.allocate()
+            
+			set data = thistype.allocate()
             set data.target = target
             set data.level = GetUnitAbilityLevel(caster, SPELL_ID)
             set data.owner = GetOwningPlayer(caster)
@@ -150,20 +169,10 @@ scope VoltyCrush initializer init
             call TimerStart(t, TICK, true, function thistype.Refresh) 
             set VoltyTab[GetHandleId(target)] = VoltyTab[GetHandleId(target)] + 1
             set t = null
-            return data
+            
+			return data
         endmethod
-        
-        method onDestroy takes nothing returns nothing
-            call UnitRemoveAbility(.target, BUFF_SPELL_ID)
-            call UnitRemoveAbility(.target, BUFF_ID)
-            call DestroyEffect(.sfx)
-            set .sfx = null
-            call ReleaseGroup( .dgroup )
-            set .dgroup = null
-            set .caster = null
-            set .target = null
-        endmethod
-        
+
     endstruct
     
     private function Actions takes nothing returns nothing
@@ -175,20 +184,14 @@ scope VoltyCrush initializer init
     endfunction
     
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-		call TriggerAddCondition(t, Condition( function Conditions))
-        call TriggerAddAction(t, function Actions)
-		
         call MainSetup()
         call XE_PreloadAbility(BUFF_SPELL_ID)
         call Preload(TICK_FX)
         call Preload(EXPLODE_FX)
         call Preload(TARGET_FX)
         call Preload(MAIN_TARGET_FX)
-        
-        set t = null
     endfunction
     
 endscope

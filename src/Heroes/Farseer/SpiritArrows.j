@@ -1,12 +1,13 @@
 scope SpiritArrows initializer init
     /*
      * Description: The Farseer sends out arrows of his spirit homing towards a target location and 
-                    dealing damage enemy units on collision.The Arrows last for up to 7 seconds and will fly 
+                    dealing damage enemy units on collision.  The Arrows last for up to 7 seconds and will fly 
                     around near the target location until death.
      * Last Update: 09.01.2014
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
 	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     06.04.2015: Integrated RegisterPlayerUnitEvent
      */
     globals
         private constant integer SPELL_ID = 'A09J'
@@ -24,6 +25,11 @@ scope SpiritArrows initializer init
         private constant string STUN_EFFECT = ""
         private constant string STUN_ATT_POINT = ""
         private constant real STUN_DURATION = 1.0
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_PIERCE
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_LIGHTNING
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private xedamage damageOptions
     endglobals
@@ -33,8 +39,9 @@ scope SpiritArrows initializer init
     endfunction
 
     private function setupDamageOptions takes xedamage d returns nothing
-       set d.dtype = DAMAGE_TYPE_LIGHTNING
-       set d.atype = ATTACK_TYPE_NORMAL
+       set d.dtype = DAMAGE_TYPE
+       set d.atype = ATTACK_TYPE
+	   set d.wtype = WEAPON_TYPE
 
        set d.exception = UNIT_TYPE_STRUCTURE
        set d.damageEnemies = true 
@@ -107,7 +114,7 @@ scope SpiritArrows initializer init
 	endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         
         // Initializing the damage options:
         set damageOptions = xedamage.create()
@@ -115,12 +122,6 @@ scope SpiritArrows initializer init
         
         call XE_PreloadAbility(SPELL_ID)
         call Preload(MODEL_PATH)
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition(t, function Conditions)
-		call TriggerAddAction(t, function Actions)
-		
-        set t = null
     endfunction
 
 endscope

@@ -5,6 +5,7 @@ scope ReflectiveShield initializer init
      * Last Update: 09.01.2014
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     06.04.2015: Changed ATTACK_TYPE from HERO to NORMAL
      */
     globals
         private constant integer SPELL_ID = 'A09G'
@@ -13,8 +14,10 @@ scope ReflectiveShield initializer init
         private constant real DOT_TIME = 3.00
         private constant string EFFECT = "Abilities\\Spells\\Items\\AIvi\\AIviTarget.mdl"
         private constant string ATT_POINT = "origin"
-        private constant attacktype ATT_TYPE = ATTACK_TYPE_HERO
-        private constant damagetype DMG_TYPE = DAMAGE_TYPE_LIGHTNING
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_LIGHTNING
         
         private integer array CHANCE
     endglobals
@@ -29,8 +32,8 @@ scope ReflectiveShield initializer init
     
     private function reflect takes unit attacked, unit attacker, real damage returns nothing
         call SetWidgetLife(attacked, (GetWidgetLife(attacked) + damage))
-        set DamageType = SPELL
-        call DOT.start(attacked, attacker, damage , DOT_TIME , ATT_TYPE , DMG_TYPE , EFFECT , ATT_POINT )
+        set DamageType = PHYSICAL
+        call DOT.start(attacked, attacker, damage , DOT_TIME , ATTACK_TYPE , DAMAGE_TYPE , EFFECT , ATT_POINT )
     endfunction
     
     private function Actions takes unit damagedUnit, unit damageSource, real damage returns nothing

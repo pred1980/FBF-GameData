@@ -4,8 +4,10 @@ scope HighJump initializer init
                     lands on and stuns them.
      * Last Update: 09.01.2014
      * Changelog: 
-     *     09.01.2014: Abgleich mit OE und der Exceltabelle
-	 *     19.03.2015: Added Conditions to the "knockbackFilter method" in the Jump struct
+     *      09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *      19.03.2015: Added Conditions to the "knockbackFilter method" in the Jump struct
+	 *		06.04.2015: Integrated SpellHelper for filtering
+						Added DamageType SPELL/PHYSICAL
      */
     globals
         private constant integer SPELL_ID = 'A08X'
@@ -17,8 +19,6 @@ scope HighJump initializer init
         //You can also use 0.00 if you want some kind of an barrel roll :D
         private constant real JUMP_CURVE_FACTOR = 0.60 //1.00
         private constant real TIMER_INTERVAL = 0.03125
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
-        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_HERO
         private constant string JUMP_MODEL = "Units\\Creeps\\FirePandarenBrewmaster\\FirePandarenBrewmaster_Missile.mdl"
         private constant real JUMP_MODEL_SCALE = 1.85
         private constant real JUMP_MODEL_Z_OFFSET = 75.00
@@ -30,6 +30,9 @@ scope HighJump initializer init
         private real array KNOCKBACK_DISTANCE_ULTI
         private real array ULTI_IMPACT_DAMAGE
         
+		// Dealt damage configuration
+		private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
         private constant damagetype ULTI_IMPACT_DAMAGE_TYPE = DAMAGE_TYPE_FIRE
         private constant attacktype ULTI_IMPACT_ATTACK_TYPE = ATTACK_TYPE_MAGIC
         
@@ -79,10 +82,7 @@ scope HighJump initializer init
             local real dy = GetUnitY(temp.caster) - GetUnitY(u)
             local real ang = Atan2(dy, dx) - bj_PI
             
-			if (IsUnitEnemy(u, GetOwningPlayer(temp.caster)) and not /*
-			*/ IsUnitDead(u) and not /*
-			*/ IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/ IsUnitType(u, UNIT_TYPE_MECHANICAL)) then
+			if (SpellHelper.isValidEnemy(u, temp.caster)) then
                 call Knockback.create(temp.caster, u, KNOCKBACK_DISTANCE_ULTI[ArtOfFire_GetLevel(temp.caster) - 1], KNOCKBACK_DURATION_ULTI, ang, 0, "", "")
                 call Stun_UnitEx(u, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
             endif
@@ -105,8 +105,10 @@ scope HighJump initializer init
                 call GroupRefresh(ENUM_GROUP)
                 call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(caster), GetUnitY(caster), JUMP_IMPACT_AREA, doKnockback)
                 call DestroyEffect(AddSpecialEffect(JUMP_ENHANCED_IMPACT_MODEL, cx, cy))
+				set DamageType = SPELL
                 call ultidmg.damageAOE(caster, GetUnitX(caster), GetUnitY(caster), JUMP_IMPACT_AREA, ULTI_IMPACT_DAMAGE[ArtOfFire_GetLevel(caster) - 1])
             endif
+			set DamageType = PHYSICAL
             call dmg.damageAOE(caster, GetUnitX(caster), GetUnitY(caster), JUMP_IMPACT_AREA, JUMP_IMPACT_DAMAGE[lvl])
             call DisableUnit(caster, false)
             call root.destroy()

@@ -2,12 +2,12 @@ scope HacknSlash initializer init
     /*
      * Description: The Fire Panda starts multiple attacks to random enemies, dealing damage to each. 
                     After returning to the start point, his attackspeed is increased.
-     * Last Update: 09.01.2014
      * Changelog: 
-     *     09.01.2014: Abgleich mit OE und der Exceltabelle
-	 *     28.02.2014: Damage Werte von 60/90/120/150/180 auf 50/80/110/140/170 reduziert
+     *      09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *      28.02.2014: Damage Werte von 60/90/120/150/180 auf 50/80/110/140/170 reduziert
 	                   TARGET_DAMAGE_REDUCER von 10% auf 15% erhöht
-	 *     19.03.2015: Added Conditions to the "filter method" in the main struct				   
+	 *      19.03.2015: Added Conditions to the "filter method" in the main struct
+	 *		06.04.2015: Integrated SpellHelper for filtering and damaging	 
      */
     globals
         private constant integer SPELL_ID = 'A08S'
@@ -25,8 +25,11 @@ scope HacknSlash initializer init
         private constant string BLINK_EFFECT_ATTACH = "origin"
         private constant string SLASH_DAMAGE_EFFECT = "Objects\\Spawnmodels\\Human\\HumanBlood\\BloodElfSpellThiefBlood.mdl"
         private constant string SLASH_DAMAGE_EFFECT_ATTACH = "origin"
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_FIRE
-        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_HERO
+        
+		// Dealt damage configuration
+		private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+		private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_FIRE
+		private constant weapontype WEAPON_TYPE = WEAPON_TYPE_METAL_LIGHT_SLICE
         
         private integer array MAX_TARGETS
         private real array STRIKE_DAMAGE
@@ -130,19 +133,7 @@ scope HacknSlash initializer init
         endmethod
         
         private static method filter takes nothing returns boolean
-			local unit u = GetFilterUnit()
-			local boolean b = false
-			
-			if (IsUnitEnemy(u, GetOwningPlayer(temp.caster)) and not /*
-			*/	IsUnitDead(u) and not /*
-			*/  IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/  IsUnitType(u, UNIT_TYPE_MECHANICAL)) then
-				set b = true
-			endif
-			
-			set u = null
-			
-            return b
+			return SpellHelper.isValidEnemy(GetFilterUnit(), temp.caster) 
         endmethod
         
         method getTarget takes nothing returns nothing
@@ -169,9 +160,11 @@ scope HacknSlash initializer init
                 call SetUnitFacing(caster, Atan2(GetUnitY(target) - GetUnitY(caster), GetUnitX(target)  - GetUnitX(caster)) * bj_RADTODEG)
                 call SetUnitAnimation(caster, ATTACK_ANIMATION_ORDER)
                 call DestroyEffect(AddSpecialEffectTarget(BLINK_EFFECT, caster, BLINK_EFFECT_ATTACH))
-                set DamageType = 1
-                call damageTarget(caster, target, STRIKE_DAMAGE[lvl] - (STRIKE_DAMAGE[lvl] * dmgRed / 100))
-                set dmgRed = dmgRed + TARGET_DAMAGE_REDUCER
+                
+				set DamageType = PHYSICAL
+				call SpellHelper.damageTarget(caster, target, STRIKE_DAMAGE[lvl] - (STRIKE_DAMAGE[lvl] * dmgRed / 100), true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+                
+				set dmgRed = dmgRed + TARGET_DAMAGE_REDUCER
                 if enhanced then
                     call ArtOfFire_IgniteUnit(caster, target)
                 endif
@@ -242,9 +235,12 @@ scope HacknSlash initializer init
             set dmg = xedamage.create()
             set atype = ATTACK_TYPE
             set dtype = DAMAGE_TYPE
+			set wtype = WEAPON_TYPE
+			
             if SLASH_DAMAGE_EFFECT != "" then
                 call useSpecialEffect(SLASH_DAMAGE_EFFECT, SLASH_DAMAGE_EFFECT_ATTACH)
             endif
+			
             set groupFilter = Condition(function thistype.filter)
         endmethod
     endstruct

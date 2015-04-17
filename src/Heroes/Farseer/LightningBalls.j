@@ -21,6 +21,11 @@ library LightningBalls initializer init uses RegisterPlayerUnitEvent, TimerUtils
         private constant real ARC = 0.10 
         private constant real MIN_DIST = 300. // min cast range 
         private constant string ERROR_MSG = "The Farseer is inside the minimum range."  
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
 
     private function GetAoE takes integer lvl returns real
@@ -41,8 +46,9 @@ library LightningBalls initializer init uses RegisterPlayerUnitEvent, TimerUtils
     
     //xedamage options:
     private function DamageOptions takes xedamage spellDamage returns nothing
-        set spellDamage.dtype = DAMAGE_TYPE_MAGIC
-        set spellDamage.atype = ATTACK_TYPE_NORMAL
+        set spellDamage.dtype = DAMAGE_TYPE
+        set spellDamage.atype = ATTACK_TYPE
+		set spellDamage.wtype = WEAPON_TYPE
         set spellDamage.exception = UNIT_TYPE_STRUCTURE
         set spellDamage.visibleOnly = false
         set spellDamage.damageAllies = false

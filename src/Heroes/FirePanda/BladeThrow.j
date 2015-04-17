@@ -4,7 +4,8 @@ scope BladeThrow initializer init
                     Each blade can only hit an enemy once.
      * Last Update: 09.01.2014
      * Changelog: 
-     *     09.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *		06.04.2015: Integrated SpellHelper for filtering and damaging
      */
     globals
         private constant integer SPELL_ID = 'A08Y'
@@ -15,10 +16,13 @@ scope BladeThrow initializer init
         private constant real MISSILE_CURVE_FACTOR_Z = 0.50
         private constant real MISSILE_HEIGHT = 45
         private constant real MISSILE_COLLISION_SIZE = 150.00
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
-        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_HERO
-        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WOOD_LIGHT_SLICE
         private constant string ENHANCED_MISSILE_EFFECT = "Models\\ArtOfFireWeaponEffect.mdl"
+		
+		// Dealt damage configuration
+		private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+		private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_FIRE
+		private constant weapontype WEAPON_TYPE = WEAPON_TYPE_METAL_LIGHT_SLICE
+		
         private real array MISSILE_DAMAGE
     endglobals
     
@@ -52,8 +56,9 @@ scope BladeThrow initializer init
             local thistype this = thistype(b.customdata)
             
             if not IsUnitInGroup(u, targetsHit) then
-                set DamageType = SPELL
-                call damageTarget(root.caster, u, MISSILE_DAMAGE[root.lvl])
+                set DamageType = PHYSICAL
+				call SpellHelper.damageTarget(root.caster, u, MISSILE_DAMAGE[root.lvl], true, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+				
                 if enhanced then
                     call ArtOfFire_IgniteUnit(root.caster, u)
                 endif

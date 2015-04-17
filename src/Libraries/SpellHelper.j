@@ -21,6 +21,10 @@ library SpellHelper uses SimError, MiscFunctions, RestoreMana
 				*/ target != caster
 		endmethod
 		
+		static method isMelee takes unit target returns boolean
+			return IsUnitType(target, UNIT_TYPE_MELEE_ATTACKER)
+		endmethod
+		
 		static method isUnitDead takes unit target returns boolean
 			return IsUnitType(target, UNIT_TYPE_DEAD) or GetUnitTypeId(target) == 0
 		endmethod
@@ -60,7 +64,7 @@ library SpellHelper uses SimError, MiscFunctions, RestoreMana
 		
 		//Damage Target
 		//Note: attack == true->Angriff, false->Zauber 
-		static method damageTarget takes unit source, unit target, real damage, boolean attack, boolean ranged, attacktype attackType, damagetype damageType, weapontype weaponType returns nothing
+		static method damageTarget takes unit source, widget target, real damage, boolean attack, boolean ranged, attacktype attackType, damagetype damageType, weapontype weaponType returns nothing
 			call UnitDamageTarget(source, target, damage, attack, ranged, attackType, damageType, weaponType)        
 		endmethod
 		

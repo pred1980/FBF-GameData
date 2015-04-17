@@ -6,8 +6,9 @@ library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils,
 					fire nova on impact, dealing additional damage and knocks enemies away from the Firepanda.
      * Last Update: 09.01.2014
      * Changelog: 
-     *     09.01.2014: Abgleich mit OE und der Exceltabelle
-	 *     19.03.2015: Added Conditions to the damage method in the main struct
+     *      09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *      19.03.2015: Added Conditions to the damage method in the main struct
+	 *		06.04.2015: Integrated SpellHelper for filtering and damaging
      */
     globals
         private constant integer SPELL_ID = 'A08U'
@@ -16,8 +17,11 @@ library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils,
         private constant integer IGNITION_BUFF_ID = 'B01T'
         private constant real IGNITION_DURATION = 3.00
         private constant real IGNITION_DAMAGE_INTERVAL = 0.25
-        private constant damagetype IGNITION_DAMAGE_TYPE = DAMAGE_TYPE_FIRE
-        private constant attacktype IGNITION_ATTACK_TYPE = ATTACK_TYPE_MAGIC
+		
+		// Dealt damage configuration
+		private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+		private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_FIRE
+		private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private real array IGNITION_DAMAGE
     endglobals
@@ -59,8 +63,9 @@ library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils,
         
         static method onLoop takes nothing returns nothing
             local thistype this = thistype(GetEventBuff().data)
-            set DamageType = 1
-            call damageTarget(caster, target, IGNITION_DAMAGE[lvl] * IGNITION_DAMAGE_INTERVAL)
+            
+			set DamageType = SPELL
+			call SpellHelper.damageTarget(caster, target, IGNITION_DAMAGE[lvl] * IGNITION_DAMAGE_INTERVAL, false, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
         endmethod
         
         static method onBuffAdd takes nothing returns nothing
@@ -87,8 +92,9 @@ library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils,
         static method onInit takes nothing returns nothing
             set buffType = DefineBuffType(IGNITION_BUFF_PLACER_ID, IGNITION_BUFF_ID, IGNITION_DAMAGE_INTERVAL, true, false, thistype.onBuffAdd, thistype.onLoop, thistype.onBuffEnd)
             set dmg = xedamage.create()
-            set dtype = IGNITION_DAMAGE_TYPE
-            set atype = IGNITION_ATTACK_TYPE
+			set dmg.atype = ATTACK_TYPE
+            set dmg.dtype = DAMAGE_TYPE
+			set dmg.wtype = WEAPON_TYPE
         endmethod
     endstruct
         
@@ -98,11 +104,8 @@ library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils,
         static constant boolean useDamageEvents = true
         
         method onDamage takes unit target, real damage returns nothing
-            if DamageType == 0 and /*
-			*/ IsUnitEnemy(target, GetOwningPlayer(owner)) and not /*
-			*/ IsUnitDead(target) and not /*
-			*/ IsUnitType(target, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/ IsUnitType(target, UNIT_TYPE_MECHANICAL) then
+            if (DamageType == PHYSICAL and /*
+			*/ SpellHelper.isValidEnemy(target, owner)) then
 			       call Ignition.generate(owner, target, lvl)
             endif
         endmethod

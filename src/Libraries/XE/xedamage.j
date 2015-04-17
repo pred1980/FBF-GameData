@@ -217,7 +217,7 @@ library xedamage initializer init requires xebasic
                  set fc = GetWidgetLife(u)-hp + EPSILON
             endif
             set isDummyDamage = true
-            call UnitDamageTarget(dmger,u, fc ,false,false,a,d,null)
+			call UnitDamageTarget(dmger,u, fc ,false,false,a,d,null)
             static if DEBUG_MODE then
                 if IsUnitType(u, UNIT_TYPE_DEAD) and (hp>0.405) then
                     call BJDebugMsg("xedamage: For some reason, the unit being tested by getDamageTypeFactor has died. Verify MAX_DAMAGE_FACTOR is set to a correct value. ") 
@@ -361,7 +361,7 @@ library xedamage initializer init requires xebasic
                 
                 set .inUse = .inUse +1
                 set pl=GetWidgetLife(target)
-                call UnitDamageTarget(source,target,  f*damage, true, .ranged, .atype, .dtype, .wtype )
+				call SpellHelper.damageTarget(source,target,  f*damage, true, .ranged, .atype, .dtype, .wtype)
                 set .inUse = .inUse -1
                 set .CurrentDamageTag = tg
                 set .CurrentDamageType = dt
@@ -394,8 +394,7 @@ library xedamage initializer init requires xebasic
             endif
             
             set .inUse = .inUse +1
-            set DamageType = SPELL
-            call UnitDamageTarget(source,target,  damage, true, .ranged, null, null, .wtype )
+			call SpellHelper.damageTarget(source, target, damage, true, .ranged, null, null, .wtype)
             set .inUse = .inUse -1
             set .CurrentDamageTag  = tg
             set .CurrentDamageType = dt
@@ -475,8 +474,7 @@ library xedamage initializer init requires xebasic
                 if(this.usefx) then
                     set hp = GetWidgetLife(target)
                 endif
-                set DamageType = SPELL
-                call UnitDamageTarget(.sourceAOE,target, f*this.AOEdamage, true, .ranged, .atype, .dtype, .wtype )
+				call SpellHelper.damageTarget(.sourceAOE,target, f*this.AOEdamage, true, .ranged, atype, .dtype, .wtype)
                 if(this.usefx and (hp > GetWidgetLife(target) ) ) then
                     call DestroyEffect(  AddSpecialEffectTarget(this.fxpath, target, this.fxattach) )
                 endif                                  
@@ -488,25 +486,28 @@ library xedamage initializer init requires xebasic
         endmethod
 
         private static method damageAOE_DestructablesEnum takes nothing returns boolean
-         local destructable target=GetFilterDestructable()
-         local xedamage this=.instance //adopting a instance.
-         local real     dx=.AOEx-GetDestructableX(target)
-         local real     dy=.AOEy-GetDestructableY(target)
+			local destructable target = GetFilterDestructable()
+			local xedamage this = .instance //adopting a instance.
+			local real dx = .AOEx - GetDestructableX(target)
+			local real dy = .AOEy - GetDestructableY(target)
 
-             if( dx*dx + dy*dy >= .AOEradius+EPSILON )  then
-                 set target=null
-                 return false
-             endif
-             set .countAOE=.countAOE+1
-             if(.usefx) then
-                 call DestroyEffect(  AddSpecialEffectTarget(this.fxpath, target, this.fxattach) )
-             endif
-             set DamageType = SPELL
-             call UnitDamageTarget(.sourceAOE,target, this.AOEdamage, true, .ranged, .atype, .dtype, .wtype )
-
-          set .instance= this //better restore, nesting IS possible!
-          set target=null
-          return false
+			if( dx*dx + dy*dy >= .AOEradius+EPSILON )  then
+				set target=null
+				return false
+			endif
+			 
+			set .countAOE = .countAOE+1
+			 
+			if(.usefx) then
+				call DestroyEffect(  AddSpecialEffectTarget(this.fxpath, target, this.fxattach) )
+			endif
+			 
+			call SpellHelper.damageTarget(.sourceAOE, target, this.AOEdamage, true, .ranged, .atype, .dtype, .wtype)
+			 
+			set .instance = this //better restore, nesting IS possible!
+			set target = null
+			
+			return false
         endmethod
         //==========================================================================================
         // will affect trees if damageTrees is true!
