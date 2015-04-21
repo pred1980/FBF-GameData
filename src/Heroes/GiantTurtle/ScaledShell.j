@@ -2,9 +2,10 @@ scope ScaledShell initializer init
     /*
      * Description: The Turtles shell is full of scales, reducing the damage of attacks from behind and 
                     reflects some part of that damage back to the attacker.
-     * Last Update: 10.01.2014
      * Changelog: 
-     *     10.01.2014: Abgleich mit OE und der Exceltabelle
+     *      10.01.2014: Abgleich mit OE und der Exceltabelle
+	 *		16.04.2015: Integrated SpellHelper for filtering and damging
+						Code Refactoring
      */
     globals
         private constant integer SPELL_ID = 'A086'
@@ -13,8 +14,11 @@ scope ScaledShell initializer init
         private constant string DAMAGE_REFLECTION_TARGET_EFFECT_ATTACH = "origin"
         private constant string DAMAGE_REFLECTION_CASTER_EFFECT = "Abilities\\Spells\\Human\\Defend\\DefendCaster.mdl"
         private constant string DAMAGE_REFLECTION_CASTER_EFFECT_ATTACH = "chest"
-        private constant damagetype DAMAGE_REFLECTION_DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
-        private constant attacktype DAMAGE_REFLECTION_ATTACK_TYPE = ATTACK_TYPE_CHAOS
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private real array DAMAGE_REFLECTION_FACTOR
         private real array DAMAGE_REDUCTION_FACTOR
@@ -34,18 +38,19 @@ scope ScaledShell initializer init
         set DAMAGE_REDUCTION_FACTOR[5] = 0.65
     endfunction
     
-    private function checkUnit takes unit owner, unit source returns boolean
-        return IsUnitEnemy(source, GetOwningPlayer(owner)) and not IsUnitType(source, UNIT_TYPE_MECHANICAL) and IsUnitType(source, UNIT_TYPE_MELEE_ATTACKER) and not IsUnitType(source, UNIT_TYPE_FLYING) and not IsUnitDead(owner)
+    private function checkUnit takes unit target, unit caster returns boolean
+		return  SpellHelper.isValidEnemy(target, caster) and /*
+		*/		SpellHelper.isMelee(target)
     endfunction
     
-    private function isBackAttack takes unit source, unit target returns boolean
+    private function isBackAttack takes unit caster, unit target returns boolean
         local real a1 = 0.00 
         local real a2 = 0.00 
         local real ang = 0.00
         
-        if checkUnit(target, source) then
+        if checkUnit(target, caster) then
             set a1 = GetUnitFacing(target) * bj_DEGTORAD
-            set a2 = Atan2(GetUnitY(target) - GetUnitY(source), GetUnitX(target) - GetUnitX(source))
+            set a2 = Atan2(GetUnitY(target) - GetUnitY(caster), GetUnitX(target) - GetUnitX(caster))
             set ang = a2 - a1
 
             if ang > bj_PI then
@@ -61,52 +66,25 @@ scope ScaledShell initializer init
         return false
     endfunction
 
-    private struct ScaledShell
-        unit target
-        integer level = 0
-        real dmgRed = 0.00
-        real dmgRef = 0.00
-        timer t
-        
-        method onDestroy takes nothing returns nothing
-            call ReleaseTimer(.t)
-            set .t = null
-            set .target = null
-        endmethod
-        
-        static method onDamageReduction takes nothing returns nothing
-            local thistype this = GetTimerData(GetExpiredTimer())
+    private function onAttack takes unit caster, unit target, real damage returns nothing
+            local integer level = GetUnitAbilityLevel(target, SPELL_ID)
+            local real dmgRed = damage * DAMAGE_REDUCTION_FACTOR[level]
             
-            call DestroyEffect(AddSpecialEffectTarget(DAMAGE_REFLECTION_TARGET_EFFECT, this.target, DAMAGE_REFLECTION_TARGET_EFFECT_ATTACH))
-            call SetUnitState(this.target, UNIT_STATE_LIFE, GetUnitState(this.target, UNIT_STATE_LIFE) + .dmgRed)
-            call this.destroy()
-        endmethod
-        
-        static method create takes unit attacker, unit target, real damage returns thistype
-            local thistype this = thistype.allocate()
-            
-            set .target = target
-            set .level = GetUnitAbilityLevel(target, SPELL_ID)
-            
-            //Damage Reduction
-            set .dmgRed = damage * DAMAGE_REDUCTION_FACTOR[.level]
-            set .t = NewTimer()
-            call SetTimerData(.t, this)
-            call TimerStart(.t, 0.1, false, function thistype.onDamageReduction)
-            
-            //Damage Reflection
-            call DestroyEffect(AddSpecialEffectTarget(DAMAGE_REFLECTION_CASTER_EFFECT, attacker, DAMAGE_REFLECTION_CASTER_EFFECT_ATTACH))
-            set DamageType = SPELL
-            call UnitDamageTarget(target, attacker, damage * DAMAGE_REFLECTION_FACTOR[.level], false, false, DAMAGE_REFLECTION_ATTACK_TYPE, DAMAGE_REFLECTION_DAMAGE_TYPE, WEAPON_TYPE_WHOKNOWS)
-            
-            return this
-        endmethod
-
-    endstruct
+			//Damage Reflection
+            call DestroyEffect(AddSpecialEffectTarget(DAMAGE_REFLECTION_CASTER_EFFECT, caster, DAMAGE_REFLECTION_CASTER_EFFECT_ATTACH))
+            set DamageType = PHYSICAL
+			call SpellHelper.damageTarget(target, caster, damage * DAMAGE_REFLECTION_FACTOR[level], true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+			
+			//Damage Reduction
+			call DestroyEffect(AddSpecialEffectTarget(DAMAGE_REFLECTION_TARGET_EFFECT, caster, DAMAGE_REFLECTION_TARGET_EFFECT_ATTACH))
+            call SetUnitState(caster, UNIT_STATE_LIFE, GetUnitState(caster, UNIT_STATE_LIFE) + dmgRed)
+        endfunction
     
     private function Actions takes unit damagedUnit, unit damageSource, real damage returns nothing
-        if ( GetUnitAbilityLevel(damagedUnit, SPELL_ID) > 0 and isBackAttack(damageSource, damagedUnit) and DamageType == 0 ) then
-            call ScaledShell.create(damageSource, damagedUnit, damage)
+        if (GetUnitAbilityLevel(damagedUnit, SPELL_ID) > 0 and /*
+		*/	isBackAttack(damageSource, damagedUnit) and /*
+		*/	DamageType == PHYSICAL ) then
+            call onAttack(damageSource, damagedUnit, damage)
         endif
     endfunction
 

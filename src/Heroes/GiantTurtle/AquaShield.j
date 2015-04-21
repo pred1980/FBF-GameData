@@ -4,17 +4,15 @@ scope AquaShield initializer init
                     against physical damage. The shield increases the armor of the target and explodes after expiring, 
                     dealing damage to enemies in an area around the target. The shield can be destroyed manually if 
                     it is cast on self.
-     * Last Update: 10.01.2014
      * Changelog: 
-     *     10.01.2014: Abgleich mit OE und der Exceltabelle
+     *      10.01.2014: Abgleich mit OE und der Exceltabelle
+	 *		17.04.2015: Integrated RegisterPlayerUnitEvent
      */
     globals
         private constant integer SPELL_ID = 'A083'
         private constant integer AQUA_SHIELD_RELEASE_SPELL_ID = 'A084'
         private constant integer AQUA_SHIELD_BUFF_PLACER_ID = 'A085'
         private constant integer AQUA_SHIELD_BUFF_ID = 'B01K'
-        private constant attacktype AQUA_SHIELD_ATTACK_TYPE = ATTACK_TYPE_MAGIC
-        private constant damagetype AQUA_SHIELD_DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
         private constant real AQUA_SHIELD_DAMAGE_AREA = 250.00
         private constant string AQUA_SHIELD_DAMAGE_EFFECT = "Abilities\\Weapons\\DragonHawkMissile\\DragonHawkMissile.mdl"
         private constant string AQUA_SHIELD_DAMAGE_EFFECT_ATTACH = "chest"
@@ -23,6 +21,11 @@ scope AquaShield initializer init
         private constant real AQUA_SHIELD_DURATION = 10.00
         private real array AQUA_SHIELD_DAMAGE
         private integer array AQUA_SHIELD_ARMOR_BONUS
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
 
     private function MainSetup takes nothing returns nothing
@@ -131,16 +134,14 @@ scope AquaShield initializer init
     endmethod
 
     static method onInit takes nothing returns nothing
-        local trigger trig = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ(trig, EVENT_PLAYER_UNIT_SPELL_CAST)
-        call TriggerAddCondition(trig, Condition(function thistype.onSpellCast))
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_CAST, function thistype.onSpellCast, null)
 
         set buffType = DefineBuffType(AQUA_SHIELD_BUFF_PLACER_ID, AQUA_SHIELD_BUFF_ID, 0, false, false, thistype.onBuffAdd, 0, thistype.onBuffEnd)
         set dmg = xedamage.create()
-        set dtype = AQUA_SHIELD_DAMAGE_TYPE
-        set atype = AQUA_SHIELD_ATTACK_TYPE
+        set dtype = DAMAGE_TYPE
+        set atype = ATTACK_TYPE
+		set wtype = WEAPON_TYPE
         call useSpecialEffect(AQUA_SHIELD_DAMAGE_EFFECT, AQUA_SHIELD_DAMAGE_EFFECT_ATTACH)
-        set trig = null
     endmethod
 
     endstruct

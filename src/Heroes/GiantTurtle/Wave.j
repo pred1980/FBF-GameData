@@ -4,11 +4,12 @@ scope Wave initializer init
                     Once the wave reaches the Turtles position, he will surf on it to the impact area dealing 
                     damage to enemies in there. Units on the way are slighty pushed back and receive a small 
                     amount of damage.
-     * Last Update: 10.01.2014
      * Changelog: 
-     *     08.01.2014: Spell konnte noch nicht überprüft werden. Siehe Excelliste!!!
-     *     10.01.2014: Abgleich mit OE und der Exceltabelle + Bugfixing
-	 *     20.03.2015: Added Spell-Immunity-Check to the "doPushbackEnum method"
+     *      08.01.2014: Spell konnte noch nicht überprüft werden. Siehe Excelliste!!!
+     *      10.01.2014: Abgleich mit OE und der Exceltabelle + Bugfixing
+	 *      20.03.2015: Added Spell-Immunity-Check to the "doPushbackEnum method"
+	 *		16.04.2015: Integrated SpellHelper for filtering
+						Code Refactoring
      */
     globals
         private constant integer SPELL_ID = 'A082'
@@ -29,15 +30,17 @@ scope Wave initializer init
         private constant real ANIMATION_SPEED_FACTOR = 2.00
         private constant integer WAVE_CASTER_SURF_ANIMATION = 1
         private constant integer WAVE_CASTER_FINISH_ANIMATION = 12
-        private constant attacktype WAVE_ATTACK_TYPE = ATTACK_TYPE_MAGIC
-        private constant damagetype WAVE_DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
         private constant string WAVE_DAMAGE_EFFECT = "Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveDamage.mdl"
         private constant string WAVE_DAMAGE_EFFECT_ATTACH = "origin"
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private real array WAVE_PUSHBACK_DAMAGE
         private real array WAVE_END_DAMAGE
     endglobals
-
 
     private function MainSetup takes nothing returns nothing
         set WAVE_PUSHBACK_DAMAGE[0] = 35.00
@@ -80,23 +83,21 @@ scope Wave initializer init
             local thistype this = temp
             local real ang = Atan2(GetUnitY(u) - GetUnitY(root.caster), GetUnitX(u) - GetUnitX(root.caster))
             
-            if IsUnitEnemy(root.caster, GetOwningPlayer(u)) and not /*
-            */ IsUnitInGroup(u, targets) and not /*
-            */ IsUnitDead(u) and not /*
-			*/ IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not /*
-			*/ IsUnitType(u, UNIT_TYPE_MECHANICAL) then
+			if (SpellHelper.isValidEnemy(u, root.caster)) then
                 call GroupAddUnit(targets, u)
                 call Knockback.create(root.caster, u, WAVE_PUSHBACK_DISTANCE, WAVE_PUSHBACK_DURATION, ang, 0, "", "")
-                set DamageType = SPELL
-                call damageTarget(root.caster, u, WAVE_PUSHBACK_DAMAGE[root.lvl])
-            endif
+                set DamageType = PHYSICAL
+				call dmg.damageTarget(root.caster, u, WAVE_PUSHBACK_DAMAGE[root.lvl])
+			endif
+			
             set u = null
+			
             return false
         endmethod
         
         method onHit takes nothing returns nothing
-            set DamageType = SPELL
-            call damageAOE(root.caster, x, y, WAVE_IMPACT_AREA, WAVE_END_DAMAGE[root.lvl])
+            set DamageType = PHYSICAL
+            call dmg.damageAOE(root.caster, x, y, WAVE_IMPACT_AREA, WAVE_END_DAMAGE[root.lvl])
             //call SetUnitZ(root.caster, GetTerrainZ(x, y))
             if not IsUnitDead(root.caster) then
                 call SetUnitAnimationByIndex(root.caster, WAVE_CASTER_FINISH_ANIMATION)
@@ -163,7 +164,8 @@ scope Wave initializer init
             local thistype this = 0
             local real sx = GetUnitX(from.caster) + WAVE_CREATION_DISTANCE * Cos(from.angle - bj_PI)
             local real sy = GetUnitY(from.caster) + WAVE_CREATION_DISTANCE * Sin(from.angle - bj_PI)
-            call SetUnitPathing(from.caster, false)
+            
+			call SetUnitPathing(from.caster, false)
             set this = allocate(sx, sy, WAVE_EFFECT_HEIGTH, from.x, from.y, WAVE_EFFECT_HEIGTH)
             set scale = WAVE_EFFECT_SCALE
             set zangle = WAVE_EFFECT_Z_ANGLE
@@ -173,14 +175,16 @@ scope Wave initializer init
             call launch(WAVE_SPEED, 0.00)
             set root = from
             set root.lvl = root.lvl - 1
-            return this
+            
+			return this
         endmethod
         
         static method onInit takes nothing returns nothing
             set doPushback = Condition(function thistype.doPushbackEnum)
             set dmg = xedamage.create()
-            set atype = WAVE_ATTACK_TYPE
-            set dtype = WAVE_DAMAGE_TYPE
+            set dmg.atype = ATTACK_TYPE
+            set dmg.dtype = DAMAGE_TYPE
+			set dmg.wtype = WEAPON_TYPE
             call useSpecialEffect(WAVE_DAMAGE_EFFECT, WAVE_DAMAGE_EFFECT_ATTACH)
             set t = HandleTable.create()
         endmethod

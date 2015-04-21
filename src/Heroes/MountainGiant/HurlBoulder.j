@@ -1,13 +1,14 @@
 library HurlBoulder initializer Init requires xedamage, xemissile
     /*
-     * Description: The Mountain Giant throws a boulder in the target area, causing damage and stunning the target for 2 seconds.
-     * Last Update: 09.01.2014
+     * Description: The Mountain Giant throws a boulder in the target area, causing damage and 
+					stunning the target for 2 seconds.
      * Changelog: 
-     *     09.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     	21.04.2015: Integrated RegisterPlayerUnitEvent
+						Changed DamageType from FIRE to DEMOLITION
      */
     globals
         private constant integer SPELL_ID = 'A098'
-        
         private constant real TARGET_RADIUS = 200.0
         // Main missile visual settings:
         private constant string MAIN_MODEL =  "Abilities\\Weapons\\RockBoltMissile\\RockBoltMissile.mdl"
@@ -20,6 +21,11 @@ library HurlBoulder initializer Init requires xedamage, xemissile
         private constant string STUN_EFFECT = "Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl"
         private constant string STUN_ATT_POINT = "overhead"
         private constant real STUN_DURATION = 2.0
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_DEMOLITION
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_ROCK_HEAVY_BASH
     endglobals
     
     private constant function Damage takes integer level returns real
@@ -31,8 +37,9 @@ library HurlBoulder initializer Init requires xedamage, xemissile
     // which something else probably instantiated and we would like to configure.
     //
     private function setupDamageOptions takes xedamage d returns nothing
-        set d.dtype = DAMAGE_TYPE_FIRE   // Do spell, fire (magic) damage
-        set d.atype = ATTACK_TYPE_NORMAL //
+        set d.atype = ATTACK_TYPE
+		set d.dtype = DAMAGE_TYPE
+        set d.wtype = WEAPON_TYPE
 
         set d.damageEnemies = true
         set d.damageNeutral = false
@@ -91,12 +98,15 @@ library HurlBoulder initializer Init requires xedamage, xemissile
         private static method finalEnum takes nothing returns boolean
             local unit u = GetFilterUnit()
             local HurlBoulderMain this = .current //Don't feel like typing "current" everywhere.
-            if (damageOptions.allowedTarget( .caster, u ) ) then
-                set DamageType = SPELL
+            
+			if (damageOptions.allowedTarget( .caster, u ) ) then
+                set DamageType = PHYSICAL
                 call damageOptions.damageTarget(.caster, u, Damage(.level))
                 call Stun_UnitEx(u, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
             endif
+			
             set u = null
+			
             return false
         endmethod
 
@@ -113,34 +123,27 @@ library HurlBoulder initializer Init requires xedamage, xemissile
         endmethod
     endstruct
 
-    private function spellIdMatch takes nothing returns boolean
+    private function Conditions takes nothing returns boolean
         return (GetSpellAbilityId()==SPELL_ID)
     endfunction
 
-    private function onSpellEffect takes nothing returns nothing
-        local real tx = GetSpellTargetX()                   //The spell's target, since a recent patch
-        local real ty = GetSpellTargetY()                   //we no longer need to use locations for this.
-        local unit hero = GetTriggerUnit()                    //The spell's caster
-        local integer level = GetUnitAbilityLevel(hero, SPELL_ID) //The level of the spell
+    private function Actions takes nothing returns nothing
+        local real tx = GetSpellTargetX()
+        local real ty = GetSpellTargetY()
+        local unit hero = GetTriggerUnit()
+        local integer level = GetUnitAbilityLevel(hero, SPELL_ID)
         
-        local HurlBoulderMain fb = HurlBoulderMain.create(hero, level, tx,ty)
+        call HurlBoulderMain.create(hero, level, tx,ty)
         set hero = null
     endfunction
 
     private function Init takes nothing returns nothing
-        local trigger t = CreateTrigger()
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 
-        // Initializing the damage options:
-        set damageOptions=xedamage.create()    // first instanciate a xeobject.
-        call setupDamageOptions(damageOptions) // now call the function we saw before.
+        set damageOptions=xedamage.create()
+        call setupDamageOptions(damageOptions)
 
-        //Setting up the spell's trigger:
-        call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(t, Condition(function spellIdMatch))
-        call TriggerAddAction(t, function onSpellEffect)
         call Preload(MAIN_MODEL)
         call Preload(STUN_EFFECT)
-        
-        set t = null
     endfunction
 endlibrary

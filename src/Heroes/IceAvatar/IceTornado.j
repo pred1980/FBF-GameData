@@ -23,7 +23,7 @@ scope IceTornado initializer init
         
 		// Dealt damage configuration
         private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_ICE
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_COLD
         private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
 		
 		private real array DURATION

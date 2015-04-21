@@ -2,9 +2,10 @@ scope Endurance initializer init
     /*
      * Description: The Mountain Giant uses his mental power to get stronger and stronger by every hit he take. 
                     This newly gained strength fails after a short time.
-     * Last Update: 09.01.2014
      * Changelog: 
-     *     09.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *		21.04.2015: Integrated SpellHelper for filtering
+						Removed xedamage
 	 *
 	 * Info:
 	       BONUS_ATTACK_SPEED |-512|+511 
@@ -14,14 +15,14 @@ scope Endurance initializer init
         private constant integer BUFF_PLACER_ID = 'A09A'
         private constant integer BUFF_ID = 'B01W'
         private constant integer DAMAGE_MODIFIER_PRIORITY = 50
-        private real array SPELL_DURATION
         private constant real TIMER_INTERVAL = 0.10
-        
         private constant real REMOVE_BONUS_TIMER_INTERVAL = 5.0
         private constant integer array STR_BONUS
         private constant integer array AGI_BONUS
         private constant integer array ATTACK_SPEED_BONUS
         private constant integer MAX_ATTACK_SPEED_BONUS = 511
+		
+		private real array SPELL_DURATION
     endglobals
     
     private function MainSetup takes nothing returns nothing
@@ -84,7 +85,6 @@ scope Endurance initializer init
         real damageBlocked = 0.00
         dbuff buff = 0
         
-        static delegate xedamage dmg = 0
         static thistype temp = 0
         static integer buffType = 0
         
@@ -125,7 +125,7 @@ scope Endurance initializer init
             local dbuff b = GetEventBuff()
             local timer t = NewTimer()
             
-            if IsUnitDead(b.target) then
+            if (SpellHelper.isUnitDead(b.target)) then
                 call TimerStart(t, 1.00/I2R(.temp.hits), true, function thistype.onRemoveBonus)
             else
                 call TimerStart(t, REMOVE_BONUS_TIMER_INTERVAL/I2R(.temp.hits), true, function thistype.onRemoveBonus)
@@ -157,9 +157,6 @@ scope Endurance initializer init
         
         private static method onInit takes nothing returns nothing
             set buffType = DefineBuffType(BUFF_PLACER_ID, BUFF_ID, TIMER_INTERVAL, true, false, thistype.onBuffAdd, 0, thistype.onBuffEnd)
-            set dmg = xedamage.create()
-            set atype = ATTACK_TYPE_MAGIC
-            set dtype = DAMAGE_TYPE_MAGIC
         endmethod
     
     endstruct

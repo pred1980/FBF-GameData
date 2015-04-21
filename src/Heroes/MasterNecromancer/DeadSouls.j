@@ -2,10 +2,11 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
     /*
      * Description: The Death Master calls forth vile souls to help him in his fight. 
                     He summons magical ghosts over 12 seconds, flying to enemies around him and dealing damage on impact.
-     * Last Update: 05.11.2013
      * Changelog: 
-     *     05.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     28.03.2014: Anzahl der Missiles von 120 auf 20 reduziert 
+     *     	05.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     	28.03.2014: Anzahl der Missiles von 120 auf 20 reduziert 
+	 *		21.04.2015: Integrated SpellHelper for filtering
+						Code Refactoring
      *
      */
     globals
@@ -15,9 +16,6 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
         private constant real TIMER_INTERVAL = 0.05 //Should be divisible with MISSILE_SPAWN_INTERVAL without rest (here it would be 2)
         private constant real SPELL_AREA_OF_EFFECT = 750.00
         private constant boolean STOP_IF_CASTER_DEAD = true
-    endglobals
-    
-    globals
         private constant string MISSILE_MODEL = "Models\\SpiritDragonMissile(Dark).mdx"
         private constant string MISSILE_COLLISION_MODEL = "Models\\darkbirth.mdx"
         private constant real MISSILE_SIZE = 0.90
@@ -30,12 +28,13 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
         private constant real MISSILE_ACCELERATION = 105.00 //Acceleration per Second, here 105.00, makes 700 Speed after 5 seconds fly duration
         private constant real MISSILE_MAX_SPEED = 700.00
         private constant boolean MISSILE_RANDOM_COLOR = false //If true, the missiles will have a random team color
-    endglobals
     
-    globals
-        private real array MISSILE_DAMAGE
-        private constant attacktype MISSILE_ATTACK_TYPE = ATTACK_TYPE_MAGIC
-        private constant damagetype MISSILE_DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+        
+		private real array MISSILE_DAMAGE
     endglobals
     
     private function MainSetup takes nothing returns nothing
@@ -79,7 +78,7 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
         private method onHit takes nothing returns nothing
             call hiddenDestroy()
             call DestroyEffect(AddSpecialEffectTarget(MISSILE_COLLISION_MODEL, target, "foot"))
-            set DamageType = 1
+            set DamageType = SPELL
             call damageTarget(owner, target, MISSILE_DAMAGE[GetUnitAbilityLevel(owner, SPELL_ID)])
         endmethod
         
@@ -89,7 +88,8 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
             local real sy = GetUnitY(caster) + GetRandomReal(0.00, SPELL_AREA_OF_EFFECT) * Sin(angle)
             local real sz = GetRandomReal(MISSILE_MIN_START_Z, MISSILE_MAX_START_Z)
             local thistype this = create(sx, sy, sz, to, MISSILE_Z_OFFSET)
-            set owner = caster
+            
+			set owner = caster
             set target = to
             set fxpath = MISSILE_MODEL
             set scale = MISSILE_SIZE
@@ -104,8 +104,9 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
         
         private static method onInit takes nothing returns nothing
             set damager = xedamage.create()
-            set atype = MISSILE_ATTACK_TYPE
-            set dtype = MISSILE_DAMAGE_TYPE
+            set atype = ATTACK_TYPE
+            set dtype = DAMAGE_TYPE
+			set wtype = WEAPON_TYPE
         endmethod
         
     endstruct
@@ -121,6 +122,9 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
     
         private static timer ticker = null
         private static boolexpr groupFilter = null
+		
+		private static unit tempUnit = null
+		private static thistype temp = 0
         
         private effect sfx
         
@@ -134,21 +138,17 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
                 call PauseTimer(ticker)
             endif
         endmethod
-        
-            private static unit tempUnit = null
-            private static thistype temp = 0
-            
-            private static method filter takes nothing returns boolean
-                set tempUnit = GetFilterUnit()
-                return IsUnitEnemy(tempUnit, GetOwningPlayer(temp.caster)) and not IsUnitType(tempUnit, UNIT_TYPE_DEAD)
-            endmethod
-        
-            private method getRandomUnit takes nothing returns unit
-                set temp = this
-                call GroupEnumUnitsInArea(ENUM_GROUP, GetUnitX(caster), GetUnitY(caster), SPELL_AREA_OF_EFFECT, groupFilter)
-                set tempUnit = GroupPickRandomUnit(ENUM_GROUP)
-                return tempUnit
-            endmethod
+
+		private static method filter takes nothing returns boolean
+			return SpellHelper.isValidEnemy(GetFilterUnit(), temp.caster)
+		endmethod
+	
+		private method getRandomUnit takes nothing returns unit
+			set temp = this
+			call GroupEnumUnitsInArea(ENUM_GROUP, GetUnitX(caster), GetUnitY(caster), SPELL_AREA_OF_EFFECT, groupFilter)
+			set tempUnit = GroupPickRandomUnit(ENUM_GROUP)
+			return tempUnit
+		endmethod
         
         private static method periodicFunc takes nothing returns nothing
             local thistype this = first

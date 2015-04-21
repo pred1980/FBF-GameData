@@ -6,6 +6,7 @@ scope Barrage initializer Init
      * Changelog: 
      *     29.10.2013: Abgleich mit OE und der Exceltabelle
 	 *     21.03.2015: Code refactoring
+	 *     18.04.2015: Integrated RegisterPlayerUnitEvent
      *
 	 * Note:
 	 *     Damgage pro Missile:
@@ -30,12 +31,18 @@ scope Barrage initializer Init
         private constant real mTimer = 0.05
         //maximum number of missiles
         private constant integer maxM = 30
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
 
     private function setupDamageOptions takes xedamage d returns nothing
         //setup of the damage options
-        set d.dtype = DAMAGE_TYPE_MAGIC    //deals magic damage
-        set d.atype = ATTACK_TYPE_NORMAL   //normal attack type
+		set d.atype = ATTACK_TYPE
+        set d.dtype = DAMAGE_TYPE    
+		set d.wtype = WEAPON_TYPE
         
         set d.damageEnemies = true     //hits enemies
         set d.damageAllies  = false    //doesn't hit allies
@@ -76,7 +83,7 @@ scope Barrage initializer Init
         method onUnitHit takes unit hitunit returns nothing
             if (damageOptions.allowedTarget( this.caster, hitunit)) then
                 call DestroyEffect(AddSpecialEffectTarget(boomEffect, hitunit, "origin"))
-                set DamageType = 1
+                set DamageType = SPELL
                 call damageOptions.damageAOE(this.caster, GetUnitX(hitunit), GetUnitY(hitunit), radius, this.dmg)
                 call this.terminate()
             endif
@@ -118,32 +125,29 @@ scope Barrage initializer Init
     endfunction
     
     private function Actions takes nothing returns nothing
-        local integer i=0
+        local integer i = 0
         local unit hero = GetTriggerUnit()
         local location tarLoc = GetSpellTargetLoc()
         local unit tarUnit = CreateUnitAtLoc(GetOwningPlayer(hero), XE_DUMMY_UNITID, tarLoc, bj_UNIT_FACING)
         local Data D = Data.create(hero, tarUnit, i)
         local timer t = NewTimer()
-        call SetTimerData(t, integer(D))
+        
+		call SetTimerData(t, integer(D))
         call TimerStart(t, mTimer, true, function Loop)
         call KillUnit(tarUnit)
-        set t = null
+        
+		set t = null
         set hero = null
         set tarLoc = null
         set tarUnit = null
     endfunction
     
     private function Init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-		
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function Actions)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 		
         set damageOptions=xedamage.create()
         call setupDamageOptions(damageOptions)
 		
-        set t = null
         call Preload(boomEffect)
         call Preload(missile)
     endfunction

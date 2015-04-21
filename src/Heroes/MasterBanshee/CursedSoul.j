@@ -3,10 +3,10 @@ scope CursedSoul initializer init
      * Description: She takes the soul from a near corpse, forcing it to possess a random enemy land unit. 
                     If that unit is different to the cursed soul, it will deal damage to the unit, 
                     else it will take control of that unit temporally, draining its life.
-     * Last Update: 29.10.2013
      * Changelog: 
      *     29.10.2013: Abgleich mit OE und der Exceltabelle
 	 *     21.03.2015: Code refactoring
+	 *     18.04.2015: Integrated RegisterPlayerUnitEvent
      *
      */ 
     globals
@@ -29,6 +29,11 @@ scope CursedSoul initializer init
         
         private constant real ROTMAJ = Cos(bj_PI * INTERVAL / PERIOD)
         private constant real ROTMIN = Sin(bj_PI * INTERVAL / PERIOD)
+				
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private real array DAMAGE
         private group targets
@@ -117,8 +122,9 @@ scope CursedSoul initializer init
             local player pt = GetOwningPlayer(this.target)
             local player ps = GetOwningPlayer(this.soul)
             local boolean b = false
+			local integer level = GetUnitAbilityLevel(this.caster, SPELL_ID)
             
-            if IsUnitInRange(this.soul, this.target, 50.0) or IsUnitDead(this.soul) or IsUnitDead(this.target) then
+            if (IsUnitInRange(this.soul, this.target, 50.0) or IsUnitDead(this.soul) or IsUnitDead(this.target)) then
                 set b = true
                 call ReleaseTimer(GetExpiredTimer())
             else
@@ -127,7 +133,7 @@ scope CursedSoul initializer init
             if b then
                 call GroupRemoveUnit(taggedTargets, this.target)
                 
-                if IsUnitDead(this.target) and not IsUnitDead(this.soul) then
+                if (IsUnitDead(this.target) and not IsUnitDead(this.soul)) then
                     call DestroyEffect(AddSpecialEffect(SPIRIT_EFFECT_DEAD, GetUnitX(this.soul), GetUnitY(this.soul)))
                     call RemoveUnit(this.soul)
                 else
@@ -136,10 +142,10 @@ scope CursedSoul initializer init
                         call RemoveUnit(this.soul)
                         call DestroyEffect(AddSpecialEffectTarget(SPIRIT_EFFECT_POSSESSION, this.target, "origin"))
                         call SetUnitOwner(this.target, ps, true)
-                        call UnitApplyTimedLife(this.target, 'Bpos', POSSESSION_DUR * (GetUnitAbilityLevel(this.caster, SPELL_ID)))
+                        call UnitApplyTimedLife(this.target, 'Bpos', POSSESSION_DUR * level)
                     else
-                        set DamageType = 1
-                        call UnitDamageTarget(this.caster, this.target, DAMAGE[GetUnitAbilityLevel(this.caster, SPELL_ID)], true, false, ATTACK_TYPE_MAGIC, DAMAGE_TYPE_MAGIC, WEAPON_TYPE_WHOKNOWS)
+                        set DamageType = SPELL
+						call SpellHelper.damageTarget(this.caster, this.target, DAMAGE[level], false, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
                         call RemoveUnit(this.soul)
                     endif
                 endif
@@ -154,7 +160,8 @@ scope CursedSoul initializer init
             local thistype this = thistype.allocate()
             
             set .caster = caster
-            set .soul = CreateUnit(GetOwningPlayer(.caster), GetUnitTypeId(target), GetUnitX(target), GetUnitY(target), GetUnitFacing(target))
+			set .target = target
+            set .soul = CreateUnit(GetOwningPlayer(caster), GetUnitTypeId(target), GetUnitX(target), GetUnitY(target), GetUnitFacing(target))
             
             call SetUnitMoveSpeed(.soul, NORMAL_MOVEMENT_SPEED)
             call UnitApplyTimedLife( .soul, 'BTLF', MAX_LIFE_TIME_SOUL )
@@ -181,7 +188,7 @@ scope CursedSoul initializer init
     endstruct
 
    private function Actions takes nothing returns nothing
-        call CursedSoul.create( GetTriggerUnit(), GetSpellTargetUnit() )
+        call CursedSoul.create(GetTriggerUnit(), GetSpellTargetUnit())
     endfunction
 	
 	private function Conditions takes nothing returns boolean
@@ -189,20 +196,14 @@ scope CursedSoul initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-		call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function Actions)
-		
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+
 		call MainSetup()
         call Preload(START_EFFECT)
         call Preload(SPIRIT_EFFECT)
         call Preload(SPIRIT_EFFECT_DEAD)
         call Preload(SPIRIT_EFFECT_TARGET)
         call Preload(SPIRIT_EFFECT_POSSESSION)
-		
-		set t = null
     endfunction
 
 endscope

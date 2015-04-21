@@ -21,7 +21,7 @@ scope FreezingBreath initializer init
 		
 		// Dealt damage configuration
         private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_ICE
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_COLD
         private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
 

@@ -1,17 +1,17 @@
 scope CraggyExterior initializer init
     /*
      * Description: The skin of the Mountain Giant reduces all physical and magical damage.
-     * Last Update: 09.01.2014
      * Changelog: 
-     *     09.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     	21.04.2015: Integrated RegisterPlayerUnitEvent
      */
     private keyword CraggyExterior
 
     globals
         private constant integer SPELL_ID = 'A099'
+        private constant integer DAMAGE_MODIFIER_PRIORITY = 25
         
-		private constant integer DAMAGE_MODIFIER_PRIORITY = 25
-        private real array PHYSICAL_DAMAGE_RED
+		private real array PHYSICAL_DAMAGE_RED
         private real array SPELL_DAMAGE_RED
         private CraggyExterior array spellForUnit
     endglobals
@@ -39,8 +39,10 @@ scope CraggyExterior initializer init
             
         static method create takes CraggyExterior from returns thistype
             local thistype this = allocate(from.caster, DAMAGE_MODIFIER_PRIORITY)
-            set root = from
-            return this
+            
+			set root = from
+            
+			return this
         endmethod
         
         method onDamageTaken takes unit source, real damage returns real
@@ -86,22 +88,26 @@ scope CraggyExterior initializer init
 
     private function Actions takes nothing returns nothing
         local CraggyExterior ce = 0
+		local unit u = GetTriggerUnit()
         
-        set ce = CraggyExterior.getForUnit(GetTriggerUnit())
+        set ce = CraggyExterior.getForUnit(u)
         if( GetLearnedSkill() == SPELL_ID )then
             if ce == null then
-                set ce = CraggyExterior.create(GetTriggerUnit())
+                set ce = CraggyExterior.create(u)
             else
-                call ce.onLevelUp(GetTriggerUnit())
+                call ce.onLevelUp(u)
             endif
         endif
+		
+		set u = null
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetLearnedSkill() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_HERO_SKILL )
-        call TriggerAddAction( t, function Actions )
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_HERO_SKILL, function Conditions, function Actions)
         call MainSetup()
     endfunction
 

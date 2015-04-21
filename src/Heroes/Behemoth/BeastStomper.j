@@ -2,10 +2,10 @@ scope BeastStomper initializer init
     /*
      * Description: Octar slams the ground, stunning and damaging nearby enemy units.
      * Changelog: 
-     *     25.10.2013: Abgleich mit OE und der Exceltabelle
-	 *     18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
-	 *     26.03.2015: Integrated RegisterPlayerUnitEvent
-	                   Integrated SpellHelper for damaging and filtering
+     *     	25.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     	18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     	26.03.2015: Integrated RegisterPlayerUnitEvent
+						Integrated SpellHelper for damaging and filtering
      *
      */
     globals

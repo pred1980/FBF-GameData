@@ -23,7 +23,7 @@ scope FogOfDeath initializer init
 		
 		// Dealt damage configuration
         private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_ICE
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_COLD
         
         private real array DAMAGE_PER_SECOND
         private real RADIUS = 700
@@ -65,7 +65,7 @@ scope FogOfDeath initializer init
 			
             if GetRandomInt(1,100) >= CHANCE_TO_HIT then
 				set DamageType = SPELL
-                call DOT.start( .tempthis.caster , u , DAMAGE_PER_SECOND[.tempthis.level] , DOT_TIME , ATTACK_TYPE , DAMAGE_TYPE_ICE , EFFECT , ATT_POINT )
+                call DOT.start( .tempthis.caster , u , DAMAGE_PER_SECOND[.tempthis.level] , DOT_TIME , ATTACK_TYPE , DAMAGE_TYPE , EFFECT , ATT_POINT )
             endif
 			
             call GroupRemoveUnit(.tempthis.targets, u)

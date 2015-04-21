@@ -7,6 +7,7 @@ scope SpiritBurn initializer Init
      * Changelog: 
      *     29.10.2013: Abgleich mit OE und der Exceltabelle
 	 *     20.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
+	 *     18.04.2015: Integrated RegisterPlayerUnitEvent
      *
      */   
     globals
@@ -20,12 +21,18 @@ scope SpiritBurn initializer Init
         private constant real heroExplodeDmg = 0.10//percentage of health that detonates when hero's mana = 0
         private constant real radius = 350.0//radius of the explosion
         private constant real duration = 5.0//duration of the spell, used to control buff stacking
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
     
     private function setupDamageOptions takes xedamage d returns nothing
-    //setup of the damage options
-        set d.dtype = DAMAGE_TYPE_MAGIC    //deals magic damage
-        set d.atype = ATTACK_TYPE_NORMAL   //normal attack type
+		//setup of the damage options
+		set d.atype = ATTACK_TYPE
+        set d.dtype = DAMAGE_TYPE    
+		set d.wtype = WEAPON_TYPE
         
         set d.damageEnemies = true     //hits enemies
         set d.damageAllies  = false    //doesn't hit allies
@@ -88,7 +95,7 @@ scope SpiritBurn initializer Init
                 else
                     set dmg = GetWidgetLife(D.target) * heroExplodeDmg
                 endif
-                set DamageType = 1
+                set DamageType = SPELL
                 call damageOptions.damageGroup(D.caster, all, dmg)
                 call DestroyEffect(AddSpecialEffectTarget(boomEffect, D.target, "origin"))
                 call UnitRemoveAbility(D.target, BUFF_ID)
@@ -116,18 +123,13 @@ scope SpiritBurn initializer Init
     endfunction
     
     private function Init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-		
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function Actions)
-		
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+
 		set damageOptions=xedamage.create()
         call setupDamageOptions(damageOptions)
         
 		set all = CreateGroup()
         set b = Condition(function Pick)
-        set t = null
         call Preload(boomEffect)
     endfunction
 endscope

@@ -5,6 +5,7 @@ scope DarkObedience initializer init
      * Changelog: 
      *     28.10.2013: Abgleich mit OE und der Exceltabelle
 	 *     20.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
+	 *     18.04.2015: Integrated RegisterPlayerUnitEvent
      *
      */
     globals
@@ -19,12 +20,18 @@ scope DarkObedience initializer init
         private constant string deathSFX = "Abilities\\Spells\\Items\\AIil\\AIilTarget.mdl"
         //effect displayed on the missile while it's flying around
         private constant string flashSFX = "Abilities\\Spells\\Undead\\CarrionSwarm\\CarrionSwarmDamage.mdl"
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
     
     private function setupDamageOptions takes xedamage d returns nothing
         //setup of the damage options
-        set d.dtype = DAMAGE_TYPE_MAGIC    //deals magic damage
-        set d.atype = ATTACK_TYPE_NORMAL   //normal attack type
+		set d.atype = ATTACK_TYPE
+        set d.dtype = DAMAGE_TYPE    
+		set d.wtype = WEAPON_TYPE
         
         set d.damageEnemies = true     //hits enemies
         set d.damageAllies  = false    //doesn't hit allies
@@ -41,37 +48,35 @@ scope DarkObedience initializer init
     private struct ArcaneMissile extends xecollider
         unit castingHero
         integer level
-        method onUnitHit takes unit hitunit returns nothing
+        
+		method onUnitHit takes unit hitunit returns nothing
             if (damageOptions.allowedTarget( this.castingHero  , hitunit ) ) then
                 call DestroyEffect( AddSpecialEffectTarget(SFX,hitunit, "origin") )
-                set DamageType = 1
+                set DamageType = SPELL
                 call damageOptions.damageTarget(this.castingHero  , hitunit, this.level * DAMAGE)
             endif
         endmethod
-        method onDestroy takes nothing returns nothing
+        
+		method onDestroy takes nothing returns nothing
             set this.castingHero = null
             call DestroyEffect( AddSpecialEffect(deathSFX, this.x , this.y ) )
         endmethod
-        method loopControl takes nothing returns nothing
+        
+		method loopControl takes nothing returns nothing
             if(GetRandomReal(0,1)<0.25) then
                 call DestroyEffect( AddSpecialEffect(flashSFX, this.x , this.y ) )
             endif
         endmethod
     endstruct
-                
-    
 
     private function Actions takes nothing returns nothing
 		local unit hero = GetTriggerUnit()
         local unit tar = GetSpellTargetUnit()
         local integer level = GetUnitAbilityLevel(hero, SPELL_ID)
-        local real x
-        local real y
-        local ArcaneMissile am
-        
-        set x = GetUnitX(hero)
-        set y = GetUnitY(hero)
-        set am = ArcaneMissile.create( x, y, bj_RADTODEG * Atan2(GetUnitY(tar) - y, GetUnitX(tar) - x))
+        local real x = GetUnitX(hero)
+        local real y = GetUnitY(hero)
+        local ArcaneMissile am = ArcaneMissile.create( x, y, bj_RADTODEG * Atan2(GetUnitY(tar) - y, GetUnitX(tar) - x))
+
         set am.fxpath = missile
         set am.speed = 285.0
         set am.acceleration = 1100.0
@@ -81,8 +86,9 @@ scope DarkObedience initializer init
         set am.targetUnit = tar
         set am.expirationTime = ( level * DURATION )
         set am.castingHero = hero
-        set am.level = GetUnitAbilityLevel(hero, SPELL_ID)
-        set tar = null
+        set am.level = level
+        
+		set tar = null
         set hero = null
     endfunction
 	
@@ -91,16 +97,11 @@ scope DarkObedience initializer init
     endfunction
     
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-		call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function Actions)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         
 		set damageOptions=xedamage.create()
         call setupDamageOptions(damageOptions)
 		
-		set t = null
         call Preload(missile)
         call Preload(SFX)
         call Preload(flashSFX)

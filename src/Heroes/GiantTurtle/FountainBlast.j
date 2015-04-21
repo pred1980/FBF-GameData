@@ -5,10 +5,11 @@ scope FountainBlast initializer init
                     which results in mighty water explosions, that throw enemies in 200 range in the air, dealing damage 
                     and slow them after falling back on the ground for 5 seconds. The projectiles can also be fired 
                     at a target area, causing them to explode on impact.
-     * Last Update: 10.01.2014
      * Changelog: 
-     *     10.01.2014: Abgleich mit OE und der Exceltabelle
-	 *     19.03.2014: Flugzeit von getroffenen Einheiten durch die Projektile reduziert 
+     *      10.01.2014: Abgleich mit OE und der Exceltabelle
+	 *      19.03.2014: Flugzeit von getroffenen Einheiten durch die Projektile reduziert
+	 *		17.04.2015: Integrated RegisterPlayerUnitEvent
+						Integrated SpellHelper for filtering	 
      */
     globals
         private constant integer SPELL_ID = 'A087'
@@ -32,7 +33,7 @@ scope FountainBlast initializer init
         //Advanced Missile Options
         
         /*Wenn dieser Wert auf true gesetzt wird, wird die Explosion zwar ein wenig delayed, aber sieht daf?r geiler aus :D
-          Die Kugeln werden erst nach oben schweben, werden dabei gr??er und fallen dann ganz schnell auf den Boden
+          Die Kugeln werden erst nach oben schweben, werden dabei größer und fallen dann ganz schnell auf den Boden
           
           Mit diesen Einstellungen werden genau 1.75 Sekunden ben?tigt. Bin gr??tenteils durch stundenlanges Rechnen auf 
           diese Werte gekommen, damits auch mehr oder weniger gut aussieht.. :P
@@ -65,11 +66,15 @@ scope FountainBlast initializer init
         private constant real EXPLOSION_DELAY = 10.00
         private constant real EXPLOSION_START_SPEED = 850.00
         private constant real EXPLOSION_ACCELERATION = -1888.00//-971.43
-        //Formel f?r die Zeit:
+        //Formel für die Zeit:
         // (StartSpeed / |Acceleration|) * 2
         //Hier: (850 / 971.43) * 2 ~= 1.75
-        private constant attacktype EXPLOSION_ATTACK_TYPE = ATTACK_TYPE_MAGIC
-        private constant damagetype EXPLOSION_DAMAGE_TYPE = DAMAGE_TYPE_COLD
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_COLD
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+		
         private real array EXPLOSION_DAMAGE
     endglobals
     
@@ -94,8 +99,7 @@ scope FountainBlast initializer init
         */
         private constant boolean BUFF_APPLY_ON_TOSS_START = true
     endglobals
-    
-    
+
     private function MainSetup takes nothing returns nothing
         set MISSILE_AMOUNT[0] = 4
         set MISSILE_AMOUNT[1] = 5
@@ -105,8 +109,7 @@ scope FountainBlast initializer init
         set EXPLOSION_DAMAGE[1] = 200.00
         set EXPLOSION_DAMAGE[2] = 275.00
     endfunction
-    
-    
+
     private keyword Projectile
     private keyword Main
     private keyword Tosser
@@ -145,7 +148,6 @@ scope FountainBlast initializer init
                 call UnitAddBuff(source, target, buffType, BUFF_DURATION, lvl + 1)
             endif
             
-            
             if count <= 0 then
                 call PauseTimer(ticker)
             endif
@@ -162,8 +164,7 @@ scope FountainBlast initializer init
                 set time = time + TIMER_INTERVAL
                 
                 set curSpeed = curSpeed + EXPLOSION_ACCELERATION * TIMER_INTERVAL
-                     
-                
+
                 if time >= totalTime then
                     call destroy()
                 endif
@@ -196,7 +197,7 @@ scope FountainBlast initializer init
                 call UnitAddBuff(source, target, buffType, BUFF_DURATION + totalTime, lvl + 1)
             endif
                 
-            set DamageType = 1
+            set DamageType = SPELL
             call damageTarget(source, target, EXPLOSION_DAMAGE[lvl])
             
             call listAdd()
@@ -210,8 +211,9 @@ scope FountainBlast initializer init
             set t = HandleTable.create()
             set ticker = CreateTimer()
             set dmg = xedamage.create()
-            set dtype = EXPLOSION_DAMAGE_TYPE
-            set atype = EXPLOSION_ATTACK_TYPE
+            set dtype = DAMAGE_TYPE
+            set atype = ATTACK_TYPE
+			set wtype = WEAPON_TYPE
             
             set buffType = DefineBuffType(BUFF_PLACER_ID, BUFF_ID, 0.00, false, false, 0, 0, 0)
         endmethod    
@@ -226,9 +228,8 @@ scope FountainBlast initializer init
         static boolexpr explosionTargetFilter = null
         
         static method explosionFilter takes nothing returns boolean
-            
             set tempUnitTar = GetFilterUnit()
-            if IsUnitEnemy(tempUnit, GetOwningPlayer(tempUnitTar)) and not IsUnitType(tempUnitTar, UNIT_TYPE_DEAD) and not IsUnitType(tempUnitTar, UNIT_TYPE_MECHANICAL) then
+			if (SpellHelper.isValidEnemy(tempUnit, tempUnitTar)) then
                 call Tosser.create(tempUnit, tempUnitTar, tempInt)
             endif
             return false
@@ -423,8 +424,7 @@ scope FountainBlast initializer init
                         call forceExplosion(not evaporating)
                     endif
                 else
-                    
-                    if IsUnitType(caster, UNIT_TYPE_DEAD) and not casterDead then
+                    if (SpellHelper.isUnitDead(caster) and not casterDead) then
                         set casterDead = true
                         set evaporating = true
                         call disableFireMode()
@@ -587,17 +587,13 @@ scope FountainBlast initializer init
             call thistype(t[GetTriggerUnit()]).fireProjectile(GetSpellTargetX(), GetSpellTargetY())
             return false
         endmethod
-        
-        
+
         implement Spell
         
         static method onInit takes nothing returns nothing
-            local trigger trig = CreateTrigger()
             set ticker = CreateTimer()
             set t = HandleTable.create()
-            
-            call TriggerRegisterAnyUnitEventBJ(trig, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-            call TriggerAddCondition(trig, Condition(function thistype.onSubCast))
+         	call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function thistype.onSubCast, null)
         endmethod
     endstruct
     

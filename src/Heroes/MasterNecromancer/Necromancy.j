@@ -2,10 +2,10 @@ scope Necromancy initializer init
     /*
      * Description: The Master Necromancer raises a Skeleton from every corpse in the target area. 
                     The more skeletons raised, the weaker they are.
-     * Last Update: 05.11.2013
      * Changelog: 
      *     05.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     21.03.2015: Rewrite code from scratch to simplify
+	 *     21.03.2015: Rewrote code from scratch
+	 *     18.04.2015: Integrated RegisterPlayerUnitEvent
      *
      */
     globals
@@ -84,34 +84,26 @@ scope Necromancy initializer init
     endfunction
 	
 	private function EnumFilter takes nothing returns boolean
-		return IsUnitDead(GetFilterUnit())
+		return SpellHelper.isUnitDead(GetFilterUnit())
 	endfunction
 
 	private function Conditions takes nothing returns boolean
-		local boolean b = false
-		
 		if (GetSpellAbilityId() == SPELL_ID) then
 			call GroupEnumUnitsInArea(targets, GetSpellTargetX(), GetSpellTargetY(), RADIUS, Condition(function EnumFilter))
 			set amount = CountUnitsInGroup(targets)
 			if (amount > 0) then
-				set b = true
+				return true
 			endif
 		endif
 			
-		return b
+		return false
 	endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT)
-		call TriggerAddCondition(t, Condition(function Conditions))
-        call TriggerAddAction(t, function Actions)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         
 		call MainSetup()
         call Preload(EFFECT)
-		
-		set t = null
     endfunction
 
 endscope
