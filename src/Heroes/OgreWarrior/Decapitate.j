@@ -2,23 +2,28 @@ scope Decapitate initializer init
     /*
      * Description: The Ogre performs a mighty attack with his Battle Axe, attempting to decapitate a target enemy. 
                     If the target is low on Health, this attack will instantly kill the target. 
-                    There's a 50% chance to kill the target if it's a hero.
-     * Last Update: 09.01.2014
+                    Theres a 50% chance to kill the target if its a hero.
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     24.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for filtering and damaging
      */
     globals
         private constant integer SPELL_ID = 'A09K'
-        private constant attacktype ATT_TYPE = ATTACK_TYPE_MELEE
-        private constant damagetype DMG_TYPE = DAMAGE_TYPE_NORMAL
         private constant string DAMAGE_EFFECT = "Abilities\\Spells\\Orc\\FeralSpirit\\feralspiritdone.mdl"
         private constant string DAMAGE_ATT_POINT = "overhead"
         private constant string KILL_EFFECT = "Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster.mdl"
         private constant string KILL_ATT_POINT = "chest"
+		private constant integer CHANCE = 50
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private integer array HEALTH_CHECK
         private real array DAMAGE
-        private constant integer CHANCE = 50
+        
     endglobals
     
     private function MainSetup takes nothing returns nothing
@@ -35,8 +40,10 @@ scope Decapitate initializer init
         set DAMAGE[5] = 350
     endfunction
 
-    private function damageTarget takes unit caster, unit target returns nothing
-        local integer level = GetUnitAbilityLevel(caster, SPELL_ID)
+    private function Actions takes nothing returns nothing
+		local unit caster = GetTriggerUnit()
+		local unit target = GetSpellTargetUnit()
+		local integer level = GetUnitAbilityLevel(caster, SPELL_ID)
         
         if GetWidgetLife(target) <= HEALTH_CHECK[level] then
             if IsUnitType( target, UNIT_TYPE_HERO) then
@@ -44,33 +51,29 @@ scope Decapitate initializer init
                     call DestroyEffect(AddSpecialEffectTarget(KILL_EFFECT, target, KILL_ATT_POINT))
                     call KillUnit(target)
                 else
-                    set DamageType = SPELL
-                    call UnitDamageTarget(caster, target, DAMAGE[level], false, false, ATT_TYPE, DMG_TYPE, WEAPON_TYPE_WHOKNOWS)
-                    call DestroyEffect(AddSpecialEffectTarget(DAMAGE_EFFECT, target, DAMAGE_ATT_POINT))
+					call DestroyEffect(AddSpecialEffectTarget(DAMAGE_EFFECT, target, DAMAGE_ATT_POINT))
                 endif
             else
                 call DestroyEffect(AddSpecialEffectTarget(KILL_EFFECT, target, KILL_ATT_POINT))
                 call KillUnit(target)
             endif
         else
-            set DamageType = SPELL
-            call UnitDamageTarget(caster, target, DAMAGE[level], false, false, ATT_TYPE, DMG_TYPE, WEAPON_TYPE_WHOKNOWS)
-            call DestroyEffect(AddSpecialEffectTarget(DAMAGE_EFFECT, target, DAMAGE_ATT_POINT))
+			call DestroyEffect(AddSpecialEffectTarget(DAMAGE_EFFECT, target, DAMAGE_ATT_POINT))
         endif
-            
+		
+		set DamageType = PHYSICAL
+		call SpellHelper.damageTarget(caster, target, DAMAGE[level], true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+		
+        set caster = null
+		set target = null
     endfunction
-
-    private function Actions takes nothing returns nothing
-        if( GetSpellAbilityId() == SPELL_ID )then
-            call damageTarget( GetTriggerUnit(), GetSpellTargetUnit() )
-        endif
+	
+	private function Conditions takes nothing returns boolean
+        return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         call MainSetup()
         call Preload(DAMAGE_EFFECT)
         call Preload(KILL_EFFECT)

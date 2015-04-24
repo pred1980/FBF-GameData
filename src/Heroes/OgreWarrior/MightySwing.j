@@ -2,19 +2,25 @@ scope MightySwing initializer init
     /*
      * Description: The Ogre Warrior attacks with great might, causing his attacks to damage nearby enemies 
                     in addition to his main target. The further the enemy is away from the Ogre the less damage it takes.
-     * Last Update: 09.01.2014
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     24.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for filtering and damaging
      */
     private keyword MightySwing
     
     globals
         private constant integer SPELL_ID = 'A09I'
         
-        private integer array SPLASH_BONUS
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+        
+		private integer array SPLASH_BONUS
         private integer array SPLASH_RADIUS
         private integer array SPLASH_REDUCER
-        
+		
 		private MightySwing array spellForUnit
     endglobals
     
@@ -43,23 +49,11 @@ scope MightySwing initializer init
         integer level = 0
         real damage = 0.00
         group targets
-        static thistype tempthis
+        static thistype tempthis = 0
         
 		static method getForUnit takes unit u returns thistype
 			return spellForUnit[GetUnitId(u)]
 		endmethod
-		
-        static method create takes unit damageSource returns thistype
-            local thistype this = thistype.allocate()
-            
-            set .attacker = damageSource
-        	set .level =  GetUnitAbilityLevel(damageSource, SPELL_ID)
-			set .targets = NewGroup()
-			set .tempthis = this
-			set spellForUnit[GetUnitId(damageSource)] = this
-            
-            return this
-        endmethod
 		
 		method onAttack takes unit damageSource, unit damagedUnit, real damage returns nothing
             set .tempthis.damage = damage
@@ -69,8 +63,16 @@ scope MightySwing initializer init
 		endmethod
 		
 	    static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.attacker ) ) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and IsUnitType(GetFilterUnit(), UNIT_TYPE_GROUND) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)
-        endmethod
+			local unit u = GetFilterUnit()
+			local boolean b = false
+			
+			if (SpellHelper.isValidEnemy(u, .tempthis.attacker) and /*
+			*/	IsUnitType(u, UNIT_TYPE_GROUND)) then
+				set b = true
+			endif
+			
+			set u = null
+	    endmethod
         
         static method onDamageTarget takes nothing returns nothing
             local unit u = GetEnumUnit()
@@ -87,8 +89,8 @@ scope MightySwing initializer init
                 exitwhen i > 4
                     if distance <= SPLASH_RADIUS[i] then
                         set damage = (.tempthis.damage * (SPLASH_BONUS[.tempthis.level] - SPLASH_REDUCER[i])) / 100
-                        set DamageType = SPELL
-                        call UnitDamageTarget(.tempthis.attacker, u, damage, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_UNKNOWN, WEAPON_TYPE_WHOKNOWS)
+                        set DamageType = PHYSICAL
+						call SpellHelper.damageTarget(.tempthis.attacker, u, damage, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
                         call GroupRemoveUnit(.tempthis.targets, u)
                         set i = maxIndex
                     endif
@@ -101,13 +103,25 @@ scope MightySwing initializer init
             endif
         endmethod
 		
+		static method create takes unit damageSource returns thistype
+            local thistype this = thistype.allocate()
+            
+            set .attacker = damageSource
+        	set .level =  GetUnitAbilityLevel(damageSource, SPELL_ID)
+			set .targets = NewGroup()
+			set .tempthis = this
+			set spellForUnit[GetUnitId(damageSource)] = this
+            
+            return this
+        endmethod
+		
 		method onLevelUp takes unit damageSource returns nothing
             set .level =  GetUnitAbilityLevel(damageSource, SPELL_ID)
 		endmethod
         
     endstruct
 
-    private function Actions takes unit damagedUnit, unit damageSource, real damage returns nothing
+    private function DamageResponseActions takes unit damagedUnit, unit damageSource, real damage returns nothing
         local MightySwing ms = 0
         
         if ( GetUnitAbilityLevel(damageSource, SPELL_ID) > 0 and DamageType == PHYSICAL ) then
@@ -120,32 +134,28 @@ scope MightySwing initializer init
         endif
     endfunction
     
-    private function onLearnSkill takes nothing returns nothing
+    private function LearnActions takes nothing returns nothing
         local MightySwing ms = 0
         local unit u = GetTriggerUnit()
         
         set ms = MightySwing.getForUnit(u)
-        if( GetLearnedSkill() == SPELL_ID )then
-            if ms == null then
-                set ms = MightySwing.create(u)
-            else
-                call ms.onLevelUp(u)
-            endif
-        endif
+		if ms == null then
+			set ms = MightySwing.create(u)
+		else
+			call ms.onLevelUp(u)
+		endif
         
         set u = null
     endfunction
+	
+	private function Conditions takes nothing returns boolean
+        return GetLearnedSkill() == SPELL_ID
+    endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_HERO_SKILL )
-        call TriggerAddAction( t, function onLearnSkill )
-        
-        call RegisterDamageResponse( Actions )
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_HERO_SKILL, function Conditions, function LearnActions)
+        call RegisterDamageResponse( DamageResponseActions )
         call MainSetup()
-        
-        set t = null
     endfunction
 
 endscope

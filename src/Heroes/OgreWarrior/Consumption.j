@@ -2,7 +2,6 @@ library Consumption initializer Init uses GroupUtils, DamageModifiers, SpellEven
     /*
      * Description: The Ogre Warrior concentrates his power to consume the complete damage to regain his life. 
                     After a short period of time he releases the total consumed power for a last final attack.
-     * Last Update: 09.01.2014
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
      */

@@ -1,14 +1,14 @@
 library AxeThrow initializer Init requires xedamage, xemissile
     /*
      * Description: The Ogre Warrior throws his mighty axe at a target enemy, damaging and stunning anyone near where it lands.
-     * Last Update: 09.01.2014
      * Changelog: 
      *     09.01.2014: Abgleich mit OE und der Exceltabelle
 	 *     23.02.2014: Werte erhoeht von 80/160/240/320/400 auf 110/220/330/440/550
+	 *     24.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for filtering
      */
     globals
         private constant integer SPELL_ID = 'A09H' //The triggerer spell id.
-        
         private constant real TARGET_RADIUS = 300.0 // In what range to look for child missile targets?
         private constant real LAUNCH_PERIOD = 0.2   // How often to launch child missiles in flight?
 
@@ -28,6 +28,11 @@ library AxeThrow initializer Init requires xedamage, xemissile
         //KNOCK BACK
         private constant integer DISTANCE = 100
         private constant real KB_TIME = 0.35
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
     
     private constant function Damage takes integer level returns real
@@ -35,14 +40,15 @@ library AxeThrow initializer Init requires xedamage, xemissile
     endfunction
 
     private function setupDamageOptions takes xedamage d returns nothing
-       set d.dtype = DAMAGE_TYPE_FIRE
-       set d.atype = ATTACK_TYPE_NORMAL
-
-       set d.exception = UNIT_TYPE_STRUCTURE
-       set d.damageEnemies = true  // This evil spell pretty much hits
-       set d.damageAllies  = false
-       set d.damageNeutral = false  // the casting hero himSelf... it would
-       set d.damageSelf    = false // be quite dumb if it was able to hit the hero...
+		set d.atype = ATTACK_TYPE
+		set d.dtype = DAMAGE_TYPE
+		set d.wtype = WEAPON_TYPE
+       
+		set d.exception = UNIT_TYPE_STRUCTURE
+		set d.damageEnemies = true  // This evil spell pretty much hits
+		set d.damageAllies  = false
+		set d.damageNeutral = false  // the casting hero himSelf... it would
+		set d.damageSelf    = false // be quite dumb if it was able to hit the hero...
     endfunction
 
     //**********************************************************************************
@@ -58,7 +64,17 @@ library AxeThrow initializer Init requires xedamage, xemissile
         private static HammerThrowMain current
         
         private static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .current.caster ) ) and (GetFilterUnit() != .current.target) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)
+			local unit u = GetFilterUnit()
+			local boolean b = false
+			
+			if (SpellHelper.isValidEnemy(u, .current.caster)) and /*
+			*/	u != .current.target) then
+				set b = true
+			endif
+			
+			set u = null
+		
+			return b
         endmethod
         
         private static method onStun takes nothing returns nothing
@@ -77,7 +93,8 @@ library AxeThrow initializer Init requires xedamage, xemissile
                 set y = GetUnitY(this.caster) - GetUnitY(this.target)
                 set ang = Atan2(y, x) - bj_PI
                 call Knockback.create(this.caster, this.target, DISTANCE, KB_TIME, ang, 0, "", "")
-                call damageOptions.damageTarget(this.caster, hitunit, Damage(this.level))
+                set DamageType = PHYSICAL
+				call damageOptions.damageTarget(this.caster, hitunit, Damage(this.level))
                 call GroupEnumUnitsInRange(this.g, GetUnitX(hitunit), GetUnitY(hitunit), TARGET_RADIUS, function thistype.group_filter_callback)
                 call ForGroup( this.g, function thistype.onStun )
                 call this.terminate()
@@ -86,11 +103,7 @@ library AxeThrow initializer Init requires xedamage, xemissile
         
     endstruct
 
-    private function spellIdMatch takes nothing returns boolean
-        return GetSpellAbilityId() == SPELL_ID
-    endfunction
-
-    private function onSpellEffect takes nothing returns nothing
+    private function Actions takes nothing returns nothing
         local unit caster = GetTriggerUnit()
         local unit target = GetSpellTargetUnit()
         local real cx = GetUnitX(caster) 
@@ -114,21 +127,18 @@ library AxeThrow initializer Init requires xedamage, xemissile
         set caster = null
         set target = null
     endfunction
+	
+	private function Conditions takes nothing returns boolean
+        return GetSpellAbilityId() == SPELL_ID
+    endfunction
 
-   private function Init takes nothing returns nothing
-        local trigger t = CreateTrigger()
+	private function Init takes nothing returns nothing
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 
         // Initializing the damage options:
         set damageOptions = xedamage.create()
         call setupDamageOptions(damageOptions)
         call Preload(MAIN_MODEL)
         call Preload(STUN_EFFECT)
-
-        //Setting up the spell's trigger:
-        call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        call TriggerAddCondition(t, Condition(function spellIdMatch))
-        call TriggerAddAction(t, function onSpellEffect)
-        
-        set t = null
     endfunction
 endlibrary

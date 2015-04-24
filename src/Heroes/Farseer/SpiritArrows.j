@@ -56,6 +56,7 @@ scope SpiritArrows initializer init
         
         method onUnitHit takes unit target returns nothing
             if (damageOptions.allowedTarget( this.caster  , target ) ) then
+				set DamageType = PHYSICAL
                 call damageOptions.damageTarget(this.caster, target, Damage(this.level))
                 call Stun_UnitEx(target, STUN_DURATION, true, STUN_EFFECT, STUN_ATT_POINT)
                 call this.terminate()
