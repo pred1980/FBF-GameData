@@ -149,7 +149,7 @@ scope BoilingBlood initializer init
         
         set bb = BoilingBlood.getForUnit(u)
 		
-		if bb == null then
+		if bb == 0 then
 			set bb = BoilingBlood.create(u, GetSpellTargetX(), GetSpellTargetY())
 		else
 			call bb.onDestroy()

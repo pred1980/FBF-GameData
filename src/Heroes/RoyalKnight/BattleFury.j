@@ -128,7 +128,7 @@ scope BattleFury initializer init
         if ( DamageType == 0 ) then
             if GetUnitAbilityLevel(damageSource, BUFF_ID) > 0 then
                 set s = BattleFury.getForUnit(damageSource)
-                if s == null then
+                if s == 0 then
                     set s = BattleFury.create(damageSource)
                 else
                     call s.onAttack(damageSource, s)

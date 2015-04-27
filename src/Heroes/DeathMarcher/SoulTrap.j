@@ -3,14 +3,15 @@ scope SoulTrap initializer init
      * Description: The Gatekeeper traps a unit in within his tormented soul, removing it from the battlefield 
                     and damaging it in the process. Mana Concentration increases the damage done.
      * Changelog: 
-     *     01.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     24.03.2015: Fixed a bug after the "Spell-End" (onEnd) that the target ran in different directions
-	 *     30.03.2015: Integrated RegisterPlayerUnitEvent
-	                   Integrated SpellHelper for damaging
+     *     	01.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     	24.03.2015: Fixed a bug after the "Spell-End" (onEnd) that the target ran in different directions
+	 *     	30.03.2015: Integrated RegisterPlayerUnitEvent
+						Integrated SpellHelper for damaging
+	 *		22.04.2015: changed complete spell in object editor to guarantee spell immunity
      *
      */
     globals
-        private constant integer SPELL_ID = 'A050'
+        private constant integer SPELL_ID = 'A00I'
         private constant integer DUMMY_SPELL_ID = 'A051'
         private constant integer DUMMY_ID = 'e00R'
         private constant real DURATION = 8.0

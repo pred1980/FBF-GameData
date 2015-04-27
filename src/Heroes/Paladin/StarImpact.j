@@ -2,9 +2,9 @@ scope StarImpact initializer init
     /*
      * Description: Edgar calls down a Falling Star that, on impact, damages and stuns all enemy units, 
                     and splits into several smaller stars that deal less damage. The Star takes 1.5 seconds to summon.
-     * Last Update: 02.01.2014
      * Changelog: 
-     *     02.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	02.01.2014: Abgleich mit OE und der Exceltabelle
+	 *		27.04.2015: Integrated SpellHelper for filtering
      */
     globals
         private constant integer SPELL_ID = 'A08O'
@@ -20,11 +20,14 @@ scope StarImpact initializer init
         private constant real SPLITTER_IMPACT_AREA = 75.00
         private real array STAR_IMPACT_DAMAGE
         private real array SPLITTER_DAMAGE
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
-        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
         private constant string STAR_DAMAGE_EFFECT = "Models\\StarImpactExplosion.mdl"
         private constant real STAR_DAMAGE_EFFECT_SCALE = 1.15
         private real array STUN_DURATION
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
     
     //Missile Configuration
@@ -100,7 +103,7 @@ scope StarImpact initializer init
         
         method terminate takes Splitter s returns nothing
             set splitterCount = splitterCount - 1
-            set DamageType = 1
+            set DamageType = SPELL
             call damageAOE(caster, s.x, s.y, SPLITTER_IMPACT_AREA, SPLITTER_DAMAGE[lvl])
             call s.terminate()
             if splitterCount <= 0 then
@@ -134,10 +137,10 @@ scope StarImpact initializer init
             set dmg = xedamage.create()
             set dtype = DAMAGE_TYPE
             set atype = ATTACK_TYPE
+			set wtype = WEAPON_TYPE
         endmethod
         
     endstruct
-    
     
     struct Star extends xemissile
     
@@ -155,9 +158,10 @@ scope StarImpact initializer init
         
         static method damageFilterEnum takes nothing returns boolean
             local unit u = GetFilterUnit()
-            if IsUnitEnemy(u, GetOwningPlayer(temp.caster)) and not IsUnitType(u, UNIT_TYPE_DEAD) and not IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(u, UNIT_TYPE_FLYING) and not IsUnitType(u, UNIT_TYPE_STRUCTURE) and not IsUnitType(u, UNIT_TYPE_MECHANICAL) then
-                call StunUnitTimed(u, STUN_DURATION[temp.lvl])
-                set DamageType = 1
+			
+			if (SpellHelper.isValidEnemy(u, temp.caster) and not IsUnitType(u, UNIT_TYPE_FLYING)) then
+				call StunUnitTimed(u, STUN_DURATION[temp.lvl])
+                set DamageType = SPELL
                 call damageTarget(temp.caster, u, STAR_IMPACT_DAMAGE[temp.lvl])
             endif
             set u = null

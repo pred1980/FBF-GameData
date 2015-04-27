@@ -67,7 +67,7 @@ library AxeThrow initializer Init requires xedamage, xemissile
 			local unit u = GetFilterUnit()
 			local boolean b = false
 			
-			if (SpellHelper.isValidEnemy(u, .current.caster)) and /*
+			if (SpellHelper.isValidEnemy(u, .current.caster) and /*
 			*/	u != .current.target) then
 				set b = true
 			endif

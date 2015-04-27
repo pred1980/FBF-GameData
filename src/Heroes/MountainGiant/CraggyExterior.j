@@ -92,7 +92,7 @@ scope CraggyExterior initializer init
         
         set ce = CraggyExterior.getForUnit(u)
         if( GetLearnedSkill() == SPELL_ID )then
-            if ce == null then
+            if ce == 0 then
                 set ce = CraggyExterior.create(u)
             else
                 call ce.onLevelUp(u)

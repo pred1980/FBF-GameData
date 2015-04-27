@@ -3,9 +3,9 @@ scope HolyCross initializer init
      * Description: The Paladin creates a Holy Cross at the target location. Enemies that enter the Cross will be 
                     silenced for 2 seconds and will receive damage over time if they stay too long. Allies will receive 
                     less damage and an increased life regeneration. The cross lasts 7.5 seconds.
-     * Last Update: 02.01.2014
      * Changelog: 
-     *     02.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	02.01.2014: Abgleich mit OE und der Exceltabelle
+	 *		27.04.2015: Integrated SpellHelper for filtering
      */
     globals
         private constant integer SPELL_ID = 'A08R'
@@ -39,9 +39,12 @@ scope HolyCross initializer init
     //Damage Configuration
     globals
         private real array DAMAGE_PER_SECOND
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
-        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
         private constant integer DAMAGE_REDUCTION_PRIORITY  = 60
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
     
     private function MainSetup takes nothing returns nothing
@@ -175,10 +178,11 @@ scope HolyCross initializer init
         static method enumFilter takes nothing returns boolean
             local unit u = GetFilterUnit()
             local thistype this = temp
-            
-            if not IsUnitType(u, UNIT_TYPE_DEAD) and not IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(u, UNIT_TYPE_FLYING) and IsUnitInRegion(cross, u) then
-                
-                if IsUnitEnemy(u, GetOwningPlayer(caster)) then
+			
+			if not SpellHelper.isUnitImmune(u) and not /*
+			*/	   IsUnitType(u, UNIT_TYPE_FLYING) and /*
+			*/	   IsUnitInRegion(cross, u) then
+                if (SpellHelper.isValidEnemy(u, caster)) then
                     call GroupAddUnit(tempGroup, u)
                     if not IsUnitInGroup(u, lastTargets) then
                         call SilenceUnitTimed(u, SILENCE_DURATION[lvl])
@@ -328,6 +332,7 @@ scope HolyCross initializer init
             set dmg = xedamage.create()
             set atype = ATTACK_TYPE
             set dtype = DAMAGE_TYPE
+			set wtype = WEAPON_TYPE
             
             set cornerEffectAngle[0] = 4.71
             set cornerEffectAngle[1] = 4.71

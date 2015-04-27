@@ -72,6 +72,8 @@ scope MightySwing initializer init
 			endif
 			
 			set u = null
+			
+			return b
 	    endmethod
         
         static method onDamageTarget takes nothing returns nothing
@@ -126,7 +128,7 @@ scope MightySwing initializer init
         
         if ( GetUnitAbilityLevel(damageSource, SPELL_ID) > 0 and DamageType == PHYSICAL ) then
 			set ms = MightySwing.getForUnit(damageSource)
-			if ms == null then
+			if ms == 0 then
 				set ms = MightySwing.create( damageSource )
 			else
 				call ms.onAttack( damageSource, damagedUnit, damage )

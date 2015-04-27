@@ -2,10 +2,9 @@ scope Adolescence initializer init
     /*
      * Description: The Nerubian Widow lays eggs that spawn spiderlings. Growing up, 
                     these sworn companions support the Widow in teaching her enemies the real meaning of Arachnophobia.
-     * Last Update: 27.10.2013
      * Changelog: 
-     *     27.10.2013: Abgleich mit OE und der Exceltabelle
-     *
+     *     	27.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     	27.04.2015: Integrated RegisterPlayerUnitEvent
      */
     globals
         private constant integer SPELL_ID = 'A004'
@@ -46,16 +45,23 @@ scope Adolescence initializer init
     endfunction
 
     private struct Adolescence
-        unit caster
-        unit egg
-        unit child
-        real size = 0.00
-        timer ti
+        private unit caster
+        private unit egg
+        private unit child
+        private real size = 0.00
+        private timer ti
+		
+		method onDestroy takes nothing returns nothing
+            set .caster = null
+            set .egg = null
+            set .child = null
+            call ReleaseTimer( .ti )
+        endmethod
         
         static method AddValues takes nothing returns nothing
             local thistype this = GetTimerData( GetExpiredTimer() )
             
-            if not IsUnitDead(this.child) then
+            if not (SpellHelper.isUnitDead(this.child)) then
                 set .size = .size + 0.01
                 call SetUnitScale(this.child, (START_SIZE + .size), (START_SIZE + .size), (START_SIZE + .size))
                 call AddUnitMaxState(this.child, UNIT_STATE_MAX_LIFE, HP_PER_SECONDS[GetUnitAbilityLevel(this.caster, SPELL_ID)])
@@ -103,34 +109,20 @@ scope Adolescence initializer init
         
             return this
         endmethod
-        
-        method onDestroy takes nothing returns nothing
-            set .caster = null
-            set .egg = null
-            set .child = null
-            call ReleaseTimer( .ti )
-        endmethod
-        
-        static method onInit takes nothing returns nothing
-            call MainSetup()
-			call Sound.preload(SOUND_1)
-			call Sound.preload(SOUND_2)
-        endmethod
     endstruct
 
     private function Actions takes nothing returns nothing
-        local Adolescence a = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set a = Adolescence.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
-        endif
+        call Adolescence.create(GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
+	endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+		call MainSetup()
+		call Sound.preload(SOUND_1)
+		call Sound.preload(SOUND_2)
     endfunction
-
 endscope

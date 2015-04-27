@@ -6,7 +6,7 @@ scope Crag initializer init
      * Changelog: 
      *     	09.01.2014: Abgleich mit OE und der Exceltabelle
 	 *     	21.04.2015: Integrated RegisterPlayerUnitEvent
-						Integrated SpellHelper for damaging and filtering
+						Integrated SpellHelper for filtering and damaging
      */
     globals
         private constant integer SPELL_ID = 'A097'
@@ -30,7 +30,7 @@ scope Crag initializer init
         private boolean destCheck		
     endglobals
     
-    private struct spelldata
+    private struct Crag
         unit source
         real x
         real y
@@ -47,16 +47,16 @@ scope Crag initializer init
             set .damaged = null
         endmethod    
         
-        static method create takes unit source, real face, real damage returns spelldata
-            local spelldata data = spelldata.allocate()
+        static method create takes unit source, real face, real damage returns thistype
+            local thistype this = thistype.allocate()
             
-			set data.source = source
-            set data.face = face
-            set data.distance = DISTANCE
-            set data.damage = damage
-            set data.damaged = CreateGroup()
+			set this.source = source
+            set this.face = face
+            set this.distance = DISTANCE
+            set this.damage = damage
+            set this.damaged = CreateGroup()
             
-			return data
+			return this
         endmethod
     endstruct
 
@@ -101,7 +101,7 @@ scope Crag initializer init
     private function timer_callback takes nothing returns nothing
         local timer t = GetExpiredTimer()
         local timer tDestr = NewTimer()
-        local spelldata data = LoadIntegerBJ(1, GetHandleId(t), hashData)
+        local Crag data = LoadIntegerBJ(1, GetHandleId(t), hashData)
         local destr datDest
         local real speed = 70
         local real radius = 150
@@ -171,7 +171,7 @@ scope Crag initializer init
         local real sourceX = GetUnitX(source)
         local real sourceY = GetUnitY(source)
         local timer t = NewTimer()
-        local spelldata data
+        local Crag data
         
 		set data = data.create(source,bj_RADTODEG*Atan2(GetSpellTargetY()-GetUnitY(source),GetSpellTargetX()-GetUnitX(source)), GetUnitAbilityLevel(source, SPELL_ID)*DAMAGE)
         set data.x = sourceX
@@ -186,7 +186,7 @@ scope Crag initializer init
     endfunction
 	
 	private function Conditions takes nothing returns boolean
-        return GetSpellAbilityId()== SPELL_ID
+        return GetSpellAbilityId() == SPELL_ID
     endfunction
         
     private function init takes nothing returns nothing

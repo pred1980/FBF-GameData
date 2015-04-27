@@ -2,9 +2,10 @@ scope CrushingWave initializer init
     /*
      * Description: The Naga Matriarch sends out a deadly gust of water wich will increase in size and damage 
                     with traveled distance. End damage is 4 times the start damage.
-     * Last Update: 08.01.2014
      * Changelog: 
-     *     08.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	08.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     	22.04.2015: Integrated RegisterPlayerUnitEvent
+						Integrated SpellHelper for filtering and damaging
      */
     globals
         private constant integer SPELL_ID = 'A07R'
@@ -31,6 +32,11 @@ scope CrushingWave initializer init
         private constant real FRONT_MULTIPLIER = 0.25 
         //Do not change the numbers below, even if they are constants
         private constant real SIZE_INCREASE = (END_SIZE - START_SIZE) * SPEED/DISTANCE
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
     
     private struct CrushingWave
@@ -50,7 +56,7 @@ scope CrushingWave initializer init
         timer t
         group targets //All units that have already been hit
         group g //All units in the range in a certain step
-        static thistype tempthis
+        static thistype tempthis = 0
         
         method onDestroy takes nothing returns nothing
             call KillUnit(.effect)
@@ -65,15 +71,29 @@ scope CrushingWave initializer init
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-            return GetUnitAbilityLevel( GetFilterUnit(), 'Avul' ) <= 0 and GetUnitAbilityLevel( GetFilterUnit(), 'Amim' ) <= 0 and GetUnitAbilityLevel(GetFilterUnit(), 'Aloc') <=0 and not IsUnitAlly(GetFilterUnit(), GetOwningPlayer(.tempthis.caster)) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD)
+			local unit u = GetFilterUnit()
+			local boolean b = false
+			
+			if (GetUnitAbilityLevel(u, 'Avul') <= 0 and /*
+			*/	GetUnitAbilityLevel(u, 'Amim') <= 0 and /*
+			*/	GetUnitAbilityLevel(u, 'Aloc') <= 0 and /*
+			*/  SpellHelper.isValidEnemy(u, .tempthis.caster)) then
+				set b = true
+			endif
+			
+			set u = null
+			
+			return b
         endmethod
         
         static method onDamageTarget takes nothing returns nothing
             local unit u = GetEnumUnit()
             
-            if (not IsUnitInGroup(u, .tempthis.targets)) and .tempthis.totalDamage < .tempthis.maxDamage and u != null then
+            if (not IsUnitInGroup(u, .tempthis.targets)) and /*
+			*/	.tempthis.totalDamage < .tempthis.maxDamage and /*
+			*/	u != null then
                 set DamageType = SPELL
-                call UnitDamageTarget(.tempthis.caster, u, .tempthis.damage, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_UNKNOWN, WEAPON_TYPE_WHOKNOWS)
+				call SpellHelper.damageTarget(.tempthis.caster, u, .tempthis.damage, false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
                 call DestroyEffect(AddSpecialEffectTarget(EFFECT, u, "origin"))
                 set .tempthis.totalDamage = .tempthis.totalDamage + .tempthis.damage
                 call GroupAddUnit(.tempthis.targets, u)
@@ -132,30 +152,20 @@ scope CrushingWave initializer init
             call TimerStart(.t, INTERVAL, true, function thistype.onPeriodic)
             
             return this
-        endmethod
-        
-        static method onInit takes nothing returns nothing
-            set thistype.tempthis = 0
-        endmethod
-        
+        endmethod  
     endstruct
 
     private function Actions takes nothing returns nothing
-        local CrushingWave cw = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set cw = CrushingWave.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
-        endif
+        call CrushingWave.create(GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+        return (GetSpellAbilityId() == SPELL_ID)
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         call Preload(EFFECT)
-        
-        set t = null
     endfunction
 
 endscope

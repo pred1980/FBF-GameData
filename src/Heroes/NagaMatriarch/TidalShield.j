@@ -3,8 +3,9 @@ scope TidalShield initializer init
      * Description: This shield makes the Naga immune to spells and boosts her life regeneration.
      * Last Update: 08.01.2014
      * Changelog: 
-     *     08.01.2014: Abgleich mit OE und der Exceltabelle + Bugfixing und kleinerem Umbau
-	 *     14.03.2014: Simplification of the code and a small bugfix
+     *     	08.01.2014: Abgleich mit OE und der Exceltabelle + Bugfixing und kleinerem Umbau
+	 *     	14.03.2014: Simplification of the code and a small bugfix
+	 *     	22.04.2015: Integrated RegisterPlayerUnitEvent
      *
      */ 
     globals
@@ -41,14 +42,8 @@ scope TidalShield initializer init
     endfunction
 	
 	private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition(t, Condition( function Conditions))
-        call TriggerAddAction( t, function Actions )
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         call MainSetup()
-        
-        set t = null
     endfunction
 
 endscope

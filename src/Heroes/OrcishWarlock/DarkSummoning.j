@@ -3,12 +3,11 @@ scope DarkSummoning
      * Description: The Warlock summons demons that binds the target between them. While being trapped, 
                     the target cannot move, attack or cast spells and any damage or heal that would affect the target 
                     will be ignored. The demons will regenerate the targets life over the duration, if it is an allied unit.
-     * Last Update: 08.01.2014
      * Changelog: 
      *      08.01.2014: Abgleich mit OE und der Exceltabelle
 	 *      02.03.2014: Original Code von Kricz genommen. Aus unerklärlichen Gründen gab es große
-	                   Unterschiede im Code. Dadurch konnte ein Bug behoben werden, der bestimmte 
-					   Einheiten nicht bewegungsunfähig gemacht hat
+						Unterschiede im Code. Dadurch konnte ein Bug behoben werden, der bestimmte 
+						Einheiten nicht bewegungsunfähig gemacht hat
 					   
 	 * Info:
 	 *      3.334 Animation Duration of Spell

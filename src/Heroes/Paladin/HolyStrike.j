@@ -3,9 +3,9 @@ scope HolyStrike initializer init
      * Description: The Paladin enchances his mace with holy power, causing his next attack to deal bonus percentage 
                     magic damage to enemies around the target. Holy Strike will be activated automatically 
                     once the cooldown is over.
-     * Last Update: 02.01.2014
      * Changelog: 
-     *     02.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	02.01.2014: Abgleich mit OE und der Exceltabelle
+	 *		27.04.2015: Integrated SpellHelper for filtering
      */
     globals
         private constant integer SPELL_ID = 'A08P'
@@ -14,13 +14,15 @@ scope HolyStrike initializer init
         private real array SPELL_COOLDOWN
     endglobals
     
-    //Damage Configuration
     globals
         private real array DAMAGE_FACTOR
         private real array DAMAGE_AREA    
-        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
-        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
         private constant string DAMAGE_EFFECT = "Abilities\\Spells\\Other\\HealingSpray\\HealBottleMissile.mdl"
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
     
     private function MainSetup takes nothing returns nothing
@@ -58,8 +60,9 @@ scope HolyStrike initializer init
 
         static method unitFilterMethod takes nothing returns boolean
             local thistype this = temp
-            local unit u = GetFilterUnit()
-            if IsUnitEnemy(u, GetOwningPlayer(owner)) and not IsUnitType(u, UNIT_TYPE_DEAD) then
+			local unit u = GetFilterUnit()
+			
+			if (SpellHelper.isValidEnemy(u, owner)) then
                 set DamageType = SPELL
                 call damageTarget(owner, u, tempDamage * DAMAGE_FACTOR[lvl -  1])
             endif
@@ -118,6 +121,7 @@ scope HolyStrike initializer init
             set dmg = xedamage.create()
             set atype = ATTACK_TYPE
             set dtype = DAMAGE_TYPE
+			set wtype = WEAPON_TYPE
             set unitFilter = Condition(function thistype.unitFilterMethod)
             call useSpecialEffect(DAMAGE_EFFECT, "origin")
         endmethod

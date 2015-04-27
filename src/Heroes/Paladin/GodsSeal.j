@@ -6,9 +6,9 @@ scope GodsSeal initializer init
                     it will heal all allied units around the target for 50% of the base regeneration. 
                     And if the target receives lethal damage, the seal will block it. 
                     It expires after 9 seconds or when broken.
-     * Last Update: 02.01.2014
      * Changelog: 
-     *     02.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	02.01.2014: Abgleich mit OE und der Exceltabelle
+	 *		27.04.2015: Integrated SpellHelper for filtering
      */
     globals
         private constant integer SPELL_ID = 'A08K'
@@ -26,6 +26,11 @@ scope GodsSeal initializer init
         private real array SEAL_BREAK_DAMAGE_VALUE
         private real array DAMAGE_REDUCTION
         private real array SEAL_HEAL
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
     
     private keyword Main
@@ -99,7 +104,7 @@ scope GodsSeal initializer init
         endmethod
         
         method explode takes nothing returns nothing
-            set DamageType = 1
+            set DamageType = SPELL
             call damageAOE(caster, GetUnitX(target), GetUnitY(target), SEAL_BREAK_DAMAGE_RANGE, SEAL_BREAK_DAMAGE_VALUE[lvl])
             if SEAL_BREAK_DAMAGE_EFFECT != "" then
                 call DestroyEffect(AddSpecialEffect(SEAL_BREAK_DAMAGE_EFFECT, GetUnitX(target), GetUnitY(target)))
@@ -110,7 +115,8 @@ scope GodsSeal initializer init
         
         static method doHealEnum takes nothing returns boolean
             local unit u = GetFilterUnit()
-            if IsUnitAlly(u, GetOwningPlayer(temp.caster)) and not IsUnitType(u, UNIT_TYPE_DEAD) and u != temp.target then
+			
+			if (SpellHelper.isValidAlly(u, temp.caster) and u != temp.target) then
                 call DestroyEffect(AddSpecialEffectTarget(SEAL_AOE_HEAL_EFFECT, u, SEAL_AOE_HEAL_EFFECT_ATTACH))
                 call SetUnitLife(u, GetUnitLife(u) + aoeHeal[temp.lvl])
             endif
@@ -169,8 +175,9 @@ scope GodsSeal initializer init
         private static method onInit takes nothing returns nothing
             set buffType = DefineBuffType(BUFF_PLACER_ID, BUFF_ID, TIMER_INTERVAL, true, false, thistype.onBuffAdd, thistype.periodicActions, thistype.onBuffEnd)
             set dmg = xedamage.create()
-            set atype = ATTACK_TYPE_MAGIC
-            set dtype = DAMAGE_TYPE_MAGIC
+            set atype = ATTACK_TYPE
+            set dtype = DAMAGE_TYPE
+			set wtype = WEAPON_TYPE
             set doHeal = Condition(function thistype.doHealEnum)
             
             set aoeHeal[0] = SPELL_DURATION * SEAL_HEAL[0] * SEAL_HEAL_AOE_FACTOR

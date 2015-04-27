@@ -2,9 +2,10 @@ library Maelstrom initializer onInit requires SpellEvent, Knockback, TimerUtils,
     /*
      * Description: The Naga channels a deadly Maelstrom, turning all units slowly around her, 
                     dealing damage to all enemy units caught.
-     * Last Update: 08.01.2014
      * Changelog: 
-     *     08.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	08.01.2014: Abgleich mit OE und der Exceltabelle
+	 *		22.04.2015: Integrated SpellHelper for filtering and damaging
+	 *		23.04.2015: Increased the damage per level from 50/100/150 to 150/300/450
      */
     globals
         // SPELL CONFIGURABLES
@@ -49,9 +50,10 @@ library Maelstrom initializer onInit requires SpellEvent, Knockback, TimerUtils,
         private constant boolean ABANDON_ON_BLINK = true // For teleport issues, Blinking with Maelstrom is not fun :(
         private constant real BLINK_RANGE = 300. // Range for a Teleport to be counted.
         
-        private constant attacktype ATK_TYPE = ATTACK_TYPE_NORMAL   // Everyday damage globals.
-        private constant damagetype DMG_TYPE = DAMAGE_TYPE_COLD
-        private constant weapontype WPN_TYPE = null
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
     
     // Speed the Maelstrom travels and adjusts.
@@ -60,7 +62,7 @@ library Maelstrom initializer onInit requires SpellEvent, Knockback, TimerUtils,
     endfunction
     
     private constant function DAMAGE takes integer level returns real
-        return level * 50.
+        return level * 150.
     endfunction
         
     // Number of waves summoned?
@@ -148,35 +150,41 @@ library Maelstrom initializer onInit requires SpellEvent, Knockback, TimerUtils,
         
         timer t
         static thistype tempData
+		
         static method unitFilter takes nothing returns boolean
             local unit u = GetFilterUnit()
-            
-            if      IsUnitEnemy( u, thistype.tempData.owner )       and /*
-            */      IsUnitType( u, UNIT_TYPE_DEAD ) == false        and /*
-            */      IsUnitType( u, UNIT_TYPE_STRUCTURE ) == false   and /*
-            */      IsUnitInGroup( u, HOLDER_GROUP ) == false       and /*
-            */      thistype.tempData.cd >= thistype.tempData.cdDur then
-            
+			local boolean b = false
+			
+			if (SpellHelper.isValidEnemy(u, thistype.tempData.caster) or /*
+			*/  SpellHelper.isValidAlly(u, thistype.tempData.caster) and not /*
+			*/  IsUnitInGroup( u, HOLDER_GROUP ) and /*
+            */  thistype.tempData.cd >= thistype.tempData.cdDur) then
                 call GroupAddUnit( HOLDER_GROUP, u )
-                set thistype.tempData.target   = u
-                set thistype.tempData.cd       = 0.00
-                set thistype.tempData.pushed   = false
-                return false
+                set thistype.tempData.target = u
+                set thistype.tempData.cd = 0.00
+                set thistype.tempData.pushed = false
+                set b = true
             endif
             
-            return false
+			set u = null
+			
+            return b
         endmethod
         
         private method knockbackUnit takes nothing returns nothing
-            set DamageType = SPELL
-            call UnitDamageTarget( this.caster, this.target, this.dmg, true, true, ATK_TYPE, DMG_TYPE, WPN_TYPE )
-            
             call Knockback.create(this.caster, this.target, this.kbdist, this.kbdur, this.angle /* bj_RADTODEG*/, 0, KB_SFX, KB_SFX_LOC)
-            static if MULTI_DAMAGE then
+            
+			static if MULTI_DAMAGE then
                 call GroupRemoveUnit( HOLDER_GROUP, this.target )
             else
                 call GroupAddUnit( this.DmgdGroup, this.target )
+			endif
+			
+			if (IsUnitEnemy(this.target, GetOwningPlayer(this.caster))) then
+				set DamageType = SPELL
+				call SpellHelper.damageTarget(this.caster, this.target, this.dmg, false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
             endif
+			
             set this.pushed = true
             set this.kbdist = 0.
             set this.kbdur = 0.
@@ -214,10 +222,11 @@ library Maelstrom initializer onInit requires SpellEvent, Knockback, TimerUtils,
             local thistype this = GetTimerData( GetExpiredTimer() )
             local real cx = GetUnitX( this.caster )
             local real cy = GetUnitY( this.caster )
-            local real tempX = this.lx - cx         // For Blink tracking.
-            local real tempY = this.ly - cy         // 
-            local integer i  = 0                    // Boolean, if it is 0 then we move.
-            set this.x = cx + this.dist * Cos( this.angle )
+            local real tempX = this.lx - cx // For Blink tracking.
+            local real tempY = this.ly - cy
+            local integer i  = 0 // Boolean, if it is 0 then we move.
+            
+			set this.x = cx + this.dist * Cos( this.angle )
             set this.y = cy + this.dist * Sin( this.angle )
             set this.lx = cx
             set this.ly = cy
@@ -315,16 +324,16 @@ library Maelstrom initializer onInit requires SpellEvent, Knockback, TimerUtils,
             // Destruction.
             
             set this.sec = this.sec + TIMER_PERIOD
-            if  this.sec >= this.dur                            or /*
-            */  IsUnitType( this.caster, UNIT_TYPE_DEAD )       or /*
-            */  this.caster == null                             then
+            if  (this.sec >= this.dur or /*
+            */  SpellHelper.isUnitDead(this.caster) or /*
+            */  this.caster == null) then
                 call .destroy()
             endif
         endmethod
                 
         static method create takes unit caster, real angle returns thistype
             local thistype this  = thistype.allocate()
-            local real     ticks
+            local real ticks
             
             set this.caster = caster
             set this.lvl = GetUnitAbilityLevel( this.caster, ABILITY_ID )
@@ -366,18 +375,20 @@ library Maelstrom initializer onInit requires SpellEvent, Knockback, TimerUtils,
             
             set this.t = NewTimer()
             call SetTimerData( this.t, this )
-            call TimerStart( this.t, TIMER_PERIOD, true, function thistype.periodic )
-            return 0
+            call TimerStart( this.t, TIMER_PERIOD, true, function thistype.periodic)
+			
+            return this
         endmethod
     endstruct
 
     private function onEffect takes nothing returns nothing
-        local unit u      = SpellEvent.CastingUnit
-        local integer i   = 0
-        local integer lvl = GetUnitAbilityLevel( u, ABILITY_ID )
-        local real angle  = 0.00
-        local real aIncr  = 360*bj_DEGTORAD / WAVES( lvl )
-        loop
+        local unit u = SpellEvent.CastingUnit
+        local integer i = 0
+        local integer lvl = GetUnitAbilityLevel(u, ABILITY_ID)
+        local real angle = 0.00
+        local real aIncr = 360*bj_DEGTORAD / WAVES( lvl)
+        
+		loop
             exitwhen i == WAVES( lvl )
             call Data.create( u, angle )
             set angle = angle + aIncr

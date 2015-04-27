@@ -24,8 +24,8 @@ scope Crowbar initializer init
 			return spellForUnit[GetUnitId(u)]
 		endmethod
 		
-        static method create takes unit damageSource, unit damagedUnit returns Spell
-            local Spell this = Spell.allocate()
+        static method create takes unit damageSource, unit damagedUnit returns thistype
+            local thistype this = thistype.allocate()
             set .attacker = damageSource
             set .counter = 1
 			set .target = damagedUnit
@@ -72,7 +72,7 @@ scope Crowbar initializer init
         
         set s = Spell.getForUnit(damageSource)
         if ( UnitHasItemOfTypeBJ(damageSource, ITEM_ID) and DamageType == 0 ) then
-			if s == null then
+			if s == 0 then
 				set s = Spell.create( damageSource, damagedUnit )
 			else
 				call s.onAttack(damagedUnit, damage)

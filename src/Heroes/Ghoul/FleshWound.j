@@ -108,7 +108,7 @@ scope FleshWound initializer init
         if (GetUnitAbilityLevel(damageSource, SPELL_ID) > 0 and /*
 		*/	SpellHelper.isValidEnemy(damagedUnit, damageSource) and /*
 		*/	DamageType == PHYSICAL ) then
-			if fw == null then
+			if fw == 0 then
 				set fw = FleshWound.create(damageSource, damagedUnit)
 			else
 				call fw.onAttack(damagedUnit, damage)

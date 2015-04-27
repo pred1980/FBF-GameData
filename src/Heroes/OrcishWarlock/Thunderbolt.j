@@ -2,9 +2,12 @@ scope Thunderbolt initializer init
     /*
      * Description: After channeling 1 second, a lightning strike comes down somewhere in an 200 AoE around the target point, 
                     damaging all units around it.
-     * Last Update: 08.01.2014
      * Changelog: 
-     *     08.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	08.01.2014: Abgleich mit OE und der Exceltabelle
+	 *		27.04.2015: Integrated RegisterPlayerUnitEvent
+						Integrated SpellHelper for filtering and damaging
+						Changed AttackType from NORMAL to MAGIC
+						Removed "Ally" from targets of this ability
      */
     globals
         private constant integer SPELL_ID = 'A07T'
@@ -14,16 +17,21 @@ scope Thunderbolt initializer init
         private constant real AoE = 150.0 //Radius of the bolt damage
         private constant real DAMAGE_START = 100 //damage on level 0
         private constant real DAMAGE_INCREASE = 200.0 //additional damage on every level
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_LIGHTNING
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
 
     private struct Thunderbolt
-        unit caster
-        integer level = 0
-        real damage
-        real x
-        real y
-        group targets
-        static thistype tempthis
+        private unit caster
+        private integer level = 0
+        private real damage
+        private real x
+        private real y
+        private group targets
+        private static thistype tempthis = 0
         
         method onDestroy takes nothing returns nothing
             call ReleaseGroup( .targets )
@@ -32,14 +40,14 @@ scope Thunderbolt initializer init
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-            return not IsUnitDead(GetFilterUnit())
+            return SpellHelper.isValidEnemy(GetFilterUnit(), .tempthis.caster)
         endmethod
         
         static method onDamageTarget takes nothing returns nothing
             local unit u = GetEnumUnit()
             call DestroyEffect(AddSpecialEffectTarget(HIT_EFFECT, u, "origin"))
             set DamageType = SPELL
-            call UnitDamageTarget(.tempthis.caster, u, .tempthis.damage, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_LIGHTNING,WEAPON_TYPE_WHOKNOWS)
+			call SpellHelper.damageTarget(.tempthis.caster, u, .tempthis.damage, false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
             set u = null
         endmethod
         
@@ -59,35 +67,25 @@ scope Thunderbolt initializer init
             set .tempthis = this
             
             call DestroyEffect(AddSpecialEffect(BOLT_EFFECT, .x, .y))
-            call GroupEnumUnitsInRange( .targets, .x, .y, AoE, function thistype.group_filter_callback )
+            call GroupEnumUnitsInRange(.targets, .x, .y, AoE, function thistype.group_filter_callback)
             call ForGroup(.targets, function thistype.onDamageTarget)
             
             return this
         endmethod
-        
-        static method onInit takes nothing returns nothing
-            set thistype.tempthis = 0
-        endmethod
-        
     endstruct
 
     private function Actions takes nothing returns nothing
-        local Thunderbolt t = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set t = Thunderbolt.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
-        endif
+        call Thunderbolt.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
+	endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         call Preload(BOLT_EFFECT)
         call Preload(HIT_EFFECT)
-        
-        set t = null
     endfunction
 
 endscope

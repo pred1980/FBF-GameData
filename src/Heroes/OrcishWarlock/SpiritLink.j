@@ -3,7 +3,6 @@ scope SpiritLink initializer init
      * Description: The Orcish Warlock connects his spirit with the target. Whenever the target receives damage and 
                     has less life than the Warlock, the damage will be blocked, by sacrificing the amount of damage 
                     with the Warlocks own life.
-     * Last Update: 08.01.2014
      * Changelog: 
      *     08.01.2014: Abgleich mit OE und der Exceltabelle
      */
@@ -46,7 +45,7 @@ scope SpiritLink initializer init
                     call SetUnitLife(root.caster, 1.00)
                     return -(GetUnitLife(root.caster) - 1.00)
                 else
-                    //Leben vom Caster ist gr??er als der Schaden, kompletten Schaden blocken
+                    //Leben vom Caster ist größer als der Schaden, kompletten Schaden blocken
                     call SetUnitLife(root.caster, GetUnitLife(root.caster) - damage)
                     return -damage
                 endif

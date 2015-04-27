@@ -3,10 +3,11 @@ scope Snipe initializer Init
      * Description: The Dark Ranger shoots an arrow at a target outside of her usual range. 
 	                She takes 3 seconds to aim.
      * Changelog: 
-     *     26.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     28.03.2014: Missile Speed von 600 auf 1100 hochgesetzt
-	 *     29.03.2015: Integrated RegisterPlayerUnitEvent
+     *     	26.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     	28.03.2014: Missile Speed von 600 auf 1100 hochgesetzt
+	 *     	29.03.2015: Integrated RegisterPlayerUnitEvent
 	                   Integrated SpellHelper for damaging
+	 *		24.04.2015: Fixed a bug with saving the current instance of the snipe struct
      */
     private keyword Snipe
     
@@ -55,6 +56,7 @@ scope Snipe initializer Init
 		
 		 method onDestroy takes nothing returns nothing
             call DestroyEffect(.cross)
+			set spellForUnit[GetUnitId(.caster)] = 0
             set .cross = null
             set .caster = null
             set .target = null
@@ -101,7 +103,8 @@ scope Snipe initializer Init
             set this.level = level
             set this.oriDist = DistanceBetweenCords(GetUnitX(caster), GetUnitY(caster), GetUnitX(target), GetUnitY(target))
             set .cross = AddSpecialEffectTarget(CROSS_MODEL, .target, "head")
-            
+            set spellForUnit[GetUnitId(caster)] = this
+			
             call SetTimerData(t , this )
             call TimerStart(t, CHANNEL_DURATION, false, function thistype.onLaunch)
             
@@ -110,10 +113,6 @@ scope Snipe initializer Init
        
     endstruct
 
-	private function Conditions takes nothing returns boolean
-		return GetSpellAbilityId() == SPELL_ID
-    endfunction
-
     private function Actions takes nothing returns nothing
         local Snipe s = 0
         local unit caster = GetTriggerUnit()
@@ -121,12 +120,16 @@ scope Snipe initializer Init
         local integer level = GetUnitAbilityLevel(caster, SPELL_ID)
     
         set s = Snipe.getForUnit(caster)
-        if s == null then
+        if s == 0 then
             set s = Snipe.create(caster, target, level)
         endif
 
         set caster = null
         set target = null
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
    
     private function Init takes nothing returns nothing
