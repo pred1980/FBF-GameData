@@ -1,5 +1,10 @@
 scope TitanDevourer
-
+	/*
+	 * Changelog: 
+			29.04.2015: Integrated SpellHelper for damaging and filtering
+	*
+	*/
+	
 	globals
 		private constant integer SPELL_ID = 'A0AD'
         private constant integer BASE_DAMAGE = 100
@@ -7,6 +12,11 @@ scope TitanDevourer
         //Diese Faktoren beschreibt die Erhöhung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
         private constant real HP_FACTOR = 0.00 //Prozentwert
         private constant real DAMAGE_FACTOR = 0.00 //Prozentwert
+		
+		//DOT
+        private constant real DOT_TIME = 10.0
+        private constant string EFFECT = "Abilities\\Spells\\NightElf\\TargetArtLumber\\TargetArtLumber.mdl"
+        private constant string ATT_POINT = "origin"
         
         private rect titanRect
         private group isDevoured
@@ -24,14 +34,21 @@ scope TitanDevourer
             private constant integer HP = 20000
             private constant integer DAMAGE = 650
             private constant real RADIUS = 380.0
+			private constant real DELAY = 60 //Time before a target devoured again
 		endglobals
         
         struct Titan
-			static unit titan
-            unit target
-            static integer hp = 0
-            static integer dmg = 0
-            static thistype tempthis
+			private tatic unit titan
+            private unit target
+			private static group g
+            private static integer hp = 0
+            private static integer dmg = 0
+            private static thistype tempthis
+			
+			method onDestroy takes nothing returns nothing
+				set .titan = null
+				set .target = null
+			endmethod
 			
 			private static method onUnitDeath takes nothing returns nothing
 				if GetUnitTypeId(GetTriggerUnit()) == TITAN_ID then
@@ -50,6 +67,53 @@ scope TitanDevourer
                     call TDS.resetDamage(.titan)
 					call TDS.addDamage(.titan, .dmg)
                 endif
+            endmethod
+			
+            private static method onDevourCond takes nothing returns boolean
+                local unit u = GetFilterUnit()
+				local boolean b = false
+                
+				if (SpellHelper.isValidEnemy(u, .tempthis.titan) and /*
+				*/  IsUnitType(u, UNIT_TYPE_HERO) and not /*
+				*/  SpellHelper.isUnitDead(.tempthis.titan) and not /*
+				*/ 	IsUnitInGroup(u, g) and not /*
+				*/  Devour.isUnitDevoured() and /*
+				*/  GetUnitAbilityLevel(u, 'Bvul') == 0 and /* //standard Unverwundbarkeit
+				*/  and GetUnitAbilityLevel(u, 'B024') == 0) then //potion Unverwundbarkeit
+					set b = true
+                endif
+                
+				set u = null
+				
+                return b
+			endmethod
+			
+			static method onRemoveTargetFromGroup takes nothing returns nothing
+				call GroupRemoveUnit(g, .tempthis.target)
+			endmethod
+            
+            static method onDevour takes nothing returns nothing
+				local real ang = 0.00
+                
+                set .tempthis.target = GetTriggerUnit()
+                set ang = AngleBetweenCords(GetUnitX(.tempthis.titan), GetUnitY(.tempthis.titan), GetUnitX(.tempthis.target), GetUnitY(.tempthis.target))  
+                
+				call GroupAddUnit(g, .tempthis.target)
+                call GroupAddUnit(isDevoured, .tempthis.target)
+                call SetUnitAnimation(.tempthis.titan, "attack")
+                call Stun_UnitEx(.tempthis.titan, TITAN_ATTACK_ANIMATION, false, "", "")
+                call Stun_UnitEx(.tempthis.target, TITAN_ATTACK_ANIMATION, false, "", "")
+                call SetUnitFacing(.tempthis.titan, ang)
+                call TimerStart(NewTimer(), TITAN_ATTACK_ANIMATION, false, function thistype.onDevourCreate)
+				call TimerStart(NewTimer(), DELAY, false, function thistype.onRemoveTargetFromGroup)
+			endmethod
+            
+            static method onDevourCreate takes nothing returns nothing
+                local Devour d = 0
+                
+                call ReleaseTimer(GetExpiredTimer())
+                call SetUnitPosition(.tempthis.target, GetUnitX(.tempthis.titan), GetUnitY(.tempthis.titan))
+                set d = Devour.create(.tempthis.target, .tempthis.titan)
             endmethod
 			
 			static method create takes nothing returns thistype
@@ -78,56 +142,10 @@ scope TitanDevourer
 				
 				return this
 			endmethod
-            
-            static method onDevourCond takes nothing returns boolean
-                local unit u = GetFilterUnit()
-                
-                if (IsUnitEnemy(u, GetOwningPlayer(.tempthis.titan)) /*
-                */  and IsUnitType(u, UNIT_TYPE_HERO) /*
-                */  and not IsUnitDead(.tempthis.titan) /*
-                */  and not IsUnitDead(u) /*
-                */  and not IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) /*
-                */  and not IsUnitType(u, UNIT_TYPE_MECHANICAL) /*
-                */  and not Devour.isUnitDevoured()) /*
-                */  and GetUnitAbilityLevel(u, 'Bvul') == 0 /* //standard Unverwundbarkeit
-                */  and GetUnitAbilityLevel(u, 'B024') == 0 then //potion Unverwundbarkeit
-                
-                    return true
-                endif
-                
-                return false
-			endmethod
-            
-            static method onDevour takes nothing returns nothing
-				local timer t = NewTimer()
-                local real ang = 0.00
-                
-                set .tempthis.target = GetTriggerUnit()
-                set ang = AngleBetweenCords(GetUnitX(.tempthis.titan), GetUnitY(.tempthis.titan), GetUnitX(.tempthis.target), GetUnitY(.tempthis.target))  
-                
-                call GroupAddUnit(isDevoured, .tempthis.target)
-                call SetUnitAnimation(.tempthis.titan, "attack")
-                call Stun_UnitEx(.tempthis.titan, TITAN_ATTACK_ANIMATION, false, "", "")
-                call Stun_UnitEx(.tempthis.target, TITAN_ATTACK_ANIMATION, false, "", "")
-                call SetUnitFacing(.tempthis.titan, ang)
-                call TimerStart(t, TITAN_ATTACK_ANIMATION, false, function thistype.onDevourCreate)
-			endmethod
-            
-            static method onDevourCreate takes nothing returns nothing
-                local Devour d = 0
-                
-                call ReleaseTimer(GetExpiredTimer())
-                call SetUnitPosition(.tempthis.target, GetUnitX(.tempthis.titan), GetUnitY(.tempthis.titan))
-                set d = Devour.create(.tempthis.target, .tempthis.titan)
-            endmethod
 			
-			method onDestroy takes nothing returns nothing
-				set .titan = null
-				set .target = null
-			endmethod
-            
-            static method onInit takes nothing returns nothing
+			static method onInit takes nothing returns nothing
 				set titanRect = gg_rct_Titan
+				set g = NewGroup()
 			endmethod
 		
 		endstruct
@@ -145,7 +163,13 @@ scope TitanDevourer
 			private constant string EFFECT_EXECUTION_POINT = "chest"
 			private constant string EFFECT_FINISH_POINT = "origin"
 			private constant real CORPSE_DROP_RANGE = 25.
-            private constant real DAMAGER_PER_INTERVAL = 1.2
+            private constant real DAMAGER_PER_INTERVAL = 1.0
+			private constant real MAX_INTERVAL = 10.0
+			
+			// Dealt damage configuration
+			private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+			private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+			private constant weapontype WEAPON_TYPE = WEAPON_TYPE_METAL_HEAVY_BASH
             
             private string SOUND_1 = "Units\\Orc\\KotoBeast.wav"
             private group isDevouring
@@ -165,61 +189,13 @@ scope TitanDevourer
 		struct Devour
 			unit cast
 			unit targ
-			static code onLoopFunc // Just to keep the code organized since it's a public resource
+			real time = 0.00
 			CustomBar cb = 0
 			ARGB left = 0
 			ARGB right = 0
             fogmodifier visibibleArea
 			
-			static method create takes unit u1, unit u2 returns thistype
-				local thistype this = thistype.allocate()
-				local timer t = NewTimer()
-				local integer lvl = GetUnitAbilityLevel(u2, SPELL_ID)
-				
-				set this.cast = u2
-				set this.targ = u1
-				set .visibibleArea = CreateFogModifierRectBJ( true, GetOwningPlayer(this.targ), FOG_OF_WAR_VISIBLE, titanRect )
-                
-                call Sound.runSoundOnUnit(SOUND_1, this.targ)
-				call DestroyEffect(AddSpecialEffect(targetE, GetUnitX(GetSpellTargetUnit()),GetUnitY(GetSpellTargetUnit())))
-				call GroupAddUnit(isDevouring, this.cast)
-				
-                call UnitAddAbility(this.targ, SPELL_ID)
-				call SetUnitAbilityLevel(this.targ, SPELL_ID, 1)
-                call IssueImmediateOrder( this.targ, "windwalk" )
-                
-                call ShowUnit(this.targ, false)
-                call SetUnitPathing(this.targ, false)
-				
-				call SetTimerData(t,integer(this))
-				call TimerStart(t, DAMAGER_PER_INTERVAL, true, thistype.onLoopFunc)
-				
-				set t = null
-				
-				call onInitBar(this.targ)
-				
-				return this
-			endmethod
-			
-			static method onLoop takes nothing returns nothing
-				local thistype this = thistype(GetTimerData(GetExpiredTimer()))
-				local real damage = I2R(GetTitanDevourDamage())
-                
-                if GetWidgetLife(this.targ) > .405 and GetWidgetLife(this.cast) > .405 then
-					if GetWidgetLife(this.targ) < damage then
-						call SetWidgetLife(this.cast, GetWidgetLife(this.cast) + (damage - GetWidgetLife(this.targ)))
-					else
-                        call SetWidgetLife(this.cast, GetWidgetLife(this.cast) + damage)
-					endif
-                    set DamageType = PHYSICAL
-                    call DamageUnitPhysical(this.cast, this.targ, damage)
-                    call DestroyEffect(AddSpecialEffectTarget(exeE, this.cast, EFFECT_EXECUTION_POINT))
-				else
-					call this.destroy()
-				endif
-			endmethod
-            
-            method onDestroy takes nothing returns nothing
+			method onDestroy takes nothing returns nothing
 				if KILL_IF_CASTER_DIES and not IsUnitDead(.targ) then
 					call KillUnit(.targ)
 				endif
@@ -236,6 +212,56 @@ scope TitanDevourer
                 call DestroyFogModifier(.visibibleArea)
 			endmethod
 			
+			static method create takes unit u1, unit u2 returns thistype
+				local thistype this = thistype.allocate()
+				local timer t = NewTimer()
+				local integer lvl = GetUnitAbilityLevel(u2, SPELL_ID)
+				
+				set this.cast = u2
+				set this.targ = u1
+				set .visibibleArea = CreateFogModifierRectBJ(true, GetOwningPlayer(this.targ), FOG_OF_WAR_VISIBLE, titanRect)
+                
+                call Sound.runSoundOnUnit(SOUND_1, this.targ)
+				call DestroyEffect(AddSpecialEffect(targetE, GetUnitX(GetSpellTargetUnit()),GetUnitY(GetSpellTargetUnit())))
+				call GroupAddUnit(isDevouring, this.cast)
+				
+                call UnitAddAbility(this.targ, SPELL_ID)
+				call SetUnitAbilityLevel(this.targ, SPELL_ID, 1)
+                call IssueImmediateOrder( this.targ, "windwalk" )
+                
+                call ShowUnit(this.targ, false)
+                call SetUnitPathing(this.targ, false)
+				
+				call SetTimerData(t,integer(this))
+				call TimerStart(t, DAMAGER_PER_INTERVAL, true, thistype.onLoop)
+				
+				set t = null
+				
+				call onInitBar(this.targ)
+				
+				return this
+			endmethod
+			
+			static method onLoop takes nothing returns nothing
+				local thistype this = thistype(GetTimerData(GetExpiredTimer()))
+				local real damage = I2R(GetTitanDevourDamage())
+                
+                if ((GetWidgetLife(this.targ) > .405 and GetWidgetLife(this.cast) > .405) or time < MAX_INTERVAL) then
+					if GetWidgetLife(this.targ) < damage then
+						call SetWidgetLife(this.cast, GetWidgetLife(this.cast) + (damage - GetWidgetLife(this.targ)))
+					else
+                        call SetWidgetLife(this.cast, GetWidgetLife(this.cast) + damage)
+					endif
+                    set DamageType = PHYSICAL
+					call SpellHelper.damageTarget(this.cast, this.targ, damage, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+                    call DestroyEffect(AddSpecialEffectTarget(exeE, this.cast, EFFECT_EXECUTION_POINT))
+				else
+					call this.destroy()
+				endif
+				
+				set time = time + 1.0
+			endmethod
+            
 			method onInitBar takes unit target returns nothing
 				set .left = ARGB.create(255, 8, 74, 16)
 				set .right = ARGB.create(255, 214, 255, 230)
@@ -259,7 +285,6 @@ scope TitanDevourer
             static method onInit takes nothing returns nothing
                 set isDevouring = NewGroup()
                 set isDevoured = NewGroup()
-                set Devour.onLoopFunc = function Devour.onLoop
                 set targetE = GetAbilityEffectById(SPELL_ID,EFFECT_TYPE_AREA_EFFECT,0)
                 
                 call Preload(targetE)
