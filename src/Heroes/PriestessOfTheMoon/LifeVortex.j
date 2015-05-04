@@ -2,9 +2,12 @@ scope LifeVortex initializer init
     /*
      * Description: The Priestess of the Moon summons a powerful vortex, that deals damage to units 
                     in a targeted area for a certain period of time.
-     * Last Update: 07.01.2014
      * Changelog: 
      *     07.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     28.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for filtering
+					   Changed AttackType from NORMAL to MAGIC
+					   Changed DamageType from UNIVERSAL to MAGIC
      *
      */
     globals
@@ -16,8 +19,11 @@ scope LifeVortex initializer init
         private constant real DOT_TIME = 2.5
         private constant string EFFECT = "Abilities\\Spells\\NightElf\\TargetArtLumber\\TargetArtLumber.mdl"
         private constant string ATT_POINT = "origin"
-        private constant attacktype ATT_TYPE = ATTACK_TYPE_NORMAL
-        private constant damagetype DMG_TYPE = DAMAGE_TYPE_UNIVERSAL
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private real array DAMAGE
     endglobals
@@ -31,10 +37,10 @@ scope LifeVortex initializer init
     endfunction
 
     private struct LifeVortex
-        unit caster
-        group targets
-        integer level = 0
-        static thistype tempthis
+        private unit caster
+        private group targets
+        private integer level = 0
+        private static thistype tempthis = 0
         
         method onDestroy takes nothing returns nothing
             call ReleaseGroup( .targets )
@@ -43,17 +49,16 @@ scope LifeVortex initializer init
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)
+			return SpellHelper.isValidEnemy(GetFilterUnit(), .tempthis.caster)
         endmethod
         
         static method onDamageTarget takes nothing returns nothing
             local unit u = GetEnumUnit()
             
-            call DOT.start( .tempthis.caster , u , DAMAGE[.tempthis.level] , DOT_TIME , ATT_TYPE , DMG_TYPE , EFFECT , ATT_POINT )
+			set DamageType = SPELL
+            call DOT.start(.tempthis.caster, u, DAMAGE[.tempthis.level], DOT_TIME, ATTACK_TYPE, DAMAGE_TYPE, EFFECT, ATT_POINT)
             call GroupRemoveUnit(.tempthis.targets, u)
-            if ( CountUnitsInGroup(.tempthis.targets) == 0 ) then
-                call .tempthis.destroy()
-            endif
+      
             set u = null
         endmethod
         
@@ -68,33 +73,25 @@ scope LifeVortex initializer init
             call DestroyEffect(AddSpecialEffect(EFFECT_LOC, x, y))
             call GroupEnumUnitsInRange( .targets, x, y, RADIUS, function thistype.group_filter_callback )
             call ForGroup( .targets, function thistype.onDamageTarget )
-            
+            call destroy()
+			
             return this
-        endmethod
-        
-        static method onInit takes nothing returns nothing
-            set thistype.tempthis = 0
         endmethod
     endstruct
 
     private function Actions takes nothing returns nothing
-        local LifeVortex lv = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set lv = LifeVortex.create( GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY() )
-        endif
+        call LifeVortex.create(GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+        return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         call MainSetup()
         call Preload(EFFECT_LOC)
         call Preload(EFFECT)
-        
-        set t = null
     endfunction
 
 endscope

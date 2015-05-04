@@ -3,9 +3,9 @@ scope PlagueInfection initializer init
      * Description: The curse afflicts the targeted unit with a deadly disease, dealing damage and 
                     slowing its movement speed. Whenever the unit dies under these effects, 
                     it will infect up to 10 more units. Units that survived the plague, cant be affected again.
-     * Last Update: 03.11.2013
      * Changelog: 
-     *     03.11.2013: Abgleich mit OE und der Exceltabelle
+     *     	03.11.2013: Abgleich mit OE und der Exceltabelle
+	 *		29.04.2015: Integrated SpellHelper for filtering
      *
      */
     globals
@@ -18,6 +18,11 @@ scope PlagueInfection initializer init
         //Der Multiplikator für weitere Infizierte Einheiten (0.75 = 75% Schaden)
         private constant real SECONDARY_INFECTION_FACTOR = 0.75
         private constant integer MAX_INFECTIONS = 10
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_SLOW_POISON
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private real array PLAGUE_DAMAGE
         private real array PLAGUE_DURATION
@@ -95,17 +100,23 @@ scope PlagueInfection initializer init
         
         static method unitFilterMethod takes nothing returns boolean
             local unit u = GetFilterUnit()
-            if not IsUnitInGroup(GetFilterUnit(), temp.targetsHit) and not IsUnitType(u, UNIT_TYPE_DEAD) and IsUnitEnemy(u, GetOwningPlayer(temp.caster)) then
-                set u = null
-                return true
+			local boolean b = false
+			
+			if (SpellHelper.isValidEnemy(u, temp.caster) and not /*
+			*/	IsUnitInGroup(u, temp.targetsHit)) then
+                set b = true
             endif
-            return false
+			
+			set u = null
+			
+            return b
         endmethod
         
         static method doInfectionEnum takes nothing returns nothing
             local unit u = GetEnumUnit()
             local thistype this = temp
-            if targetCount < MAX_INFECTIONS then
+            
+			if targetCount < MAX_INFECTIONS then
                 set buffs[targetCount] = UnitAddBuff(caster, u, buffType, PLAGUE_DURATION[lvl], lvl + 1)
                 set buffs[targetCount].data = integer(this)
                 set damage[targetCount] = oldDamage * SECONDARY_INFECTION_FACTOR
@@ -115,6 +126,7 @@ scope PlagueInfection initializer init
                 set activeBuffs = activeBuffs + 1
                 call GroupAddUnit(targetsHit, u)
             endif
+			
             set u = null
         endmethod
         
@@ -132,7 +144,8 @@ scope PlagueInfection initializer init
         static method onBuffEnd takes nothing returns nothing
             local thistype this = thistype(GetEventBuff().data)
             local integer index = getBuffIndex(GetEventBuff())
-            set activeBuffs = activeBuffs - 1
+            
+			set activeBuffs = activeBuffs - 1
             if IsUnitType(buffs[index].target, UNIT_TYPE_DEAD) then
                 call infectUnits(index)
             endif
@@ -144,9 +157,10 @@ scope PlagueInfection initializer init
         static method periodicActions takes nothing returns nothing
             local thistype this = thistype(GetEventBuff().data)
             local integer index = getBuffIndex(GetEventBuff())
-            set counter[index] = counter[index] + TIMER_INTERVAL
+            
+			set counter[index] = counter[index] + TIMER_INTERVAL
             if DAMAGE_INTERVAL - counterDebuger <= counter[index] then
-                set DamageType = 1
+                set DamageType = SPELL
                 call damageTarget(caster, buffs[index].target, damage[index] * DAMAGE_INTERVAL)
                 set counter[index] = 0.00
             endif
@@ -174,8 +188,9 @@ scope PlagueInfection initializer init
             set dmg = xedamage.create()
             set unitFilter = Condition(function thistype.unitFilterMethod)
             set doInfection = function thistype.doInfectionEnum
-            set atype = ATTACK_TYPE_MAGIC
-            set dtype = DAMAGE_TYPE_SLOW_POISON
+            set atype = ATTACK_TYPE
+            set dtype = DAMAGE_TYPE
+			set wtype = WEAPON_TYPE
             call XE_PreloadAbility(BUFF_PLACER_ID)
         endmethod
         

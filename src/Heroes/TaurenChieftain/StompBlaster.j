@@ -1,9 +1,11 @@
 scope StompBlaster initializer init
     /*
      * Description: The Tauren Chieftain stomp the area, damaging and knock back nearby enemy units.
-     * Last Update: 06.01.2014
      * Changelog: 
      *     06.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     29.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for filtering and damaging
+					   Increased the stun duration by 0.85s
      *
      */
     globals
@@ -15,18 +17,23 @@ scope StompBlaster initializer init
         //Stun Effect
         private constant string STUN_EFFECT = ""
         private constant string STUN_ATT_POINT = ""
-        private constant real STUN_DURATION = 1.0
+        private constant real STUN_DURATION = 1.85
         
         //KNOCK BACK
         private constant integer DISTANCE = 350
         private constant real KB_TIME = 0.85
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
 
     private struct StompBlaster
-        unit caster
-        integer num
-        group targets
-        static thistype tempthis
+        private unit caster
+        private integer num
+        private group targets
+        private static thistype tempthis = 0
         
         method onDestroy takes nothing returns nothing
             call ReleaseGroup( .targets )
@@ -35,7 +42,7 @@ scope StompBlaster initializer init
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)
+			return SpellHelper.isValidEnemy(GetFilterUnit(), .tempthis.caster)
         endmethod
         
         static method onKnockBack takes nothing returns nothing
@@ -45,15 +52,13 @@ scope StompBlaster initializer init
             local real y = GetUnitY(.tempthis.caster) - GetUnitY(u)
             local real ang = Atan2(y, x) - bj_PI
             
-            call Stun_UnitEx(u, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
             call Knockback.create(.tempthis.caster, u, DISTANCE, KB_TIME, ang, 0, "", "")
+			call Stun_UnitEx(u, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
             
-            set DamageType = SPELL
-            call DamageUnitPhysical(.tempthis.caster, u, dmg)
-            call GroupRemoveUnit(.tempthis.targets, u)
-            if ( CountUnitsInGroup(.tempthis.targets) == 0 ) then
-                call .tempthis.destroy()
-            endif
+            set DamageType = PHYSICAL
+			call SpellHelper.damageTarget(.tempthis.caster, u, dmg, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+            
+			call GroupRemoveUnit(.tempthis.targets, u)
             set u = null
         endmethod
         
@@ -64,32 +69,24 @@ scope StompBlaster initializer init
             set .targets = NewGroup()
             set .tempthis = this
             
-            call GroupEnumUnitsInRange( .targets, GetUnitX(.caster), GetUnitY(.caster), RADIUS, function thistype.group_filter_callback )
-            call ForGroup( .targets, function thistype.onKnockBack )
+            call GroupEnumUnitsInRange(.targets, GetUnitX(.caster), GetUnitY(.caster), RADIUS, function thistype.group_filter_callback)
+            call ForGroup(.targets, function thistype.onKnockBack)
+			call destroy()
             
             return this
-        endmethod
-
-        static method onInit takes nothing returns nothing
-            set thistype.tempthis = 0
         endmethod
     endstruct
 
     private function Actions takes nothing returns nothing
-        local StompBlaster sb = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set sb = StompBlaster.create( GetTriggerUnit() )
-        endif
+        call StompBlaster.create(GetTriggerUnit())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+        return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( t, function Actions )
-        
-        set t = null
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
     endfunction
 
 endscope

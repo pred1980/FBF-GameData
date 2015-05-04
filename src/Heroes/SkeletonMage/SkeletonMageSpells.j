@@ -34,13 +34,13 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                         They have an disease aura that deals damage over time to nearby enemies. 
                         Zombies are also valid targets for Call of the Damned, but they will die after they got affected by 
                         this ability.
-         * Last Update: 03.11.2013
          * Changelog: 
-         *     03.11.2013: Abgleich mit OE und der Exceltabelle
-		 *     23.03.2014: Zombie HP um 50% fuer alle erhoeht
+         *     	03.11.2013: Abgleich mit OE und der Exceltabelle
+		 *     	23.03.2014: Zombie HP um 50% fuer alle erhoeht
 		 *                 Zombie Damage um 20% fuer alle erhoeht
 		 *                 Duration um 5s pro Level erhoeht
-		 *     26.03.2014: Anzahl der Zombies von 2/3/4/5/6 auf 2/2/3/3/4 
+		 *     	26.03.2014: Anzahl der Zombies von 2/3/4/5/6 auf 2/2/3/3/4 
+		 *		29.04.2015: Integrated SpellHelper for filtering
          *
          */
         globals
@@ -50,19 +50,24 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             private integer array ZOMBIE_DURATION
 			private integer array ZOMBIE_HP
 			private integer array ZOMBIE_DAMAGE
-    		//New Constants of Version 1.17b
+    		
+			//New Constants of Version 1.17b
             private real array ZOMBIE_AURA_DAMAGE
             private constant integer ZOMBIE_AURA_ABILITY = 'A059'
             private constant integer ZOMBIE_AURA_EFFECT = 'A05A'
             private constant real ZOMBIE_AURA_RADIUS = 175.00
             private constant real ZOMBIE_AURA_DAMAGE_INTERVAL = 0.50
-            private constant damagetype ZOMBIE_AURA_DAMAGE_TYPE = DAMAGE_TYPE_DEATH
-            private constant attacktype ZOMBIE_AURA_ATTACK_TYPE = ATTACK_TYPE_MAGIC
+
             //End of New Constants
             private constant real ZOMBIE_SPAWN_AREA = 400.00
             private constant integer ZOMBIE_TIMED_LIFE_BUFF = 'B00L'
             private constant string ZOMBIE_SPAWN_EFFECT = "Abilities\\Spells\\Undead\\AnimateDead\\AnimateDeadTarget.mdl"
-        endglobals
+        
+			// Dealt damage configuration
+			private constant attacktype ZOMBIE_AURA_ATTACK_TYPE = ATTACK_TYPE_MAGIC
+			private constant damagetype ZOMBIE_AURA_DAMAGE_TYPE = DAMAGE_TYPE_DEATH
+			private constant weapontype ZOMBIE_AURA_WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+		endglobals
         
         private function MainSetup takes nothing returns nothing
             set ZOMBIE_ID[0] = 'zom0'
@@ -148,11 +153,14 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             
 			static method dealAuraDamage takes nothing returns boolean
                 local unit u = GetFilterUnit()
-                if IsUnitEnemy(u, GetOwningPlayer(temp.zombie)) and not IsUnitType(u, UNIT_TYPE_DEAD) then
-                    set DamageType = 1
+				
+				if (SpellHelper.isValidEnemy(u, temp.zombie)) then
+                    set DamageType = SPELL
                     call damageTarget(temp.zombie, u, ZOMBIE_AURA_DAMAGE[temp.lvl]*ZOMBIE_AURA_DAMAGE_INTERVAL)
                 endif
+				
                 set u = null
+				
                 return false
             endmethod
             
@@ -199,10 +207,13 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             private static method onUnitDeath takes nothing returns boolean
                 local unit u = GetDyingUnit()
                 local thistype this = u:thistype
-                if this != 0 then
+                
+				if this != 0 then
                     call destroy()
                 endif
+				
                 set u = null
+				
                 return false
             endmethod
             
@@ -217,6 +228,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                 set dmg = xedamage.create()
                 set dtype = ZOMBIE_AURA_DAMAGE_TYPE
                 set atype = ZOMBIE_AURA_ATTACK_TYPE
+				set wtype = ZOMBIE_AURA_WEAPON_TYPE
                 set damageFilter = Condition(function thistype.dealAuraDamage)
             endmethod
         endstruct
@@ -260,9 +272,9 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
          * Description: Whenever Ukko or his minions kill an enemy unit, he will extract its soul as long as he is close enough. 
                         Each soul increases his damage and that of his zombies, and increases the damage and area of effect of 
                         Call of the Damned. Can store up to 10 souls.
-         * Last Update: 03.11.2013
          * Changelog: 
-         *     03.11.2013: Abgleich mit OE und der Exceltabelle
+         *     	03.11.2013: Abgleich mit OE und der Exceltabelle
+		 *		29.04.2015: Integrated SpellHelper for filtering
          *
          */
         globals
@@ -423,7 +435,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             endmethod
             
             method loopControl takes nothing returns nothing
-                if IsUnitType(owner, UNIT_TYPE_DEAD) then
+				if (SpellHelper.isUnitDead(owner)) then
                     call terminate()
                 endif
             endmethod
@@ -450,7 +462,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             endmethod
             
             method onKill takes unit killed returns nothing
-                if IsUnitEnemy(killed, GetOwningPlayer(owner)) then
+				if (SpellHelper.isValidEnemy(killed, owner)) then
                     call ExtractedSoulMissile.create(killed, owner, lvl)
                 endif
             endmethod
@@ -460,8 +472,11 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                 local real dy = GetUnitY(owner) - GetUnitY(killed)
                 local real dist = SquareRoot(dx * dx + dy * dy)
 
-                if killer != owner and dist <= EXTRACTED_SOUL_RANGE[lvl - 1] and not IsUnitType(owner, UNIT_TYPE_DEAD) then
-                    if IsUnitEnemy(killed, GetOwningPlayer(owner)) and IsUnitEnemy(killed, GetOwningPlayer(killer)) and GetOwningPlayer(killer) != null then
+                if (killer != owner and dist <= EXTRACTED_SOUL_RANGE[lvl - 1] and not /*
+				*/	SpellHelper.isUnitDead(owner)) then
+					if (SpellHelper.isValidEnemy(killed, owner) and /*
+					*/	SpellHelper.isValidEnemy(killed, killer) and /*
+					*/	GetOwningPlayer(killer) != null) then
                         call ExtractedSoulMissile.create(killed, owner, lvl)
                     endif
                 endif
@@ -475,7 +490,6 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                 call XE_PreloadAbility(BUFF_PLACER_ID)
             endmethod
         endstruct
-        
         
         public function GetUltiBonusDamage takes unit caster returns real
             return Soul.getStoredSouls(caster) * ULTI_BONUS_DAMAGE[caster:Main.lvl - 1]
@@ -493,9 +507,9 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
          * Description: Ukko releases the souls of fallen units in a target area, which deal area of effect damage. 
                         A soul is released every 0.75 seconds but it takes 1.5 seconds till it finally is released. 
                         Zombies created with Spawn Zombies are also valid targets which will die after their soul gets released.
-         * Last Update: 03.11.2013
          * Changelog: 
-         *     03.11.2013: Abgleich mit OE und der Exceltabelle
+         *     	03.11.2013: Abgleich mit OE und der Exceltabelle
+		 *		29.04.2015: Integrated SpellHelper for filtering
          *
          */
         globals
@@ -519,8 +533,11 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             private constant real SOUL_RELEASE_FINAL_EFFECT_HEIGHT = 0.00
             private constant real SOUL_RELEASE_DAMAGE_AOE = 150.00 
             private real array SOUL_RELEASE_DAMAGE
+			
+			// Dealt damage configuration
+			private constant attacktype SOUL_RELEASE_ATTACK_TYPE = ATTACK_TYPE_MAGIC
             private constant damagetype SOUL_RELEASE_DAMAGE_TYPE = DAMAGE_TYPE_DEATH
-            private constant attacktype SOUL_RELEASE_ATTACK_TYPE = ATTACK_TYPE_MAGIC
+            private constant weapontype SOUL_RELEASE_WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         endglobals
         
         private function MainSetup takes nothing returns nothing
@@ -564,12 +581,18 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             
             private static method corpseFilterMethod takes nothing returns boolean
                 local unit u = GetFilterUnit()
-                if (IsUnitDead(u) or (IsUnitZombie(u) and IsUnitAlly(u, GetOwningPlayer(temp.caster)))) and t[u] == 0 then
-                    set u = null
-                    return true
+				local boolean b = false
+				
+				if (SpellHelper.isUnitDead(u) or /*
+				*/	IsUnitZombie(u) and /*
+				*/	SpellHelper.isValidAlly(u, temp.caster)	and /*
+				*/	t[u] == 0) then
+                    set b = true
                 endif
+				
                 set u = null
-                return false
+				
+                return b
             endmethod
             
             private method onDestroy takes nothing returns nothing
@@ -589,7 +612,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                         if isZombie then
                             if not IsUnitType(corpse, UNIT_TYPE_DEAD) then
                                 set damageAllies = true
-                                set DamageType = 1
+                                set DamageType = SPELL
                                 call damageTarget(caster, corpse, GetWidgetLife(corpse) + 100)
                                 set damageAllies = false
                             endif
@@ -597,7 +620,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                         set corpsefx.z = SOUL_RELEASE_FINAL_EFFECT_HEIGHT
                         set corpsefx.scale = SOUL_RELEASE_FINAL_EFFECT_SCALE
                         call corpsefx.flash(SOUL_RELEASE_FINAL_EFFECT)
-                        set DamageType = 1
+                        set DamageType = SPELL
                         call damageAOE(caster, corpsefx.x, corpsefx.y, SOUL_RELEASE_DAMAGE_AOE + SoulExtraction_GetUltiBonusArea(caster), SOUL_RELEASE_DAMAGE[lvl] + SoulExtraction_GetUltiBonusDamage(caster))
                         call corpsefx.destroy()
                         call destroy()
@@ -641,6 +664,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                 set dmg = xedamage.create()
                 set dtype = SOUL_RELEASE_DAMAGE_TYPE
                 set atype = SOUL_RELEASE_ATTACK_TYPE
+				set wtype = SOUL_RELEASE_WEAPON_TYPE
             endmethod
             
         endstruct

@@ -8,6 +8,7 @@ scope ImpalingSpine initializer Init
      *     	21.03.2014: Hero Stun auf von 2s/2.5s/3s/3.5s/4s auf 1.5s gesetzt
 	 *     	22.04.2015: Integrated RegisterPlayerUnitEvent
 						Integrated SpellHelper for filtering and damaging
+	 *		02.05.2015: Code Refactoring	
      */
     globals
         private constant integer SPELL_ID = 'A07P'
@@ -50,10 +51,10 @@ scope ImpalingSpine initializer Init
         set DOT_DAMAGE[5] = 150.0
     endfunction
 	
-	struct ImpalingSpine extends xehomingmissile
-		unit caster
-        unit target
-        integer level = 0
+	private struct ImpalingSpine extends xehomingmissile
+		private unit caster
+        private unit target
+        private integer level = 0
 		
 		method onDestroy takes nothing returns nothing
             set .caster = null

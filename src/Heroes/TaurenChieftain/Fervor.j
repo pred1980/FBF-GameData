@@ -2,9 +2,9 @@ scope Fervor initializer init
     /*
      * Description: By using his mental power, the Tauren Chieftain increases the attack speed based on the number 
                     of allied units in the aura.
-     * Last Update: 07.01.2014
      * Changelog: 
-     *     07.01.2014: Abgleich mit OE und der Exceltabelle
+     *     	07.01.2014: Abgleich mit OE und der Exceltabelle
+	 *		30.04.2015: Integrated SpellHelper for filtering
      *
 	 * Info:
 	 *     Das ist eine Aura, die mit dem Custom Aura System von Anachrone läuft
@@ -46,7 +46,8 @@ scope Fervor initializer init
         endmethod
         
         method unitFilter takes unit theUnit returns boolean
-            return not IsUnitDead(theUnit) and IsUnitAlly(theUnit, GetOwningPlayer(.theUnit)) and not IsUnitType(theUnit, UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(theUnit, UNIT_TYPE_MECHANICAL)
+            return not (SpellHelper.isUnitDead(theUnit) and /*
+			*/		    SpellHelper.isValidAlly(theUnit, .theUnit))
         endmethod
         
     endstruct

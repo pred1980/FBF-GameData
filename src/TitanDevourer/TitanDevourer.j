@@ -38,7 +38,7 @@ scope TitanDevourer
 		endglobals
         
         struct Titan
-			private tatic unit titan
+			private static unit titan
             private unit target
 			private static group g
             private static integer hp = 0
@@ -59,7 +59,7 @@ scope TitanDevourer
             
             //update HP+Damage if a player left game
             static method onUpdate takes nothing returns nothing
-                if not IsUnitDead(.titan) then
+                if not SpellHelper.isUnitDead(.titan) then
                     //get new hp+dmg
                     set .hp = GetDynamicRatioValue(HP, HP_FACTOR)
                     set .dmg = GetDynamicRatioValue(DAMAGE, DAMAGE_FACTOR)
@@ -76,10 +76,9 @@ scope TitanDevourer
 				if (SpellHelper.isValidEnemy(u, .tempthis.titan) and /*
 				*/  IsUnitType(u, UNIT_TYPE_HERO) and not /*
 				*/  SpellHelper.isUnitDead(.tempthis.titan) and not /*
+				*/  SpellHelper.isUnitImmune(u) and not /*
 				*/ 	IsUnitInGroup(u, g) and not /*
-				*/  Devour.isUnitDevoured() and /*
-				*/  GetUnitAbilityLevel(u, 'Bvul') == 0 and /* //standard Unverwundbarkeit
-				*/  and GetUnitAbilityLevel(u, 'B024') == 0) then //potion Unverwundbarkeit
+				*/  Devour.isUnitDevoured()) then
 					set b = true
                 endif
                 
@@ -89,8 +88,15 @@ scope TitanDevourer
 			endmethod
 			
 			static method onRemoveTargetFromGroup takes nothing returns nothing
+				call ReleaseTimer(GetExpiredTimer())
 				call GroupRemoveUnit(g, .tempthis.target)
 			endmethod
+			
+			static method onDevourCreate takes nothing returns nothing
+                call ReleaseTimer(GetExpiredTimer())
+                call SetUnitPosition(.tempthis.target, GetUnitX(.tempthis.titan), GetUnitY(.tempthis.titan))
+                call Devour.create(.tempthis.target, .tempthis.titan)
+            endmethod
             
             static method onDevour takes nothing returns nothing
 				local real ang = 0.00
@@ -101,21 +107,11 @@ scope TitanDevourer
 				call GroupAddUnit(g, .tempthis.target)
                 call GroupAddUnit(isDevoured, .tempthis.target)
                 call SetUnitAnimation(.tempthis.titan, "attack")
-                call Stun_UnitEx(.tempthis.titan, TITAN_ATTACK_ANIMATION, false, "", "")
-                call Stun_UnitEx(.tempthis.target, TITAN_ATTACK_ANIMATION, false, "", "")
                 call SetUnitFacing(.tempthis.titan, ang)
                 call TimerStart(NewTimer(), TITAN_ATTACK_ANIMATION, false, function thistype.onDevourCreate)
 				call TimerStart(NewTimer(), DELAY, false, function thistype.onRemoveTargetFromGroup)
 			endmethod
             
-            static method onDevourCreate takes nothing returns nothing
-                local Devour d = 0
-                
-                call ReleaseTimer(GetExpiredTimer())
-                call SetUnitPosition(.tempthis.target, GetUnitX(.tempthis.titan), GetUnitY(.tempthis.titan))
-                set d = Devour.create(.tempthis.target, .tempthis.titan)
-            endmethod
-			
 			static method create takes nothing returns thistype
 				local thistype this = thistype.allocate()
 				local trigger t = CreateTrigger()
@@ -169,7 +165,12 @@ scope TitanDevourer
 			// Dealt damage configuration
 			private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
 			private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
-			private constant weapontype WEAPON_TYPE = WEAPON_TYPE_METAL_HEAVY_BASH
+			private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+			
+			//Stun Effect
+			private constant string STUN_EFFECT = ""
+			private constant string STUN_ATT_POINT = ""
+			private constant real STUN_DURATION = MAX_INTERVAL
             
             private string SOUND_1 = "Units\\Orc\\KotoBeast.wav"
             private group isDevouring
@@ -187,16 +188,18 @@ scope TitanDevourer
 		endfunction
 
 		struct Devour
-			unit cast
-			unit targ
-			real time = 0.00
-			CustomBar cb = 0
-			ARGB left = 0
-			ARGB right = 0
-            fogmodifier visibibleArea
+			private unit cast
+			private unit targ
+			private real time = 0.00
+			private timer posTim
+			
+			private CustomBar cb = 0
+			private ARGB left = 0
+			private ARGB right = 0
+            private fogmodifier visibibleArea
 			
 			method onDestroy takes nothing returns nothing
-				if KILL_IF_CASTER_DIES and not IsUnitDead(.targ) then
+				if KILL_IF_CASTER_DIES and not SpellHelper.isUnitDead(.targ) then
 					call KillUnit(.targ)
 				endif
 				call GroupRemoveUnit(isDevouring, .cast)
@@ -204,12 +207,17 @@ scope TitanDevourer
                 call UnitRemoveAbility(.targ, SPELL_ID)
                 call UnitAddAbility(.targ, SPELL_ID)
                 call ShowUnit(.targ, true)
-				call GroupRemoveUnit(isDevoured, .targ)  
+				call GroupRemoveUnit(isDevoured, .targ)
 				call DestroyEffect(AddSpecialEffectTarget(finishE, .targ, EFFECT_FINISH_POINT))
                 call ReleaseTimer(GetExpiredTimer())
-                call .cb.destroy()
+				call ReleaseTimer(posTim)
                 call SetUnitPathing(.targ, true)
                 call DestroyFogModifier(.visibibleArea)
+				call Stun_StopStun(.targ)
+				call .cb.destroy()
+				
+				set cast = null
+				set targ = null
 			endmethod
 			
 			static method create takes unit u1, unit u2 returns thistype
@@ -231,13 +239,14 @@ scope TitanDevourer
                 
                 call ShowUnit(this.targ, false)
                 call SetUnitPathing(this.targ, false)
+				call Stun_UnitEx(this.targ, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
 				
 				call SetTimerData(t,integer(this))
-				call TimerStart(t, DAMAGER_PER_INTERVAL, true, thistype.onLoop)
+				call TimerStart(t, DAMAGER_PER_INTERVAL, true, function thistype.onLoop)
 				
 				set t = null
 				
-				call onInitBar(this.targ)
+				call onInitBar(this)
 				
 				return this
 			endmethod
@@ -246,7 +255,7 @@ scope TitanDevourer
 				local thistype this = thistype(GetTimerData(GetExpiredTimer()))
 				local real damage = I2R(GetTitanDevourDamage())
                 
-                if ((GetWidgetLife(this.targ) > .405 and GetWidgetLife(this.cast) > .405) or time < MAX_INTERVAL) then
+                if ((GetWidgetLife(this.targ) > .405 and GetWidgetLife(this.cast) > .405) and time < MAX_INTERVAL) then
 					if GetWidgetLife(this.targ) < damage then
 						call SetWidgetLife(this.cast, GetWidgetLife(this.cast) + (damage - GetWidgetLife(this.targ)))
 					else
@@ -261,12 +270,21 @@ scope TitanDevourer
 				
 				set time = time + 1.0
 			endmethod
+			
+			static method onUpdateBarPosition takes nothing returns nothing
+				local thistype this = thistype(GetTimerData(GetExpiredTimer()))
+				
+				call SetUnitX(this.targ, GetUnitX(this.cast))
+				call SetUnitY(this.targ, GetUnitY(this.cast))
+			endmethod
             
-			method onInitBar takes unit target returns nothing
+			method onInitBar takes thistype tempthis returns nothing
+				set posTim = NewTimer()
+				
 				set .left = ARGB.create(255, 8, 74, 16)
 				set .right = ARGB.create(255, 214, 255, 230)
 				
-				set .cb = CustomBar.create(target, CustomBar_iChange.setLifePer)
+				set .cb = CustomBar.create(tempthis.targ, CustomBar_iChange.setLifePer)
 				
 				set .cb.txtTag.offsetX = -92.
 				set .cb.txtTag.offsetY = -32.
@@ -276,6 +294,9 @@ scope TitanDevourer
 				call .cb.Show(bj_FORCE_ALL_PLAYERS, CustomBar_iShow.showCheck)
 				
 				call .cb.showCB()
+				
+				call SetTimerData(posTim, tempthis)
+				call TimerStart(posTim, 1.0, true, function thistype.onUpdateBarPosition)
 			endmethod
             
             static method isUnitDevoured takes nothing returns boolean

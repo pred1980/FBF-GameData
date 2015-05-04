@@ -10,11 +10,11 @@ library StoneOfTeleportation uses RegisterPlayerUnitEvent, HomeBase
 	private struct TeleportStone
 		implement INITS
 		
-		integer pid = 0
-		real pause = 0.00
-		unit source
-		effect ef
-		player p
+		private integer pid = 0
+		private real pause = 0.00
+		private unit source
+		private effect ef
+		private player p
 		
 		method onDestroy takes nothing returns nothing
 			set .source = null
@@ -43,7 +43,6 @@ library StoneOfTeleportation uses RegisterPlayerUnitEvent, HomeBase
 		static method create takes unit source returns thistype
 			local thistype this = thistype.allocate()
 			local timer t = NewTimer()
-			local real pause = 0.00
 			
 			set .source = source
 			set .p = GetOwningPlayer(.source)

@@ -2,9 +2,9 @@ scope Moonlight initializer init
     /*
      * Description: The PotM concentrates all her strenght to call the mystic might of the moon making friendly 
                     units invulnverable for a few seconds.
-     * Last Update: 07.01.2014
      * Changelog: 
      *     07.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     28.04.2015: Integrated RegisterPlayerUnitEvent
      *
      */
     globals
@@ -43,15 +43,9 @@ scope Moonlight initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddCondition(t, function Conditions)
-        call TriggerAddAction(t, function Actions)
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         call MainSetup()
         call XE_PreloadAbility(DUMMY_SPELL_ID)
-        
-        set t = null
     endfunction
 
 endscope

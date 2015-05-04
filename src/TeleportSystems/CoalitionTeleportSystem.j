@@ -33,7 +33,7 @@ scope CoalitionTeleportSystem initializer init
         static method onReturnToBaseDelay takes nothing returns nothing
             local TeleportData data = GetTimerData(GetExpiredTimer())
             
-            if IsUnitInRegion(data.reg, data.target) and not IsUnitDead(data.target) then
+            if IsUnitInRegion(data.reg, data.target) and not SpellHelper.isUnitDead(data.target) then
                 if data.counter > 1 then
                     call SetUnitPosition(data.target, data.x, data.y)
             
@@ -141,7 +141,9 @@ scope CoalitionTeleportSystem initializer init
             endif
             call Sound.runSoundForPlayer(GLOBAL_SOUND_3, p)
             
-			if GetPlayerRace(p) != RACE_UNDEAD and not CoalitionUnitShopTutorial.showTutorial[GetPlayerId(p)] then
+			if (GetPlayerRace(p) != RACE_UNDEAD and not /*
+			*/  CoalitionUnitShopTutorial.showTutorial[GetPlayerId(p)] and /*
+			*/  ShowTutorialsDialog.ForPlayer(GetPlayerId(p))) then
 				call CoalitionUnitShopTutorial.create(p, u)
 			endif
 					

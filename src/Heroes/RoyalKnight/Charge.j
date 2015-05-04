@@ -2,13 +2,13 @@ scope Charge initializer Init
     /*
      * Description: Royal Knight Parthos launches himself into the enemy lines without fear. 
                     He gains bonus attack speed and deals damage to enemy units along the way.
-     * Last Update: 10.12.2013
      * Changelog: 
      *     10.12.2013: Abgleich mit OE und der Exceltabelle
+	 *     29.04.2015: Integrated RegisterPlayerUnitEvent
      */
     globals
         //Spell settings
-        private constant integer SPELL_ABILITY = 'A08B' //the spell ability
+        private constant integer SPELL_ID = 'A08B' //the spell ability
         private constant real SPELL_PERIOD = XE_ANIMATION_PERIOD //the speed of the periodic timer that moves the caster
         private constant integer DAMAGE_PERIOD_FACTOR = 3 //optimization option, every how many periods are new targets affected
 
@@ -16,6 +16,11 @@ scope Charge initializer Init
         private constant real ANIM_SPEED_START = 1.2 //the animation speed at the start of the spell
         private constant real ANIM_SPEED_END = 0.9 //the animation speed at the end of the spell
         private constant boolean DISABLE_SPELL_SOUND = false //may be set to false with a custom warden model
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
 
     //spell stats
@@ -41,9 +46,10 @@ scope Charge initializer Init
     
     private function DamageOptions takes xedamage spellDamage returns nothing
         //useful read: http://www.wc3campaigns.net/showpost.php?p=1030046&postcount=19
-        set spellDamage.dtype=DAMAGE_TYPE_UNIVERSAL
-        set spellDamage.atype=ATTACK_TYPE_NORMAL
-        set spellDamage.tag=0 //the tag attached to the damage by xedamage
+        set spellDamage.dtype = DAMAGE_TYPE
+        set spellDamage.atype = ATTACK_TYPE
+        set spellDamage.wtype = WEAPON_TYPE
+		set spellDamage.tag=0 //the tag attached to the damage by xedamage
         set spellDamage.exception = UNIT_TYPE_STRUCTURE //deal no damage to structures
         set spellDamage.exception = UNIT_TYPE_FLYING //deal no damage to Air Units
     endfunction
@@ -68,14 +74,18 @@ scope Charge initializer Init
     endglobals
 
     private function Targets takes nothing returns boolean
-        local unit u=GetFilterUnit()
-        if not(IsUnitInGroup(u, tempsi.affected)) and IsUnitInRangeXY(u, tempx, tempy, DamageRadius(tempsi.level)) then
-            call GroupAddUnit(tempsi.affected, u)
-            set u=null
-            return true
+        local unit u = GetFilterUnit()
+		local boolean b = false
+		
+        if not(IsUnitInGroup(u, tempsi.affected)) and /*
+		*/	   IsUnitInRangeXY(u, tempx, tempy, DamageRadius(tempsi.level)) then
+				call GroupAddUnit(tempsi.affected, u)
+				set b = true
         endif
-        set u=null
-        return false
+		
+        set u = null
+		
+        return b
     endfunction
 
     private function Periodic takes nothing returns nothing
@@ -150,6 +160,41 @@ scope Charge initializer Init
         real dy
         group affected
         real time
+		
+		method onDestroy takes nothing returns nothing
+            if not(this.interrupted) then //if the channeling wasn't interrupted by the player...
+                call IssueImmediateOrder(this.caster, "stop") //...then stop it now
+            endif
+            call ReleaseTimer(this.t)
+            call GroupClear(this.affected) //the next time this instance id is used we won't need to create a group
+        endmethod
+		
+		static method get takes unit u returns instance
+            local integer i=0
+            loop
+                exitwhen i==instanceCount
+                if instances[i].caster==u then
+                    return instances[i]
+                endif
+                set i=i+1
+            endloop
+            return 0
+        endmethod
+        
+        method finish takes nothing returns nothing
+            set this.active=false //spell stopped, wait for animation to finish and then end it
+            set instanceCount=instanceCount-1
+            set instances[this.index]=instances[instanceCount]
+            set instances[instanceCount].index=this.index
+
+            if instanceCount==0 then
+                call ReleaseTimer(slide)
+                //end of evil
+                if DISABLE_SPELL_SOUND then
+                    call VolumeGroupReset()
+                endif
+            endif
+        endmethod
         
         static method create takes unit caster, integer level, real targetx, real targety returns instance
             local instance si=instance.allocate()
@@ -201,82 +246,44 @@ scope Charge initializer Init
             set instanceCount=instanceCount+1
             return si
         endmethod
-        
-        static method get takes unit u returns instance
-            local integer i=0
-            loop
-                exitwhen i==instanceCount
-                if instances[i].caster==u then
-                    return instances[i]
-                endif
-                set i=i+1
-            endloop
-            return 0
-        endmethod
-        
-        method finish takes nothing returns nothing
-            set this.active=false //spell stopped, wait for animation to finish and then end it
-            set instanceCount=instanceCount-1
-            set instances[this.index]=instances[instanceCount]
-            set instances[instanceCount].index=this.index
 
-            if instanceCount==0 then
-                call ReleaseTimer(slide)
-                //end of evil
-                if DISABLE_SPELL_SOUND then
-                    call VolumeGroupReset()
-                endif
-            endif
-        endmethod
-        
-        method onDestroy takes nothing returns nothing
-            if not(this.interrupted) then //if the channeling wasn't interrupted by the player...
-                call IssueImmediateOrder(this.caster, "stop") //...then stop it now
-            endif
-            call ReleaseTimer(this.t)
-            call GroupClear(this.affected) //the next time this instance id is used we won't need to create a group
-        endmethod
     endstruct
+	
+	private function EndActions takes nothing returns nothing
+        local instance si
+        
+		set si = instance.get(GetTriggerUnit())
+		if si != 0 then
+			call si.finish()
+			set si.interrupted=true
+		endif
+    endfunction
 
-    private function SpellEffect takes nothing returns nothing
-        local integer lvl
-        local unit u
-        //local location l
-        if GetSpellAbilityId() == SPELL_ABILITY then
-            set lvl =GetUnitAbilityLevel(GetTriggerUnit(), SPELL_ABILITY)
-            set u = GetSpellTargetUnit()
-            if u == null then
-                //point-target cast
-                call instance.create(GetTriggerUnit(), lvl, GetSpellTargetX(), GetSpellTargetY())
-            else
-                //unit-target cast
-                call instance.create(GetTriggerUnit(), lvl, GetUnitX(u), GetUnitY(u))
-                set u = null
-            endif
-        endif
+    private function StartActions takes nothing returns nothing
+        local unit caster = GetTriggerUnit()
+		local unit target = GetSpellTargetUnit()
+        local integer lvl = GetUnitAbilityLevel(caster, SPELL_ID)
+		
+		if target == null then
+			//point-target cast
+			call instance.create(caster, lvl, GetSpellTargetX(), GetSpellTargetY())
+		else
+			//unit-target cast
+			call instance.create(caster, lvl, GetUnitX(target), GetUnitY(target))
+		endif
+		
+		set caster = null
+		set target = null
     endfunction
     
-    private function SpellStop takes nothing returns nothing
-        local instance si
-        if GetSpellAbilityId() == SPELL_ABILITY then
-            set si = instance.get(GetTriggerUnit())
-            if si != 0 then
-                call si.finish()
-                set si.interrupted=true
-            endif
-        endif
+    private function Conditions takes nothing returns boolean
+        return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function Init takes nothing returns nothing
-        //init spellcast trigger
-        local trigger tr = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ( tr, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddAction( tr, function SpellEffect )
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function StartActions)
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_ENDCAST, function Conditions, function EndActions)
 
-        set tr = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ( tr, EVENT_PLAYER_UNIT_SPELL_ENDCAST )
-        call TriggerAddAction( tr, function SpellStop )
-        
         //init damage filter
         set tempbx=Condition(function Targets)
         

@@ -152,6 +152,7 @@
 //! import "src\CreepRoundSystems\CreepRoundSystem.j"
 //! import "src\CreepRoundSystems\CreepSystemModule.j"
 //! import "src\CreepRoundSystems\CreepConfigs.j"
+//! import "src\CreepRoundSystems\RoundEndSystem.j"
 
 /* Waypoint System */
 //! import "src\WaypointSystem\AnaMoveSys.j"

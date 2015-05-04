@@ -1,5 +1,8 @@
 scope StandardDefenseMode
-
+	/*
+     * Changelog: 
+	 *     02.05.2015: Integrated SpellHelper for filtering
+     */
     globals
         //saves all factors from the excel file (Forsaken Defense System)
         private constant hashtable FACTORS = InitHashtable()
@@ -149,7 +152,7 @@ scope StandardDefenseMode
         static method onRemoveAll takes nothing returns nothing
             local unit u = GetEnumUnit()
             
-            if not IsUnitDead(u) then
+            if not SpellHelper.isUnitDead(u) then
                 call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(u), GetUnitY(u)))
             endif
             

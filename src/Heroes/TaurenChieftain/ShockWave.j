@@ -3,9 +3,10 @@ scope ShockWave initializer init
      * Description: After 3 seconds, the Tauren Chieftain sends out a shockwave that knocks all enemies it hits back, 
                     dealing high damage to them and slowing them for 5 seconds. The closer an enemy is to the center 
                     of the wave, the higher is the damage it takes.
-     * Last Update: 07.01.2014
      * Changelog: 
      *     07.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     30.04.2015: Integrated RegisterPlayerUnitEvent
+	                   Integrated SpellHelper for filtering and damaging
      *
      */
     globals
@@ -23,22 +24,27 @@ scope ShockWave initializer init
         private constant real FULL_DAM_AOE = 80
         private constant real TQ_DAM_AOE = 120
         private constant real HALF_DAM_AOE = 170
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_SIEGE
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_DEMOLITION
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private string SOUND = "Abilities\\Spells\\Orc\\Shockwave\\Shockwave.wav"
     endglobals
 
     private struct ShockWave
-        unit dummy
-        unit caster
-        real distance
-        real x
-        real y
-        real angle
-        real damage
-        group hit
-        group gr
-        timer t
-        static thistype tempthis
+        private unit dummy
+        private unit caster
+        private real distance
+        private real x
+        private real y
+        private real angle
+        private real damage
+        private group hit
+        private group gr
+        private timer t
+        private static thistype tempthis
         
         method onDestroy takes nothing returns nothing
             call ReleaseTimer(.t)
@@ -54,10 +60,7 @@ scope ShockWave initializer init
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not /*
-            */     IsUnitDead(GetFilterUnit()) and not /*
-            */     IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not /*
-            */     IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL)
+			return SpellHelper.isValidEnemy(GetFilterUnit(), .tempthis.caster)
         endmethod
         
         static method onDamageTarget takes nothing returns nothing
@@ -83,8 +86,8 @@ scope ShockWave initializer init
                 endif
                 call CastDummySpellTarget(tempthis.caster, u, DUMMY_SPELL_ID, 1, "slow", 5)
                 call Knockback.create(tempthis.caster, u, KNOCK_DISTANCE, 1.5, AngleBetweenCords(tempthis.x,tempthis.y,GetUnitX(u),GetUnitY(u))*bj_DEGTORAD, 0, "", "")
-                set DamageType = SPELL
-                call UnitDamageTarget(tempthis.caster, u, dam, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_UNKNOWN, WEAPON_TYPE_WHOKNOWS)
+                set DamageType = PHYSICAL
+				call SpellHelper.damageTarget(tempthis.caster, u, dam, true, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
             endif
             call GroupRemoveUnit(tempthis.gr,u)
             set u = null
@@ -137,21 +140,16 @@ scope ShockWave initializer init
     endstruct
 
     private function Actions takes nothing returns nothing
-        local ShockWave sw = 0
-        
-        if( GetSpellAbilityId() == SPELL_ID )then
-            set sw = ShockWave.create( GetTriggerUnit() )
-        endif
+        call ShockWave.create(GetTriggerUnit())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+        return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_FINISH )
-        call TriggerAddAction( t, function Actions )
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_FINISH, function Conditions, function Actions)
         call XE_PreloadAbility(DUMMY_SPELL_ID)
-        
-        set t = null
     endfunction
 
 endscope

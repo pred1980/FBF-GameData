@@ -3,9 +3,9 @@ scope NightAura initializer init
      * Description: The mighty aura of the Priestess of the Moon surrounds friendly units and gives a 20% chance to reflect 
                     a part of the damage back to the attacker. If the unit dies, 15% of its mana is released and fills 
                     up the mana of the attacker.
-     * Last Update: 07.01.2014
      * Changelog: 
      *     07.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     28.04.2015: Integrated SpellHelper for filtering and damaging
      *
      */
     globals
@@ -17,6 +17,11 @@ scope NightAura initializer init
         private constant string MANA_FILL = "Abilities\\Spells\\Items\\AIma\\AImaTarget.mdl"
         private constant string ATT_POINT = "overhead"
         private constant integer RADIUS = 800
+		
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
         private integer array REFLECT_DAMAGE
     endglobals
@@ -30,9 +35,9 @@ scope NightAura initializer init
     endfunction
     
     private struct NightAura
-        integer level = 1
-        group g
-        static thistype tempthis
+        private integer level = 1
+        private group g
+        private static thistype tempthis = 0
         
         method onDestroy takes nothing returns nothing
             call ReleaseGroup(.g)
@@ -62,7 +67,7 @@ scope NightAura initializer init
             set dmg = damage * ( I2R((.level * REFLECT_DAMAGE[.level])) / 100.0 )
             if GetUnitState(attacker, UNIT_STATE_LIFE) > dmg then
                 set DamageType = SPELL
-                call DamageUnitPhysical(target, attacker, dmg)
+				call SpellHelper.damageTarget(target, attacker, dmg, false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
             else
                 if GetUnitState(attacker, UNIT_STATE_MAX_MANA) > 0 and GetUnitState(target, UNIT_STATE_MAX_MANA) > 0 then
                     set mana = (GetUnitState(target, UNIT_STATE_MANA) * STEAL) / 100
@@ -77,18 +82,14 @@ scope NightAura initializer init
             call destroy()
             return this
         endmethod
-       
-        static method onInit takes nothing returns nothing
-            set thistype.tempthis = 0
-        endmethod
-        
     endstruct
 
     private function Actions takes unit damagedUnit, unit damageSource, real damage returns nothing
-        local NightAura na = 0
-         
-        if ( GetUnitAbilityLevel(damagedUnit, BUFF_ID) > 0 and GetRandomInt(1, 100) <= CHANCE and IsUnitEnemy(damagedUnit, GetOwningPlayer(damageSource)) and DamageType == PHYSICAL ) then
-            set na = NightAura.create(damageSource, damagedUnit, damage)
+        if (GetUnitAbilityLevel(damagedUnit, BUFF_ID) > 0 and /*
+		*/	GetRandomInt(1, 100) <= CHANCE and /*
+		*/	SpellHelper.isValidEnemy(damagedUnit, damageSource) and /*
+		*/	DamageType == PHYSICAL ) then
+            call NightAura.create(damageSource, damagedUnit, damage)
         endif
     endfunction
     

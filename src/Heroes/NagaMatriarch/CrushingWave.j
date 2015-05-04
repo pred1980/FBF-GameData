@@ -6,6 +6,7 @@ scope CrushingWave initializer init
      *     	08.01.2014: Abgleich mit OE und der Exceltabelle
 	 *     	22.04.2015: Integrated RegisterPlayerUnitEvent
 						Integrated SpellHelper for filtering and damaging
+	 *		30.04.2015: Simplified group_filter_callback 
      */
     globals
         private constant integer SPELL_ID = 'A07R'
@@ -71,19 +72,7 @@ scope CrushingWave initializer init
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-			local unit u = GetFilterUnit()
-			local boolean b = false
-			
-			if (GetUnitAbilityLevel(u, 'Avul') <= 0 and /*
-			*/	GetUnitAbilityLevel(u, 'Amim') <= 0 and /*
-			*/	GetUnitAbilityLevel(u, 'Aloc') <= 0 and /*
-			*/  SpellHelper.isValidEnemy(u, .tempthis.caster)) then
-				set b = true
-			endif
-			
-			set u = null
-			
-			return b
+			return SpellHelper.isValidEnemy(GetFilterUnit(), .tempthis.caster) 
         endmethod
         
         static method onDamageTarget takes nothing returns nothing

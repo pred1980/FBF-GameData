@@ -3,9 +3,9 @@ scope BattleFury initializer init
      * Description: Darius enters a state of fury and deals bonus hero damage on every hit. 
                     Bonus damage is reduced everytime he gets hit. If he reaches the maximum of bonus damage 
                     it hold on for the same period of time.
-     * Last Update: 05.12.2013
      * Changelog: 
-     *     05.12.2013: Abgleich mit OE und der Exceltabelle
+     *     	05.12.2013: Abgleich mit OE und der Exceltabelle
+	 *		29.04.2015: Code Refactoring
      */
     private keyword BattleFury
     
@@ -33,30 +33,27 @@ scope BattleFury initializer init
     endfunction
 
     private struct BattleFury
-        unit source
-        integer counter = 0
-        integer level = 0
-        timer t
-        timer extra
-        boolean b = false
+        private unit source
+        private integer counter = 0
+        private integer level = 0
+        private timer t
+        private timer extra
+        private boolean b = false
         
         static method getForUnit takes unit u returns BattleFury
 			return spellForUnit[GetUnitId(u)]
 		endmethod
         
-        static method create takes unit source returns BattleFury
-            local BattleFury this = BattleFury.allocate()
-            
-            set .source = source
-            set .level = GetUnitAbilityLevel(.source, SPELL_ID)
-            //Reset
+		method onDestroy takes nothing returns nothing
             call RemoveUnitBonus(.source, BONUS_DAMAGE)
-            set .t = NewTimer()
-            call SetTimerData(.t, this)
-            call TimerStart(.t, DURATION[.level], false, function thistype.onNormalEnd)
-            set spellForUnit[GetUnitId(source)] = this
-            
-            return this
+            call ReleaseTimer(.t)
+            set .t = null
+            if .extra != null then
+                call ReleaseTimer(.extra)
+                set .extra = null
+            endif
+            set spellForUnit[GetUnitId(.source)] = 0
+            set .source = null
         endmethod
         
         method onAttack takes unit damageSource, BattleFury s returns nothing
@@ -74,6 +71,7 @@ scope BattleFury initializer init
         method increaseDamage takes BattleFury s returns nothing
             call AddUnitBonus(.source, BONUS_DAMAGE, 1)
             set .counter = .counter + 1
+			
             if .counter == MAX_DAMAGE[.level] then
                 call SetUnitAnimation( .source, "spell" )
                 set .b = true
@@ -95,7 +93,8 @@ scope BattleFury initializer init
         
         static method onNormalEnd takes nothing returns nothing
             local BattleFury this = GetTimerData(GetExpiredTimer())
-            if this.b == false then
+            
+			if this.b == false then
                 call this.destroy()
             endif
         endmethod
@@ -104,21 +103,20 @@ scope BattleFury initializer init
             local BattleFury this = GetTimerData(GetExpiredTimer())
             call this.destroy()
         endmethod
-        
-        method onDestroy takes nothing returns nothing
+		
+		static method create takes unit source returns BattleFury
+            local BattleFury this = BattleFury.allocate()
+            
+            set .source = source
+            set .level = GetUnitAbilityLevel(.source, SPELL_ID)
+            //Reset
             call RemoveUnitBonus(.source, BONUS_DAMAGE)
-            call ReleaseTimer(.t)
-            set .t = null
-            if .extra != null then
-                call ReleaseTimer(.extra)
-                set .extra = null
-            endif
-            set spellForUnit[GetUnitId(.source)] = 0
-            set .source = null
-        endmethod
-        
-        static method onInit takes nothing returns nothing
-            call MainSetup()
+            set .t = NewTimer()
+            call SetTimerData(.t, this)
+            call TimerStart(.t, DURATION[.level], false, function thistype.onNormalEnd)
+            set spellForUnit[GetUnitId(source)] = this
+            
+            return this
         endmethod
     endstruct
 
@@ -146,7 +144,8 @@ scope BattleFury initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        call RegisterDamageResponse( Actions )
+        call RegisterDamageResponse(Actions)
+		call MainSetup()
     endfunction
 
 endscope

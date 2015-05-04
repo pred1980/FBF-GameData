@@ -2,9 +2,9 @@ scope RevengeOwl initializer Init
     /*
      * Description: The Owl of the Priestess flys over the enemys army calls down waves of falling stars 
                     that damage nearby enemy units. The Owl is invulnerable and can be controlled for a short moment.
-     * Last Update: 07.01.2014
      * Changelog: 
      *     07.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     28.04.2015: Integrated RegisterPlayerUnitEvent
      *
      */    
      globals 
@@ -47,7 +47,6 @@ scope RevengeOwl initializer Init
     private function MissileEffect takes unit aMissile returns nothing
     //This is the effect of the missile. It will be displayed when it dies.
     //the function takes as a parameter the dying missile
-    
         local unit missile = aMissile
         local real bombX = GetUnitX(missile)
         local real bombY = GetUnitY(missile)
@@ -193,21 +192,7 @@ scope RevengeOwl initializer Init
         endmethod
     endstruct
 //======================================================================================
-    private function onDeath takes nothing returns boolean
-        local OwlData owl
-        local unit u = GetTriggerUnit()
-        
-        //we make sure that the unit that dies is the owl
-        if(IsUnitInGroup(u, Missileers)) then
-            //recover that owl (the struct) from the owl
-            set owl = activeTable[u] 
-            call owl.destroy()
-        endif
-
-        set u = null
-        
-        return false
-    endfunction
+    
 //======================================================================================
     private function MoveOwl takes nothing returns nothing
         local OwlData owl = OwlData(GetTimerData(GetExpiredTimer())) 
@@ -244,39 +229,45 @@ scope RevengeOwl initializer Init
         
         call SetUnitPosition(owl.owl, GetUnitX(owl.owl) + SPEED * Cos(bj_DEGTORAD*GetUnitFacing(owl.owl)), GetUnitY(owl.owl) + SPEED * Sin(bj_DEGTORAD*GetUnitFacing(owl.owl)))
     endfunction
-
-    private function Conditions takes nothing returns boolean
+	
+	private function DeathActions takes nothing returns nothing
+		local OwlData owl
+        //we make sure that the unit that dies is the owl
+        //recover that owl (the struct) from the owl
+		set owl = activeTable[GetTriggerUnit()] 
+		call owl.destroy()
+	endfunction
+	
+	private function DeathConditions takes nothing returns boolean
+        return IsUnitInGroup(GetTriggerUnit(), Missileers)
+    endfunction
+	
+	private function Actions takes nothing returns nothing
         local location spellLoc
         local real angle 
-        local OwlData owl 
+        local OwlData owl
+		local unit u = GetTriggerUnit()
         
-        if (GetSpellAbilityId() == SPELL_ID) then
-            set spellLoc = GetSpellTargetLoc()
-            set angle = bj_RADTODEG * Atan2(GetLocationY(spellLoc) - GetUnitY(GetTriggerUnit()), GetLocationX(spellLoc) - GetUnitX(GetTriggerUnit()))
-            set owl = OwlData.create(GetTriggerUnit(), GetLocationX(spellLoc), GetLocationY(spellLoc), angle)
-            
-            call SetTimerData(owl.mover, integer(owl))
-            call TimerStart(owl.mover, MOVE_TIME, true, function MoveOwl)
-            
-            call RemoveLocation(spellLoc)
-        endif
+		set spellLoc = GetSpellTargetLoc()
+		set angle = bj_RADTODEG * Atan2(GetLocationY(spellLoc) - GetUnitY(u), GetLocationX(spellLoc) - GetUnitX(u))
+		set owl = OwlData.create(u, GetLocationX(spellLoc), GetLocationY(spellLoc), angle)
+		
+		call SetTimerData(owl.mover, integer(owl))
+		call TimerStart(owl.mover, MOVE_TIME, true, function MoveOwl)
+		
+		call RemoveLocation(spellLoc)
         
         set spellLoc = null 
-        
-        return false
+		set u = null 
+    endfunction
+
+    private function Conditions takes nothing returns boolean
+        return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function Init takes nothing returns nothing
-        local trigger EffectMissileerTrigger = CreateTrigger()
-        
-        call TriggerRegisterAnyUnitEventBJ(EffectMissileerTrigger, EVENT_PLAYER_UNIT_SPELL_EFFECT )
-        call TriggerAddCondition(EffectMissileerTrigger, Condition( function Conditions ) )
-        
-        set EffectMissileerTrigger = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ(EffectMissileerTrigger, EVENT_PLAYER_UNIT_DEATH )
-        call TriggerAddCondition(EffectMissileerTrigger,  Condition(function onDeath))
-        
-        set EffectMissileerTrigger = null
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, function DeathConditions, function DeathActions)
         
         //SETTING OUR GLOBALS
         set activeTable = HandleTable.create() //Create our spell's private Table for the bombers

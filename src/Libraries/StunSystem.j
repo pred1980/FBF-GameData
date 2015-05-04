@@ -29,7 +29,7 @@ library Stun
         loop
             exitwhen i < 0
             set s = Datas[i]
-            if (s.Duration <= 0 or GetUnitAbilityLevel(s.Target, BID_UNLIMITED_STUN) < 1) then
+			if (s.Duration <= 0 or GetUnitAbilityLevel(s.Target, BID_UNLIMITED_STUN) < 1) then
                 call s.destroy()
                 set Counter = Counter - 1
                 if (Counter < 0) then
@@ -113,9 +113,11 @@ library Stun
         //-------------------------------------------------------------------------------
         // Removes the unit from the group and removes stun.
         private method onDestroy takes nothing returns nothing
-            call GroupRemoveUnit(Stuns.Pivot, .Target)
+			call GroupRemoveUnit(Stuns.Pivot, .Target)
             call UnitRemoveAbility(.Target, BID_UNLIMITED_STUN)
             call DestroyEffect(.Effect)
+			
+			set .Target = null
         endmethod
     endstruct
 
@@ -197,4 +199,11 @@ library Stun
         endif
     endfunction
     
+	public function StopStun takes unit whichUnit returns nothing
+		local Stuns s = Stuns.Get(whichUnit)
+		
+		if (s != 0) then
+            call s.destroy()
+        endif
+	endfunction
 endlibrary

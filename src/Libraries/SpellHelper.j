@@ -10,13 +10,15 @@ library SpellHelper uses SimError, MiscFunctions, RestoreMana
 			return IsUnitEnemy(target, GetOwningPlayer(caster)) and not /*
 				*/ isUnitDead(target) and not /*
 				*/ IsUnitType(target, UNIT_TYPE_STRUCTURE) and not /*
-				*/ IsUnitType(target, UNIT_TYPE_MECHANICAL)
+				*/ IsUnitType(target, UNIT_TYPE_MECHANICAL) and not /*
+				*/ IsUnitInvulnerable(target)
 		endmethod
 		
 		static method isValidAlly takes unit target, unit caster returns boolean
 			return IsUnitAlly(target, GetOwningPlayer(caster)) and not /*
 				*/ isUnitDead(target) and not /*
 				*/ IsUnitType(target, UNIT_TYPE_STRUCTURE) and not /*
+				*/ IsUnitInvulnerable(target) and not /*
 				*/ IsUnitType(target, UNIT_TYPE_MECHANICAL) and /*
 				*/ target != caster
 		endmethod
