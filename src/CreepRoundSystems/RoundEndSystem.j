@@ -8,6 +8,8 @@ scope RoundEndSystem
 
 	private struct TeleportBack
 	
+		readonly static real MIN_DISTANCE = 1000
+	
 		private static method filterCondition takes nothing returns boolean
 			local unit u = GetFilterUnit()
 			local boolean b = false
@@ -38,16 +40,23 @@ scope RoundEndSystem
 		
 		private static method prepareTeleport takes nothing returns nothing
 			local unit u = GetEnumUnit()
-			local player p = GetOwningPlayer(u)
-			local integer pid = GetPlayerId(p)
-			local real x = GetRectCenterX(Homebase.get(pid))
-            local real y = GetRectCenterY(Homebase.get(pid))
-			local timer t = NewTimer()
+			local player p
+			local integer pid = 0
+			local real x = 0.00
+            local real y = 0.00
+			local timer t
 			
-			call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(u), GetUnitY(u)))
-			call SetUnitPosition(u, x, y)
-			call SetTimerData(t, pid)
-            call TimerStart(t, TELEPORT_DELAY, false, function thistype.onPanCamera)
+			if (Distance(GetUnitX(u), GetUnitY(u), x, y) > MIN_DISTANCE) then
+				set p = GetOwningPlayer(u)
+				set pid = GetPlayerId(p)
+				set x = GetRectCenterX(Homebase.get(pid))
+				set y = GetRectCenterY(Homebase.get(pid))
+				set t = NewTimer()
+				call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(u), GetUnitY(u)))
+				call SetUnitPosition(u, x, y)
+				call SetTimerData(t, pid)
+				call TimerStart(t, TELEPORT_DELAY, false, function thistype.onPanCamera)
+			endif
 			
 			set u = null
 		endmethod
@@ -60,6 +69,7 @@ scope RoundEndSystem
                 if Game.isPlayerInGame(i) then
 					call GroupEnumUnitsOfPlayer(ENUM_GROUP, Player(i), Condition(function thistype.filterCondition))
 					call ForGroup(ENUM_GROUP, function thistype.prepareTeleport)
+					call GroupRefresh(ENUM_GROUP)
 				endif
                 set i = i + 1
             endloop
