@@ -2,10 +2,11 @@ scope Cleave initializer init
     /*
      * Description: The Abominations brutal strikes hit several units at once, a bonus percentage of the damage. 
                     Theres a small chance to stun or knockback weaker units.
-     * Last Update: 09.11.2013
      * Changelog: 
-     *     09.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     22.03.2015: ATTACK_TYPE, DAMAGE_TYPE and WEAPON_TYPE specification
+     *     	09.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     	22.03.2015: ATTACK_TYPE, DAMAGE_TYPE and WEAPON_TYPE specification
+	 *		06.05.2015: Integrated SpellHelper for filtering
+						Set struct members to private
      *
      */
     globals
@@ -53,15 +54,25 @@ scope Cleave initializer init
     endfunction
 
     private struct Cleave
-        unit caster
-        integer level = 0
-        real damage
-        real radius
-        group targets
-        static thistype tempthis
+        private unit caster
+        private integer level = 0
+        private real damage
+        private real radius
+        private group targets
+        private static thistype tempthis = 0
         
         private  static method group_filter_callback takes nothing returns boolean
-            return IsUnitEnemy( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not IsUnitDead(GetFilterUnit()) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL) and IsUnitType(GetFilterUnit(), UNIT_TYPE_GROUND)
+			local unit u = GetFilterUnit()
+			local boolean b = false
+			
+			if (SpellHelper.isValidEnemy(u, .tempthis.caster) and /*
+			*/	IsUnitType(u, UNIT_TYPE_GROUND)) then
+				set b = true
+			endif
+			
+			set u = null
+			
+            return b
         endmethod
         
         private static method onDamageTarget takes nothing returns nothing
@@ -123,10 +134,6 @@ scope Cleave initializer init
             call ReleaseGroup( .targets )
             set .targets = null
             set .caster = null
-        endmethod
-        
-        private static method onInit takes nothing returns nothing
-            set .tempthis = 0
         endmethod
     endstruct
     

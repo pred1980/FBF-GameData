@@ -275,6 +275,8 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
          * Changelog: 
          *     	03.11.2013: Abgleich mit OE und der Exceltabelle
 		 *		29.04.2015: Integrated SpellHelper for filtering
+		 *		07.05.2015: Bugfix in the filter methods "onKill" (Main struct)
+							Not possible to use SpellHelper.isValidEnemy!!!
          *
          */
         globals
@@ -462,8 +464,8 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             endmethod
             
             method onKill takes unit killed returns nothing
-				if (SpellHelper.isValidEnemy(killed, owner)) then
-                    call ExtractedSoulMissile.create(killed, owner, lvl)
+				if IsUnitEnemy(killed, GetOwningPlayer(owner)) then
+					call ExtractedSoulMissile.create(killed, owner, lvl)
                 endif
             endmethod
                 
@@ -477,7 +479,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
 					if (SpellHelper.isValidEnemy(killed, owner) and /*
 					*/	SpellHelper.isValidEnemy(killed, killer) and /*
 					*/	GetOwningPlayer(killer) != null) then
-                        call ExtractedSoulMissile.create(killed, owner, lvl)
+						call ExtractedSoulMissile.create(killed, owner, lvl)
                     endif
                 endif
             endmethod
@@ -510,6 +512,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
          * Changelog: 
          *     	03.11.2013: Abgleich mit OE und der Exceltabelle
 		 *		29.04.2015: Integrated SpellHelper for filtering
+		 *		07.05.2015: Bugfix in the filter methods "corpseFilterMethod"
          *
          */
         globals
@@ -578,14 +581,22 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             static thistype temp = 0
             
             implement List
+			
+			private method onDestroy takes nothing returns nothing
+                call listRemove()
+                call SpawnZombies_UpdateZombieDamage(caster)
+                if count <= 0 then
+                    call PauseTimer(ticker)
+                endif
+            endmethod
             
             private static method corpseFilterMethod takes nothing returns boolean
                 local unit u = GetFilterUnit()
 				local boolean b = false
 				
 				if (SpellHelper.isUnitDead(u) or /*
-				*/	IsUnitZombie(u) and /*
-				*/	SpellHelper.isValidAlly(u, temp.caster)	and /*
+				*/	(IsUnitZombie(u) and /*
+				*/	SpellHelper.isValidAlly(u, temp.caster)) and /*
 				*/	t[u] == 0) then
                     set b = true
                 endif
@@ -595,22 +606,15 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                 return b
             endmethod
             
-            private method onDestroy takes nothing returns nothing
-                call listRemove()
-                call SpawnZombies_UpdateZombieDamage(caster)
-                if count <= 0 then
-                    call PauseTimer(ticker)
-                endif
-            endmethod
-            
             static method onExpire takes nothing returns nothing
                 local thistype this = first
-                loop
+                
+				loop
                     exitwhen this == 0
                     set counter = counter + TIMER_INTERVAL
                     if counter >= SOUL_RELEASE_INTERVAL then
                         if isZombie then
-                            if not IsUnitType(corpse, UNIT_TYPE_DEAD) then
+                            if not SpellHelper.isUnitDead(corpse) then
                                 set damageAllies = true
                                 set DamageType = SPELL
                                 call damageTarget(caster, corpse, GetWidgetLife(corpse) + 100)
@@ -630,6 +634,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                     endif
                     set this = next
                 endloop
+				
             endmethod
             
             static method release takes Main which returns boolean

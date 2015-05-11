@@ -7,6 +7,7 @@ scope Rage initializer init
 	 *      20.03.2015: Code refactoring
 	 *		13.04.2015: Code Refactoring
 						Integrated SpellHelper for damaging
+	 *		07.05.2015: Changed DamageType from PHYSICAL to SPELL to avoid an endless loop
      *
      */
     globals
@@ -20,8 +21,9 @@ scope Rage initializer init
     endglobals
     
     private function OnRage takes unit attacker, unit target, real damage returns nothing
-		set DamageType = PHYSICAL
-		call SpellHelper.damageTarget(attacker, target, damage * BASE_DAMAGE_MODIFIER, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+		//Do NOT change DamageType to PHYSICAL or you get endless loop
+		set DamageType = SPELL
+		call SpellHelper.damageTarget(attacker, target, damage * BASE_DAMAGE_MODIFIER, false, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
     endfunction
 
     private function Actions takes unit damagedUnit, unit damageSource, real damage returns nothing

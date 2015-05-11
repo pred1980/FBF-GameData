@@ -3,7 +3,6 @@ scope PlagueCloud initializer init
      * Description: Each unit that comes in range of Blight Cleaver has a chance to get infected with the plague, 
                     taking damage over time. Each infected unit also has a low chance to infect others. 
                     The plague disappears after a few seconds if the unit is not reinfected.
-     * Last Update: 11.11.2013
      * Changelog: 
      *     11.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     24.03.2015: Integrated SpellHelper for detecting a valid target

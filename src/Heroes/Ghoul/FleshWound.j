@@ -102,9 +102,8 @@ scope FleshWound initializer init
     endstruct
 
     private function Actions takes unit damagedUnit, unit damageSource, real damage returns nothing
-        local FleshWound fw = 0
+        local FleshWound fw = FleshWound.getForUnit(damageSource)
         
-        set fw = FleshWound.getForUnit(damageSource)
         if (GetUnitAbilityLevel(damageSource, SPELL_ID) > 0 and /*
 		*/	SpellHelper.isValidEnemy(damagedUnit, damageSource) and /*
 		*/	DamageType == PHYSICAL ) then

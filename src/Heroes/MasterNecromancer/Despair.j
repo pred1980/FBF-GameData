@@ -36,12 +36,12 @@ scope Despair initializer init
     endfunction
     
     private struct Despair
-        unit target
-        integer advantage = 0
-        integer level = 0
-        timer intervalTimer
-        timer durationTimer
-        static thistype tempthis = 0
+        private unit target
+        private integer advantage = 0
+        private integer level = 0
+        private timer intervalTimer
+        private timer durationTimer
+        private static thistype tempthis = 0
 		
 		method onDestroy takes nothing returns nothing
             call UnitRemoveAbility(.target, BUFSPEL_ID)

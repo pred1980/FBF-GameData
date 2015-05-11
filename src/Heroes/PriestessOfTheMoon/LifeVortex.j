@@ -49,7 +49,17 @@ scope LifeVortex initializer init
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-			return SpellHelper.isValidEnemy(GetFilterUnit(), .tempthis.caster)
+			local unit u = GetFilterUnit()
+			local boolean b = false
+			
+			if (SpellHelper.isValidEnemy(u, .tempthis.caster) and not /*
+			*/	SpellHelper.isUnitImmune(u)) then
+				set b = true
+			endif
+			
+			set u = null
+			
+			return b
         endmethod
         
         static method onDamageTarget takes nothing returns nothing

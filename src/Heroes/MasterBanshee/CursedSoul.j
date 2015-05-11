@@ -52,16 +52,16 @@ scope CursedSoul initializer init
     endfunction
     
     private struct CursedSoul
-        unit caster
-        unit target
-        unit soul
-        integer level = 0
-        real dx
-        real dy
-        timer t
-        effect fx
+        private unit caster
+        private unit target
+        private unit soul
+        private integer level = 0
+        private real dx
+        private real dy
+        private timer t
+        private effect fx
         
-        static thistype tempthis
+        static thistype tempthis = 0
         
 		method onDestroy takes nothing returns nothing
             set .caster = null
@@ -70,6 +70,8 @@ scope CursedSoul initializer init
             set .t = null
             call DestroyEffect(.fx)
             set .fx = null
+			call GroupRefresh(targets)
+			call GroupRefresh(taggedTargets)
         endmethod
 
         method getRandomEnemy takes unit c, group g, real range returns unit
@@ -77,18 +79,17 @@ scope CursedSoul initializer init
 			local boolean b = false
 
             loop
-				exitwhen (u == null or b == true)
-                set u = FirstOfGroup(g)
+				set u = FirstOfGroup(g)
 				if (SpellHelper.isValidEnemy(u, c) and not /*
+				*/  IsUnitType(u, UNIT_TYPE_FLYING) and not /*
 				*/  IsUnitInGroup(u, taggedTargets)) then
 					set b = true
 				endif
+				exitwhen (u == null or b == true)
                 call GroupRemoveUnit(g, u)
             endloop
 			
-			call GroupRefresh(g)
-			
-            return u
+			return u
         endmethod
         
         static method onWaitNearbyEnemy takes nothing returns nothing
@@ -124,7 +125,7 @@ scope CursedSoul initializer init
             local boolean b = false
 			local integer level = GetUnitAbilityLevel(this.caster, SPELL_ID)
             
-            if (IsUnitInRange(this.soul, this.target, 50.0) or IsUnitDead(this.soul) or IsUnitDead(this.target)) then
+            if (IsUnitInRange(this.soul, this.target, 50.0) or SpellHelper.isUnitDead(this.soul) or SpellHelper.isUnitDead(this.target)) then
                 set b = true
                 call ReleaseTimer(GetExpiredTimer())
             else
@@ -133,7 +134,7 @@ scope CursedSoul initializer init
             if b then
                 call GroupRemoveUnit(taggedTargets, this.target)
                 
-                if (IsUnitDead(this.target) and not IsUnitDead(this.soul)) then
+                if (SpellHelper.isUnitDead(this.target) and not SpellHelper.isUnitDead(this.soul)) then
                     call DestroyEffect(AddSpecialEffect(SPIRIT_EFFECT_DEAD, GetUnitX(this.soul), GetUnitY(this.soul)))
                     call RemoveUnit(this.soul)
                 else

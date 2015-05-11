@@ -1,4 +1,9 @@
 scope Dialog
+	/*
+     * Changelog: 
+     *     	06.05.2015: Changed question and switches Yes/no
+	 *
+     */
 	
 	struct ShowTutorialsDialog
 		private static boolean array show[12]
@@ -13,10 +18,10 @@ scope Dialog
 			local integer pid = GetPlayerId(GetTriggerPlayer())
 			local integer clickedButton = d.GetResult()
 			
-			if (clickedButton == 89) then //yes
-				set show[pid] = true
-			else
+			if (clickedButton == 89) then
 				set show[pid] = false
+			else
+				set show[pid] = true
 			endif
 			
 			set count = count + 1
@@ -31,7 +36,7 @@ scope Dialog
 		static method initialize takes nothing returns nothing
 			local Dialog d = Dialog.create()
 			
-			call d.SetMessage("Do you need any help?")
+			call d.SetMessage("Have you played the game before?")
 			
 			call d.AddButton("Yes",  HK_Y)
 			call d.AddButton("No", HK_N)

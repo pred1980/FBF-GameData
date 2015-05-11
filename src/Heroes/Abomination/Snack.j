@@ -4,103 +4,129 @@ scope Snack initializer init
 	                equal amount. 
                     The enemy cannot move while being eaten. If the victim dies in the process, Blight Cleaver will 
                     permanently gain 3 points in Strength.
-     * Last Update: 11.11.2013
      * Changelog: 
-     *     11.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     24.03.2015: Check immunity on spell cast
+     *     	11.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     	24.03.2015: Check immunity on spell cast
+	 *     	06.05.2015: Integrated RegisterPlayerUnitEvent
+						Integrated SpellHelper for damaging and filtering
+						Code Refactoring
      *
      */
-    globals
+	 
+	private keyword Snack
+    
+	globals
         private constant integer SPELL_ID = 'A06L'
 		private constant real INTERVAL = 1.0
+		private constant integer ITERATION = 5
 		//Stun Effect for Pause Target
         private constant string STUN_EFFECT = ""
         private constant string STUN_ATT_POINT = ""
         private constant real STUN_DURATION = 5.0
+				
+		// Dealt damage configuration
+        private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
+        private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
+        private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
 		
-        private boolean cancel
-        private hashtable unitSpellData = InitHashtable()
+		private Snack array spellForUnit
+		
         private real baseDamage = 70
         private real damageModifier = 0.5
-        private integer iteration = 5
-
     endglobals
 
     private struct Snack
-        unit caster
-        unit target
-        real damage
-        integer count
+        private unit caster
+        private unit target
+        private real damage
+        private integer count = 0
+		private timer t
+		private real x
+		private real y
         
         method onDestroy takes nothing returns nothing
+			call ReleaseTimer(.t)
             call UnitEnableAttack(.caster)
+			set spellForUnit[GetUnitId(.caster)] = 0
             set .caster = null
             set .target = null
         endmethod
+		
+		static method getForUnit takes unit u returns thistype
+			return spellForUnit[GetUnitId(u)]
+		endmethod
+		
+		private static method onSnack takes nothing returns nothing
+			local thistype this = GetTimerData(GetExpiredTimer())
+			
+			if (this.count == 0 or /*
+			*/	SpellHelper.isUnitDead(this.caster) or /*
+			*/	SpellHelper.isUnitDead(this.target) or /*
+			*/	(GetUnitX(this.caster) != this.x and /*
+			*/   GetUnitY(this.caster) != this.y)) then
+				call this.destroy()
+			else
+				set this.count = this.count - 1
+				set DamageType = PHYSICAL
+				call SpellHelper.damageTarget(this.caster,this.target,this.damage, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+				
+				call SetUnitAnimation(this.caster, "stand channel" )
+				call SetUnitState(this.caster, UNIT_STATE_LIFE, GetUnitState(this.caster, UNIT_STATE_LIFE) + this.damage)
+				
+				if (SpellHelper.isUnitDead(this.target) and not /*
+				*/  SpellHelper.isUnitDead(this.caster)) then
+					call SetHeroStr(this.target,GetHeroStr(this.target,false) - 3,true)
+					call SetHeroStr(this.caster,GetHeroStr(this.caster,false) + 3,true)
+				endif
+			endif
+		endmethod
         
         static method create takes unit caster, unit target returns thistype
-            local thistype data = thistype.allocate()
+            local thistype this = thistype.allocate()
 			
-            set data.caster = caster
-            set data.target = target
-            set data.count = iteration
-            set data.damage = baseDamage + ((baseDamage * damageModifier) * GetUnitAbilityLevel(caster, SPELL_ID))
+			set .t = NewTimer()
+            set .caster = caster
+            set .target = target
+            set .count = ITERATION
+			set .x = GetUnitX(.caster)
+			set .y = GetUnitY(.caster)
+            set .damage = baseDamage + ((baseDamage * damageModifier) * GetUnitAbilityLevel(.caster, SPELL_ID))
+			set spellForUnit[GetUnitId(.caster)] = this
             //Pause Unit / Used Stun System
             call Stun_UnitEx(target, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
-            call UnitDisableAttack(caster)
-            return data
+            call UnitDisableAttack(.caster)
+			
+			call SetTimerData(.t, this)
+			call TimerStart(.t, INTERVAL, true, function thistype.onSnack)
+			
+            return this
         endmethod
         
     endstruct
-
-    private function timer_callback takes nothing returns nothing
-        local timer t = GetExpiredTimer()
-        local boolean dead
-        local Snack data = LoadIntegerBJ(1,GetHandleId(t),unitSpellData)
-        
-		set data.count = data.count - 1
-        
-        set DamageType = SPELL
-        call DamageUnit(data.caster,data.target,data.damage,false)
-        if GetUnitState(data.caster, UNIT_STATE_LIFE) > 0 then
-            call SetUnitAnimation(data.caster, "stand channel" )
-            call SetUnitState(data.caster, UNIT_STATE_LIFE, GetUnitState(data.caster, UNIT_STATE_LIFE) + data.damage)
-        endif
-        if cancel or data.count == 0 then
-            if GetUnitState(data.target,UNIT_STATE_LIFE) <= 0 and GetUnitState(data.caster,UNIT_STATE_LIFE) > 0 then
-                call SetHeroStr(data.target,GetHeroStr(data.target,false) - 3,true)
-                call SetHeroStr(data.caster,GetHeroStr(data.caster,false) + 3,true)
-            endif
-            call data.destroy()
-            call DestroyTimer(t)
-            set t = null
-        else
-            call TimerStart(t, 1.0, false, function timer_callback)
-        endif
+	
+	private function EndConditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID 
+    endfunction
+	
+	private function EndActions takes nothing returns nothing
+		local Snack s = Snack.getForUnit(GetTriggerUnit())
+		
+		if s != 0 then
+			call s.destroy()
+		endif
     endfunction
 
-    private function Conditions takes nothing returns boolean
+    private function StartConditions takes nothing returns boolean
 		return GetSpellAbilityId() == SPELL_ID and not /*
 		*/	   SpellHelper.isImmuneOnSpellCast(SPELL_ID, GetTriggerUnit(), GetSpellTargetUnit(), GetSpellTargetX(), GetSpellTargetY())
     endfunction
 
-    private function ActionsStart takes nothing returns nothing
-        local Snack s
-        local timer t = CreateTimer()
-		
-        set s = Snack.create(GetTriggerUnit(),GetSpellTargetUnit())
-        set cancel = false
-        call SaveIntegerBJ(s, 1 , GetHandleId(t), unitSpellData)
-        call TimerStart(t,INTERVAL,false,function timer_callback)
-    endfunction
-
-    private function ActionsEnd takes nothing returns nothing
-        set cancel = true
+    private function StartActions takes nothing returns nothing
+        call Snack.create(GetTriggerUnit(), GetSpellTargetUnit())
     endfunction
 
     private function init takes nothing returns nothing
-        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function ActionsStart)
-		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_ENDCAST, function Conditions, function ActionsEnd)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function StartConditions, function StartActions)
     endfunction
 
 endscope

@@ -163,7 +163,8 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         local unit u = GetEnumUnit()
 		
 		call DestroyEffect(AddSpecialEffect(START_BURROW_EFFECT, GetUnitX(u), GetUnitY(u)))
-        call ShowUnit(u,false)
+        call UnitDisableAttack(u)
+		call ShowUnit(u,false)
         set u = null
     endfunction
     
@@ -174,6 +175,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         call SetUnitX(u,tempX)
         call SetUnitY(u,tempY)
         call ShowUnit(u,true)
+		call UnitEnableAttack(u)
         set u = null
     endfunction
     
@@ -196,7 +198,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
             set u = GroupPickRandomUnit(gr)
             exitwhen u == null or not(IsCarrion(u) or lord == u or IsUnitDead(u))
             call GroupRemoveUnit(gr,u)
-            set u = null
+			set u = null
         endloop
         
         if u != null then
@@ -247,7 +249,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
                 call UnitAddAbility(grub,MORPH_ID_GRUB)
             endif
             call GroupAddUnit(grubs,grub)
-            set grub = null
+			set grub = null
         endif
         set u = null
         return false

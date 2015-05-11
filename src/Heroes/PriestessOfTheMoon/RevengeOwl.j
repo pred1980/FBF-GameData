@@ -144,10 +144,10 @@ scope RevengeOwl initializer Init
     //this takes care of each missile individualy. So if the owl dies while bombing
     //the released missiles will still fall and damage the enemies !
     private struct MissileData
-        unit missile 
-        real bombX
-        real bombY
-        timer t
+        private unit missile 
+        private real bombX
+        private real bombY
+        private timer t
         
         static method bombFall takes nothing returns nothing
             local MissileData data = MissileData(GetTimerData(GetExpiredTimer())) 
@@ -185,7 +185,6 @@ scope RevengeOwl initializer Init
         endmethod
         
         method onDestroy takes nothing returns nothing
-            
             call MissileEffect(.missile)
             call ReleaseTimer(.t)
             call KillUnit(.missile)

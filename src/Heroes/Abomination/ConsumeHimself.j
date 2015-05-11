@@ -1,7 +1,6 @@
 scope ConsumeHimself initializer init
     /*
      * Description: The Abomination consumes a chunk of his body to regenerate some hitpoints over 10 seconds.
-     * Last Update: 09.11.2013
      * Changelog: 
      *     09.11.2013: Abgleich mit OE und der Exceltabelle
      *

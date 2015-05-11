@@ -159,7 +159,9 @@ scope StarImpact initializer init
         static method damageFilterEnum takes nothing returns boolean
             local unit u = GetFilterUnit()
 			
-			if (SpellHelper.isValidEnemy(u, temp.caster) and not IsUnitType(u, UNIT_TYPE_FLYING)) then
+			if (SpellHelper.isValidEnemy(u, temp.caster) and not /*
+			*/  IsUnitType(u, UNIT_TYPE_FLYING)) and not /*
+			*/  SpellHelper.isUnitImmune(u)	then
 				call StunUnitTimed(u, STUN_DURATION[temp.lvl])
                 set DamageType = SPELL
                 call damageTarget(temp.caster, u, STAR_IMPACT_DAMAGE[temp.lvl])

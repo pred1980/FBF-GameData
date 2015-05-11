@@ -1,6 +1,6 @@
-//*********************Disable/Enable attack by Elphis v0.0.3*********************
+//*********************Disable/Enable attack by Elphis v0.0.4*********************
 //*********************Allow you disable/enable attack staus of unit*********************
-//*********************API:
+//                      API:
 //                          - function DisableAttack takes unit u returns nothing
 //                          **Allow you disable attack of unit**
 //                          - function EnableAttack takes unit u returns nothing
@@ -11,7 +11,6 @@
 //                          **Enable attack of unit in wide Area**
 //********************************************************************************************************
 //********************************************************************************************************
-//*************************************************************************************
 //          - Installation:
 //                                - Import/copy the required libraries and Attack Staus code to your map
 //                                - Copy DummyUnit of this map into your map
@@ -26,16 +25,19 @@ library DisableAttack initializer Init
     
     globals
         private     constant        integer     ORDER          = 0xD0270
-        private     constant        integer     DISABLE_ABI_ID = 'DISA' // Rawcode of Ability Disable, changes if needed
+        private     constant        integer     SPELL_ID       = 'DISA' // Rawcode of Ability Disable, changes if needed
         private     constant        integer     BUFF_ID        = 'BDIS' // Rawcode of Buff Disable, changes if needed
         private     constant        integer     DUMMY_ID       = 'e00D' //Dummy rawcode
         
+        private                     group       Swap           = CreateGroup()
+        private                     group       Temp
+        
         /*=Non - Configurables=*/
-        private unit Dummy
+        private                     unit        Dummy
     endglobals
 
     function UnitDisableAttack takes unit u returns boolean
-        if GetUnitAbilityLevel(u,BUFF_ID) > 0x0 then
+        if GetUnitAbilityLevel(u,BUFF_ID) > 0 then
             return false
         endif
         call SetUnitX(Dummy,GetUnitX(u))
@@ -48,24 +50,54 @@ library DisableAttack initializer Init
         return UnitRemoveAbility(u,BUFF_ID)
     endfunction
     
-    private function GroupDisable takes nothing returns nothing
-        call UnitDisableAttack(GetEnumUnit())
-    endfunction
-    
-    private function GroupEnable takes nothing returns nothing
-        call UnitEnableAttack(GetEnumUnit())
+    private function SwapGroup takes group Group returns nothing
+        set Temp = Group
+        set Group = Swap
+        set Swap = Temp
     endfunction
     
     function GroupDisableAttack takes group g returns nothing
-        call ForGroup(g, function GroupDisable)
+        local unit FoG
+        
+		loop
+            set FoG=FirstOfGroup(g)
+            exitwhen FoG==null
+            //
+            call UnitDisableAttack(FoG)
+            //
+            call GroupAddUnit(Swap,FoG)
+            call GroupRemoveUnit(g,FoG)
+        endloop
+        
+		set FoG = null
+		
+        call SwapGroup(g)
     endfunction
     
     function GroupEnableAttack takes group g returns nothing
-        call ForGroup(g, function GroupEnable)
+        local unit FoG
+        loop
+            set FoG=FirstOfGroup(g)
+            exitwhen FoG==null
+            //
+            call UnitEnableAttack(FoG)
+            //
+            call GroupAddUnit(Swap,FoG)
+            call GroupRemoveUnit(g,FoG)
+        endloop
+		
+		set FoG = null
+        
+        call SwapGroup(g)
     endfunction
     
     function Init takes nothing returns nothing
+
         set Dummy = CreateUnit(Player(15),DUMMY_ID,0.,0.,0.)
+        
+        if GetUnitAbilityLevel(Dummy,SPELL_ID) == 0 then
+            call UnitAddAbility(Dummy,SPELL_ID)
+        endif
     endfunction
 
 endlibrary

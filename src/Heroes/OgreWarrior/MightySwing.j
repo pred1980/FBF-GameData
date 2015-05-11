@@ -3,9 +3,10 @@ scope MightySwing initializer init
      * Description: The Ogre Warrior attacks with great might, causing his attacks to damage nearby enemies 
                     in addition to his main target. The further the enemy is away from the Ogre the less damage it takes.
      * Changelog: 
-     *     09.01.2014: Abgleich mit OE und der Exceltabelle
-	 *     24.04.2015: Integrated RegisterPlayerUnitEvent
-	                   Integrated SpellHelper for filtering and damaging
+     *     	09.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     	24.04.2015: Integrated RegisterPlayerUnitEvent
+						Integrated SpellHelper for filtering and damaging
+	 *		11.05.2015:	set DamageType to SPELL to avoid an endless loop and lag while attack
      */
     private keyword MightySwing
     
@@ -25,11 +26,11 @@ scope MightySwing initializer init
     endglobals
     
     private function MainSetup takes nothing returns nothing
-        set SPLASH_BONUS[1] = 15
-        set SPLASH_BONUS[2] = 30
-        set SPLASH_BONUS[3] = 45
-        set SPLASH_BONUS[4] = 60
-        set SPLASH_BONUS[5] = 75
+        set SPLASH_BONUS[1] = 15 //percent
+        set SPLASH_BONUS[2] = 30 //percent
+        set SPLASH_BONUS[3] = 45 //percent
+        set SPLASH_BONUS[4] = 60 //percent
+        set SPLASH_BONUS[5] = 75 //percent
         
         set SPLASH_REDUCER[0] = 0
         set SPLASH_REDUCER[1] = 3
@@ -55,14 +56,32 @@ scope MightySwing initializer init
 			return spellForUnit[GetUnitId(u)]
 		endmethod
 		
-		method onAttack takes unit damageSource, unit damagedUnit, real damage returns nothing
-            set .tempthis.damage = damage
-            call GroupEnumUnitsInRange(.targets, GetUnitX(damageSource), GetUnitY(damageSource), SPLASH_RADIUS[4], function thistype.group_filter_callback)
-            call GroupRemoveUnit(.targets, damagedUnit)
-            call ForGroup(.targets, function thistype.onDamageTarget)
-		endmethod
+		static method onDamageTarget takes nothing returns nothing
+            local unit u = GetEnumUnit()
+            local integer i = 0
+            local real cX = GetUnitX(.tempthis.attacker)
+            local real cY = GetUnitY(.tempthis.attacker)
+            local real tX = GetUnitX(u)
+            local real tY = GetUnitY(u)
+            local real distance = DistanceBetweenCords(cX, cY, tX, tY)
+            local real damage = 0.00
+            local integer maxIndex = 5
+            
+			loop
+                exitwhen i > 4
+                    if distance <= SPLASH_RADIUS[i] then
+                        set damage = (.tempthis.damage * (SPLASH_BONUS[.tempthis.level] - SPLASH_REDUCER[i])) / 100
+                        set DamageType = SPELL
+						call SpellHelper.damageTarget(.tempthis.attacker, u, damage, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+                        set i = maxIndex
+                    endif
+                set i = i + 1
+            endloop
+            
+            set u = null
+        endmethod
 		
-	    static method group_filter_callback takes nothing returns boolean
+		private static method group_filter_callback takes nothing returns boolean
 			local unit u = GetFilterUnit()
 			local boolean b = false
 			
@@ -75,35 +94,14 @@ scope MightySwing initializer init
 			
 			return b
 	    endmethod
-        
-        static method onDamageTarget takes nothing returns nothing
-            local unit u = GetEnumUnit()
-            local integer i = 0
-            local real cX = GetUnitX(.tempthis.attacker)
-            local real cY = GetUnitY(.tempthis.attacker)
-            local real tX = GetUnitX(u)
-            local real tY = GetUnitY(u)
-            local real distance = DistanceBetweenCords(cX, cY, tX, tY)
-            local real damage = 0.00
-            local integer maxIndex = 5
-            
-            loop
-                exitwhen i > 4
-                    if distance <= SPLASH_RADIUS[i] then
-                        set damage = (.tempthis.damage * (SPLASH_BONUS[.tempthis.level] - SPLASH_REDUCER[i])) / 100
-                        set DamageType = PHYSICAL
-						call SpellHelper.damageTarget(.tempthis.attacker, u, damage, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
-                        call GroupRemoveUnit(.tempthis.targets, u)
-                        set i = maxIndex
-                    endif
-                set i = i + 1
-            endloop  
-            
-            set u = null
-            if CountUnitsInGroup(.tempthis.targets) == 0 then
-                call GroupRefresh(.tempthis.targets)
-            endif
-        endmethod
+		
+		method onAttack takes unit damageSource, unit damagedUnit, real damage returns nothing
+            set .tempthis.damage = damage
+            call GroupEnumUnitsInRange(.targets, GetUnitX(damageSource), GetUnitY(damageSource), SPLASH_RADIUS[4], function thistype.group_filter_callback)
+            call GroupRemoveUnit(.targets, damagedUnit)
+            call ForGroup(.targets, function thistype.onDamageTarget)
+			call GroupRefresh(.targets)
+		endmethod
 		
 		static method create takes unit damageSource returns thistype
             local thistype this = thistype.allocate()
@@ -126,7 +124,8 @@ scope MightySwing initializer init
     private function DamageResponseActions takes unit damagedUnit, unit damageSource, real damage returns nothing
         local MightySwing ms = 0
         
-        if ( GetUnitAbilityLevel(damageSource, SPELL_ID) > 0 and DamageType == PHYSICAL ) then
+        if (GetUnitAbilityLevel(damageSource, SPELL_ID) > 0 and /*
+		*/	DamageType == PHYSICAL) then
 			set ms = MightySwing.getForUnit(damageSource)
 			if ms == 0 then
 				set ms = MightySwing.create( damageSource )
@@ -137,11 +136,10 @@ scope MightySwing initializer init
     endfunction
     
     private function LearnActions takes nothing returns nothing
-        local MightySwing ms = 0
         local unit u = GetTriggerUnit()
-        
-        set ms = MightySwing.getForUnit(u)
-		if ms == null then
+		local MightySwing ms = MightySwing.getForUnit(u)
+
+		if ms == 0 then
 			set ms = MightySwing.create(u)
 		else
 			call ms.onLevelUp(u)

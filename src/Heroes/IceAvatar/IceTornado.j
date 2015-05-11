@@ -3,13 +3,12 @@ scope IceTornado initializer init
      * Description: The Cold Jester summons a frightful twister of frozen shrapnels around himself, 
                     hurting every enemy unit standing in his way.
      * Changelog: 
-     *     27.10.2013: Abgleich mit OE und der Exceltabelle
-	 *     20.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + 
-	                   Spell-Immunity-Check in the "DamageTargets method"
-	 *     17.04.2015: Integrated RegisterPlayerUnitEvent
-	                   Integrated SpellHelper for damaging and filtering					   
-     *
-	 * Note: Might still leak somewhere (~ 4 Handles per cast)
+     *     	27.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     	20.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + 
+						Spell-Immunity-Check in the "DamageTargets method"
+	 *     	17.04.2015: Integrated RegisterPlayerUnitEvent
+						Integrated SpellHelper for damaging and filtering
+	 *		08.05.2015:	Bugfix: onDestroy()
      */
     globals
         private constant integer SPELL_ID = 'A04J'
@@ -59,40 +58,39 @@ scope IceTornado initializer init
     endfunction
 
     private struct Tornado
-        unit caster
-        unit dummy
-        group targets
-        real rx
-        real ry
-        timer durationTimer
-        timer intervalTimer
-        integer level
+        private unit caster
+        private unit dummy
+        private group targets
+        private real rx
+        private real ry
+        private timer durationTimer
+        private timer intervalTimer
+        private integer level = 0
         
-        static thistype tempthis
-        static group temptargets
+        private static thistype tempthis = 0
+		
+		method onDestroy takes nothing returns nothing
+            call RemoveUnit( .dummy )
+            call ReleaseTimer( .durationTimer )
+            call ReleaseTimer( .intervalTimer )
+			set .caster = null
+			set .dummy = null
+        endmethod
+		
+		private static method filter takes nothing returns boolean
+			return SpellHelper.isValidEnemy(GetFilterUnit(), .tempthis.caster)
+		endmethod
         
-        static method DamageTargets takes nothing returns boolean
-            local unit u = GetFilterUnit()
-            
-			if (SpellHelper.isValidEnemy(u, .tempthis.caster)) and not /*
-			*/  IsUnitInGroup(u, .tempthis.targets) then
-				set DamageType = PHYSICAL
-				call SpellHelper.damageTarget(.tempthis.caster, u, DAMAGE[.tempthis.level], true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
-				call DestroyEffect(AddSpecialEffect(EFFECT_ID, GetUnitX(u), GetUnitY(u)))
-				
-				return true
-			endif
-
-            set u = null
+        private static method damageTargets takes nothing returns nothing
+            local unit u = GetTriggerUnit()
 			
-            return false
-        endmethod
+			set DamageType = SPELL
+			call SpellHelper.damageTarget(.tempthis.caster, u, DAMAGE[.tempthis.level], false, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+			call DestroyEffect(AddSpecialEffect(EFFECT_ID, GetUnitX(u), GetUnitY(u)))
+			set u = null
+		endmethod
         
-        static method RenewGroup takes nothing returns nothing
-            call GroupAddUnit(.tempthis.targets,GetEnumUnit())
-        endmethod
-        
-        static method Interval takes nothing returns nothing
+        private static method interval takes nothing returns nothing
             local thistype this = GetTimerData(GetExpiredTimer())
             local real rxold = this.rx
             local real ryold = this.ry
@@ -109,52 +107,39 @@ scope IceTornado initializer init
             set rxold = this.rx + GetUnitX(this.caster)
             set ryold = this.ry + GetUnitY(this.caster)
             call SetUnitPosition(this.dummy, rxold, ryold)
-            //Call Damage Function for new targets
-            set .tempthis = this
-            call GroupEnumUnitsInRange(.temptargets, rxold, ryold, AOE_RANGE, Condition(function Tornado.DamageTargets))
-            call GroupClear(this.targets)
-            call ForGroup(.temptargets, function thistype.RenewGroup) //Set the contents of the target group to the units at the moment inside the tornado (targets=temptargets doesn't work thanks to pointers)
+        endmethod
+		
+		private static method endDuration takes nothing returns nothing
+            local thistype this = GetTimerData(GetExpiredTimer())
+            call this.destroy()
         endmethod
         
         static method create takes unit c returns thistype
             local thistype this = thistype.allocate()
             local real theta = GetUnitFacing(c) * bj_DEGTORAD
+			local trigger t = CreateTrigger()
             
             set .caster = c
             set .level = GetUnitAbilityLevel(c, SPELL_ID) - 1
             set .targets = NewGroup()
-            set .rx = CRCL_RADIUS*Cos(theta)
-            set .ry = CRCL_RADIUS*Sin(theta)
+            set .rx = CRCL_RADIUS * Cos(theta)
+            set .ry = CRCL_RADIUS * Sin(theta)
             set .dummy = CreateUnit(GetOwningPlayer(.caster),DUMMY_ID,GetUnitX(.caster),GetUnitY(.caster),0)
             call SetUnitScale( .dummy, 0.5, 0.5, 0.5 )
+			call TriggerRegisterUnitInRange(t, .dummy, AOE_RANGE, Condition(function thistype.filter))
+			call TriggerAddAction(t, function thistype.damageTargets)
             
+			set .tempthis = this
             set .durationTimer = NewTimer()
             set .intervalTimer = NewTimer()
             call SetTimerData( .durationTimer , this )
             call SetTimerData( .intervalTimer , this )
-            call TimerStart(.intervalTimer, TMR_INTERVAL,true, function thistype.Interval)
-            call TimerStart(.durationTimer, DURATION[.level],false, function thistype.EndDuration)
+            call TimerStart(.intervalTimer, TMR_INTERVAL, true, function thistype.interval)
+            call TimerStart(.durationTimer, DURATION[.level], false, function thistype.endDuration)
             
+			set t = null
+			
             return this
-        endmethod
-        
-        static method EndDuration takes nothing returns nothing
-            local thistype this = GetTimerData(GetExpiredTimer())
-            call this.destroy()
-        endmethod
-        
-        method onDestroy takes nothing returns nothing
-			set .caster = null
-			set .dummy = null
-            call ReleaseGroup( .targets )
-            call RemoveUnit( .dummy )
-            call ReleaseTimer( .durationTimer )
-            call ReleaseTimer( .intervalTimer )
-        endmethod
-        
-        static method onInit takes nothing returns nothing
-            set .tempthis = 0
-            set .temptargets = NewGroup()
         endmethod
     endstruct
 

@@ -3,11 +3,12 @@ scope VampireBlood initializer Init
      * Description: The Dread Lord spills his own blood into a target area, 
 	                enchanting allied units with a life-draining attack.
      * Changelog: 
-     *     15.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     26.11.2013: Umbau auf xemissile 
-	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
-	 *     04.04.2015: Integrated RegisterPlayerUnitEvent
-	                   Integrated SpellHelper for filtering and damaging
+     *     	15.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     	26.11.2013: Umbau auf xemissile 
+	 *     	19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     	04.04.2015: Integrated RegisterPlayerUnitEvent
+						Integrated SpellHelper for filtering and damaging
+	 *		07.05.2015: Fixed a bug with the current level
      */
     globals
         private constant integer SPELL_ID = 'A06V'
@@ -103,7 +104,7 @@ scope VampireBlood initializer Init
             set this.scale = MISSILE_SCALE
 			set this.caster = caster
             set this.target = target
-            set this.level = GetUnitAbilityLevel(caster, SPELL_ID) + 1
+            set this.level = GetUnitAbilityLevel(caster, SPELL_ID)
 			
 			call this.launch(MISSILE_SPEED, GetRandomReal(ARC_MIN, ARC_MAX))
 			
@@ -119,7 +120,7 @@ scope VampireBlood initializer Init
         method onHit takes nothing returns nothing
             local unit d
 			
-			if not IsUnitDead(.target) then
+			if not SpellHelper.isUnitDead(.target) then
                 set d = CreateUnit(GetOwningPlayer(.caster), DUMMY_ID, GetUnitX(.target), GetUnitY(.target), GetUnitFacing(.target))
                 call UnitAddAbility(d, BUFFSPELL)
                 call SetUnitAbilityLevel(d, BUFFSPELL, .level)
