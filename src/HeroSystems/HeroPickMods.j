@@ -125,7 +125,7 @@ scope HeroPickMods
                     exitwhen i >= bj_MAX_PLAYERS
                     if not BaseMode.hasPicked[i] and Game.isPlayerInGame(i) then
                         set randomIndex = BaseMode.getRandomHero()
-                        loop
+						loop
                             exitwhen BaseMode.onEnterFilter(GET_HERO_PICK_UNIT(i), randomIndex)
                             set randomIndex = BaseMode.getRandomHero()
                         endloop

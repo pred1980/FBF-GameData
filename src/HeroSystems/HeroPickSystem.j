@@ -125,7 +125,7 @@ scope HeroPickSystem
             endif
         endmethod
         
-        /* Entfernt den Helden vom Spielfeld, sobald er das Spiel verl?sst */
+        /* Entfernt den Helden vom Spielfeld, sobald er das Spiel verlässt */
         static method removeHero takes integer pid returns nothing
             call RemoveUnit(.pickedHero[pid])
         endmethod
@@ -174,8 +174,8 @@ scope HeroPickSystem
 							if (ShowTutorialsDialog.ForPlayer(i)) then
 								call HeroPickTutorial.create(Player(i), ap.getHeroPickTimer())
 							endif
-							call CREATE_HERO_PICK_UNIT(i)
 						endif
+						call CREATE_HERO_PICK_UNIT(i)
 					endif
 				set i = i + 1
 			endloop

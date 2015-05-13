@@ -197,7 +197,7 @@ scope HeroPickInit
         
         /*
          * Start Positionen der Helden nach dem
-         * sie ausgew?hlt wurden, heisst in der
+         * sie ausgewählt wurden, heisst in der
          * jeweiligen Basis des Spielers
          */
         

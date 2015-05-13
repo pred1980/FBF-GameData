@@ -6,7 +6,7 @@ scope Dialog
      */
 	
 	struct ShowTutorialsDialog
-		private static boolean array show[12]
+		private static boolean array show
 		private static integer count = 0
 		
 		static method ForPlayer takes integer pid returns boolean
@@ -35,6 +35,13 @@ scope Dialog
 	
 		static method initialize takes nothing returns nothing
 			local Dialog d = Dialog.create()
+			local integer i = 0
+			
+			loop
+                exitwhen i >= bj_MAX_PLAYERS
+				set show[i] = false
+				set i = i + 1
+			endloop
 			
 			call d.SetMessage("Have you played the game before?")
 			
