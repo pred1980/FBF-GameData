@@ -3,8 +3,9 @@ scope Charge initializer Init
      * Description: Royal Knight Parthos launches himself into the enemy lines without fear. 
                     He gains bonus attack speed and deals damage to enemy units along the way.
      * Changelog: 
-     *     10.12.2013: Abgleich mit OE und der Exceltabelle
-	 *     29.04.2015: Integrated RegisterPlayerUnitEvent
+     *     	10.12.2013: Abgleich mit OE und der Exceltabelle
+	 *     	29.04.2015: Integrated RegisterPlayerUnitEvent
+	 *		16.05.2015: Increased Damage per Level from 100/150/200 to 200/250/300
      */
     globals
         //Spell settings
@@ -37,7 +38,7 @@ scope Charge initializer Init
     endfunction
 
     private constant function Damage takes integer level returns real
-        return 50.0 + 50.0 * level
+        return 150.0 + 50.0 * level
     endfunction
     
     private constant function DamageRadius takes integer level returns real

@@ -1,7 +1,11 @@
 library SeedOfLife initializer Init uses GroupUtils, DamageModifiers, SpellEvent, AutoIndex, IntuitiveBuffSystem
 	/*
 	 * Item: Holy Shield
-	 */ 
+	 *
+     * Changelog: 
+     *     	17.05.2015: Increased the duration from 7/8/9 seconds to 15/20/25 seconds
+						Added "Self" as target
+     */	 
     private keyword Data 
     
     globals
@@ -51,19 +55,19 @@ library SeedOfLife initializer Init uses GroupUtils, DamageModifiers, SpellEvent
     
     private function SetUpSpellData takes nothing returns nothing
         // how long does the buff last?
-        set DURATION[1]=7
-        set DURATION[2]=8
-        set DURATION[3]=9
+        set DURATION[1]= 15
+        set DURATION[2]= 20
+        set DURATION[3]= 25
         
         // Heals all units around the damaged target in this area
-        set AOE[1]=300
-        set AOE[2]=350
-        set AOE[3]=400
+        set AOE[1] = 300
+        set AOE[2] = 350
+        set AOE[3] = 400
         
         // heal at most this many times // zero or less for no limit
-        set MAX_HEALINGS[1]=0
-        set MAX_HEALINGS[2]=0
-        set MAX_HEALINGS[3]=0
+        set MAX_HEALINGS[1] = 0
+        set MAX_HEALINGS[2] = 0
+        set MAX_HEALINGS[3] = 0
         
         //Hero Level Range
         set HERO_LEVEL_RANGE[1] = 10
