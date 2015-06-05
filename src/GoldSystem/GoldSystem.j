@@ -218,8 +218,6 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
         
     endstruct
     
-    
-    
     struct GoldIncome
         timer t
         boolean isForsaken = false
