@@ -329,7 +329,7 @@ scope Game
             local player p = GetTriggerPlayer()
             local integer id = GetPlayerId(p)
             
-            call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, 10.00, GetPlayerNameColored(.players[id], false) + " has left the game.")
+			call DisplayTextToForce(GetPlayersAll(), GetPlayerNameColored(.players[id], false) + " has left the game.")
             
             //set new count of players
             if (GetPlayerRace(p) == RACE_UNDEAD) then
@@ -373,43 +373,45 @@ scope Game
             local player killedPlayer = GetTriggerPlayer()
             local integer pidKilled = GetPlayerId(killedPlayer)
 			local integer pidKilling = GetPlayerId(killingPlayer)
-            
-            if IsUnitEnemy(killedUnit, killingPlayer) then
-                if GetOwningPlayer(killedUnit) != Player(PLAYER_NEUTRAL_PASSIVE) then // Helden bei der Auswahl
-                    call BonusGoldOnDeath.showDeathMessageAndUpdateGold(killedUnit, killingUnit)
-					if GetPlayerController(GetOwningPlayer(killingUnit)) == MAP_CONTROL_USER then
-						call FBFMultiboard.onUpdateUnitKills(pidKilling)
-						call FBFMultiboard.onUpdateTowerKills(pidKilling)
+		
+			if (killingUnit != null) then
+				if IsUnitEnemy(killedUnit, killingPlayer) then
+					if GetOwningPlayer(killedUnit) != Player(PLAYER_NEUTRAL_PASSIVE) then // Helden bei der Auswahl
+						call BonusGoldOnDeath.showDeathMessageAndUpdateGold(killedUnit, killingUnit)
+						if GetPlayerController(GetOwningPlayer(killingUnit)) == MAP_CONTROL_USER then
+							call FBFMultiboard.onUpdateUnitKills(pidKilling)
+							call FBFMultiboard.onUpdateTowerKills(pidKilling)
+						endif
 					endif
-                endif
-            endif
-			
-			if GetPlayerController(GetOwningPlayer(killedUnit)) == MAP_CONTROL_USER then
-				//Ist die getoetete Einheit ein Held und gehoert einem Spieler?
-				if IsUnitType(killedUnit, UNIT_TYPE_HERO) then
-					call PlayerStats.setPlayerDeath(killedPlayer)
-					//Update Multiboard (Deaths)
-					call FBFMultiboard.onUpdateDeaths(pidKilled)
-					call FBFMultiboard.onUpdateStatus(pidKilled, killedUnit)
+				endif
+				
+				if GetPlayerController(GetOwningPlayer(killedUnit)) == MAP_CONTROL_USER then
+					//Ist die getoetete Einheit ein Held und gehoert einem Spieler?
+					if IsUnitType(killedUnit, UNIT_TYPE_HERO) then
+						call PlayerStats.setPlayerDeath(killedPlayer)
+						//Update Multiboard (Deaths)
+						call FBFMultiboard.onUpdateDeaths(pidKilled)
+						call FBFMultiboard.onUpdateStatus(pidKilled, killedUnit)
+						
+						//Revive the killed Hero
+						call HeroRespawn.reviveHero(killedUnit, 0., true)
+					endif
+					//Ist der Killer ein Held und gehoert einem Spieler?
+					if IsUnitType(killingUnit, UNIT_TYPE_HERO) then
+						call FBFMultiboard.onUpdateHeroKills(pidKilling)
+					endif
+				endif
 					
-					//Revive the killed Hero
-					call HeroRespawn.reviveHero(killedUnit, 0., true)
+				//Ist die getoetete Einheit das Forsaken Heart, dann beende das Spiel
+				if GetUnitTypeId(killedUnit) == HEART_ID then
+					call onGameOver()
 				endif
-				//Ist der Killer ein Held und gehoert einem Spieler?
-				if IsUnitType(killingUnit, UNIT_TYPE_HERO) then
-					call FBFMultiboard.onUpdateHeroKills(pidKilling)
+				
+				//ist die getoetet Einheit eine Forsaken Defense Unit, dann entferne sie aus der Gruppe,
+				//damit das MB die richtige Anzahl anzeigt
+				if ForsakenUnits.isForsakenUnit(killedUnit) then
+					call ForsakenUnits.remove(killedUnit)
 				endif
-			endif
-                
-			//Ist die getoetete Einheit das Forsaken Heart, dann beende das Spiel
-			if GetUnitTypeId(killedUnit) == HEART_ID then
-				call onGameOver()
-			endif
-			
-			//ist die getoetet Einheit eine Forsaken Defense Unit, dann entferne sie aus der Gruppe,
-			//damit das MB die richtige Anzahl anzeigt
-			if ForsakenUnits.isForsakenUnit(killedUnit) then
-				call ForsakenUnits.remove(killedUnit)
 			endif
             
         endmethod
@@ -476,8 +478,7 @@ scope Game
 					//adding real Player leaves game Event
 					if isRealPlayer(i) then
 						call TriggerRegisterPlayerEventLeave(leaveTrig, .players[i])
-						call TriggerAddAction(leaveTrig, function thistype.onLeave)
-                    endif
+					endif
 					//Adding Hero LevelUp Event
 					call RegisterPlayerUnitEventForPlayer(EVENT_PLAYER_HERO_LEVEL, null, function thistype.onHeroLevelUp, .players[i])
                     
@@ -502,6 +503,8 @@ scope Game
                 endif
                 set i = i + 1
             endloop
+			
+			call TriggerAddAction(leaveTrig, function thistype.onLeave)
             
             //die beiden Creep Spieler als Feinde setzen und als Bot markieren
             call SetPlayerAllianceStateBJ(Player(bj_PLAYER_NEUTRAL_VICTIM), Player(bj_PLAYER_NEUTRAL_EXTRA), bj_ALLIANCE_UNALLIED)

@@ -197,13 +197,12 @@ scope HeroPickMods
         
         static method onGameInitMiscSystem takes nothing returns nothing
             call ReleaseTimer(GetExpiredTimer())
-            call Repick.setRepick(true)
             call Game.initMiscSystem()
         endmethod
         
         static method onHeroPickEndCallback takes nothing returns nothing
-            local integer i = 0
-            local timer t = GetExpiredTimer()
+			local integer i = 0
+			call ReleaseTimer(GetExpiredTimer())
             
             loop
                 exitwhen i >= bj_MAX_PLAYERS
@@ -216,7 +215,7 @@ scope HeroPickMods
 			    set i = i + 1
             endloop
             
-            call TimerStart(t, 11.0, false, function thistype.onGameInitMiscSystem )
+            call TimerStart(NewTimer(), 11.0, false, function thistype.onGameInitMiscSystem )
         endmethod
         
         static method onHeroPickEnd takes nothing returns nothing
@@ -224,7 +223,7 @@ scope HeroPickMods
             local timer t = NewTimer()
             
             //disable Repick for a short moment
-            call Repick.setRepick(false)
+			call Repick.setRepick(false)
             
             if (.ticker != null) and (.ticker2 != null) then
                 call ReleaseTimer(.ticker)
@@ -251,7 +250,8 @@ scope HeroPickMods
                 endif
                 set i = i + 1
             endloop
-            
+			
+            call Repick.setRepick(true)
             call TimerStart(t, ALL_PICK_HERO_PICK_END_DURATION + 5.0, false, function thistype.onHeroPickEndCallback )
         endmethod
         

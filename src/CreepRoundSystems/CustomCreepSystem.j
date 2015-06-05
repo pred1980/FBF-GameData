@@ -1,6 +1,7 @@
 scope CustomCreepSystem
 	/*
 	 * This System allows the Coalition Players to send their own creep units.
+	 * Note: not yet finished
 	 */
 
 	globals

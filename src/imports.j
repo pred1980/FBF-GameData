@@ -106,12 +106,12 @@
 //! import "src\ItemAbilities\NetherCharge.j"
 //! import "src\ItemAbilities\RocketBoots.j"
 //! import "src\ItemAbilities\Entangle.j"
-//! import "src\ItemAbilities\PoisonMarker.j"
 //! import "src\ItemAbilities\CorruptedIcon.j"
 //! import "src\ItemAbilities\MetalHand.j"
 //! import "src\ItemAbilities\MidnightArmor.j"
 //! import "src\ItemAbilities\DemonicAmulet.j"
 //! import "src\ItemAbilities\SkullRod.j"
+//! import "src\ItemAbilities\ReflectionOfIllidan.j"
 
 /* Tome Damage System */
 //! import "src\TomeDamageSystem\TomeDamageSystem.j"

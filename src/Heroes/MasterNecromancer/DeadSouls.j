@@ -7,6 +7,7 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
 	 *     	28.03.2014: Anzahl der Missiles von 120 auf 20 reduziert 
 	 *		21.04.2015: Integrated SpellHelper for filtering
 						Code Refactoring
+	 *		27.05.2015: Increased damage per missile from 60/120/180 to 120/180/240
      *
      */
     globals
@@ -38,9 +39,9 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
     endglobals
     
     private function MainSetup takes nothing returns nothing
-        set MISSILE_DAMAGE[1] = 60
-        set MISSILE_DAMAGE[2] = 120
-        set MISSILE_DAMAGE[3] = 180
+        set MISSILE_DAMAGE[1] = 120
+        set MISSILE_DAMAGE[2] = 180
+        set MISSILE_DAMAGE[3] = 240
     endfunction
     
     //The actual missile, using a xemissile
