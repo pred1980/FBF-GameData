@@ -35,7 +35,6 @@ scope RoundEndSystem
 				call PanCameraToTimed(x, y, 0.00)
 			endif
 			
-			call StopUnitsOfPlayer(Player(this))
 			call ReleaseTimer(GetExpiredTimer())
 		endmethod
 		

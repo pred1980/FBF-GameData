@@ -50,7 +50,7 @@ scope HeroRepickSystem
             if enable then
                 //Not picked a hero
                 if not BaseMode.hasPicked[id] then
-                    call SimError(p, "You cannot repick unless you have chosen an hero first.")
+                    call SimError(p, "You cannot repick unless you have chosen a hero first.")
                 else
                     //Repicked more than allowed
                     if BaseMode.repickCount[id] >= REPICK_AMOUNT then

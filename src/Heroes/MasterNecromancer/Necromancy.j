@@ -3,11 +3,9 @@ scope Necromancy initializer init
      * Description: The Master Necromancer raises a Skeleton from every corpse in the target area. 
                     The more skeletons raised, the weaker they are.
      * Changelog: 
-     *     	05.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     	21.03.2015: Rewrote code from scratch
-	 *     	18.04.2015: Integrated RegisterPlayerUnitEvent
-	 *		27.05.2015: Code Refactoring
-						Reduced the cooldown from 45s to 25s
+     *     05.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     21.03.2015: Rewrote code from scratch
+	 *     18.04.2015: Integrated RegisterPlayerUnitEvent
      *
      */
     globals
@@ -16,6 +14,8 @@ scope Necromancy initializer init
         private constant string EFFECT = "Abilities\\Spells\\Undead\\AnimateDead\\AnimateDeadTarget.mdl"
 		private constant integer MAX_SKELETON = 3
 		
+		private group targets
+		private integer amount = 0
 		private integer array UNIT_IDS
         private real array UNIT_DMG
         private real array UNIT_HPS
@@ -46,25 +46,17 @@ scope Necromancy initializer init
         set UNIT_DUR[3] = 60
         set UNIT_DUR[4] = 60
         set UNIT_DUR[5] = 60
+		
+		set targets = NewGroup()
     endfunction
     
-	private function EnumFilter takes nothing returns boolean
-		return SpellHelper.isUnitDead(GetFilterUnit())
-	endfunction
-	
     private function Actions takes nothing returns nothing
 		local unit caster = GetTriggerUnit()
-		local real x = GetSpellTargetX()
-		local real y = GetSpellTargetY()
 		local unit u = null
 		local unit s = null
 		local integer level = GetUnitAbilityLevel(caster, SPELL_ID)
 		local integer count = 0
-		local integer amount = 0
-		local group targets = NewGroup()
 		
-		call GroupEnumUnitsInArea(targets, x, y, RADIUS, Condition(function EnumFilter))
-		set amount = CountUnitsInGroup(targets)
 		//check if there are more than MAX_SKELETON
 		if (amount > MAX_SKELETON) then
 		   set amount = MAX_SKELETON
@@ -88,10 +80,23 @@ scope Necromancy initializer init
 		call ReleaseGroup(targets)
 		set u = null
 		set s = null
+		set amount = 0
     endfunction
 	
+	private function EnumFilter takes nothing returns boolean
+		return SpellHelper.isUnitDead(GetFilterUnit())
+	endfunction
+
 	private function Conditions takes nothing returns boolean
-		return GetSpellAbilityId() == SPELL_ID
+		if (GetSpellAbilityId() == SPELL_ID) then
+			call GroupEnumUnitsInArea(targets, GetSpellTargetX(), GetSpellTargetY(), RADIUS, Condition(function EnumFilter))
+			set amount = CountUnitsInGroup(targets)
+			if (amount > 0) then
+				return true
+			endif
+		endif
+			
+		return false
 	endfunction
 
     private function init takes nothing returns nothing

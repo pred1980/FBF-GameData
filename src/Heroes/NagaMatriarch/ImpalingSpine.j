@@ -1,15 +1,14 @@
 scope ImpalingSpine initializer Init
     /*
      * Description: The Naga Matriarch throws a magical Spear, dealing damage, stunning the target and 
-                    damaging it over 8 seconds.
+                    damaging it over 60 seconds.
      * Changelog: 
      *     	31.12.2013: Neuimplementierung (Umbau auf xemissile)
      *     	08.01.2014: Abgleich mit OE und der Exceltabelle
      *     	21.03.2014: Hero Stun auf von 2s/2.5s/3s/3.5s/4s auf 1.5s gesetzt
 	 *     	22.04.2015: Integrated RegisterPlayerUnitEvent
 						Integrated SpellHelper for filtering and damaging
-	 *		02.05.2015: Code Refactoring
-	 *		26.05.2015: Reduced damage over time from 60s to 8s
+	 *		02.05.2015: Code Refactoring	
      */
     globals
         private constant integer SPELL_ID = 'A07P'
@@ -41,7 +40,7 @@ scope ImpalingSpine initializer Init
         private constant string EFFECT = "Abilities\\Spells\\Other\\FrostDamage\\FrostDamage.mdl"
         private constant string ATT_POINT = "chest"
         private real array DOT_DAMAGE
-        private real DOT_TIME = 8.0
+        private real DOT_TIME = 60.0
     endglobals
     
     private function MainSetup takes nothing returns nothing
