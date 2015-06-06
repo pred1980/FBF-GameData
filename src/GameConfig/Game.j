@@ -114,6 +114,10 @@ scope Game
         static method updatePlayerCount takes nothing returns nothing
             set .playerCount = .playerCount - 1
         endmethod
+		
+		/*
+		 * PLAYER GOLD
+		 */
         
         //add Gold to a specific Player
         static method playerAddGold takes integer pid, integer goldAdd returns nothing
@@ -121,20 +125,19 @@ scope Game
                 call SetPlayerState(.players[pid], PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(.players[pid], PLAYER_STATE_RESOURCE_GOLD) + goldAdd)
             endif
         endmethod
-        
-        //add Lumber to a specific Player
-        static method playerAddLumber takes integer pid, integer lumberAdd returns nothing
-            if lumberAdd > 0 then
-                call SetPlayerState(.players[pid], PLAYER_STATE_RESOURCE_LUMBER, GetPlayerState(.players[pid], PLAYER_STATE_RESOURCE_LUMBER) + lumberAdd)
-            endif
-        endmethod
-        
-        //remove Gold to a specific Player
+		
+		//remove Gold to a specific Player
         static method playerRemoveGold takes integer pid, integer goldRemove returns nothing
             call SetPlayerState(.players[pid], PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(.players[pid], PLAYER_STATE_RESOURCE_GOLD) - goldRemove)
         endmethod
-        
-        static method getPlayerStartGold takes player p returns integer
+		
+		//get current gold from a specific Player
+        static method getPlayerGold takes integer pid returns integer
+            return GetPlayerState(Player(pid), PLAYER_STATE_RESOURCE_GOLD)
+        endmethod
+		
+		//get player start gold
+		static method getPlayerStartGold takes player p returns integer
             local integer gold = 0
             
             if ( GetPlayerRace(p) == RACE_UNDEAD ) then
@@ -144,7 +147,24 @@ scope Game
             endif
             return gold
         endmethod
+		
+		/*
+		 * PLAYER LUMBER
+		 */
+		 
+		//add Lumber to a specific Player
+        static method playerAddLumber takes integer pid, integer lumberAdd returns nothing
+            if lumberAdd > 0 then
+                call SetPlayerState(.players[pid], PLAYER_STATE_RESOURCE_LUMBER, GetPlayerState(.players[pid], PLAYER_STATE_RESOURCE_LUMBER) + lumberAdd)
+            endif
+        endmethod
         
+        //get current lumber from a specific Player
+        static method getPlayerLumber takes integer pid returns integer
+            return GetPlayerState(Player(pid), PLAYER_STATE_RESOURCE_LUMBER)
+        endmethod
+        
+		//get player start lumber
         static method getPlayerStartLumber takes player p returns integer
             if ( GetPlayerRace(p) == RACE_UNDEAD ) then
                 return BaseGoldSystem.START_LUMBER_FORSAKEN
