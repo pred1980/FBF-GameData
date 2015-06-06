@@ -1,0 +1,11 @@
+Anforderung:
+
+
+MS:
+1. Konfiguration erstellen mit der man einstellen kann, welche Tower nacheinander gebaut werden soll
+
+
+PP:
+1. Schnittstelle bereitstellen, die die akt. Holzmenge zurück gibt
+2. beim Spielstart ermitteln ob ein Slot von einem Computerspieler besetzt ist
+2.1 Unterscheidung zw. Computer Leicht/Mittel/Schwer schaffen  
