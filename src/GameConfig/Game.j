@@ -235,6 +235,25 @@ scope Game
             
             return level
         endmethod
+		
+		//get player ai difficult
+		// -1 == real player
+		// 0 == newbie
+		// 1 == normal
+		// 2 == insane
+		static method getAIDifficulty takes integer pid returns integer
+			if (not .isRealPlayer(pid)) then  
+				if GetAIDifficulty(Player(pid)) == AI_DIFFICULTY_NEWBIE then
+					return 0
+				elseif GetAIDifficulty(Player(pid)) == AI_DIFFICULTY_NORMAL then
+					return 1
+				else
+					return 2
+				endif
+			else
+				return -1
+			endif
+		endmethod
         
         //*****************************************************\\
         //*************** END OF CONFIGURATION*****************\\
@@ -490,8 +509,8 @@ scope Game
             //Setting Player Datas
             loop
                 exitwhen i >= bj_MAX_PLAYERS
-                set .isBot[i] = false
-                //Checking for Players and Bots
+                
+				//Checking for Players and Bots
                 if isPlayerInGame(i) then
                     set .players[i] = Player(i)
                     
@@ -519,6 +538,8 @@ scope Game
 					//only count if it's a real player
                     if isRealPlayer(i) then
 						set .playerCount = .playerCount + 1
+					else
+						set .isBot[i] = true
 					endif
                 endif
                 set i = i + 1
