@@ -433,7 +433,7 @@ scope Game
 						call FBFMultiboard.onUpdateStatus(pidKilled, killedUnit)
 						
 						//Revive the killed Hero
-						call HeroRespawn.reviveHero(killedUnit, 0., true)
+						call HeroRespawn.create(killedUnit, true)
 					endif
 					//Ist der Killer ein Held und gehoert einem Spieler?
 					if IsUnitType(killingUnit, UNIT_TYPE_HERO) then
