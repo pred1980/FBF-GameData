@@ -28,9 +28,9 @@ library Consumption initializer Init uses GroupUtils, DamageModifiers, SpellEven
     
     private function MainSetup takes nothing returns nothing
         // how long does the buff last?
-        set DURATION[1] = 5
-        set DURATION[2] = 7
-        set DURATION[3] = 9
+        set DURATION[1] = 5.0
+        set DURATION[2] = 7.0
+        set DURATION[3] = 9.0
         
         //Physical Damage
         set DAMAGE_REDUCTION_PHYISCAL[1] = 1.6 //+60%
@@ -57,20 +57,19 @@ library Consumption initializer Init uses GroupUtils, DamageModifiers, SpellEven
     endglobals
     
     private struct Data extends DamageModifier
-        unit caster
-        unit target
-        effect targetFx
-        integer level = 0
-        real reduction = 0.00
-        timer t
+        private unit caster
+        private unit target
+        private effect targetFx
+        private integer level = 0
+        private real reduction = 0.00
         
-        static thistype tempthis
-        static real CurrentDamage
+        private static thistype tempthis
+        private static real CurrentDamage
         
-        static thistype array Instance
+        private static thistype array Instance
 		
 		method onDestroy takes nothing returns nothing
-            set Instance[GetUnitId(.target)] = 0
+			set Instance[GetUnitId(.tempthis.target)] = 0
             call RemoveUnitBonus(.caster, BONUS_DAMAGE)
             call RemoveUnitBonus(.caster, BONUS_ATTACK_SPEED)
             set .caster = null
@@ -79,16 +78,15 @@ library Consumption initializer Init uses GroupUtils, DamageModifiers, SpellEven
                 call DestroyEffect(.targetFx)
                 set .targetFx = null
             endif
-            call ReleaseTimer(.t)
         endmethod
 
         private method onDamageTaken takes unit origin, real damage returns real
             local real blocked = Damage_Blocked(.level, damage)
 			
-            if DamageType == PHYSICAL then
+            if (DamageType == PHYSICAL) then
                 set blocked = (DAMAGE_REDUCTION_PHYISCAL[.level] * blocked) - blocked
             endif
-            if DamageType == SPELL then
+            if (DamageType == SPELL) then
                 set blocked = (DAMAGE_REDUCTION_SPELL[.level] * blocked) - blocked
             endif
             set .reduction = .reduction + blocked
@@ -98,14 +96,14 @@ library Consumption initializer Init uses GroupUtils, DamageModifiers, SpellEven
         endmethod
 		
 		private static method onBonusEnd takes nothing returns nothing
+			call ReleaseTimer(GetExpiredTimer())
             call thistype(GetEventBuff().data).destroy()
         endmethod
         
         static method BuffRemoved takes nothing returns nothing
             call AddUnitBonus(.tempthis.caster, BONUS_DAMAGE, R2I(.tempthis.reduction))
             call AddUnitBonus(.tempthis.caster, BONUS_ATTACK_SPEED, R2I(ATTACK_SPEED[.tempthis.level]))
-            set .tempthis.t = NewTimer()
-            call TimerStart(.tempthis.t, BONUS_DAMAGE_TIME, false, function thistype.onBonusEnd)
+			call TimerStart(NewTimer(), BONUS_DAMAGE_TIME, false, function thistype.onBonusEnd)
         endmethod
         
 		static method create takes unit caster, unit target returns thistype
@@ -115,6 +113,7 @@ library Consumption initializer Init uses GroupUtils, DamageModifiers, SpellEven
                 set s=.allocate(target, PRIORITY)
                 set s.caster=caster
                 set s.target=target
+				
                 if TARGET_FX!="" then
                     set s.targetFx = AddSpecialEffectTarget(TARGET_FX, target, TARGET_FX_ATTPT)
                 endif

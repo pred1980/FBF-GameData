@@ -6,11 +6,12 @@ library CreepSystemUnits uses MiscFunctions
     endglobals
     
     function GET_UNIT_DATA takes integer column, integer row returns integer
-        //3 == Bounty je nach Round-Config, der gewählt wurde
         if column != 3 then
+			//returns any other data from the HashTable UNIT_DATA
             return LoadInteger(UNIT_DATA, column, row)
         else
-            return S2I(getDataFromString(LoadStr(UNIT_DATA, column, row), RoundType.current))
+			//returns the Bounty Value depending on the current GameType
+            return S2I(getDataFromString(LoadStr(UNIT_DATA, column, row), GameType.current))
         endif
     endfunction
     
@@ -27,6 +28,7 @@ library CreepSystemUnits uses MiscFunctions
     //4 = Unit HP in the AoS Part
     //5 = Unit Mana in the AoS Part
     //6 = Ability Id
+	//7 = Life Time
     function GET_UNIT_VALUE takes integer unitId, integer value returns integer
         local integer i = 0
         
@@ -34,7 +36,7 @@ library CreepSystemUnits uses MiscFunctions
             exitwhen i > MAX_CREEPS
             if (LoadInteger(UNIT_DATA, 0, i) ==  unitId) then
                 if value != -1 then
-                    return S2I((getDataFromString(LoadStr(UNIT_DATA, value, i), RoundType.current)))
+                    return S2I((getDataFromString(LoadStr(UNIT_DATA, value, i), GameType.current)))
                 else
                     return i
                 endif
@@ -69,6 +71,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 0) //5 : Unit Mana in the AoS Part
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1) //6 : Ability Id
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1) //7: Ability Level
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1) //8: Life Time
             set column = 0
             set row = row + 1
             
@@ -86,6 +92,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -105,6 +115,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -122,6 +136,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -141,6 +159,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -158,6 +180,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -177,6 +203,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 300)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -194,6 +224,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 200)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -213,6 +247,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -230,6 +268,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -249,6 +291,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -266,6 +312,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 500)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -287,6 +337,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -304,6 +358,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -323,6 +381,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -340,6 +402,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -359,6 +425,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -376,6 +446,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -395,6 +469,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -412,6 +490,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 0)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -433,6 +515,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 300)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -451,6 +537,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 300)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 'A0A3')
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 2)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -469,6 +559,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 300)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 'A0A5')
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 2)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -486,6 +580,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 300)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -505,6 +603,10 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 300)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
             
@@ -522,6 +624,10 @@ library CreepSystemUnits uses MiscFunctions
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 300)
             set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, -1)
             set column = 0
             set row = row + 1
@@ -541,7 +647,82 @@ library CreepSystemUnits uses MiscFunctions
             call SaveInteger(UNIT_DATA, column, row, 300)
             set column = column + 1
             call SaveInteger(UNIT_DATA, column, row, 'A0A6')
-            
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 2)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = 0
+            set row = row + 1
+			
+			//Index: 27        
+            //Custom Creep / Shop Unit (Orc)
+			//******ALDARII GENERAL*******
+            call SaveInteger(UNIT_DATA, column, row, 'o00F') 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 620) 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 34) 
+            set column = column + 1
+            call SaveStr(UNIT_DATA, column, row, "5,") 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 400) 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 0) 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1) 
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1) 
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+            set column = 0
+            set row = row + 1
+			
+			//Index: 28        
+            //Custom Creep / Shop Unit (Nightelf)
+			//******PANTHER RIDER*******
+            call SaveInteger(UNIT_DATA, column, row, 'e00S') 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 650) 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 41) 
+            set column = column + 1
+            call SaveStr(UNIT_DATA, column, row, "5,") 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 350) 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 0) 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+            set column = 0
+            set row = row + 1
+			
+			//Index: 29        
+            //Custom Creep / Shop Unit (Human)
+			//******REFORMED BANDIT*******
+            call SaveInteger(UNIT_DATA, column, row, 'n00R')
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 1200)
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 65)
+            set column = column + 1
+            call SaveStr(UNIT_DATA, column, row, "5,") 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 865) 
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 0)
+            set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, 'A0AX') 
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1) 
+			set column = column + 1
+            call SaveInteger(UNIT_DATA, column, row, -1)
+            set column = 0
+            set row = row + 1
+			
             //save the amount of all creeps
             set MAX_CREEPS = row
         endmethod

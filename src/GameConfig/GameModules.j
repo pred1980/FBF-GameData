@@ -78,7 +78,7 @@ scope GameModules
             call Titan.create()
 			
             //Create Coalition Unit Shops
-            call CoalitionShopSystem.initialize()
+            call UnitShopSystem.initialize()
 			
             //init Final Mode
             call FinalMode.initialize()
@@ -95,6 +95,9 @@ scope GameModules
 			
 			//init Defense Mode
 			call StandardDefenseInit.initialize()
+			
+			//Test: Send Unit System
+			call CustomCreepSystem.initialize()
 		endmethod
 	
 	endstruct

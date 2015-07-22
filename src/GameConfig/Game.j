@@ -73,18 +73,14 @@ scope Game
             call SetPlayerState(.players[pid], PLAYER_STATE_RESOURCE_LUMBER, value)
         endmethod
         
-        /*
-		 * NOTE: Wirft true zurück wenn:
-		 *       1. der Game Slot von einem richtigen Spieler besetzt ist
-		 *       2. ein Computer darauf plaziert wurde 
-		 */ 
+		//player can be a real player or a computer
         static method isPlayerInGame takes integer i returns boolean
-            return GetPlayerSlotState(Player(i)) != PLAYER_SLOT_STATE_EMPTY
+            return GetPlayerSlotState(Player(i)) == PLAYER_SLOT_STATE_PLAYING
         endmethod
 		
-		//Checkt ob es sich um einen menschlichen Spieler handelt und ob er noch im Spiel ist
+		//is it a real player?
 		static method isRealPlayer takes integer i returns boolean
-            return GetPlayerController(Player(i)) == MAP_CONTROL_USER and GetPlayerSlotState(Player(i)) == PLAYER_SLOT_STATE_PLAYING
+            return GetPlayerController(Player(i)) == MAP_CONTROL_USER
         endmethod
 		
 		//count players
@@ -324,7 +320,7 @@ scope Game
 			
 			//Ab hier wissen wir ob es nur Spieler auf einer Seite 
 			//gibt oder ob auf beiden Seiten Spieler sind...
-			if (.forsakenPlayers == 0) or (.coalitionPlayers == 0) then
+			if ((.forsakenPlayers == 0) or (.coalitionPlayers == 0)) then
 				set .oneSidedGame = true
 			endif
         endmethod
@@ -424,25 +420,22 @@ scope Game
 					endif
 				endif
 				
-				if GetPlayerController(GetOwningPlayer(killedUnit)) == MAP_CONTROL_USER then
-					//Ist die getoetete Einheit ein Held und gehoert einem Spieler?
-					if IsUnitType(killedUnit, UNIT_TYPE_HERO) then
-						call PlayerStats.setPlayerDeath(killedPlayer)
-						//Update Multiboard (Deaths)
-						call FBFMultiboard.onUpdateDeaths(pidKilled)
-						call FBFMultiboard.onUpdateStatus(pidKilled, killedUnit)
-						
-						//Revive the killed Hero
-						call HeroRespawn.create(killedUnit, true)
-					endif
-					//Ist der Killer ein Held und gehoert einem Spieler?
-					if IsUnitType(killingUnit, UNIT_TYPE_HERO) then
-						call FBFMultiboard.onUpdateHeroKills(pidKilling)
-					endif
-				endif
+				if IsUnitType(killedUnit, UNIT_TYPE_HERO) then
+					call PlayerStats.setPlayerDeath(killedPlayer)
+					//Update Multiboard (Deaths)
+					call FBFMultiboard.onUpdateDeaths(pidKilled)
+					call FBFMultiboard.onUpdateStatus(pidKilled, killedUnit)
 					
-				//Ist die getoetete Einheit das Forsaken Heart, dann beende das Spiel
-				if GetUnitTypeId(killedUnit) == HEART_ID then
+					//Revive the killed Hero
+					call HeroRespawn.create(killedUnit, true)
+				endif
+				
+				if IsUnitType(killingUnit, UNIT_TYPE_HERO) then
+					call FBFMultiboard.onUpdateHeroKills(pidKilling)
+				endif
+				
+				//Killed Unit == Forsaken Heart? If yes, Game over :)
+				if (GetUnitTypeId(killedUnit) == HEART_ID) then
 					call onGameOver()
 				endif
 				
@@ -511,12 +504,16 @@ scope Game
                 exitwhen i >= bj_MAX_PLAYERS
                 
 				//Checking for Players and Bots
-                if isPlayerInGame(i) then
+				if (isPlayerInGame(i)) then
                     set .players[i] = Player(i)
                     
 					//adding real Player leaves game Event
-					if isRealPlayer(i) then
+					if (isRealPlayer(i)) then
 						call TriggerRegisterPlayerEventLeave(leaveTrig, .players[i])
+						//only count if it's a real player
+						set .playerCount = .playerCount + 1
+					else
+						set .isBot[i] = true
 					endif
 					//Adding Hero LevelUp Event
 					call RegisterPlayerUnitEventForPlayer(EVENT_PLAYER_HERO_LEVEL, null, function thistype.onHeroLevelUp, .players[i])
@@ -534,14 +531,7 @@ scope Game
                         call SetPlayerAllianceStateBJ(Player(i), Player(bj_PLAYER_NEUTRAL_VICTIM), bj_ALLIANCE_ALLIED_VISION)
                         call SetPlayerAllianceStateBJ(Player(bj_PLAYER_NEUTRAL_VICTIM), Player(i), bj_ALLIANCE_ALLIED_VISION)
                     endif
-					
-					//only count if it's a real player
-                    if isRealPlayer(i) then
-						set .playerCount = .playerCount + 1
-					else
-						set .isBot[i] = true
-					endif
-                endif
+				endif
                 set i = i + 1
             endloop
 			

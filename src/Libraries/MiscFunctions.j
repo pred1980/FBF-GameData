@@ -547,9 +547,13 @@ library MiscFunctions requires GroupUtils
 	
     function GetDynamicRatioValue takes integer value, real factor returns integer
 		local integer val = 0
+		
+		//call BJDebugMsg("Old Value: " + I2S(value))
 		//Wenn auf beiden Seiten Spieler sind...
 		if not (Game.isOneSidedGame()) then
+			//call BJDebugMsg(I2S(value) + "*" + I2S(Game.getCoalitionPlayers()) + "/6 * (1 + " + R2S(factor) + "*(6-" + I2S(Game.getForsakenPlayers()) + "))")
 			set val = R2I(I2R(value) * I2R(Game.getCoalitionPlayers()) / I2R(6) * (I2R(1) + factor * (I2R(6) - I2R(Game.getForsakenPlayers()))))
+			//call BJDebugMsg("New Value: " + I2S(val))
 		//Wenn nur auf der Forsaken Seite Spieler sind...
 		elseif (Game.getCoalitionPlayers() == 0 and Game.getForsakenPlayers() > 0) then
 			set val = R2I(I2R(value) * I2R(Game.getForsakenPlayers()) / I2R(6))

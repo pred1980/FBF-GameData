@@ -3,11 +3,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
     globals
         private constant real array START_LOC_X
         private constant real array START_LOC_Y
-        //Dieser Punkt ist der Endpunkt der TD-Waypoints aller Lanes
-        //sowie der Startpunkt für den AoS Teil
-        private real AOS_START_LOC_X
-        private real AOS_START_LOC_Y
-		
+        
 		//Zuordnung Player-Id zu WAYPOINT-Index
 		//Wird benötigt, damit für P6-12 die Creeps an den richtigen Lanes loslaufen
 		private constant integer array PLAYER__X__WAYPOINT
@@ -231,6 +227,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
     function interface getUnitMaxMana takes integer unitId returns integer
     function interface getUnitDamage takes integer unitId returns integer
     function interface getUnitAbility takes integer unitId returns integer
+	function interface getUnitLifeTime takes integer unitId returns real
     
     struct SharedObjects
         onSpawn spawnCall = 0
@@ -293,14 +290,22 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
                 return val + (RoundSystem.actualRound * INCREASED_MANA_PER_ROUND)
             endif
         endmethod
-        
-        method getUnitDamage takes integer index returns integer
+		
+        static method getUnitDamage takes integer index returns integer
             return GET_UNIT_DATA(2, index) + (RoundSystem.actualRound * INCREASED_DAMAGE_PER_ROUND)
         endmethod
         
         static method getUnitAbility takes integer index returns integer
             return GET_UNIT_DATA(6, index)
         endmethod
+		
+		static method getUnitAbilityLevel takes integer index returns integer
+			return GET_UNIT_DATA(7, index)
+		endmethod
+		
+		static method getUnitLifeTime takes integer index returns real
+			return I2R(GET_UNIT_DATA(8, index))
+		endmethod
     endstruct
     
     struct UnitSpawn extends SharedObjects
@@ -314,7 +319,61 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
         
         onUnitSpawn onUnitSpawnCall = 0
         
-        static method create takes integer pid, integer unitId, integer amount, onUnitSpawn onUnitSp, string effPath returns UnitSpawn
+        private static method setUnitData takes integer pid, unit u, integer unitIndex, real posX, real posY returns nothing
+			local integer abiId = 0
+            local integer abiLevel = 0
+			local real lifeTime = 0.00
+			
+			call SetUnitPathing(u, false)
+			call SetUnitX(u, posX)
+			call SetUnitY(u, posY)
+			
+			set abiId = .getUnitAbility(unitIndex)
+			if (abiId != -1) then
+				call UnitAddAbility(u, abiId)
+				
+				set abiLevel = .getUnitAbilityLevel(unitIndex)
+				if (abiLevel != -1) then
+					call SetUnitAbilityLevel(u, abiId, abiLevel)
+				else
+					call SetUnitAbilityLevel(u, abiId, RoundSystem.actualRound)
+				endif
+			endif
+			
+			set lifeTime = .getUnitLifeTime(unitIndex)
+			if (lifeTime != -1) then
+				call UnitApplyTimedLife(u, 'BTLF', lifeTime)
+			endif
+			
+			//add HP, Mana and Damage
+			call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, I2R(.getUnitMaxLife(unitIndex, false)))
+			call TDS.addDamage(u, .getUnitDamage(unitIndex))
+			
+			//add Unit to the WayPointSystem ( TD Part )
+			call WayPointSystem.addUnit(PLAYER__X__WAYPOINT[pid], u)
+		endmethod
+        
+        method spawn takes player p, integer unitIndex, real posX, real posY returns nothing
+            local integer i = 0
+            local unit u
+			
+            loop
+				exitwhen i >= .amount
+				set u = CreateUnit(p, .unitID, posX, posY, 270)
+				
+				call setUnitData(.pID, u, unitIndex, posX, posY)
+				
+				set i = i + 1
+			endloop
+            
+            set u = null
+        endmethod
+		
+		static method addUnit takes integer pid, integer unitIndex, unit soldUnit, real posX, real posY returns nothing
+			call setUnitData(pid, soldUnit, unitIndex, posX, posY)
+		endmethod
+		
+		static method create takes integer pid, integer unitId, integer amount, onUnitSpawn onUnitSp, string effPath returns UnitSpawn
             local thistype us = thistype.allocate()
                 set us.unitID = unitId
                 set us.pID = pid
@@ -322,50 +381,6 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
                 set us.onUnitSpawnCall = onUnitSp
                 set us.sfxPath = effPath
             return us
-        endmethod
-        
-        method spawn takes player p, integer unitIndex, real posX, real posY returns nothing
-            local integer i = 0
-            local unit u = null
-            local integer abiId = 0
-            
-            if .runOnSpawnCheck() then
-                call .runOnSpawnCall()
-                loop
-                    exitwhen i >= .amount
-                    set u = CreateUnit(p, .unitID, posX, posY, 270)
-                    
-                    call SetUnitPathing(u, false)
-                    call SetUnitX(u, posX)
-                    call SetUnitY(u, posY)
-					
-					//Creep Fähigkeit für TD Teil deaktivieren indem man sie kurz entfernt
-                    set abiId = SharedObjects.getUnitAbility(SharedObjects.getUnitIndex(u))
-                    if abiId != -1 then
-                        //call UnitRemoveAbility(u, abiId)
-                        call SetUnitAbilityLevel(u, abiId, 2)
-                    endif
-                    
-                    if .sfxPath != "" then
-                        call DestroyEffect(AddSpecialEffect(.sfxPath, GetUnitX(u), GetUnitY(u)))
-                    endif
-                    
-                    //add HP, Mana and Damage
-                    call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, I2R(.getUnitMaxLife(unitIndex, false)))
-                    call TDS.addDamage(u, .getUnitDamage(unitIndex))
-                                        
-                    if .onUnitSpawnCall != 0 then
-                        call .onUnitSpawnCall.execute(u) 
-                    endif
-                    
-                    //add Unit to the WayPointSystem ( TD Part )
-                    call WayPointSystem.addUnit(PLAYER__X__WAYPOINT[.pID], u)
-                    
-                    set i = i + 1
-                endloop
-            endif
-            
-            set u = null
         endmethod
 		
 		private static method onInit takes nothing returns nothing
@@ -405,8 +420,31 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
         integer round = 0
         integer i = 0
         integer k = 1
-        
-        static method create takes player p, integer pid, integer r returns thistype
+
+        static method onSpawnInterval takes nothing returns nothing
+            local Wave this = GetTimerData(GetExpiredTimer())
+            
+            //get Unit Index of the spawing Unit
+            set this.unitIndex = RoundType.getUnitIndex(this.i, this.round)
+            //get Unit ID of the spawing Unit
+            set this.id = this.us.getUnitId(this.unitIndex)
+            set this.amount = RoundType.getUnitAmount(this.i, this.round)
+            set this.us = UnitSpawn.create(this.pid, this.id, this.count, 0, "")
+            
+            call this.us.spawn(this.owner, this.unitIndex, START_LOC_X[this.pid], START_LOC_Y[this.pid])
+            
+            if this.k < this.amount then
+                set this.k = this.k + 1
+            else
+                set this.k = 1
+                set this.i = this.i + 1
+                if this.i == this.iterator then
+                    call ReleaseTimer(GetExpiredTimer())
+                endif
+            endif
+        endmethod
+		
+		static method create takes player p, integer pid, integer r returns thistype
             local thistype this = thistype.allocate()
             local timer t
             
@@ -425,89 +463,25 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
             return this
         endmethod
         
-        static method onSpawnInterval takes nothing returns nothing
-            local Wave this = GetTimerData(GetExpiredTimer())
-            
-            //get Unit Index of the spawing Unit
-            set this.unitIndex = RoundType.getUnitIndex(this.i, this.round)
-            //get Unit ID of the spawing Unit
-            set this.id = this.us.getUnitId(this.unitIndex)
-            set this.amount = RoundType.getUnitAmount(this.i, this.round)
-            set this.us = UnitSpawn.create(this.pid, this.id, this.count, 0, "")
-            
-            call this.us.spawn(this.owner, this.unitIndex, START_LOC_X[this.pid], START_LOC_Y[this.pid])
-            
-            if this.k < this.amount then
-                set this.k = this.k + 1
-            else
-                set this.k = 1
-                set this.i = this.i + 1
-                if this.i == this.iterator then
-                    call ReleaseTimer(GetExpiredTimer())
-                endif
-            endif
+    endstruct
+	
+	/*
+	 * This struct is for sending units from a shop to attack
+	 * the forsaken.
+	 */
+	
+	struct CustomWave
+
+		static method addUnitToWaypoint takes unit soldUnit returns nothing
+            local integer pid = GetPlayerId(GetOwningPlayer(soldUnit))
+			local integer unitIndex = SharedObjects.getUnitIndex(soldUnit)
+			local UnitSpawn us
+			
+			call SetUnitOwner( soldUnit, Player(bj_PLAYER_NEUTRAL_VICTIM), true )
+			call us.addUnit(pid, unitIndex, soldUnit, START_LOC_X[pid], START_LOC_Y[pid])
         endmethod
         
     endstruct
-	
-	/*struct CustomWave extends SharedObjects
-        player owner = null
-        integer pid = 0
-        
-        integer id
-        integer unitIndex
-        integer amount
-        integer count
-        integer iterator 
-        integer rounds
-        real interval
-        
-        UnitSpawn us = 0
-        integer i = 0
-        integer k = 1
-        
-        static method create takes player p, integer pid returns thistype
-            local thistype this = thistype.allocate()
-            local timer t
-            
-            set .owner = p
-            set .pid = pid
-            
-            set .interval = RoundType.getInterval()
-            set .iterator = RoundType.getIterator(.round)
-            set .count = RoundType.getCount()
-			
-			set t = NewTimer()
-            call SetTimerData(t, this)
-            call TimerStart(t, .interval, true, function thistype.onSpawnInterval)
-
-            return this
-        endmethod
-        
-        static method onSpawnInterval takes nothing returns nothing
-            local Wave this = GetTimerData(GetExpiredTimer())
-            
-            //get Unit Index of the spawing Unit
-            set this.unitIndex = RoundType.getUnitIndex(this.i, this.round)
-            //get Unit ID of the spawing Unit
-            set this.id = this.us.getUnitId(this.unitIndex)
-            set this.amount = RoundType.getUnitAmount(this.i, this.round)
-            set this.us = UnitSpawn.create(this.pid, this.id, this.count, 0, "")
-            
-            call this.us.spawn(this.owner, this.unitIndex, START_LOC_X[this.pid], START_LOC_Y[this.pid])
-            
-            if this.k < this.amount then
-                set this.k = this.k + 1
-            else
-                set this.k = 1
-                set this.i = this.i + 1
-                if this.i == this.iterator then
-                    call ReleaseTimer(GetExpiredTimer())
-                endif
-            endif
-        endmethod
-        
-    endstruct*/
      
     private function init takes nothing returns nothing
         call initLocations()

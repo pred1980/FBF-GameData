@@ -1,11 +1,28 @@
 scope ItemShops
     
     globals
+		private constant string EFFECT = "Abilities\\Spells\\Other\\TalkToMe\\TalkToMe.mdl"
+		private constant real SHOP_RANGE = 400.0
+		private constant real EFFECT_DURATION = 1.5
+	
 		private unit array SHOP[4][3]
 		private integer array SHOP_IDS[4][3]
+		private hashtable shops = InitHashtable()
     endglobals
     
     struct ItemShops
+	
+		private static method onUnitInRange takes nothing returns nothing
+			local unit u = LoadUnitHandle(shops, 0, GetHandleId(GetTriggeringTrigger()))
+			
+			call TimedEffect.createOnUnit(EFFECT, u, "overhead", EFFECT_DURATION)
+			
+			set u = null
+		endmethod
+		
+		private static method onUnitInRangeCondition takes nothing returns boolean
+			return IsUnitType(GetTriggerUnit(), UNIT_TYPE_HERO)
+		endmethod
     
         static method getShop takes integer raceId, integer shopId returns unit
             return SHOP[raceId][shopId]
@@ -16,6 +33,7 @@ scope ItemShops
 			local unit u
 			local integer i = 0
 			local integer k = 0
+			local trigger t
 
 			//Grab all units on the map and enter them into the system.
 			call GroupEnumUnitsInRect(g, GetPlayableMapRect(), null)
@@ -29,6 +47,12 @@ scope ItemShops
 						exitwhen k > 2
 						if GetUnitTypeId(u) == SHOP_IDS[i][k] then
 							set SHOP[i][k] = u
+							set t = CreateTrigger()
+							call SaveUnitHandle(shops, 0, GetHandleId(t), u)
+							call TriggerRegisterUnitInRange(t, u, SHOP_RANGE, null)
+							call TriggerAddCondition(t,  Condition(function thistype.onUnitInRangeCondition))
+							call TriggerAddAction(t, function thistype.onUnitInRange)
+							set t = null
 						endif
 						set k = k + 1
 					endloop
@@ -39,7 +63,7 @@ scope ItemShops
 				set k = 0
 				call GroupRemoveUnit(g, u)
 			endloop
-			
+
 			call ReleaseGroup(g)
 			set u = null
 		endmethod

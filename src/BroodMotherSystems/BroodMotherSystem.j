@@ -39,9 +39,9 @@ scope BroodMotherSystem initializer init
         private string SOUND_2 = "Units\\Creeps\\Spider\\SpiderYes2.wav"
         private integer counter = 0
         
-        //Dieser Faktoren beschreiben die Erhöhung der HP/Damage Werte je nach Spieleranzahl
-        private constant real HP_FACTOR = 0.00 //Prozentwert
-        private constant real DAMAGE_FACTOR = 0.00 //Prozentwert
+        //Dieser Faktoren beschreiben die Erhöhung der HP/Damage Werte je nach Spieleranzahl auf der Forsaken Seite
+        private constant real HP_FACTOR = 0.08 //Prozentwert
+        private constant real DAMAGE_FACTOR = 0.03 //Prozentwert
 	endglobals
     
     private function ResetCounter takes nothing returns nothing
@@ -116,7 +116,7 @@ scope BroodMotherSystem initializer init
         static method onUpdate takes nothing returns nothing
             if not IsUnitDead(.broodMother) then
                 //get new hp+dmg
-                set .hp = GetDynamicRatioValue(HP, HP_FACTOR)
+				set .hp = GetDynamicRatioValue(HP, HP_FACTOR)
                 set .dmg = GetDynamicRatioValue(DAMAGE, DAMAGE_FACTOR)
                 call SetUnitMaxState(.broodMother, UNIT_STATE_MAX_LIFE, .hp)
                 call TDS.resetDamage(.broodMother)

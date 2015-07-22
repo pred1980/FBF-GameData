@@ -79,22 +79,6 @@ library TextTag
         set text = null
         set tt = null
     endfunction
-    
-    //==============================================================================
-    function TextTagLossGold takes unit whichUnit, integer bounty, player killed returns nothing
-        local texttag tt = CreateTextTag()
-        local string text = "-" + I2S(bounty)
-        call SetTextTagText(tt, text, FONT_SIZE)
-        call SetTextTagPos(tt, GetUnitX(whichUnit)-SIGN_SHIFT, GetUnitY(whichUnit), 0.0)
-        call SetTextTagColor(tt, 255, 0, 0, 255)
-        call SetTextTagVelocity(tt, 0.0, 0.04)
-        call SetTextTagVisibility(tt, GetLocalPlayer() == killed)
-        call SetTextTagFadepoint(tt, 2.0)
-        call SetTextTagLifespan(tt, 3.0)
-        call SetTextTagPermanent(tt, false)
-        set text = null
-        set tt = null
-    endfunction
 
     //==============================================================================
     function TextTagLumberBounty takes unit whichUnit, integer bounty, player killer returns nothing

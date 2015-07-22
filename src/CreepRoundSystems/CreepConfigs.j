@@ -4,11 +4,12 @@ scope CreepConfigs
      * AoS Teil abkommen muss die Anzahl an Creep Units reduziert werden aber je nach Runde verstärtkt HP.
      * Dazu gibt es 6 Versionen:
      * -------------------------
-     * SCC_One: Diese ist für 1 Spieler gedacht --> max. 60 Creep Units laufen an der Lane
-     * ...
-     * SCC_Three: Diese ist für 3 Spieler gedacht --> max. 20 Creep Units laufen pro Lane
-	 * ...
-     * SCC_Six: Diese ist für 6 Spieler gedacht --> max. 10 Creep Units laufen pro Lane
+     * SCC_One:		1 Player  --> max. 60 creep units per lane
+     * SCC_Two: 	2 Players --> max. 30 creep units per lane
+     * SCC_Three: 	3 Players --> max. 20 creep units per lane
+	 * SCC_Four: 	4 Players --> max. 15 creep units per lane
+	 * SCC_Five: 	5 Players --> max. 12 creep units per lane
+     * SCC_Six: 	6 Players --> max. 10 creep units per lane
 	 *
      * Durch die Reduzierung der Einheiten je nach Forsaken Spieleranzahl, müssen die HP der Creep Units je nach akt.
      * Runde erhöht werden, da das Holzeinkommen und die Stärker der Tower nicht angepasst werden.
@@ -819,39 +820,39 @@ scope CreepConfigs
 		implement Round
 		
 		method getRounds takes nothing returns integer
-		return thistype.rounds
+			return thistype.rounds
 		endmethod
 		
 		method getIterator takes integer round returns integer
-		return thistype.iterator[round]
+			return thistype.iterator[round]
 		endmethod
 		
 		method getUnitIndex takes integer iterator, integer round returns integer
-		return S2I(getDataFromString(thistype.ids[round], iterator))
+			return S2I(getDataFromString(thistype.ids[round], iterator))
 		endmethod
 		
 		method getUnitAmount takes integer iterator, integer round returns integer
-		return S2I(getDataFromString(thistype.amount[round], iterator))
+			return S2I(getDataFromString(thistype.amount[round], iterator))
 		endmethod
 		
 		method getInterval takes nothing returns real
-		return thistype.interval
+			return thistype.interval
 		endmethod
 		
 		method getPause takes nothing returns real
-		return thistype.pause
+			return thistype.pause
 		endmethod
 		
 		method getCount takes nothing returns integer
-		return thistype.count
+			return thistype.count
 		endmethod
 		
 		method getRoundTimer takes nothing returns real
-		return thistype.roundTimer
+			return thistype.roundTimer
 		endmethod
 		
 		method getStartNextRound takes nothing returns integer
-		return thistype.startNextRound
+			return thistype.startNextRound
 		endmethod
 		
 		static method onInit takes nothing returns nothing
@@ -971,53 +972,4 @@ scope CreepConfigs
 		set thistype.iterator[20] = 10
 		endmethod
 	endstruct
-	
-	/*
-	 * Custom Creep Config
-	 */
-	 //1 Spieler
-    /*struct CustomCreepConfig
-	
-		static integer array id
-        static integer array amount //How many Creeps should be spawn per Id?
-        static integer array iterator //Need for the amount of creep types
-        static integer count //How many spawns per Creep Unit
-        static real interval //delay between each spawned unit
-        
-        method getIterator takes integer round returns integer
-            return .iterator[round]
-        endmethod
-        
-        method getUnitIndex takes integer iterator, integer round returns integer
-            return S2I(getDataFromString(.id[round], iterator))
-        endmethod
-        
-        method getUnitAmount takes integer iterator, integer round returns integer
-            return S2I(getDataFromString(.amount[round], iterator))
-        endmethod
-        
-        method getInterval takes nothing returns real
-            return .interval
-        endmethod
-        
-        method getCount takes nothing returns integer
-            return .count
-        endmethod
-        
-        static method onInit takes nothing returns nothing
-            //Nach welchem Rythmus werden die Einheiten pro Lane gespawnt?
-            set .interval = 4.0
-            //Wie viele Creeps werden pro Interval gespawnt?
-            set .count = 1
-            
-            set .id[0] = 'o00F'
-            set .amount[0] = "1,"
-            set .iterator[0] = 3
-            
-            
-        endmethod
-        
-    endstruct*/
-
-
 endscope

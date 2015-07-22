@@ -9,7 +9,7 @@ scope WardenSystem initializer init
         //Interval before a new warden spawns
         private constant real INTERVAL = 2.5
         //Life Time
-        private real LIFE_TIME = 20.0
+        private real LIFE_TIME = 30.0
         //Fade duration
         private constant real ARGB_DURATION = 2.5
         private constant string ORDER_ATTACKMOVE = "attack"

@@ -72,20 +72,13 @@ library WayPointSystem uses AnaMoveSys, UnitMaxState
             local unit u = GetTriggerUnit()
             local player p = GetOwningPlayer(u)
             local integer pid = GetPlayerId(p)
-            local integer abiId = 0
             local integer mana = 0
             
             call SetUnitPathing(u, true)
             call SetUnitPosition(u, GetUnitX(u), GetUnitY(u))
             //set new HP for the AoS Part
             call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, I2R(SharedObjects.getUnitMaxLife(SharedObjects.getUnitIndex(u), true)))
-            //creep unit has an ability?
-            set abiId = SharedObjects.getUnitAbility(SharedObjects.getUnitIndex(u)) 
-            if abiId != -1 then
-                //Creep F?higkeit f?r AoS Teil aktivieren indem man ihr die Abi. wieder gibt
-                call UnitAddAbility(u, abiId)
-                call SetUnitAbilityLevel(u, abiId, 1)
-            endif
+            
             set mana = SharedObjects.getUnitMaxMana(SharedObjects.getUnitIndex(u)) 
             if mana > 0 then
                 call SetUnitMaxState(u, UNIT_STATE_MAX_MANA, I2R(mana))
@@ -201,7 +194,7 @@ library WayPointSystem uses AnaMoveSys, UnitMaxState
                 set i = i + 1
             endloop
             
-            //OnEnter Event f?r den Final Point der TD-Ways damit die Units dann den AoS Teil ablaufen
+            //OnEnter Event für den Final Point der TD-Ways damit die Units dann den AoS Teil ablaufen
             set onEnter = CreateTrigger()
             call TriggerRegisterEnterRectSimple(onEnter, gg_rct_EndOfTD)
             call TriggerAddCondition(onEnter, Condition(function WayPointSystem.onEnterCondition))

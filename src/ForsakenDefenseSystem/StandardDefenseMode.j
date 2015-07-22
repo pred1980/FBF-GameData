@@ -1,23 +1,27 @@
 scope StandardDefenseMode
 	/*
      * Changelog: 
-	 *     02.05.2015: Integrated SpellHelper for filtering
+	 *     	02.05.2015: Integrated SpellHelper for filtering
+	 *		23.06.2015: Added Spawn Limiter
      */
     globals
         //saves all factors from the excel file (Forsaken Defense System)
         private constant hashtable FACTORS = InitHashtable()
         private constant hashtable SAVED_FACTORS = InitHashtable()
         private constant hashtable UNIT_DATA = InitHashtable()
-        //****The Boni to HP and Damage for each Round a Creep is used
+        
+		//****The Boni to HP and Damage for each Round a Creep is used
         private constant integer INCREASED_HP_AOS_PER_ROUND = 55
         private constant integer INCREASED_DAMAGE_PER_ROUND = 7
         //private constant real MANA_MULTIPLIER = 0.02
+		
 		//Wie viele Forsaken Verteidigungseinheiten gibt es?
         private constant integer MAX_UNDEAD = 8 
         private constant string SPAWN_EFFECT = "Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton.mdl"
 		private constant integer MAX_SPAWN_POINTS = 6
 		private constant integer MAX_SPAWN_AREAS = 4
         private rect array SPAWN_RECTS[MAX_SPAWN_POINTS][MAX_SPAWN_AREAS]
+		
 		//Should the units be removed after every round?
         private constant boolean REMOVE_CREEPS = true 
         private constant string EFFECT = "Abilities\\Spells\\NightElf\\Blink\\BlinkCaster.mdl"
@@ -32,113 +36,113 @@ scope StandardDefenseMode
 		//prozentualler Wert zum erhöhen pro Forsaken Creep Einheit
         private real array INCREASE 
         
-        //Ist die Verteidigung aktiviert oder nicht?
+        //Activate/Deactivate Defense 
+		//SET FALSE ONLY FOR TESTING!!!
         private constant boolean ACTIVATED = true
+		
+		//How much units will spawn in comparison to the attack units?
+		private constant integer SPAWN_LIMITER = 30 //units
     endglobals
     
-    //Diese Funktion gibt den Spawn Point zurück wo die Einheit gespawnt werden soll ( abh. von der Runde )
-    private function getSpawnPoint takes real rndVal returns integer
-		local integer i = 1
-		local integer index = 0
-		local real val = 0.00
+	private struct SpawnUnit
+		//Diese Funktion gibt den Spawn Point zurück wo die Einheit gespawnt werden soll ( abh. von der Runde )
+		private static method getSpawnPoint takes real rndVal returns integer
+			local integer i = 1
+			local integer index = 0
+			local real val = 0.00
+			
+			loop
+				exitwhen i > MAX_SPAWN_POINTS or index > 0
+				set val = val + DefenseCalc.getValue(RoundSystem.actualRound, i)
+				if rndVal <= val then
+					set index = i
+				endif
+				//Durch ungenauer Werte kann der Fall eintreten, dass der gespeicherte Werte trotzdem kleiner ist
+				//als der RandomValue, dann wird immer der letzte Spawn Point genutzt
+				if i == MAX_SPAWN_POINTS and index == 0 then
+					set index = MAX_SPAWN_POINTS
+				endif
+				
+				set i = i + 1
+			endloop
+			
+			return index
+		endmethod
 		
-        loop
-			exitwhen i > MAX_SPAWN_POINTS or index > 0
-			set val = val + DefenseCalc.getValue(RoundSystem.actualRound, i)
-            if rndVal <= val then
-				set index = i
-			endif
-			//Durch ungenauer Werte kann der Fall eintreten, dass der gespeicherte Werte trotzdem kleiner ist
-			//als der RandomValue, dann wird immer der letzte Spawn Point genutzt
-			if i == MAX_SPAWN_POINTS and index == 0 then
-				set index = MAX_SPAWN_POINTS
+		//Diese function erstellt die Einheit an der entsprechenden Stelle
+		private static method spawnUnit takes integer id, integer index returns nothing
+			local unit u = null
+			local integer unitLife = 0
+			local integer damage = 0
+			local integer rnd1 = 0
+			local integer rnd2 = GetRandomInt(0, MAX_SPAWN_AREAS - 1)
+			local boolean b = false
+			local real x = 0.00
+			local real y = 0.00
+			
+				//Wenn nur Spieler auf der Forsaken Seite sind...
+			if (Game.isOneSidedGame()) then
+				set rnd1 = GetRandomInt(0, MAX_SPAWN_POINTS - 1)
+			else
+				//Wenn es Spieler auf beiden Seiten gibt...
+				set rnd1 = getSpawnPoint(GetRandomReal(0,100)) - 1
 			endif
 			
-			set i = i + 1
-		endloop
-		
-        return index
-	endfunction
-    
-    //Diese function erstellt die Einheit an der entsprechenden Stelle
-    private function spawnUnit takes integer id, integer index returns nothing
-        local unit u = null
-        local integer unitLife = 0
-        local integer damage = 0
-        local integer rnd1 = 0
-		local integer rnd2 = GetRandomInt(0, MAX_SPAWN_AREAS - 1)
-        local boolean b = false
-        local real x = 0.00
-        local real y = 0.00
-		
-			//Wenn nur Spieler auf der Forsaken Seite sind...
-		if (Game.isOneSidedGame()) then
-			set rnd1 = GetRandomInt(0, MAX_SPAWN_POINTS - 1)
-		else
-			//Wenn es Spieler auf beiden Seiten gibt...
-			set rnd1 = getSpawnPoint(GetRandomReal(0,100)) - 1
-		endif
-		
-		loop
-            exitwhen b
-            if SPAWN_RECTS[rnd1][rnd2] != null then
-                set b = true
-            else
-                set rnd2 = GetRandomInt(0, MAX_SPAWN_AREAS - 1)
-            endif
-        endloop
-		
-        //Zufalls x/y postion ermitteln
-        set x = GetRandomReal(GetRectMinX(SPAWN_RECTS[rnd1][rnd2]), GetRectMaxX(SPAWN_RECTS[rnd1][rnd2]))
-        set y = GetRandomReal(GetRectMinY(SPAWN_RECTS[rnd1][rnd2]), GetRectMaxY(SPAWN_RECTS[rnd1][rnd2]))
-        set u = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), id, x, y, 0)
-        set unitLife = S2I(getDataFromString(LoadStr(UNIT_DATA, RoundSystem.actualRound, index), 0))
-        set damage = S2I(getDataFromString(LoadStr(UNIT_DATA, RoundSystem.actualRound, index), 1))
-        call DestroyEffect(AddSpecialEffect(SPAWN_EFFECT, GetUnitX(u), GetUnitY(u)))
-        
-        static if REMOVE_CREEPS then
-            call ForsakenUnits.add(u)
-        endif
-        
-        //set HP
-        call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, unitLife)
-        call SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-        //set Damage
-        call TDS.addDamage(u, damage)
-    endfunction
-    
-    //Diese Methode setzt alle gez?hlten Faktoren f?r die neue Runde auf 0
-    private function resetFactors takes nothing returns nothing
-        //call FlushParentHashtable(SAVED_FACTORS)
-    endfunction
-    
-    private function countFactorForUnit takes unit creepUnit returns nothing
-        local real unitLifePercent = GetUnitState(creepUnit, UNIT_STATE_LIFE) / GetUnitState(creepUnit, UNIT_STATE_MAX_LIFE)
-        local integer row = GetUnitTypeId(creepUnit)
-        local real factor = 0.00
-        local integer unitId = 0
-        local integer i = 0
-        local real savedFactor = 0.00
-        loop
-            exitwhen i > MAX_UNDEAD
-			set factor = LoadReal(FACTORS, i, row) * unitLifePercent
-            set savedFactor = LoadReal(SAVED_FACTORS, i, row)
-            set savedFactor = savedFactor + factor
-            call SaveReal(SAVED_FACTORS, i, row, savedFactor)
-			//value > 1.0 ? --> send undead unit
-            if (savedFactor >= 1.0) then
-				//reduce value by 1
-                call SaveReal(SAVED_FACTORS, i, row, (savedFactor - 1.0))
-                //get unit ID which concerning to the factor
-                set unitId = unitIds[i]
-                //spawn unit
-                static if ACTIVATED then
-			        call spawnUnit(unitId, i)
-                endif
-            endif
-            set i = i + 1
-        endloop
-    endfunction
+			loop
+				exitwhen b
+				if SPAWN_RECTS[rnd1][rnd2] != null then
+					set b = true
+				else
+					set rnd2 = GetRandomInt(0, MAX_SPAWN_AREAS - 1)
+				endif
+			endloop
+			
+			//Zufalls x/y postion ermitteln
+			set x = GetRandomReal(GetRectMinX(SPAWN_RECTS[rnd1][rnd2]), GetRectMaxX(SPAWN_RECTS[rnd1][rnd2]))
+			set y = GetRandomReal(GetRectMinY(SPAWN_RECTS[rnd1][rnd2]), GetRectMaxY(SPAWN_RECTS[rnd1][rnd2]))
+			set u = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), id, x, y, 0)
+			set unitLife = S2I(getDataFromString(LoadStr(UNIT_DATA, RoundSystem.actualRound, index), 0))
+			set damage = S2I(getDataFromString(LoadStr(UNIT_DATA, RoundSystem.actualRound, index), 1))
+			call DestroyEffect(AddSpecialEffect(SPAWN_EFFECT, GetUnitX(u), GetUnitY(u)))
+			
+			static if REMOVE_CREEPS then
+				call ForsakenUnits.add(u)
+			endif
+			
+			//set HP
+			call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, unitLife)
+			call SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
+			//set Damage
+			call TDS.addDamage(u, damage)
+		endmethod
+	
+		static method countFactorForUnit takes unit creepUnit returns nothing
+			local real unitLifePercent = GetUnitState(creepUnit, UNIT_STATE_LIFE) / GetUnitState(creepUnit, UNIT_STATE_MAX_LIFE)
+			local integer row = GetUnitTypeId(creepUnit)
+			local real factor = 0.00
+			local integer unitId = 0
+			local integer i = 0
+			local real savedFactor = 0.00
+			
+			loop
+				exitwhen i > MAX_UNDEAD
+				set factor = LoadReal(FACTORS, i, row) * unitLifePercent
+				set savedFactor = LoadReal(SAVED_FACTORS, i, row)
+				set savedFactor = savedFactor + factor
+				call SaveReal(SAVED_FACTORS, i, row, savedFactor)
+				//value > 1.0 ? --> spawn forsaken unit
+				if (savedFactor >= 1.0) then
+					//reduce value by 1
+					call SaveReal(SAVED_FACTORS, i, row, (savedFactor - 1.0))
+					//get unit ID which concerning to the factor
+					set unitId = unitIds[i]
+					//spawn unit
+					call spawnUnit(unitId, i)
+				endif
+				set i = i + 1
+			endloop
+		endmethod
+	endstruct
     
     struct ForsakenUnits
         static group g
@@ -217,9 +221,7 @@ scope StandardDefenseMode
             call initUnitFactors()
             call initValues()
             call initRects()
-            call resetFactors()
             call DefenseCalc.initialize()
-            
         endmethod
         
         /*
@@ -1101,11 +1103,12 @@ scope StandardDefenseMode
          */
         
         static method onEnterCondition takes nothing returns boolean
-            return GetOwningPlayer(GetTriggerUnit()) == Player(bj_PLAYER_NEUTRAL_VICTIM)
+            return  GetOwningPlayer(GetTriggerUnit()) == Player(bj_PLAYER_NEUTRAL_VICTIM) and /*
+			*/		ForsakenUnits.getCount() <= SPAWN_LIMITER and ACTIVATED	
         endmethod
         
         static method onEnterAction takes nothing returns nothing
-            call countFactorForUnit(GetTriggerUnit())
+            call SpawnUnit.countFactorForUnit(GetTriggerUnit())
         endmethod
          
         private static method initRects takes nothing returns nothing
@@ -1234,7 +1237,7 @@ scope StandardDefenseMode
             loop
                 exitwhen i > MAX_UNDEAD
                 if unitId == LoadInteger(UNIT_DATA, 0, i) then
-                    return S2I(getDataFromString(bounty[i], RoundType.current))
+                    return S2I(getDataFromString(bounty[i], GameType.current))
                 endif
                 set i = i + 1
             endloop

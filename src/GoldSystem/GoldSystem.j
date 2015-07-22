@@ -13,8 +13,6 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
         
         private constant integer MAX_STREAK = 20
         private integer array STREAK_BONI
-        
-        private constant integer GOLD_LOSS_MULTIPLIER = 70
     endglobals
 	
 	globals
@@ -47,11 +45,6 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
             return HERO_KILL_BONI + (GetHeroLevel(killed) * HERO_KILL_MULTIPIER)
         endmethod
         
-        //returns the Gold who loses the Player for his killed Hero
-        private static method getGoldLossForKilledHero takes unit killed returns integer
-            return GetHeroLevel(killed) * GOLD_LOSS_MULTIPLIER
-        endmethod
-        
         //returns the Bonus Gold(Bounty) a killed Creep Unit
         private static method getBonusForCreep takes unit killed returns integer
             return GET_UNIT_VALUE(GetUnitTypeId(killed), 3)
@@ -63,7 +56,6 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
             local integer pidKiller = GetPlayerId(GetOwningPlayer(killer))
             local integer pidKilled = GetPlayerId(GetOwningPlayer(killed))
             local integer gold = 0
-            local integer goldloss = 0
             local integer streak = 0
             local string deathString = ""
             
@@ -71,7 +63,6 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
 			    //is a Hero of a Player or is a normal unit?
                 if killed == BaseMode.pickedHero[pidKilled] then
                     set gold = getBonusForHero(killed, killer)
-                    set goldloss = getGoldLossForKilledHero(killed)
                     set streak = KillStreakSystem.getKillStreak(GetOwningPlayer(killed))
 
 					//Textausgabe zusammenbauen
@@ -80,16 +71,11 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
 					endif
 					set deathString = deathString + GetPlayerNameColored(Player(pidKiller), false) + " just killed " + GetPlayerNameColored(Player(pidKilled), false) + " for " + "|cffffcc00" + I2S(gold) + "|r gold!"
 					
-					//Gibt den akt. Streak des gekillten Spielers zur?ck
+					//Gibt den akt. Streak des gekillten Spielers zurück
 					if KillStreakSystem.getStreakHasMessage(streak) then
 						set deathString = deathString + " Killed Streak Bonus: " + "(|cffffcc00+" + I2S(BonusGoldOnStreak.getStreakBonus(streak)) + ")|r"
 					endif
 				
-					//remove gold for the killed hero
-					call Game.playerRemoveGold(pidKilled, goldloss)
-					//Show loss gold over the killed
-					call TextTagLossGold(killed, goldloss, GetOwningPlayer(killed))
-					
 					//Ist der Killer ein Spieler?
 					if GetPlayerController(GetOwningPlayer(killer)) == MAP_CONTROL_USER then
 						//add Gold and Streak Gold for the Killer

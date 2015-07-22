@@ -39,7 +39,7 @@ scope MiscTutorials
             local real y = 0.00
             
             set .p = p
-            set .shop = CoalitionShopSystem.getShop(.p)
+            set .shop = UnitShopSystem.getShop(.p)
             set .hero = hero
             set .showTutorial[GetPlayerId(.p)] = true
             set x = GetUnitX(.shop)
