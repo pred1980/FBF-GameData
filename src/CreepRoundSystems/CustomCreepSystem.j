@@ -61,7 +61,8 @@ scope CustomCreepSystem
 			set t = null
 		endmethod
 		
-		private static method createShop takes integer pId, integer posId, trigger t, integer shopId returns nothing
+		private static method createShop takes integer pId, integer posId, integer shopId returns nothing
+			local trigger t = CreateTrigger()
 			local unit shop = CreateUnit(Player(pId), shopId, position[posId][0], position[posId][1], FACING[posId])
 			
 			call TriggerRegisterUnitEvent( t, shop, EVENT_UNIT_SELL )
@@ -69,11 +70,11 @@ scope CustomCreepSystem
 			call TriggerAddAction(t, function thistype.onShopSell)
 			
 			call registerOnUnitInRange(shop)
+			
+			set t = null
 		endmethod
 	
 		static method initialize takes nothing returns nothing
-			local trigger t = CreateTrigger()
-			
 			//Unit facing
 			//Orc|Dassir Summons
             set FACING[0] = 0.00
@@ -93,9 +94,9 @@ scope CustomCreepSystem
 			set position[2][0] = -300.2 
             set position[2][1] = -11450.3
 			
-			call createShop(PLAYER_NEUTRAL_PASSIVE, 0, t, ORC_SHOP_ID)
-			call createShop(PLAYER_NEUTRAL_PASSIVE, 1, t, NE_SHOP_ID)
-			call createShop(PLAYER_NEUTRAL_PASSIVE, 2, t, HUM_SHOP_ID)
+			call createShop(PLAYER_NEUTRAL_PASSIVE, 0, ORC_SHOP_ID)
+			call createShop(PLAYER_NEUTRAL_PASSIVE, 1, NE_SHOP_ID)
+			call createShop(PLAYER_NEUTRAL_PASSIVE, 2, HUM_SHOP_ID)
             
 		endmethod
 	

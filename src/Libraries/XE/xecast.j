@@ -433,17 +433,19 @@ struct xecast[MAXINSTANCES]
     endmethod
 
     private static method removeAbility takes nothing returns boolean
-     local unit u=GetTriggerUnit()
-         if(GetUnitUserData(u)!=0) then
-             call PauseUnit(u,true)
-         endif
+		local unit u=GetTriggerUnit()
+		
+        if (GetUnitUserData(u) != 0) then
+            call PauseUnit(u, true)
+        endif
         //This is necessary, picture a value for recycle delay that's higher than the casting time,
         //for example if the spell does dps, if you leave the dummy caster with the ability and it 
         //is owned by an AI player it will start casting the ability on player units, so it is
         // a good idea to pause it...
 
-     set u=null
-     return true
+		set u = null
+	 
+		return true
     endmethod
 
     //===================================================================================================

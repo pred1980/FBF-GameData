@@ -41,18 +41,21 @@ scope UnitShopSystem
 			set t = null
 		endmethod
 		
-		private static method createShop takes integer pId, integer posId, trigger t, integer shopId returns nothing
+		private static method createShop takes integer pId, integer posId, integer shopId returns nothing
+			local trigger t = CreateTrigger()
 			local unit shop = CreateUnit(Player(pId), shopId, POSITION[posId][0], POSITION[posId][1], FACING[posId])
 			
-			call TriggerRegisterUnitEvent( t, shop, EVENT_UNIT_SELL )
+			call TriggerRegisterUnitEvent( t, shop, EVENT_UNIT_SELL)
+			call TriggerAddAction(t, function thistype.onShopSell)
 			call SetUnitAnimation( shop, "channel" )
 			set SHOPS[GetPlayerId(Player(pId))] = shop
 			
 			call registerOnUnitInRange(shop)
+			
+			set t = null
 		endmethod
 		
         static method initialize takes nothing returns nothing
-            local trigger t = CreateTrigger()
 			local integer i = 0
 			
             //Richtung
@@ -84,42 +87,38 @@ scope UnitShopSystem
             set POSITION[6][1] = 4040.4 //y-pos of Zombie
             
             if Game.isPlayerInGame(6) then
-				call createShop(6, 2, t, HUMAN_SHOP_ID)
+				call createShop(6, 2, HUMAN_SHOP_ID)
             endif
             
             if Game.isPlayerInGame(7) then
-                call createShop(7, 3, t, HUMAN_SHOP_ID)
+                call createShop(7, 3, HUMAN_SHOP_ID)
             endif
             
             if Game.isPlayerInGame(8) then
-                call createShop(8, 0, t, ORC_SHOP_ID)
+                call createShop(8, 0, ORC_SHOP_ID)
             endif
             
             if Game.isPlayerInGame(9) then
-                call createShop(9, 1, t, ORC_SHOP_ID)
+                call createShop(9, 1, ORC_SHOP_ID)
             endif
             
             if Game.isPlayerInGame(10) then
-                call createShop(10, 4, t, NIGHTELF_SHOP_ID)
+                call createShop(10, 4, NIGHTELF_SHOP_ID)
             endif
             
             if Game.isPlayerInGame(11) then
-                call createShop(11, 5, t, NIGHTELF_SHOP_ID)
+                call createShop(11, 5, NIGHTELF_SHOP_ID)
             endif
 			
 			//Forsaken Shop
 			loop
 				exitwhen i > 5
 					if (Game.isPlayerInGame(i)) then
-						call createShop(bj_PLAYER_NEUTRAL_EXTRA, 6, t, FORSAKEN_SHOP_ID)
+						call createShop(bj_PLAYER_NEUTRAL_EXTRA, 6, FORSAKEN_SHOP_ID)
 						set i = 6
 					endif
 				set i = i + 1
 			endloop
-			
-            call TriggerAddAction( t, function thistype.onShopSell )
-            
-            set t = null
         endmethod
         
         static method getShop takes player p returns unit

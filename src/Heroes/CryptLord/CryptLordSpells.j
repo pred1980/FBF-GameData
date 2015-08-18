@@ -29,8 +29,10 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
      * Description: Gives your Grubs the ability to develop into the more powerful Carrion Beetles over 1 minute. 
                     They deal double damage and have more hp.
      * Changelog: 
-     *     06.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     29.03.2015: Integrated RegisterPlayerUnitEvent
+     *     	06.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     	29.03.2015: Integrated RegisterPlayerUnitEvent
+	 *		18.08.2015: Bugfix (wrong beetle to a grub)
+						Bugfix (wrong position for cocoons after a round end teleport)
      *
      */
     globals
@@ -76,8 +78,8 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         private integer array BEETLE_ID
         private integer array GRUB_ID
         
-        private real tempX
-        private real tempY
+        private real tempX = 0.00
+        private real tempY = 0.00
     endglobals
 
     private function IsCocoon takes unit u returns boolean
@@ -131,13 +133,18 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         call GroupRemoveUnit(cocoons,cocoon)
         call RemoveUnit(cocoon)
 		call DestroyEffect(AddSpecialEffect(FINISH_MORPH_EFFECT, x, y))
-        call GroupAddUnit(beetles,CreateUnit(lordOwner,BEETLE_ID[GetUnitAbilityLevel(lord,MORPH_ID)], x, y, GetRandomReal(0,360)))
+        call GroupAddUnit(beetles, CreateUnit(lordOwner,BEETLE_ID[GetUnitAbilityLevel(lord,SWARM_ID)], x, y, GetRandomReal(0,360)))
     endfunction
     
     private function morph_callback takes nothing returns nothing
         local timer t = GetExpiredTimer()
         local saveCocoon sc = GetTimerData(t)
-        call ReleaseTimer(t)
+        
+		//Get new x/y pos before eMorph
+		set sc.x = GetUnitX(sc.cocoon)
+        set sc.y = GetUnitY(sc.cocoon)
+		
+		call ReleaseTimer(t)
         if IsCocoon(sc.cocoon) then
             call eMorph.execute(sc.cocoon,sc.x,sc.y)
         endif
@@ -171,12 +178,16 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
     private function finishMorph takes nothing returns nothing
         local unit u = GetEnumUnit()
 		
-		call DestroyEffect(AddSpecialEffect(FINISH_BURROW_EFFECT, tempX, tempY))
-        call SetUnitX(u,tempX)
-        call SetUnitY(u,tempY)
-        call ShowUnit(u,true)
+		if (IsTerrainWalkable(tempX,tempY)) then
+			call DestroyEffect(AddSpecialEffect(FINISH_BURROW_EFFECT, tempX, tempY))
+        	call SetUnitX(u,tempX)
+			call SetUnitY(u,tempY)
+        endif
+		
+		call ShowUnit(u,true)
 		call UnitEnableAttack(u)
-        set u = null
+        
+		set u = null
     endfunction
     
     private function BurrowMove takes nothing returns nothing

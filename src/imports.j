@@ -85,6 +85,7 @@
 //! import "src\HeroSystems\HeroRepickSystem.j"
 //! import "src\HeroSystems\HeroRespawnSystem.j"
 //! import "src\HeroSystems\HeroStatsSystem.j"
+//! import "src\HeroSystems\HeroWarning.j"
 
 /* Item Systems */
 //! import "src\ItemSystems\UnitInventory.j"

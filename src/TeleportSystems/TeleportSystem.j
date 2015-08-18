@@ -1,4 +1,6 @@
 scope TeleportSystem initializer init
+	/* Teleporter in the Forsaken Area */
+	
 	globals
         private constant integer TELEPORTER_ID = 'n007' //Teleporter
 		private constant integer MAX_TELEPORTER_PLACES = 4

@@ -55,7 +55,7 @@ scope ForsakenTeleportSystem initializer init
                 if data.counter > 1 then
                     call SetUnitPosition(data.target, data.x, data.y)
             
-                    if (GetLocalPlayer() == data.p) then
+                    if ((GetLocalPlayer() == data.p) and IsUnitType(data.target, UNIT_TYPE_HERO)) then
                         call PanCameraToTimed(data.x, data.y, 0.00)
                     endif
 					call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(data.target), GetUnitY(data.target)))
@@ -103,7 +103,7 @@ scope ForsakenTeleportSystem initializer init
             
             call SetUnitPosition(u, x, y)
             
-            if (GetLocalPlayer() == p) then
+			if ((GetLocalPlayer() == p) and IsUnitType(u, UNIT_TYPE_HERO)) then
                 call PanCameraToTimed(x, y, 0.00)
             endif
             call Sound.runSoundForPlayer(GLOBAL_SOUND_3, p)
