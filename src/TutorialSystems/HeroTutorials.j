@@ -12,6 +12,7 @@ scope HeroTutorials initializer init
             local timer t = GetExpiredTimer()
             local thistype data = GetTimerData(t)
             
+			call SetAllUnitsInvulnerableOfPlayer(data.p, false)
             call cinematicOff(data.p)
             call ReleaseTimer(t)
 			call SetUserControlForceOn(GetForceOfPlayer(data.p))
@@ -26,12 +27,14 @@ scope HeroTutorials initializer init
             set .p = p
             call SetUserControlForceOff(GetForceOfPlayer(p))
 			call StopUnitsOfPlayer(p)
+			//Set all units invulnerable
+			call SetAllUnitsInvulnerableOfPlayer(.p, true)
 			
             call cinematicOn(.p)
             call PanCameraToTimedForPlayer(.p, x, y, .5)
             //Show Note Text Message
             call Usability.getTextMessage(0, 4, true, .p, true, 3.0)
-            //
+
             call SetTimerData(t, this)
             call TimerStart(t, 10.0 , false, function thistype.onFinishTutorial)
             
@@ -59,6 +62,7 @@ scope HeroTutorials initializer init
             if data.tiDialog != null then
                 call TimerDialogDisplayForPlayer(data.p, data.tiDialog, true)
             endif
+			call SetAllUnitsInvulnerableOfPlayer(data.p, false)
 			call SetUserControlForceOn(GetForceOfPlayer(data.p))
             call PanCameraToTimedForPlayer(data.p, data.x, data.y, .5)
             call cinematicOff(data.p)
@@ -74,6 +78,8 @@ scope HeroTutorials initializer init
             set .p = p
 			call SetUserControlForceOff(GetForceOfPlayer(p))
 			call StopUnitsOfPlayer(p)
+			//Set all units invulnerable
+			call SetAllUnitsInvulnerableOfPlayer(.p, true)
 			
             if tm != null then
                 set .tiDialog = tm
@@ -93,6 +99,7 @@ scope HeroTutorials initializer init
             //Show Note Text Message
             call Usability.getTextMessage(0, 0, true, .p, true, 5.0)
             call Usability.getTextMessage(0, 1, true, .p, true, 12.0)
+			
             call SetTimerData(t, this)
             call TimerStart(t, 25.0 , false, function thistype.onFinishTutorial)
             
@@ -119,6 +126,7 @@ scope HeroTutorials initializer init
             if data.tiDialog != null then
                 call TimerDialogDisplayForPlayer(data.p, data.tiDialog, true)
             endif
+			call SetAllUnitsInvulnerableOfPlayer(data.p, false)
 			call SetUserControlForceOn(GetForceOfPlayer(data.p))
             call PanCameraToTimedForPlayer(data.p, GetUnitX(BaseMode.pickedHero[GetPlayerId(data.p)]), GetUnitY(BaseMode.pickedHero[GetPlayerId(data.p)]), .5)
             call cinematicOff(data.p)
@@ -184,6 +192,8 @@ scope HeroTutorials initializer init
             set .count = 0
             call SetUserControlForceOff(GetForceOfPlayer(p))
 			call StopUnitsOfPlayer(p)
+			//Set all units invulnerable
+			call SetAllUnitsInvulnerableOfPlayer(.p, true)
 			
             if GetPlayerRace(p) == RACE_UNDEAD then
                 set .raceType = 0
@@ -203,7 +213,7 @@ scope HeroTutorials initializer init
             call PanCameraToTimedForPlayer( .p, x, y, .5 )
             //Show Note Text Message
             call Usability.getTextMessage(0, 2, true, .p, true, 3.0)
-            
+
 			call SetTimerData(t, this)
             call TimerStart(t, 4.5 , false, function thistype.onShowShops)
             

@@ -21,10 +21,12 @@ scope MiscTutorials
             local thistype this = GetTimerData(t)
             
 			call SetUserControlForceOn(GetForceOfPlayer(this.p))
-            call SetUnitInvulnerable(this.hero, false)
+            call SetAllUnitsInvulnerableOfPlayer(this.p, false)
+			
             if (GetLocalPlayer() == this.p) then
 				call SelectUnit(this.shop, true)
 			endif
+			
 			call SetUnitPathing(this.shop, false)
             call cinematicOff(this.p)
             call ReleaseTimer(t)
@@ -47,8 +49,10 @@ scope MiscTutorials
             call SetUserControlForceOff(GetForceOfPlayer(p))
 			call StopUnitsOfPlayer(p)
 			
+			//Set all units invulnerable
+			call SetAllUnitsInvulnerableOfPlayer(.p, true)
+			
             call cinematicOn(.p)
-            call SetUnitInvulnerable(.hero, true)
             call SelectUnit(.hero, false)
             call SetUnitPathing(.shop, true)
             call IssuePointOrder(.hero, "move", x, y)
@@ -56,7 +60,7 @@ scope MiscTutorials
 
             //Show Note Text Message
             call Usability.getTextMessage(0, 5, true, .p, true, 2.0)
-            //
+
             call SetTimerData(t, this)
             call TimerStart(t, 8.0 , false, function thistype.onFinishTutorial)
             

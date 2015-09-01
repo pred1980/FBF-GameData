@@ -628,5 +628,23 @@ library MiscFunctions requires GroupUtils
 		set u = null
 		call ReleaseGroup(g)
 	endfunction
+	
+	function SetAllUnitsInvulnerableOfPlayer takes player p, boolean b returns nothing
+		local group g = NewGroup()
+		local unit u
+		
+		call GroupEnumUnitsOfPlayer(g, p, null)
+		loop
+			set u = FirstOfGroup(g)
+			exitwhen u == null
+			if not (IsUnitType(u, UNIT_TYPE_PEON)) then
+				call SetUnitInvulnerable(u, b)
+			endif
+			call GroupRemoveUnit(g, u)
+		endloop
+		
+		set u = null
+		call ReleaseGroup(g)
+	endfunction
 
 endlibrary
