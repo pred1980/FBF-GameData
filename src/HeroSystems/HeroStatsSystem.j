@@ -300,7 +300,7 @@ scope HeroStatsSystem
             set .role[20] = "Magician"
             set .ms[20] = "350"
             set .cooldown[20] = "2.01"
-            set .range[20] = "800"
+            set .range[20] = "650"
             set .desc[20] = "An age old mage that became one with nature. He's Anahi's mentor and guide. Through his teachings, she and the Order of the Moon, became one of the gratest powers in the region. He's a legend come true, but he fears this battle will be his last service to his Goddess. A vital one, yet one that may require a great sacrifice."
             
             set .name[14] = "Priestess of the Moon"
