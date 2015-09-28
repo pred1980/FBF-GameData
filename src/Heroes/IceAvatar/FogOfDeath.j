@@ -1,12 +1,14 @@
 scope FogOfDeath initializer init
     /*
      * Description: Akull partially evaporates into a bone-chilling mist that deals damage over time to all units inside. 
-                    As long as the spell is active, hes mostly formless, making 50% of the attacks on him miss.
+                    As long as the spell is active, hes mostly formless, making 25% of the attacks on him miss.
      * Changelog: 
-     *     28.10.2013: Abgleich mit OE und der Exceltabelle
-	 *     20.03.2015: Added Spell-Immunity-Check in the "group_filter_callback method"
-	 *     17.04.2015: Integrated RegisterPlayerUnitEvent
-	                   Integrated SpellHelper for filtering
+     *     	28.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     	20.03.2015: Added Spell-Immunity-Check in the "group_filter_callback method"
+	 *     	17.04.2015: Integrated RegisterPlayerUnitEvent
+	                    Integrated SpellHelper for filtering
+	 *		04.09.2015: Reduced the chance to miss target from 50% to 25%
+						Increased the damage per seconds and level by 30%
      *
      */
     globals
@@ -14,7 +16,7 @@ scope FogOfDeath initializer init
         private constant integer DUMMY_ID = 'h005'
         private constant real SPELL_DURATION = 30.0
         private constant real INTERVAL = 5.0 
-        private constant integer CHANCE_TO_HIT = 50
+        private constant integer CHANCE_TO_HIT = 25
         
         //DOT
         private constant real DOT_TIME = .75
@@ -30,9 +32,9 @@ scope FogOfDeath initializer init
     endglobals
     
     private function MainSetup takes nothing returns nothing
-        set DAMAGE_PER_SECOND[1] = 20
-        set DAMAGE_PER_SECOND[2] = 30
-        set DAMAGE_PER_SECOND[3] = 40
+        set DAMAGE_PER_SECOND[1] = 26
+        set DAMAGE_PER_SECOND[2] = 39
+        set DAMAGE_PER_SECOND[3] = 52
     endfunction
 
     private struct FogOfDeath

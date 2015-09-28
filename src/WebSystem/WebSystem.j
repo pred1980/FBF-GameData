@@ -1,7 +1,10 @@
 scope WebSystem
+	/*
+     * Changelog: 
+     *		04.09.2015: Reduced the amount of webs per area from 5 to 4
+     */
 
     globals
-        private constant integer MAX_WEB_TYPES = 3
         private constant integer MAX_WEB_AREAS = 3
         private constant integer WEB_SMALL = 'e008'
         private constant integer WEB_MEDIUM = 'e00A'
@@ -11,7 +14,7 @@ scope WebSystem
         private constant integer WEB_SPELL_LARGE = 'A0AC'
         private constant integer WEB_AURA_BUFF_ID = 'B02I'
         private constant real LIFE_TIME = 230.0
-		private constant integer WEB_PER_RECT = 5 //Anzahl pro Gebiet
+		private constant integer WEB_PER_RECT = 4 //Anzahl pro Gebiet
         private constant real MIN_TIME = 185.0
         private constant real MAX_TIME = 255.0
         

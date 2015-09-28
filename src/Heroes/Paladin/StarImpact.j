@@ -5,6 +5,7 @@ scope StarImpact initializer init
      * Changelog: 
      *     	02.01.2014: Abgleich mit OE und der Exceltabelle
 	 *		27.04.2015: Integrated SpellHelper for filtering
+	 *		04.09.2015: Removed GetLocalPlayer which caused the game to desync
      */
     globals
         private constant integer SPELL_ID = 'A08O'
@@ -218,17 +219,13 @@ scope StarImpact initializer init
             
             //INDICATOR CREATION
             static if SHOW_IMPACT_INDICATOR then
-            
                 loop
                     exitwhen i >= bj_MAX_PLAYERS
-                    if IsPlayerAlly(Player(i), GetOwningPlayer(from.caster)) or Player(i) == GetOwningPlayer(from.caster) then
-                        if GetLocalPlayer() == Player(i) then
-                            set fx = IMPACT_INDICATOR_MODEL
-                        endif
+                    if (IsPlayerAlly(Player(i), GetOwningPlayer(from.caster)) or Player(i) == GetOwningPlayer(from.caster)) then
+                        set fx = IMPACT_INDICATOR_MODEL
                     endif
                     set i = i + 1
                 endloop
-                
                 
                 set i = 0
                 loop
@@ -238,7 +235,6 @@ scope StarImpact initializer init
                     set a = a + (2 * bj_PI / IMPACT_INDICATOR_AMOUNT)
                     set i = i + 1
                 endloop
-                
             endif
             
             call launch(spd, 0.00)

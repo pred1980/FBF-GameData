@@ -1,11 +1,13 @@
 scope HotCoals initializer init
     /*
      * eeve.org / Tower: Wealthy Fire Pit
-     * Description: Whenever the Rock kills a creep it gains 15%/20%/25% bonus crit chance for 8.5 seconds.
+     * Description: Whenever the Rock kills a creep it gains 15% bonus crit chance (2x) for 8.5 seconds.
      * Last Update: 18.12.2013
      * Changelog: 
-     *     18.12.2013: Abgleich mit OE und der Exceltabelle
-	 *     16.03.2014: Chancen von 30%/40%/50% auf 15%/20%/25% reduziert 
+     *      18.12.2013: Abgleich mit OE und der Exceltabelle
+	 *      16.03.2014: Chancen von 30%/40%/50% auf 15%/20%/25% reduziert
+	 *		17.09.2015: Decreased crit chance from 15%/20%/25% to 15%
+						Decreased crit damage multiplier from 3.5 to 2.0
      */
      
     globals

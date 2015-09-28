@@ -384,6 +384,10 @@ scope Game
             call Titan.onUpdate()
             //Remove Hero from battlefield
             call BaseMode.removeHero(id)
+			//Update King Mithas HP+Damage
+            call KingMithasCore.onUpdate()
+			//Update Forsaken Heart HP+Damage
+			call KingMod.onUpdate()
             //if Forsaken Player? --> Remove all Towers and the acolyt of this player
             if (GetPlayerRace(p) == RACE_UNDEAD) then
                 call TowerSystem.removeTowersAndBuilder(p)
@@ -420,7 +424,8 @@ scope Game
 					endif
 				endif
 				
-				if IsUnitType(killedUnit, UNIT_TYPE_HERO) then
+				if (IsUnitType(killedUnit, UNIT_TYPE_HERO) and /*
+				*/	GetPlayerController(GetOwningPlayer(killedUnit)) == MAP_CONTROL_USER) then
 					call PlayerStats.setPlayerDeath(killedPlayer)
 					//Update Multiboard (Deaths)
 					call FBFMultiboard.onUpdateDeaths(pidKilled)
@@ -430,7 +435,8 @@ scope Game
 					call HeroRespawn.create(killedUnit, true)
 				endif
 				
-				if IsUnitType(killingUnit, UNIT_TYPE_HERO) then
+				if (IsUnitType(killingUnit, UNIT_TYPE_HERO) and /*
+				*/	GetPlayerController(GetOwningPlayer(killingUnit)) == MAP_CONTROL_USER) then
 					call FBFMultiboard.onUpdateHeroKills(pidKilling)
 				endif
 				

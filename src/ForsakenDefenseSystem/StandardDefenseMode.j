@@ -3,6 +3,7 @@ scope StandardDefenseMode
      * Changelog: 
 	 *     	02.05.2015: Integrated SpellHelper for filtering
 	 *		23.06.2015: Added Spawn Limiter
+	 *		16.09.2015: Added new area for the defense units (at the end)
      */
     globals
         //saves all factors from the excel file (Forsaken Defense System)
@@ -18,7 +19,7 @@ scope StandardDefenseMode
 		//Wie viele Forsaken Verteidigungseinheiten gibt es?
         private constant integer MAX_UNDEAD = 8 
         private constant string SPAWN_EFFECT = "Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton.mdl"
-		private constant integer MAX_SPAWN_POINTS = 6
+		private constant integer MAX_SPAWN_POINTS = 7
 		private constant integer MAX_SPAWN_AREAS = 4
         private rect array SPAWN_RECTS[MAX_SPAWN_POINTS][MAX_SPAWN_AREAS]
 		
@@ -1155,6 +1156,12 @@ scope StandardDefenseMode
             set SPAWN_RECTS[5][1] = gg_rct_spawnRect17
             set SPAWN_RECTS[5][2] = gg_rct_spawnRect18
             set SPAWN_RECTS[5][3] = null
+			
+			//7 area (at the end)
+            set SPAWN_RECTS[5][0] = gg_rct_spawnRect19
+            set SPAWN_RECTS[5][1] = gg_rct_spawnRect20
+            set SPAWN_RECTS[5][2] = gg_rct_spawnRect21
+            set SPAWN_RECTS[5][3] = null
             
         endmethod
         
@@ -1295,7 +1302,7 @@ scope StandardDefenseMode
 		
 		static method update takes nothing returns nothing
 			local integer row = RoundSystem.actualRound
-			local integer column = 1 // 5 places for spawning Defense units ( SPAWN_RECTS )
+			local integer column = 1 // 7 places for spawning Defense units ( SPAWN_RECTS )
 			local real sum = 0.00
             local real temp = 0.00
             local integer coalitionHeroLevel = Game.getCoalitionHeroLevelSum()
@@ -1321,14 +1328,15 @@ scope StandardDefenseMode
         
         static method initialize takes nothing returns nothing
             set SIGMA[1] = 3.0 
-            set SIGMA[2] = 2.2
-            set SIGMA[3] = 1.5
+            set SIGMA[2] = 2.5
+            set SIGMA[3] = 1.8
             set SIGMA[4] = 1.5
-			set SIGMA[5] = 2.2 
-			set SIGMA[6] = 3.0
+			set SIGMA[5] = 1.8 
+			set SIGMA[6] = 2.5
+			set SIGMA[7] = 3.0
         endmethod
         
-        //index is the spawn place from 1 to 5
+        //index is the spawn place from 1 to 7
         static method getValue takes integer round, integer index returns real
             return LoadReal(WEIGHTS, index, round)
         endmethod

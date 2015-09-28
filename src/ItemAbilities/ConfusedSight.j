@@ -5,13 +5,13 @@ scope ConfusedSight initializer init
     globals
         private constant integer SPELL_ID= 'A03L'
         private constant integer WARD_ID = 'o002'
-        private constant real WARD_LIFE_TIME = 30
+        private constant real WARD_LIFE_TIME = 30.0
         private constant integer DUMMY_ID = 'e00H'
         private constant integer DUMMY_SPELL_ID = 'A03M'
         private constant real DUMMY_LIFE_TIME = .75
         private constant string SFX = "Abilities\\Spells\\Other\\Andt\\Andt.mdl"
         private constant string SFX_ATTPT = "origin"
-        private constant real RADIUS = 350
+        private constant real RADIUS = 500
         private constant integer MIN_TARGETS = 1
         private constant integer MAX_TARGETS = 4
         private constant real MIN_RANDOM_TIME = .75
@@ -19,17 +19,17 @@ scope ConfusedSight initializer init
         
     endglobals
 
-    private struct Spell
-        unit caster
-        unit ward
-        effect sfx
-        group targets
-        timer t
-        timer main
-        static Spell tempthis
+    private struct ConfusedSight
+        private unit caster
+        private unit ward
+        private effect sfx
+        private group targets
+        private timer t
+        private timer main
+        private static thistype tempthis
         
-        static method create takes unit caster returns Spell
-            local Spell this = Spell.allocate()
+        static method create takes unit caster returns thistype
+            local thistype this = thistype.allocate()
             local real x
             local real y
             
@@ -49,23 +49,23 @@ scope ConfusedSight initializer init
             call TimerStart(.t, GetRandomReal(MIN_RANDOM_TIME, MAX_RANDOM_TIME) , false, function thistype.onRandomTimerEnd)
             
             call UnitApplyTimedLife( .ward, 'BTLF', WARD_LIFE_TIME )
-            call GroupEnumUnitsInRange( .targets, GetUnitX(.ward), GetUnitY(.ward), RADIUS, function Spell.group_filter_callback )
+            call GroupEnumUnitsInRange( .targets, GetUnitX(.ward), GetUnitY(.ward), RADIUS, function thistype.group_filter_callback )
             
             return this
         endmethod
         
         static method onMainTimerEnd takes nothing returns nothing
-            local Spell this = GetTimerData(GetExpiredTimer())
+            local thistype this = GetTimerData(GetExpiredTimer())
             
             call this.destroy()
         endmethod
         
         static method onRandomTimerEnd takes nothing returns nothing
-            local Spell this = GetTimerData(GetExpiredTimer())
+            local thistype this = GetTimerData(GetExpiredTimer())
             
-            call ForGroup( GetRandomSubGroup(GetRandomInt(MIN_TARGETS, MAX_TARGETS), this.targets), function Spell.onGetTargets )
+            call ForGroup( GetRandomSubGroup(GetRandomInt(MIN_TARGETS, MAX_TARGETS), this.targets), function thistype.onGetTargets )
             if .ward != null then
-                call GroupEnumUnitsInRange( this.targets, GetUnitX(this.ward), GetUnitY(this.ward), RADIUS, function Spell.group_filter_callback )
+                call GroupEnumUnitsInRange( this.targets, GetUnitX(this.ward), GetUnitY(this.ward), RADIUS, function thistype.group_filter_callback )
                 call SetTimerData(GetExpiredTimer(), this)
                 call TimerStart(GetExpiredTimer(), GetRandomReal(MIN_RANDOM_TIME, MAX_RANDOM_TIME) , false, function thistype.onRandomTimerEnd)
             endif
@@ -87,7 +87,8 @@ scope ConfusedSight initializer init
         endmethod
         
         static method group_filter_callback takes nothing returns boolean
-            return IsUnitAlly( GetFilterUnit(), GetOwningPlayer( .tempthis.caster ) ) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_DEAD) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(GetFilterUnit(), UNIT_TYPE_MECHANICAL) and not IsUnitHidden(GetFilterUnit())
+			return (SpellHelper.isValidAlly(GetFilterUnit(), .tempthis.caster) and not /*
+			*/		IsUnitHidden(GetFilterUnit()))
         endmethod
         
          method onDestroy takes nothing returns nothing
@@ -104,15 +105,14 @@ scope ConfusedSight initializer init
     endstruct
 
     private function Actions takes nothing returns nothing
-        local Spell s = 0
-        
         if( GetSpellAbilityId() == SPELL_ID )then
-            set s = Spell.create( GetTriggerUnit() )
+            call ConfusedSight.create( GetTriggerUnit() )
         endif
     endfunction
 
     private function init takes nothing returns nothing
         local trigger t = CreateTrigger()
+		
         call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
         call TriggerAddAction( t, function Actions )
         call XE_PreloadAbility(DUMMY_SPELL_ID)

@@ -14,6 +14,7 @@ scope Items
         Item POTION_OF_INVISIBILITY = 0
         Item SPEED_UP_POTION = 0
 		Item TELEPORT_STONE = 0
+		Item TALISMAN_OF_TRANSLOCATION = 0
         
         /*
          * Undead Items
@@ -157,8 +158,9 @@ scope Items
 			set POTION_OF_INVISIBILITY = Item.create('I002', GetItemGold('I002'), ITEM_CLASS_BASIC, null, "ReplaceableTextures\\CommandButtons\\BTNPotionred.blp")
 			set SPEED_UP_POTION = Item.create('I006', GetItemGold('I006'), ITEM_CLASS_BASIC, null, "ReplaceableTextures\\CommandButtons\\BTNPoTN_Chill_Potion.blp")
 			set TELEPORT_STONE = Item.create('I00L', GetItemGold('I00L'), ITEM_CLASS_BASIC, null, "ReplaceableTextures\\CommandButtons\\BTNGem_Of_Teleportation.blp")
+			set TALISMAN_OF_TRANSLOCATION = Item.create('I00K', GetItemGold('I00K'), ITEM_CLASS_BASIC, null, "ReplaceableTextures\\CommandButtons\\BTNWAmulet.blp")
 			 
-			 
+			
 			/*
 			 * Init Undead Items
 			 */

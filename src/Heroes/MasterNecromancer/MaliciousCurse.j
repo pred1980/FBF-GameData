@@ -7,6 +7,8 @@ scope MaliciousCurse initializer init
      *     	05.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     	18.04.2015: Integrated RegisterPlayerUnitEvent
 						Integrated SpellHelper for filtering and damaging
+	 *		27.09.2015: Increased the cooldown from 12s to 18s
+						Changed the mana from 120 to 120/130/140/150/160
      *
      */
     globals
@@ -48,14 +50,14 @@ scope MaliciousCurse initializer init
     endfunction
     
     private struct MaliciousCurse
-        unit caster
-        unit target
-        unit dummy
-        boolean isLife
-        timer itrvTimer
-        timer durTimer
-        integer level = 0
-        static thistype tempthis = 0
+        private unit caster
+        private unit target
+        private unit dummy
+        private boolean isLife
+        private timer itrvTimer
+        private timer durTimer
+        private integer level = 0
+        private static thistype tempthis = 0
         
         method onDestroy takes nothing returns nothing
             call UnitRemoveAbility(.dummy,LBUFF_ABI)

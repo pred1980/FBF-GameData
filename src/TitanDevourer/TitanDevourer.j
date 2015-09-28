@@ -197,6 +197,7 @@ scope TitanDevourer
 			private ARGB left = 0
 			private ARGB right = 0
             private fogmodifier visibibleArea
+			private static thistype tempthis = 0
 			
 			method onDestroy takes nothing returns nothing
 				if KILL_IF_CASTER_DIES and not SpellHelper.isUnitDead(.targ) then
@@ -218,37 +219,6 @@ scope TitanDevourer
 				
 				set cast = null
 				set targ = null
-			endmethod
-			
-			static method create takes unit u1, unit u2 returns thistype
-				local thistype this = thistype.allocate()
-				local timer t = NewTimer()
-				local integer lvl = GetUnitAbilityLevel(u2, SPELL_ID)
-				
-				set this.cast = u2
-				set this.targ = u1
-				set .visibibleArea = CreateFogModifierRectBJ(true, GetOwningPlayer(this.targ), FOG_OF_WAR_VISIBLE, titanRect)
-                
-                call Sound.runSoundOnUnit(SOUND_1, this.targ)
-				call DestroyEffect(AddSpecialEffect(targetE, GetUnitX(GetSpellTargetUnit()),GetUnitY(GetSpellTargetUnit())))
-				call GroupAddUnit(isDevouring, this.cast)
-				
-                call UnitAddAbility(this.targ, SPELL_ID)
-				call SetUnitAbilityLevel(this.targ, SPELL_ID, 1)
-                call IssueImmediateOrder( this.targ, "windwalk" )
-                
-                call ShowUnit(this.targ, false)
-                call SetUnitPathing(this.targ, false)
-				call Stun_UnitEx(this.targ, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
-				
-				call SetTimerData(t,integer(this))
-				call TimerStart(t, DAMAGER_PER_INTERVAL, true, function thistype.onLoop)
-				
-				set t = null
-				
-				call onInitBar(this)
-				
-				return this
 			endmethod
 			
 			static method onLoop takes nothing returns nothing
@@ -302,6 +272,42 @@ scope TitanDevourer
             static method isUnitDevoured takes nothing returns boolean
                 return CountUnitsInGroup(isDevoured) > 0
             endmethod
+			
+			static method getDevouredUnit takes nothing returns unit
+				return .tempthis.targ
+			endmethod
+			
+			static method create takes unit u1, unit u2 returns thistype
+				local thistype this = thistype.allocate()
+				local timer t = NewTimer()
+				local integer lvl = GetUnitAbilityLevel(u2, SPELL_ID)
+				
+				set .cast = u2
+				set .targ = u1
+				set .visibibleArea = CreateFogModifierRectBJ(true, GetOwningPlayer(this.targ), FOG_OF_WAR_VISIBLE, titanRect)
+                
+                call Sound.runSoundOnUnit(SOUND_1, this.targ)
+				call DestroyEffect(AddSpecialEffect(targetE, GetUnitX(GetSpellTargetUnit()),GetUnitY(GetSpellTargetUnit())))
+				call GroupAddUnit(isDevouring, this.cast)
+				
+                call UnitAddAbility(this.targ, SPELL_ID)
+				call SetUnitAbilityLevel(this.targ, SPELL_ID, 1)
+                call IssueImmediateOrder( this.targ, "windwalk" )
+                
+                call ShowUnit(this.targ, false)
+                call SetUnitPathing(this.targ, false)
+				call Stun_UnitEx(this.targ, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
+				
+				call SetTimerData(t,integer(this))
+				call TimerStart(t, DAMAGER_PER_INTERVAL, true, function thistype.onLoop)
+				
+				set .tempthis = this
+				set t = null
+				
+				call onInitBar(this)
+				
+				return this
+			endmethod
 			
             static method onInit takes nothing returns nothing
                 set isDevouring = NewGroup()

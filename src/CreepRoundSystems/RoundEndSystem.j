@@ -8,7 +8,7 @@ scope RoundEndSystem
 
 	private struct TeleportBack
 	
-		readonly static real MIN_DISTANCE = 1000
+		private static real MIN_DISTANCE = 1000
 	
 		private static method filterCondition takes nothing returns boolean
 			local unit u = GetFilterUnit()
@@ -16,8 +16,10 @@ scope RoundEndSystem
 			
 			if (not SpellHelper.isUnitDead(u) and not /*
 					*/ IsUnitType(u, UNIT_TYPE_STRUCTURE) and not /*
-					*/ IsUnitType(u, UNIT_TYPE_PEON)) and not /*
-					*/ IsUnitType(u, UNIT_TYPE_MECHANICAL) then
+					*/ IsUnitType(u, UNIT_TYPE_PEON) and not /*
+					*/ IsUnitType(u, UNIT_TYPE_MECHANICAL) and /*
+					*/ GetPlayerController(GetOwningPlayer(u)) == MAP_CONTROL_USER and /*
+					*/ (Devour.getDevouredUnit() != u)) then
 					set b = true
 			endif
 			

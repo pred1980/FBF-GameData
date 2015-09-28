@@ -1,17 +1,17 @@
 scope Moonlight initializer init
     /*
-     * Description: The PotM concentrates all her strenght to call the mystic might of the moon making friendly 
-                    units invulnverable for a few seconds.
+     * Description: The Priestess concentrates all her strenght to call the mystic might of the moon giving friendly 
+					units a 30% chance to avoid attacks for a few seconds.
      * Changelog: 
-     *     07.01.2014: Abgleich mit OE und der Exceltabelle
-	 *     28.04.2015: Integrated RegisterPlayerUnitEvent
+     *     	07.01.2014: Abgleich mit OE und der Exceltabelle
+	 *     	28.04.2015: Integrated RegisterPlayerUnitEvent
+	 *		18.09.2015: Changed Invulnerability to an 30% Evasion Aura
      *
      */
     globals
         private constant integer SPELL_ID = 'A07F'
         private constant integer DUMMY_ID = 'h017'
-        private constant integer DUMMY_SPELL_ID = 'A07B'
-        private constant string ORDER_ID = "voodoo"
+        private constant integer DUMMY_SPELL_ID = 'S000'
         
         private real array DURATION
     endglobals
@@ -30,8 +30,7 @@ scope Moonlight initializer init
         local unit moon = CreateUnit(GetOwningPlayer(caster), DUMMY_ID, GetSpellTargetX(), GetSpellTargetY(), 0)
         
         call UnitAddAbility(moon, DUMMY_SPELL_ID)
-        call SetUnitAbilityLevel(moon, DUMMY_SPELL_ID, level)
-        call IssueImmediateOrder(moon, ORDER_ID)
+        call SetUnitAbilityLevel(moon, DUMMY_SPELL_ID, 1)
         call UnitApplyTimedLife(moon, 'BTLF', DURATION[level])
         
         set moon = null

@@ -39,35 +39,15 @@ scope HeroPickSystem
         static boolean array isRandom
         static boolean array gotRandomGold
         static string array origPlayerName
-        
-        static method onRandomEvent takes nothing returns boolean
-            local integer index = getRandomHero()
-            local unit u = GetTriggerUnit()
-            local player p = GetOwningPlayer(u)
-            local integer pid = GetPlayerId(p)
-            
-            loop
-                exitwhen onEnterFilter(GetTriggerUnit(), index)
-                set index = getRandomHero()
-            endloop
-            
-            if GameMode.getCurrentMode() == 0 then
-                call AllPick.createRandomHero( p, u, index )
-            endif
-            
-            //Update the Number of Players who selected a hero
-            call Game.updatePlayerCount()
-            return false
-        endmethod
-        
-        static method onEnterFilter takes unit u, integer index returns boolean
+		
+		static method onEnterFilter takes unit u, integer index returns boolean
             local player p = GetOwningPlayer(u)
             local race r = GetUnitRace(u)
             local race h = GetUnitRace(FirstOfGroup(GetUnitsOfPlayerAndTypeId(Player(PLAYER_NEUTRAL_PASSIVE), GET_HERO(index))))
             local boolean b = false
             
 			// General Condition
-			if (IsUnitType(u, UNIT_TYPE_PEON) and BaseMode.available[index]) then
+			if (BaseMode.available[index]) then
 				if ( r == RACE_UNDEAD ) then
 					if ( h == r ) then
 						set b = true
@@ -77,33 +57,72 @@ scope HeroPickSystem
 						set b = true
 					else
 						call Usability.getTextMessage(0, 7, true, p, true, 0.5)
+						if (r == RACE_HUMAN) then
+							call Usability.getTextMessage(0, 11, false, p, false, 4.0)
+						elseif (r == RACE_ORC) then
+							call Usability.getTextMessage(0, 12, false, p, false, 4.0)
+						else
+							call Usability.getTextMessage(0, 13, false, p, false, 4.0)
+						endif
 					endif
 				endif 
 			endif
 
-			
             return b
         endmethod
-    
+        
+        static method onRandomEvent takes nothing returns boolean
+            local integer index = getRandomHero()
+            local unit u = GetTriggerUnit()
+            local player p = GetOwningPlayer(u)
+            local integer pid = GetPlayerId(p)
+			local boolean b = false
+            
+			if (IsUnitType(u, UNIT_TYPE_PEON)) then
+				loop
+					exitwhen onEnterFilter(u, index)
+					set index = getRandomHero()
+				endloop
+				
+				if GameMode.getCurrentMode() == 0 then
+					call AllPick.createRandomHero( p, u, index )
+				endif
+				
+				//Update the Number of Players who selected a hero
+				call Game.updatePlayerCount()
+				
+				set b = true
+			endif
+			
+			set u = null
+			return b
+        endmethod
+        
         static method onEnterEvent takes nothing returns boolean
             local integer index = getRegionIndex(GetTriggeringRegion())
             local unit u = GetTriggerUnit()
             local player p = GetOwningPlayer(u)
             local integer pid = GetPlayerId(p)
+			local boolean b = false
             
-			if ( onEnterFilter(u, index) ) then
-                if GameMode.getCurrentMode() == 0 then
-                    call AllPick.step0( p, u, GetTriggeringRegion(), -1 )
-                endif
-                //Update the Number of Players who selected a hero
-                call Game.updatePlayerCount()
-                return true
-            endif
-            return false
+			if (IsUnitType(u, UNIT_TYPE_PEON)) then
+				if ( onEnterFilter(u, index) ) then
+					if GameMode.getCurrentMode() == 0 then
+						call AllPick.step0( p, u, GetTriggeringRegion(), -1 )
+					endif
+					//Update the Number of Players who selected a hero
+					call Game.updatePlayerCount()
+					set b = true
+				endif
+			endif
+            
+			set u = null
+			return b
         endmethod
         
         static method getRandomHero takes nothing returns integer
             local integer r = GetRandomInt(0, GET_MAX_HEROES() - 1)
+			
             loop
                 exitwhen BaseMode.available[r]
                 set r = GetRandomInt(0, GET_MAX_HEROES() - 1)

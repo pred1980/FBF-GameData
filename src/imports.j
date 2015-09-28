@@ -57,6 +57,7 @@
 //! import "src\Libraries\RectUtils.j"
 //! import "src\Libraries\RestoreMana.j"
 //! import "src\Libraries\TimedEffect.j"
+//! import "src\Libraries\DamageLog.j"
 
 /* XE Libraries */
 //! import "src\Libraries\XE\xepreload.j"
@@ -104,7 +105,7 @@
 //! import "src\ItemAbilities\LuckyRing.j"
 //! import "src\ItemAbilities\SeedOfLife.j"
 //! import "src\ItemAbilities\NetherCharge.j"
-//! import "src\ItemAbilities\RocketBoots.j"
+// import "src\ItemAbilities\RocketBoots.j"
 //! import "src\ItemAbilities\Entangle.j"
 //! import "src\ItemAbilities\CorruptedIcon.j"
 //! import "src\ItemAbilities\MetalHand.j"
@@ -112,6 +113,7 @@
 //! import "src\ItemAbilities\DemonicAmulet.j"
 //! import "src\ItemAbilities\SkullRod.j"
 //! import "src\ItemAbilities\ReflectionOfIllidan.j"
+//! import "src\ItemAbilities\TalismanOfTranslocation.j"
 
 /* Tome Damage System */
 //! import "src\TomeDamageSystem\TomeDamageSystem.j"
@@ -267,7 +269,7 @@
  * HEROES
  */
  
- //! import "src\Heroes\HerosWill.j"
+ // import "src\Heroes\HerosWill.j"
  
 /* Behemoth */
 //! import "src\Heroes\Behemoth\ExplosivTantrum.j"
@@ -358,6 +360,7 @@
 //! import "src\Heroes\PriestessOfTheMoon\Moonlight.j"
 //! import "src\Heroes\PriestessOfTheMoon\NightAura.j"
 //! import "src\Heroes\PriestessOfTheMoon\RevengeOwl.j"
+//! import "src\Heroes\PriestessOfTheMoon\EvasionAura.j"
 
 /* Naga Matriarch */
 //! import "src\Heroes\NagaMatriarch\TidalShield.j"

@@ -32,6 +32,9 @@ scope UsabilitySystem
         set NOTE_MESSAGES[8] = TYPE[0] + "Four new Towers are activated."
 		set NOTE_MESSAGES[9] = TYPE[0] + "Two new Teleportes are avaiable. Use them to teleport from one point to the next."
 		set NOTE_MESSAGES[10] = TYPE[0] + "The repick time is over. You can't pick another hero anymore."
+		set NOTE_MESSAGES[11] = "|cffffcc00You're a human player!|r Select one of the human heroes or a neutral like the Fire Panda or Ogre Warrior."
+		set NOTE_MESSAGES[12] = "|cffffcc00You're an orc player!|r Select one of the orc heroes or a neutral like the Giant Turtle or Naga Matriarch."
+		set NOTE_MESSAGES[13] = "|cffffcc00You're a nightelf player!|r Select one of the nightelf heroes or a neutral like the Ogre Warrior or Giant Turtle."
 		
         set WARN_MESSAGES[0] = TYPE[1] + "Do not pass this way - TURN AROUND!!! Walk through the teleporter in your base to be transported to the front."
 		

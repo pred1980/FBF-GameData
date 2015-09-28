@@ -443,6 +443,13 @@ scope HeroStatsSystem
                                 call ClearTextMessages()
                             endif
                             call Usability.getTextMessage(0, 6, true, p, true, 0.1)
+							if (r == RACE_HUMAN) then
+								call Usability.getTextMessage(0, 11, false, p, false, 5.0)
+							elseif (r == RACE_ORC) then
+								call Usability.getTextMessage(0, 12, false, p, false, 5.0)
+							else
+								call Usability.getTextMessage(0, 13, false, p, false, 5.0)
+							endif
                         endif
                     endif 
                     set i = GET_MAX_HEROES()

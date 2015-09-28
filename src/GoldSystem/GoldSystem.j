@@ -1,9 +1,15 @@
 library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
-
+	/*
+     * Changelog: 
+     *     	25.09.2015:	Changed gold income to 5gold/10s on both sides
+						Changed start gold to 500 on both sides
+	 *		
+     */
+	 
     globals
-        private constant integer STARTGOLD_FORSAKEN = 510
+        private constant integer STARTGOLD_FORSAKEN = 500
         private constant integer STARTLUMBER_FORSAKEN = 350
-        private constant integer STARTGOLD_COALITION = 450
+        private constant integer STARTGOLD_COALITION = 500
         private constant integer RANDOMGOLD = 150
     
         private constant integer HERO_KILL_BONI = 100
@@ -18,12 +24,12 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
 	globals
         //Gold Income
 		/*
-		 * Forsaken:  Alle 5s gibt es 2 Gold! Nach 1min == 24 | Nach 10min == 240 Gold
-		 * Coalition: Alle 5s gibt es 10 Gold! Nach 1min == 120 | Nach 10min == 1200 Gold 
+		 * Forsaken:  Alle 10s gibt es 5 Gold! Nach 1min == 30 | Nach 10min == 300 Gold
+		 * Coalition: Alle 10s gibt es 5 Gold! Nach 1min == 30 | Nach 10min == 300 Gold 
 		 */ 
-        private constant integer FORSAKEN_GOLD = 2
-        private constant integer COALITION_GOLD = 10
-        private constant real INCOME_INTERVAL = 5.00
+        private constant integer FORSAKEN_GOLD = 5
+        private constant integer COALITION_GOLD = 5
+        private constant real INCOME_INTERVAL = 10.00
     endglobals
     
     struct BaseGoldSystem

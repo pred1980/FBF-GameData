@@ -81,19 +81,23 @@ scope HeroRepickSystem
                             endif
                         endif
 
-                        set BaseMode.gotRandomGold[id] = false
-                        set BaseMode.isRandom[id] = false
+						//Was it a random hero?
+						if (BaseMode.gotRandomGold[id]) then
+							set BaseMode.gotRandomGold[id] = false
+							set BaseMode.isRandom[id] = false
+							//Remove Random Gold
+							call Game.playerRemoveGold(id, BaseGoldSystem.RANDOM_GOLD)
+						endif
                         
                         //reset Player Name
                         call SetPlayerName(p, BaseMode.origPlayerName[id])
-                        
+						
                         //Visuell Effect to the Hero
                         call eh(BaseMode.pickedHero[id], EFFECT)
                         call KillUnit(BaseMode.pickedHero[id])
                         call RemoveUnit(BaseMode.pickedHero[id])
                         set BaseMode.pickedHero[id] = null
                         //create hero ( repick )
-                        
                         set h = CreateUnit( Player(PLAYER_NEUTRAL_PASSIVE), GET_HERO(index), GET_HERO_REPICK_RECT_X(index), GET_HERO_REPICK_RECT_Y(index), GET_HERO_PICK_FACING(index) )
                         //add the hero as new selectable Hero
                         set BaseMode.selectableHero[index] = GetUnitTypeId(h)

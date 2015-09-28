@@ -22,16 +22,6 @@ scope HeroRespawnSystem
         return IsUnitType(u, UNIT_TYPE_HERO)
     endfunction
     
-    private struct Data
-        
-		
-		
-        
-        
-		
-		
-    endstruct 
-    
     struct HeroRespawn
 		private timer t
         private real time

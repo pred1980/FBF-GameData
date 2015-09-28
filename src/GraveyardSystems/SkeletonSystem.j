@@ -3,10 +3,17 @@ scope SkeletonSystem
      * Dieses System spawnt auf dem Friedhof in regelmaessigen Abstaenden 5 verschiedene Typen von
      * Skeletten
      */
+	 
+	 /*
+     * Changelog: 
+     *  	16.09.2015: Increased the amount of skeletons from 12 to 15
+	 *					Increased attack-graveyard-chance from 14% to 20%
+	 *		28.09.2015:	Increased the base hp of all skeletons by 100
+     */
 
     globals
         private integer array SKELETONS
-        private constant integer MAX_SKELETONS = 12
+        private constant integer MAX_SKELETONS = 15
         private constant real MIN_TIME = 90.0
         private constant real MAX_TIME = 150.0
         private constant integer INCREASED_HP_PER_ROUND = 55
@@ -15,12 +22,12 @@ scope SkeletonSystem
         private integer array START_HP
         private integer array START_DAMAGE
         private constant real LIFE_TIME = 120.0
-        //Diese Faktoren beschreibt die Erhoehung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
+        //Diese Faktoren beschreibt die Erhoehung der HP/Damage Werte je nach Spieleranzahl
         private constant real HP_FACTOR = 0.10
         private constant real DAMAGE_FACTOR = 0.15
         
         private rect array GRAVESTONE_SPAWN_RECTS
-        private constant real GRAVESTONE_ATTACK_RANGE = 500
+        private constant real GRAVESTONE_ATTACK_RANGE = 600
     endglobals
 
     private function MainSetup takes nothing returns nothing
@@ -30,17 +37,17 @@ scope SkeletonSystem
         set SKELETONS[3] = 'u024'
         set SKELETONS[4] = 'u025'
         
-        set START_HP[0] = 130
+        set START_HP[0] = 230
         set START_DAMAGE[0] = 45
-        set START_HP[1] = 155
+        set START_HP[1] = 255
         set START_DAMAGE[1] = 42
-        set START_HP[2] = 180
+        set START_HP[2] = 280
         set START_DAMAGE[2] = 50
-        set START_HP[3] = 195
+        set START_HP[3] = 295
         set START_DAMAGE[3] = 47
-        set START_HP[4] = 110
+        set START_HP[4] = 210
         set START_DAMAGE[4] = 40
-        set START_HP[5] = 140
+        set START_HP[5] = 240
         set START_DAMAGE[5] = 43
         
         set GRAVESTONE_SPAWN_RECTS[0] = gg_rct_GravestoneRect0
@@ -75,7 +82,7 @@ scope SkeletonSystem
         local real y = GetRandomReal(GetRectMinY(GRAVESTONE_SPAWN_RECTS[rectIndex]), GetRectMaxY(GRAVESTONE_SPAWN_RECTS[rectIndex]))
         local unit skeleton = null
         local destructable gravestone = null
-        local integer rnd = GetRandomInt(0,7) //12,5%
+        local integer rnd = GetRandomInt(0,5) //20%
 		
         loop
             exitwhen IsTerrainWalkable(x,y)
@@ -95,7 +102,7 @@ scope SkeletonSystem
         call DestroyEffect(AddSpecialEffect(SPAWN_EFFECT, GetUnitX(skeleton), GetUnitY(skeleton)))
         call UnitApplyTimedLife(skeleton, 'BTLF', LIFE_TIME)
         
-        //Greife den naechsten Gravestone an / 12,5% chance das angegriffen wird
+        //Attack next closest graveyard / 20% chance
         if rnd == 0 then
 			set gravestone = GetClosestDestructableInRange(x, y, GRAVESTONE_ATTACK_RANGE, Condition(function onFilterGraveyards))
             if gravestone != null then

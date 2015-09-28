@@ -1,9 +1,10 @@
 scope WormSystem initializer onInit
 	/*
-     * Last Update: 28.03.2014
      * Changelog: 
-     *     28.03.2014: Spawn Interval von 10s-20s auf 10s-30s erhoeht
-	 *                 Schaden pro Runde um 10% reduziert (von 75 auf 67) 
+     *  28.03.2014: Spawn Interval von 10s-20s auf 10s-30s erhoeht
+     *              Schaden pro Runde um 10% reduziert (von 75 auf 67)
+     *	15.09.2015: Changed damage from (200 + (actualRound*67)) to (actualRound * 200)
+					Increased the worm count from 4 to 5
      *
      */
     
@@ -23,7 +24,7 @@ scope WormSystem initializer onInit
         private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL // The damage type
         private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL // The attack type
         
-        private constant integer WORM_COUNT = 4
+        private constant integer WORM_COUNT = 5
         private constant real SPAWN_INTERVAL_MIN = 10.0
         private constant real SPAWN_INTERVAL_MAX = 30.0
         private constant integer ATTACK_COUNT = 1
@@ -35,8 +36,8 @@ scope WormSystem initializer onInit
         private constant real STUN_DURATION = 3.5
     endglobals
     
-    private constant function GetDamage takes integer round returns real
-        return 200.00 + (round * 67)
+    private function GetDamage takes integer round returns real
+        return I2R(round * 200)
     endfunction
     
     private constant function GetAOE takes nothing returns real
@@ -108,7 +109,7 @@ scope WormSystem initializer onInit
                     set this.tick   = this.tick + 1
                     return
                 endif
-                set this.last   = this.target
+                set this.last = this.target
             endif
             
             if this.target != null then
@@ -118,7 +119,6 @@ scope WormSystem initializer onInit
                     set y = GetUnitY(this.target) + WORM_DISTANCE * Sin(f* bj_DEGTORAD)
                     
                     call SetUnitFacing(this.worm, f + 180)
-                    //call StunUnitTimed(this.target, WAIT_TIME)
                     call Stun_UnitEx(this.target, STUN_DURATION, true, STUN_EFFECT, STUN_ATT_POINT)
                     
                     call SetUnitX(this.worm, x)
@@ -126,7 +126,7 @@ scope WormSystem initializer onInit
                 else
                     if not IsUnitType(this.last, UNIT_TYPE_HERO) then
                         //no hero - check hp
-                        if GetUnitLifePercent(this.last) <= KILL_FACTOR then
+                        if (GetUnitLifePercent(this.last) <= KILL_FACTOR) then
                             call SetUnitExploded(this.last, true)
                             call KillUnit(this.last)
                         endif

@@ -9,6 +9,7 @@ scope IceTornado initializer init
 	 *     	17.04.2015: Integrated RegisterPlayerUnitEvent
 						Integrated SpellHelper for damaging and filtering
 	 *		08.05.2015:	Bugfix: onDestroy()
+	 *		04.09.2015: Increased damage per level by 7%
      */
     globals
         private constant integer SPELL_ID = 'A04J'
@@ -27,7 +28,8 @@ scope IceTornado initializer init
 		
 		private real array DURATION
         private real array DAMAGE
-        private real MATRIX_MAJOR //Entries of the Rotational Matrix
+		//Entries of the Rotational Matrix
+        private real MATRIX_MAJOR 
         private real MATRIX_MINOR
     endglobals
     
@@ -40,11 +42,11 @@ scope IceTornado initializer init
         set DURATION[3] = 8
         set DURATION[4] = 8
         
-        set DAMAGE[0] = 69
-        set DAMAGE[1] = 95
-        set DAMAGE[2] = 132
-        set DAMAGE[3] = 167
-        set DAMAGE[4] = 190
+        set DAMAGE[0] = 74
+        set DAMAGE[1] = 102
+        set DAMAGE[2] = 141
+        set DAMAGE[3] = 179
+        set DAMAGE[4] = 203
         
         // end of user configuration        
         set theta = TwoPI/CRCL_PERIOD*TMR_INTERVAL //Angle the Tornado revolves around each interval
