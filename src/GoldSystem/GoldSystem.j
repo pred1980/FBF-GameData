@@ -1,7 +1,7 @@
 library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
 	/*
      * Changelog: 
-     *     	25.09.2015:	Changed gold income to 5gold/10s on both sides
+     *     	25.09.2015:	Changed gold income to 8 gold each 10s on both sides
 						Changed start gold to 500 on both sides
 	 *		
      */
@@ -24,11 +24,11 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
 	globals
         //Gold Income
 		/*
-		 * Forsaken:  Alle 10s gibt es 5 Gold! Nach 1min == 30 | Nach 10min == 300 Gold
-		 * Coalition: Alle 10s gibt es 5 Gold! Nach 1min == 30 | Nach 10min == 300 Gold 
+		 * Forsaken:  Every 10s you get 8 Gold! After 1min == 48 | Nach 10min == 480 Gold
+		 * Coalition: Every 10s you get 8 Gold! After 1min == 48 | Nach 10min == 480 Gold
 		 */ 
-        private constant integer FORSAKEN_GOLD = 5
-        private constant integer COALITION_GOLD = 5
+        private constant integer FORSAKEN_GOLD = 8
+        private constant integer COALITION_GOLD = 8
         private constant real INCOME_INTERVAL = 10.00
     endglobals
     
@@ -261,10 +261,10 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
         
         static method initialize takes nothing returns nothing
             set .time[0] = INCOME_INTERVAL
-            set .goldPerTime[0] = I2S(FORSAKEN_GOLD) + " gold/" + R2SW(.time[0],0,2) + "s"
+            set .goldPerTime[0] = I2S(FORSAKEN_GOLD) + " gold/" + I2S(R2I(.time[0])) + "s"
             
             set .time[1] = INCOME_INTERVAL
-            set .goldPerTime[1] = I2S(COALITION_GOLD) + " gold/" + R2SW(.time[1],0,2) + "s"
+            set .goldPerTime[1] = I2S(COALITION_GOLD) + " gold/" + I2S(R2I(.time[1])) + "s"
         endmethod
     
     endstruct

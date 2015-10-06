@@ -27,11 +27,19 @@ scope CreepSystemModule
                 exitwhen i > max
                 if Game.isPlayerInGame(i) then
                     set w = Wave.create(Player(bj_PLAYER_NEUTRAL_VICTIM), i, actualRound)
-                    call SetPlayerState(Player(i), PLAYER_STATE_RESOURCE_FOOD_USED, actualRound )
                 endif
                 set i = i + 1
             endloop
-            
+			
+			set i = 0
+			loop
+                exitwhen i == bj_MAX_PLAYER_SLOTS
+				if Game.isPlayerInGame(i) then
+					call SetPlayerState(Player(i), PLAYER_STATE_RESOURCE_FOOD_USED, actualRound )
+				endif
+                set i = i + 1
+            endloop
+			          
             call ClearTextMessages()
             call DisplayTimedTextToPlayer(GetLocalPlayer(),0.0 ,0.0 ,TEXT_DURATION , "|cffffcc00Round " + I2S(actualRound) +"|r\n" + "*** |cff679bf2" + RoundText.getTextOfRound(actualRound) + "|r ***")
         endmethod

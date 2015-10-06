@@ -37,10 +37,12 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
          * Changelog: 
          *     	03.11.2013: Abgleich mit OE und der Exceltabelle
 		 *     	23.03.2014: Zombie HP um 50% fuer alle erhoeht
-		 *                 Zombie Damage um 20% fuer alle erhoeht
-		 *                 Duration um 5s pro Level erhoeht
+		 *                 	Zombie Damage um 20% fuer alle erhoeht
+		 *                 	Duration um 5s pro Level erhoeht
 		 *     	26.03.2014: Anzahl der Zombies von 2/3/4/5/6 auf 2/2/3/3/4 
 		 *		29.04.2015: Integrated SpellHelper for filtering
+		 *		05.10.2015: Decreased amount of Zombies from 2/2/3/3/4 to 3 each level
+							Decreased duration from 15/20/25/30/35s to 15s each level
          *
          */
         globals
@@ -76,11 +78,11 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             set ZOMBIE_ID[3] = 'zom3'
             set ZOMBIE_ID[4] = 'zom4'
             
-            set ZOMBIE_SUMMON_AMOUNT[0] = 2
-            set ZOMBIE_SUMMON_AMOUNT[1] = 2//3
-            set ZOMBIE_SUMMON_AMOUNT[2] = 3//4
-            set ZOMBIE_SUMMON_AMOUNT[3] = 3//5
-            set ZOMBIE_SUMMON_AMOUNT[4] = 4//6
+            set ZOMBIE_SUMMON_AMOUNT[0] = 3
+            set ZOMBIE_SUMMON_AMOUNT[1] = 3
+            set ZOMBIE_SUMMON_AMOUNT[2] = 3
+            set ZOMBIE_SUMMON_AMOUNT[3] = 3
+            set ZOMBIE_SUMMON_AMOUNT[4] = 3
 			
 			set ZOMBIE_HP[0] = 225
             set ZOMBIE_HP[1] = 450
@@ -95,10 +97,10 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             set ZOMBIE_DAMAGE[4] = 54
             
             set ZOMBIE_DURATION[0] = 15
-            set ZOMBIE_DURATION[1] = 20
-            set ZOMBIE_DURATION[2] = 25
-            set ZOMBIE_DURATION[3] = 30
-            set ZOMBIE_DURATION[4] = 35
+            set ZOMBIE_DURATION[1] = 15
+            set ZOMBIE_DURATION[2] = 15
+            set ZOMBIE_DURATION[3] = 15
+            set ZOMBIE_DURATION[4] = 15
 			
 			set ZOMBIE_AURA_DAMAGE[0] = 7.5
             set ZOMBIE_AURA_DAMAGE[1] = 12.5

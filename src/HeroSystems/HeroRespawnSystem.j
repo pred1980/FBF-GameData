@@ -1,7 +1,11 @@
 scope HeroRespawnSystem
-
+	/*
+     * Changelog: 
+     *     01.10.2015: Increased the revivetime factor from 4 to 5 x Hero-Level
+     */
     globals
-        private constant integer SHORT_REVIVE = 'A077' // Dark Ranger's Ulti --> Falls damit gekillt, soll der Ally Hero nur 10s warten
+		// Dark Ranger's Ulti --> Falls damit gekillt, soll der Ally Hero nur 10s warten
+        private constant integer SHORT_REVIVE = 'A077' 
         private constant real REVIVE_TIME_MAX = 90.0
         private constant real REVIVE_TIME_START = 10.0
         private constant real REVIVE_TIME_PER_LEVEL = 5.0
@@ -9,7 +13,7 @@ scope HeroRespawnSystem
     endglobals
     
     private function GetAdjustedTime takes unit hero returns real
-        local real reviveTime =  4. * GetHeroLevel(hero)
+        local real reviveTime =  I2R(5 * GetHeroLevel(hero))
 		
 		if (reviveTime > REVIVE_TIME_MAX) then
 			return REVIVE_TIME_MAX
