@@ -1,7 +1,8 @@
 scope HeroRespawnSystem
 	/*
      * Changelog: 
-     *     01.10.2015: Increased the revivetime factor from 4 to 5 x Hero-Level
+     *     	01.10.2015: Increased the revivetime factor from 4 to 5 x Hero-Level
+	 *		12.10.2015: Removed SHORT_REVIVE from hero after revive
      */
     globals
 		// Dark Ranger's Ulti --> Falls damit gekillt, soll der Ally Hero nur 10s warten
@@ -37,9 +38,11 @@ scope HeroRespawnSystem
         private boolean eff
 		
 		method onDestroy takes nothing returns nothing
-			call ReleaseTimer(.t)
-            call DestroyLeaderboard(.l)
-			set .hero = null
+			call DestroyLeaderboard(.l)
+			call PauseTimer(.t)
+			call DestroyTimer(.t)
+			set t = null
+            set .hero = null
 		endmethod
 		
         static method onPeriodic takes nothing returns nothing
@@ -84,8 +87,9 @@ scope HeroRespawnSystem
 			set .y = GetRectCenterY(GET_HERO_RACE_START_RECT(GetPlayerRace(.p)))
 			set .eff = doEyecandy
 			
-			if GetUnitAbilityLevel(hero, SHORT_REVIVE) > 0 then
+			if GetUnitAbilityLevel(.hero, SHORT_REVIVE) > 0 then
 				set reviveTime = REVIVE_TIME_START
+				call UnitRemoveAbility(.hero, SHORT_REVIVE)
 			endif
 			
 			set .l = CreateLeaderboard()
@@ -93,7 +97,7 @@ scope HeroRespawnSystem
 			call PlayerSetLeaderboard(.p, .l )
 			call LeaderboardDisplay(.l, true )
 			
-			set .t = NewTimer()
+			set .t = CreateTimer()
 			set .time = reviveTime
 			call SetTimerData(.t, this)
 			call TimerStart(.t, 1.0, true, function thistype.onPeriodic)

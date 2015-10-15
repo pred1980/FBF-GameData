@@ -28,6 +28,20 @@ scope TowerSystem
         private constant integer ACOLYTE_III_ID = 'u006'
         private constant integer SELL = 'n005'
         private constant integer MAX_TOWERS = 33
+		
+		private constant integer TOWER_DATA_COLUMN_ID = 0
+        private constant integer TOWER_DATA_COLUMN_DAMAGE = 1
+        private constant integer TOWER_DATA_COLUMN_ABILITY = 2
+        private constant integer TOWER_DATA_COLUMN_LEVEL = 3
+        private constant integer TOWER_DATA_COLUMN_WOOD_COST = 4
+        private constant integer TOWER_DATA_COLUMN_CHILD_TOWER = 5
+		
+		private constant integer TOWER_SYSTEM_AI_TOP_LEFT = 0
+        private constant integer TOWER_SYSTEM_AI_TOP_RIGHT = 1
+        private constant integer TOWER_SYSTEM_AI_LEFT = 2
+        private constant integer TOWER_SYSTEM_AI_RIGHT = 3
+        private constant integer TOWER_SYSTEM_AI_BOTTOM_LEFT = 4
+        private constant integer TOWER_SYSTEM_AI_BOTTOM_RIGHT = 5
         
 		private hashtable TOWER_DATA = InitHashtable()
         private unit array ACOLYTS
@@ -59,10 +73,106 @@ scope TowerSystem
 		call GroupRefresh(BEING_BUILT_UNITS)
 		call GroupRefresh(BEING_UPGRADE_UNITS)
 	endfunction
+	
+	/**
+	 * init the tower config for given player
+	 */
+	private function initTowerConfig takes integer playerId returns nothing
+		local TowerBuildConfig buildConfig = TowerBuildConfig.create()
+		call buildConfig.addBuilding('u00V')
+		call buildConfig.addBuilding('u00S')
+		call buildConfig.addBuilding('u00S')
+		call buildConfig.addBuilding('u00V')
+		call buildConfig.addBuilding('u00S')
+		call buildConfig.addBuilding('u00V')
+		call buildConfig.addBuilding('u00S')
+		call buildConfig.addBuilding('u00V')
+		call buildConfig.addBuilding('u00Z')
+		call buildConfig.addBuilding('u00S')
+		call buildConfig.addBuilding('u00S')
+		call buildConfig.addBuilding('u00Z')
+		call buildConfig.addBuilding('u00Z')
+		call buildConfig.addBuilding('u00S')
+		call buildConfig.addBuilding('u00S')
+		call buildConfig.addBuilding('u00Z')
+		call buildConfig.addBuilding('u00Z')
+		call buildConfig.addBuilding('u00S')
+		call buildConfig.addBuilding('u00Z')
+		call buildConfig.addBuilding('u00Z')
+		call TowerAIEventListener.getTowerBuildAI(playerId).setConfig(buildConfig)
+	endfunction
+	
+	private function TowerAISetup takes nothing returns nothing
+		local unit building = CreateUnit( Player(0), 'u00U', 0, 0, bj_UNIT_FACING)
+		local TowerHelper towersHelper = TowerHelper.create()
+		local real width = GetUnitCollision(building)
+	    local real height = width
+		
+		call KillUnit(building)
+		call RemoveUnit(building)
+		set building = null
+		
+		call towersHelper.setTowers(TOWER_DATA)
+		set towersHelper.columnUnitId = TOWER_DATA_COLUMN_ID
+		set towersHelper.columnDamage = TOWER_DATA_COLUMN_DAMAGE
+		set towersHelper.columnLevel = TOWER_DATA_COLUMN_LEVEL
+		set towersHelper.columnWoodCost = TOWER_DATA_COLUMN_WOOD_COST
+		set towersHelper.columnChildTower = TOWER_DATA_COLUMN_CHILD_TOWER
+        
+		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT, TowerBuildAI.create())
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).addRectangle(gg_rct_TowersTopLeftTop)
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).addRectangle(gg_rct_TowersTopLeftBottom)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).setBuildFromTo(true, false)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).setTowerSize(width, height)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).setTowers(towersHelper)
+		call initTowerConfig(TOWER_SYSTEM_AI_TOP_LEFT)
+		
+		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT, TowerBuildAI.create())
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).addRectangle(gg_rct_TowersTopLeftTop)
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).addRectangle(gg_rct_TowersTopLeftBottom)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).setBuildFromTo(false, false)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).setTowerSize(width, height)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).setTowers(towersHelper)
+		call initTowerConfig(TOWER_SYSTEM_AI_TOP_RIGHT)
+		
+		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_LEFT, TowerBuildAI.create())
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).addRectangle(gg_rct_TowersLeftTop)
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).addRectangle(gg_rct_TowersLeftBottom)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).setBuildFromTo(true, false)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).setTowerSize(width, height)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).setTowers(towersHelper)
+		call initTowerConfig(TOWER_SYSTEM_AI_LEFT)
+		
+		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_RIGHT, TowerBuildAI.create())
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).addRectangle(gg_rct_TowersRightTop)
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).addRectangle(gg_rct_TowersRightBottom)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).setBuildFromTo(false, false)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).setTowerSize(width, height)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).setTowers(towersHelper)
+		call initTowerConfig(TOWER_SYSTEM_AI_RIGHT)
+		
+		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT, TowerBuildAI.create())
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).addRectangle(gg_rct_TowersBottomLeftLeft)
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).addRectangle(gg_rct_TowersBottomLeftTop)
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).addRectangle(gg_rct_TowersBottomLeftRight)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setBuildFromTo(true, false)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setTowerSize(width, height)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setTowers(towersHelper)
+		call initTowerConfig(TOWER_SYSTEM_AI_BOTTOM_LEFT)
+		
+		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT, TowerBuildAI.create())
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).addRectangle(gg_rct_TowersBottomRightLeft)
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).addRectangle(gg_rct_TowersBottomRightTop)
+		//call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).addRectangle(gg_rct_TowersBottomRightRight)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setBuildFromTo(false, false)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setTowerSize(width, height)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setTowers(towersHelper)
+		call initTowerConfig(TOWER_SYSTEM_AI_BOTTOM_RIGHT)
+	endfunction
     
     private function MainSetup takes nothing returns nothing
 		local integer row = 0
-        local integer column = 0
+		local integer lastRow = 0
 			
         //Start Positions of the Acolyte Builder
         set START_POS_X[0] = GetRectCenterX(gg_rct_P1AcolyteStartPos)
@@ -93,157 +203,111 @@ scope TowerSystem
         /*
 		 * TOWER DATA
 		 */
-         
-        /*******************
-         *   Base Towers   *
-         *******************/
+        //*******************
+        // *   Base Towers  *
+        //*******************
         //Index: 0        
 		//****** Shady Spire *******
-		call SaveInteger(TOWER_DATA, column, row, 'u00R') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 49) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, -1) //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u00R')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 49)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level
 		set row = row + 1
 		
 		//Index: 1
 		//****** Dark Spire *******
-		call SaveInteger(TOWER_DATA, column, row, 'u00S') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 75) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, -1) //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 2) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u00S')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 75)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 2
 		//****** Black Spire *******
-		call SaveInteger(TOWER_DATA, column, row, 'u00T') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 111) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, -1) //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u00T')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 111)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //----------------------------------------------------------//
         
-        /*******************
-         *   Ice Towers    *
-         *******************/
+        //*******************
+        //*   Ice Towers    *
+        //*******************
          //Index: 3
         //****** Cold Obelisk *******
-		call SaveInteger(TOWER_DATA, column, row, 'u00U') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 47) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0AK') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u00U')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 47)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AK')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 4
         //****** Frosty Obelisk *******
-		call SaveInteger(TOWER_DATA, column, row, 'u00V') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 54) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0AK') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 2) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u00V')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 54)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AK')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 5
         //****** Glacial Obelisk *******
-		call SaveInteger(TOWER_DATA, column, row, 'u00W') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 63) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0AK') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u00W')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 63)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AK')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
+        //******************
+        //* Flaming Towers *
+        //******************
         //Index: 6
         //****** Flaming Rock *******
-		call SaveInteger(TOWER_DATA, column, row, 'u00Y') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 173) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, -1) //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u00Y')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 173)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 7
         //****** Blazing Rock *******
-		call SaveInteger(TOWER_DATA, column, row, 'u00Z') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 222) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, -1) //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 2) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u00Z')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 222)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 8
         //****** Magma Rock *******
-		call SaveInteger(TOWER_DATA, column, row, 'u010') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 276) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, -1) //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u010')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 276)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 9
         //****** Cursed Gravestone *******
-		call SaveInteger(TOWER_DATA, column, row, 'u00X') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 216) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A09W') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u00X')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 216)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A09W')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 10
         //****** Cursed Tombstone *******
-		call SaveInteger(TOWER_DATA, column, row, 'u011') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 252) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A09W') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 2) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u011')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 252)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A09W')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 11
         //****** Cursed Memento *******
-		call SaveInteger(TOWER_DATA, column, row, 'u012') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 294) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A09W') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u012')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 294)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A09W')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
 		set row = row + 1
 		
 		/*
@@ -252,146 +316,98 @@ scope TowerSystem
         
         //Index: 12
         //****** Decayed Earth Tower *******
-		call SaveInteger(TOWER_DATA, column, row, 'u013') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 277) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, -1) //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u013')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 277)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 13
         //****** Plagued Earth Tower *******
-		call SaveInteger(TOWER_DATA, column, row, 'u014') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 346) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, -1) //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 2) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u014')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 346)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
 		set row = row + 1
 
         //Index: 14
         //****** Blighted Earth Tower *******
-		call SaveInteger(TOWER_DATA, column, row, 'u015') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 433) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, -1) //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u015')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 433)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 15
         //****** Ice Frenzy *******
-		call SaveInteger(TOWER_DATA, column, row, 'u016') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 147) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A072') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u016')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 147)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A072')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 16
         //****** Ice Fury *******
-		call SaveInteger(TOWER_DATA, column, row, 'u017') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 157) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A072') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 2) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u017')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 157)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A072')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 17
         //****** Icy Rage *******
-		call SaveInteger(TOWER_DATA, column, row, 'u018') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 166) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A072') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u018')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 166)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A072')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 18
         //****** Putrid Pot *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01A') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1070) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A074') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01A')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 1070)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A074')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 19
         //****** Putrid Vat *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01B') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1174) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A074') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 2) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01B')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 1174)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A074')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 20
         //****** Putrid Cauldron *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01C') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1278) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A074') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01C')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 1278)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A074')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 21
         //****** Gloom Orb *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01D') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1505) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0AL') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01D')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 1505)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AL')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 22
         //****** Ruin Orb *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01E') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1084) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0AL') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 2) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01E')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 1084)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AL')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 24
         //****** Doom Orb *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01F') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 550) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0AL') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01F')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 550)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AL')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
 		set row = row + 1
 		
 		/*
@@ -400,109 +416,90 @@ scope TowerSystem
         
         //Index: 25
         //****** Monolith of Hatred *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01G') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 562) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0A2') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01G')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 562)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A2')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 26
         //****** Monolith of Terror *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01H') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 702) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0A2') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01H')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 702)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A2')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 27
         //****** Monolith of Destruction *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01I') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 878) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0A2') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01I')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 878)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A2')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 28
         //****** Glacier of Sorrow *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01J') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 403) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0A0') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01J')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 403)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A0')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 29
         //****** Glacier of Misery *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01K') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 403) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0A0') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 2) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01K')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 403)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A0')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 30
         //****** Glacier of Despair *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01L') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 378) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0A0') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01L')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 378)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A0')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 31
         //****** Totem of Infamy *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01M') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 401) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0AN') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 1) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01M')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 401)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AN')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 32
         //****** Totem of Malice *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01R') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 501) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0AN') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 2) //Tower Ability Level or Tower Level
-		set column = 0
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01R')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 501)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AN')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
 		set row = row + 1
         
         //Index: 33
         //****** Totem of Corruption *******
-		call SaveInteger(TOWER_DATA, column, row, 'u01T') //Tower Id
-		set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 626) //Tower Damage
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 'A0AN') //Tower Ability
-        set column = column + 1
-		call SaveInteger(TOWER_DATA, column, row, 3) //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row, 'u01T')  //Tower Id
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 626)  //Tower Damage
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AN')  //Tower Ability
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
+        
+        
+        set row = 0
+        set lastRow = 0
+        //at the end: all towers set wood and "child"-towers
+        loop
+            exitwhen row >= MAX_TOWERS
+            call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_WOOD_COST, row, GetUnitWoodCost(LoadInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row)))
+            if (LoadInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row) > LoadInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, lastRow)) then
+                call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, lastRow, LoadInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row))
+            else
+                call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
+            endif
+            set lastRow = row
+            set row = row + 1
+        endloop
         
     endfunction
     
@@ -513,8 +510,15 @@ scope TowerSystem
             set ACOLYTS[id] = CreateUnit(Player(id), ACOLYTE_I_ID, START_POS_X[id], START_POS_Y[id], bj_UNIT_FACING)
             call SelectUnitByPlayer(ACOLYTS[id], true, Player(id))
 			
-			if (ShowTutorialsDialog.ForPlayer(GetPlayerId(Player(id)))) then
-				call TowerBuilderTutorial.create(Player(id), START_POS_X[id], START_POS_Y[id])
+			if not (Game.isRealPlayer(id)) then
+				call TowerAIEventListener.getTowerBuildAI(id).setBuilder(ACOLYTS[id])
+				
+				set TowerAIEventListener.getTowerBuildAI(id).canBuild = true
+            	call TowerAIEventListener.getTowerBuildAI(id).buildNext()
+				
+				if (ShowTutorialsDialog.ForPlayer(GetPlayerId(Player(id)))) then
+					call TowerBuilderTutorial.create(Player(id), START_POS_X[id], START_POS_Y[id])
+				endif
 			endif
         endmethod
         
@@ -564,8 +568,13 @@ scope TowerSystem
         ///If a towers starts building
 		private static method onConstructStart takes nothing returns nothing
 			local unit t = GetConstructingStructure() //Tower
+			local integer id = GetUnitTypeId(t)
 			local integer i = 0
             local boolean b = false
+			
+			if TowerAIEventListener.getTowerBuildAI(id).isEnabled() then
+            	call TowerAIEventListener.addBuildEvent(t)
+            endif
             
             loop
                 exitwhen i >= MAX_NON_TOWER_AREAS
@@ -588,6 +597,11 @@ scope TowerSystem
         //If a towers start an Upgrade
 		private static method onUpgradeStart takes nothing returns nothing
 			local unit t = GetTriggerUnit() //Tower
+			local integer id = GetUnitTypeId(t)
+			
+			if TowerAIEventListener.getTowerBuildAI(id).isEnabled() then
+            	call TowerAIEventListener.addBuildEvent(t)
+            endif
 			
 			call GroupAddUnit(BEING_UPGRADE_UNITS, t)
 			
@@ -601,6 +615,12 @@ scope TowerSystem
 			local integer damage = getTowerValue(id, 1)
             local integer abi = getTowerValue(id, 2)
             local integer abiLvl = getTowerValue(id, 3)
+			
+			//add Tower AI Upgrade Event
+			call TowerAIEventListener.getTowerBuildAI(id).addTower(t)
+    		if (TowerAIEventListener.getTowerBuildAI(id).isEnabled() and TowerAIEventListener.getTowerBuildAI(id).countUpgradeQueue() > 0) then
+            	call TowerAIEventListener.addUpgradeEvent(t)
+            endif
 			
 			//Remove rally point ability
             call UnitRemoveAbility(t,'ARal')
@@ -669,6 +689,7 @@ scope TowerSystem
             local code c6 = function thistype.onSell
             
 			call MainSetup()
+			call TowerAISetup()
 			
 			set BEING_BUILT_UNITS = NewGroup()
 			set BEING_UPGRADE_UNITS = NewGroup()

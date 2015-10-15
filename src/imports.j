@@ -58,6 +58,7 @@
 //! import "src\Libraries\RestoreMana.j"
 //! import "src\Libraries\TimedEffect.j"
 //! import "src\Libraries\DamageLog.j"
+//! import "src\Libraries\GetUnitCollision.j"
 
 /* XE Libraries */
 //! import "src\Libraries\XE\xepreload.j"
@@ -180,6 +181,7 @@
 //! import "src\TowerSystems\CommonAIimports.j"
 //! import "src\TowerSystems\GetTowerCost.j"
 //! import "src\TowerSystems\TowerSystem.j"
+//! import "src\AI-Systems\AI-TowerBuilder.j"
 // -- Common Towers --
 //! import "src\TowerSystems\CommonTowers\ZeroPoint.j"
 //! import "src\TowerSystems\CommonTowers\HotCoals.j"

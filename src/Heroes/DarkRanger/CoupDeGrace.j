@@ -10,9 +10,10 @@ scope CoupDeGrace initializer Init
 	 *      29.03.2015: Check immunity on spell cast
 					    Integrated RegisterPlayerUnitEvent
 	                    Integrated SpellHelper for damaging and filtering
-			30.03.2015: Increased Base-Damage from 250 to 500
+	 *		30.03.2015: Increased Base-Damage from 250 to 500
 						Increased Radius from 300 to 400
 						Increased Missile Speed from 750 to 800
+	 *		12.10.2015:	Added a note for the killed ally by Coup de Grace					
      */
     globals
         private constant integer SPELL_ID = 'A076'
@@ -84,7 +85,8 @@ scope CoupDeGrace initializer Init
                 call KillUnit(.target)
                 call DestroyEffect(AddSpecialEffect(EFFECT, x, y))
                 call GroupEnumUnitsInRange(.tempthis.g, x, y, RADIUS, function thistype.group_filter_callback)
-                call ForGroup( .tempthis.g, function thistype.onDealDamage )
+                call ForGroup(.tempthis.g, function thistype.onDealDamage)
+				call Usability.getTextMessage(0, 14, true, GetOwningPlayer(.target), true, 0.00)
             endif
         endmethod
 

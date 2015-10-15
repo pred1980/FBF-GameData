@@ -152,26 +152,30 @@ library xemissile requires xefx, xebasic
                 if(.N==1) then
                     call TimerStart(.T, XE_ANIMATION_PERIOD, true, xemissile.timerLoopFunction )
                 endif
+			else
+				call .destroy()
             endif
         endmethod
         
         //-------- Constructors and destructors
 
         static method create takes real x, real y, real z, real a returns missile
-         local missile this=missile.allocate()
-            set .mx=x
+			local missile this=missile.allocate()
+            
+			set .mx=x
             set .my=y
             call MoveLocation(.l, x,y)
             set .mz=z+GetLocationZ(.l)
 
             set .fx = xefx.create(x,y,a)
             set .fx.z = z
-         return this
+			
+			return this
         endmethod
 
         private boolean silent=false
         private method destroy takes nothing returns nothing
-            if(this.silent) then
+			if(this.silent) then
                 call this.fx.hiddenDestroy()
             else
                 call this.fx.destroy()
@@ -186,7 +190,7 @@ library xemissile requires xefx, xebasic
         endmethod
         // declare hiddenDestroy so people don't call directly on the delegate xefx
         method hiddenDestroy takes nothing returns nothing
-            set silent = true
+			set silent = true
             call terminate()
         endmethod
 
@@ -211,7 +215,7 @@ library xemissile requires xefx, xebasic
                 exitwhen (i==.N )
 
                 set this=.V[i] //adopt-a-instance
-                if .dead then
+				if .dead then
                     set .launched=false
                     set this.fx.zangle=0.0
                     call .destroy()

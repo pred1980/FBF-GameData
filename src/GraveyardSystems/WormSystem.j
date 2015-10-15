@@ -5,6 +5,7 @@ scope WormSystem initializer onInit
      *              Schaden pro Runde um 10% reduziert (von 75 auf 67)
      *	15.09.2015: Changed damage from (200 + (actualRound*67)) to (actualRound * 200)
 					Increased the worm count from 4 to 5
+	 *	10.10.2015: Changed damage from (actualRound * 200) to (200 + (actualRound*100))		
      *
      */
     
@@ -37,7 +38,7 @@ scope WormSystem initializer onInit
     endglobals
     
     private function GetDamage takes integer round returns real
-        return I2R(round * 200)
+        return I2R(200 + (round * 100))
     endfunction
     
     private constant function GetAOE takes nothing returns real

@@ -7,7 +7,9 @@ scope SoulTrap initializer init
 	 *     	24.03.2015: Fixed a bug after the "Spell-End" (onEnd) that the target ran in different directions
 	 *     	30.03.2015: Integrated RegisterPlayerUnitEvent
 						Integrated SpellHelper for damaging
-	 *		22.04.2015: changed complete spell in object editor to guarantee spell immunity
+	 *		22.04.2015: Changed complete spell in object editor to guarantee spell immunity
+	 *		15.10.2015: Deactivated HIDE_ADV because it causes a problem at the end of a round when the hero teleports
+						back to its base
      *
      */
     globals
@@ -20,7 +22,7 @@ scope SoulTrap initializer init
         private constant string END_EFFECT = "Abilities\\Spells\\Items\\AIil\\AIilTarget.mdl"
         private constant rect DUMMY_RECT = gg_rct_SoulTrapDummyPosition
         //Die Einheit mit der Abi "Unsichtbarkeit" zusätzlich verstecken?
-        private constant boolean HIDE_ADV = true
+        private constant boolean HIDE_ADV = false
         
         //Stun Effect for Pause Target
         private constant string STUN_EFFECT = ""
@@ -43,14 +45,14 @@ scope SoulTrap initializer init
 	endfunction
     
     private struct SoulTrap
-        unit caster
-        unit target
-        unit dummy
-        timer t
-        real x
-        real y
-        integer level = 0
-        integer id = 0
+        private unit caster
+        private unit target
+        private unit dummy
+        private timer t
+        private real x
+        private real y
+        private integer level = 0
+        private integer id = 0
 		
 		method onDestroy takes nothing returns nothing
             call ReleaseTimer(.t)
@@ -63,8 +65,11 @@ scope SoulTrap initializer init
 		static method onEnd takes nothing returns nothing
             local thistype this = GetTimerData(GetExpiredTimer())
             call ShowUnit(this.target, true)
-            call SetUnitX(this.target, this.x)
-            call SetUnitY(this.target, this.y)
+			
+			if not (TeleportBack.isHeroInGroup(this.target)) then
+				call SetUnitX(this.target, this.x)
+				call SetUnitY(this.target, this.y)
+			endif
 			call IssueImmediateOrder(this.target, "holdposition")
             
 			set DamageType = SPELL
@@ -87,13 +92,14 @@ scope SoulTrap initializer init
             call DestroyEffect(AddSpecialEffect( START_EFFECT, GetUnitX(.target), GetUnitY(.target)))
             //Hide Advanced: Einheit mit Abi "Unsichtbarkeit" verstecken und dann in die
             //untere rechte Ecke der Karte stellen
+			//Note: Deactivated because "invisibility" not teleporting an hero back to its base
             static if HIDE_ADV then
                 set .dummy = CreateUnit(GetOwningPlayer(.caster), DUMMY_ID, .x, .y, bj_UNIT_FACING)
                 call UnitAddAbility( .dummy, DUMMY_SPELL_ID )
                 call SetUnitAbilityLevel( .dummy, DUMMY_SPELL_ID, 1 )
                 call UnitApplyTimedLife( .dummy, 'BTLF', 1.0 )
                 call IssueTargetOrder(.dummy, "invisibility", .target)
-                //Setzt die Einheit in die untere rechte Ecke der Karte
+                //Setzt den richtigen Held in die untere rechte Ecke der Karte
                 call SetUnitX(.target, GetRectCenterX(DUMMY_RECT))
                 call SetUnitY(.target, GetRectCenterY(DUMMY_RECT))
             endif

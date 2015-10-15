@@ -4,11 +4,20 @@ scope RoundEndSystem
 		private constant real TELEPORT_DELAY = 1.25
 		private constant real TEXT_DURATION = 7.5
 		private constant string EFFECT = "Abilities\\Spells\\NightElf\\Blink\\BlinkCaster.mdl"
+		private constant real DUMMY_TELEPORT_DELAY = 7.5
 	endglobals
-
-	private struct TeleportBack
 	
+	private struct Data
+		unit u
+	endstruct
+
+	struct TeleportBack
 		private static real MIN_DISTANCE = 1000
+		static group teleportGroup
+		
+		static method isHeroInGroup takes unit hero returns boolean
+			return IsUnitInGroup(hero, .teleportGroup)
+		endmethod
 	
 		private static method filterCondition takes nothing returns boolean
 			local unit u = GetFilterUnit()
@@ -26,6 +35,14 @@ scope RoundEndSystem
 			set u = null
 			
 			return b	
+		endmethod
+		
+		private static method onDummyAbilityEnd takes nothing returns nothing
+			local timer t = GetExpiredTimer()
+			local Data data = GetTimerData(t)
+			
+			call GroupRemoveUnit(.teleportGroup, data.u)
+			call ReleaseTimer(t)
 		endmethod
 		
 		private static method onPanCamera takes nothing returns nothing
@@ -48,6 +65,8 @@ scope RoundEndSystem
 			local real x = 0.00
             local real y = 0.00
 			local timer t
+			local timer t2
+			local Data data
 			
 			if (Distance(GetUnitX(u), GetUnitY(u), x, y) > MIN_DISTANCE) then
 				set p = GetOwningPlayer(u)
@@ -55,10 +74,23 @@ scope RoundEndSystem
 				set x = GetRectCenterX(Homebase.get(pid))
 				set y = GetRectCenterY(Homebase.get(pid))
 				set t = NewTimer()
+				
 				call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(u), GetUnitY(u)))
 				call SetUnitPosition(u, x, y)
 				call SetTimerData(t, pid)
 				call TimerStart(t, TELEPORT_DELAY, false, function thistype.onPanCamera)
+				
+				//Add hero to a special group to check in spells if the hero is teleporting back to base.
+				//It garantues that the hero get teleported back to base!
+				//In the Spells of the heroes you just need to call the IsUnitInGroup.
+				if (IsUnitType(u, UNIT_TYPE_HERO)) then
+					call GroupAddUnit(.teleportGroup, u)
+					set data = Data.create()
+					set data.u = u
+					set t2 = NewTimer()
+					call SetTimerData(t2, data)
+					call TimerStart(t2, DUMMY_TELEPORT_DELAY, false, function thistype.onDummyAbilityEnd)
+				endif
 			endif
 			
 			set u = null
@@ -66,7 +98,7 @@ scope RoundEndSystem
 
 		static method initialize takes nothing returns nothing
 			local integer i = 0
-			
+		
 			loop
                 exitwhen i >= bj_MAX_PLAYERS
                 if Game.isPlayerInGame(i) then
@@ -76,6 +108,10 @@ scope RoundEndSystem
 				endif
                 set i = i + 1
             endloop
+		endmethod
+		
+		static method onInit takes nothing returns nothing
+			set .teleportGroup = NewGroup()
 		endmethod
 	
 	endstruct
@@ -96,7 +132,10 @@ scope RoundEndSystem
                 if Game.isPlayerInGame(i) and GetPlayerRace(Player(i)) == RACE_UNDEAD then
                     call Game.playerAddLumber(i, Evaluation.getLumber(RoundSystem.actualRound))
                     call DisplayTimedTextToPlayer(Player(i),0.0 ,0.0 ,TEXT_DURATION , "You received " + "|cffffcc00" + I2S(Evaluation.getLumber(RoundSystem.actualRound)) +"|r Lumber.")
-                endif
+					
+					set TowerAIEventListener.getTowerBuildAI(i).canBuild = true
+					call TowerAIEventListener.getTowerBuildAI(i).buildNext()
+				endif
                 set i = i + 1
             endloop
 		endmethod

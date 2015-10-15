@@ -73,7 +73,8 @@ scope Wave initializer init
         static HandleTable t = 0
 		
         method onDestroy takes nothing returns nothing
-            call ReleaseGroup(targets)
+            call SetUnitAnimation(root.caster, "stand")
+			call ReleaseGroup(targets)
             set t[root.caster] = 0
             call root.destroy()
         endmethod
@@ -132,32 +133,37 @@ scope Wave initializer init
             call GroupRefresh(ENUM_GROUP)
             call GroupEnumUnitsInRange(ENUM_GROUP, x, y, WAVE_PUSHBACK_AREA, doPushback)
             
-            if cdist <= WAVE_PICKUP_SURF_AREA and not isSurfing and t[root.caster] == 0 and not IsUnitDead(root.caster)  then
-                set isSurfing = true
-                set t[root.caster] = 1
-                call IssueImmediateOrder(root.caster, "stop")
-                call SetUnitAnimation(root.caster, "stand")
-                call SetUnitAnimationByIndex(root.caster, WAVE_CASTER_SURF_ANIMATION)
-                call SetUnitTimeScale(root.caster, ANIMATION_SPEED_FACTOR)
-                call SetUnitZ(root.caster, WAVE_CASTER_HEIGTH + GetTerrainZ(x, y))
-            elseif isSurfing then
-                if IsTerrainWalkable(this.x, this.y) then
-                    call IssueImmediateOrder(root.caster, "stop")
-                    call SetUnitX(root.caster, x)
-                    call SetUnitY(root.caster, y)
-                    call SetUnitZ(root.caster, WAVE_CASTER_HEIGTH)
-                    call SetUnitFacing(root.caster, root.angle * bj_RADTODEG)
-                    
-                    set animreset = animreset + XE_ANIMATION_PERIOD
-                    if animreset >= ANIMATION_RESET_INTERVAL then
-                        call SetUnitAnimation(root.caster, "stand")
-                        call SetUnitAnimationByIndex(root.caster, WAVE_CASTER_SURF_ANIMATION)
-                        set animreset = 0.00
-                    endif
-                else
-                    call onHit()
-                endif
-            endif
+			if not (TeleportBack.isHeroInGroup(root.caster)) then
+				if cdist <= WAVE_PICKUP_SURF_AREA and not isSurfing and t[root.caster] == 0 and not IsUnitDead(root.caster)  then
+					set isSurfing = true
+					set t[root.caster] = 1
+					call IssueImmediateOrder(root.caster, "stop")
+					call SetUnitAnimation(root.caster, "stand")
+					call SetUnitAnimationByIndex(root.caster, WAVE_CASTER_SURF_ANIMATION)
+					call SetUnitTimeScale(root.caster, ANIMATION_SPEED_FACTOR)
+					call SetUnitZ(root.caster, WAVE_CASTER_HEIGTH + GetTerrainZ(x, y))
+				elseif isSurfing then
+					if (IsTerrainWalkable(this.x, this.y)) then
+						call IssueImmediateOrder(root.caster, "stop")
+						call SetUnitX(root.caster, x)
+						call SetUnitY(root.caster, y)
+						call SetUnitZ(root.caster, WAVE_CASTER_HEIGTH)
+						call SetUnitFacing(root.caster, root.angle * bj_RADTODEG)
+						
+						set animreset = animreset + XE_ANIMATION_PERIOD
+						if animreset >= ANIMATION_RESET_INTERVAL then
+							call SetUnitAnimation(root.caster, "stand")
+							call SetUnitAnimationByIndex(root.caster, WAVE_CASTER_SURF_ANIMATION)
+							set animreset = 0.00
+						endif
+					else
+						call onHit()
+					endif
+				endif
+			else
+				call terminate()
+			endif
+            
         endmethod
         
         static method create takes Main from returns thistype

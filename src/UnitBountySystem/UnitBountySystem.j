@@ -4,20 +4,27 @@ scope UnitBountySystem
      * Hier einfach alle Einheiten erfassen, die einen Bounty Wert beim Kill
      * ausspielen sollen
      * INFO: In der HT DATA, sind in Spalte 0 alle Einheiten drin f?r die es Bounty beim Kill gibt
-     *       w?hrend in Spalte 1 alle die Einheiten drin sind, f?r die es beim Kill kein Bounty gibt (z.b. ein Dummy)
+     *       w?hrend in Spalte 1 alle die Einheiten drin sind, für die es beim Kill kein Bounty gibt (z.b. ein Dummy)
      */
 	globals
-       //Human
+		//Human
+		//Reformed Bandit
+		private constant integer REFORMED_BANDIT_ID = 'n00R'
 		
         //Orc
+		//Aldarii General
+		private constant integer ALDARII_GENERAL_ID = 'o00F'
 		
         //Nightelf
+		//Panther Rider
+		private constant integer PANTHER_RIDER_ID = 'e00S'
 		
         /*
          * Undead
          */
         //Hero: Nerubian Widow --> Abi: Adolescence
         private constant integer NERUBIAN_CHILD_ID = 'n00C'
+		
         //Hero: Skeleton Mage --> Spawn Zombies
         private constant integer ZOMBIE_ID_0 = 'zom0'
         private constant integer ZOMBIE_ID_1 = 'zom1'
@@ -66,6 +73,9 @@ scope UnitBountySystem
 		
 		//Archnathid (Scorpion)
 		private constant integer ARCHNATHID_ID = 'n00L'
+		
+		//Roach
+		private constant integer ROACH_ID = 'u00B'
         
         /********************************************
          *           E X C E P T I O N S            *
@@ -238,6 +248,18 @@ scope UnitBountySystem
 		
 		//Archnathid (Scorpion)
 		call SaveStr(DATA, 0, ARCHNATHID_ID, "75,")
+		
+		//Roach
+		call SaveStr(DATA, 0, ROACH_ID, "3,")
+		
+		//Reformed Bandit
+		call SaveStr(DATA, 0, REFORMED_BANDIT_ID, "3,")
+		
+        //Aldarii General
+		call SaveStr(DATA, 0, ALDARII_GENERAL_ID, "3,")
+		
+        //Panther Rider
+		call SaveStr(DATA, 0, PANTHER_RIDER_ID, "3,")
 		
         /*
          * Ausnahmen: Einheiten, wie Dummys, die gekillt werden aber keinen Bounty haben sollen nicht berücksichtigt
