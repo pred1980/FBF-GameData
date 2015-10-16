@@ -5,6 +5,8 @@ library Consumption initializer Init uses GroupUtils, DamageModifiers, SpellEven
      * Changelog: 
      *     	09.01.2014: Abgleich mit OE und der Exceltabelle
 	 *		10.05.2015: Increased the final attack time from 5s to 10s
+	 *		16.10.2015: Replaced NewTimer() with CreateTimer() to fix a bug with permanent bonus damage
+						Changed damage calculation
      */
     private keyword Data
     
@@ -20,6 +22,7 @@ library Consumption initializer Init uses GroupUtils, DamageModifiers, SpellEven
         private constant integer PRIORITY = 0 
         
         private constant real BONUS_DAMAGE_TIME = 10.0
+		private integer BuffType
         private real array DURATION 
         private real array DAMAGE_REDUCTION_PHYISCAL
         private real array DAMAGE_REDUCTION_SPELL
@@ -47,15 +50,6 @@ library Consumption initializer Init uses GroupUtils, DamageModifiers, SpellEven
         set ATTACK_SPEED[3] = 300
     endfunction
     
-    // how much damage to block
-    private function Damage_Blocked takes integer level, real damage returns real
-        return RMinBJ(damage, I2R(level) * 200.)
-    endfunction
-    
-    globals
-        private integer BuffType
-    endglobals
-    
     private struct Data extends DamageModifier
         private unit caster
         private unit target
@@ -81,7 +75,7 @@ library Consumption initializer Init uses GroupUtils, DamageModifiers, SpellEven
         endmethod
 
         private method onDamageTaken takes unit origin, real damage returns real
-            local real blocked = Damage_Blocked(.level, damage)
+            local real blocked = damage
 			
             if (DamageType == PHYSICAL) then
                 set blocked = (DAMAGE_REDUCTION_PHYISCAL[.level] * blocked) - blocked
@@ -96,37 +90,42 @@ library Consumption initializer Init uses GroupUtils, DamageModifiers, SpellEven
         endmethod
 		
 		private static method onBonusEnd takes nothing returns nothing
-			call ReleaseTimer(GetExpiredTimer())
+			local timer t = GetExpiredTimer()
+			call PauseTimer(t)
+			call DestroyTimer(t)
+			set t = null
             call thistype(GetEventBuff().data).destroy()
         endmethod
         
         static method BuffRemoved takes nothing returns nothing
             call AddUnitBonus(.tempthis.caster, BONUS_DAMAGE, R2I(.tempthis.reduction))
             call AddUnitBonus(.tempthis.caster, BONUS_ATTACK_SPEED, R2I(ATTACK_SPEED[.tempthis.level]))
-			call TimerStart(NewTimer(), BONUS_DAMAGE_TIME, false, function thistype.onBonusEnd)
+			call TimerStart(CreateTimer(), BONUS_DAMAGE_TIME, false, function thistype.onBonusEnd)
         endmethod
         
 		static method create takes unit caster, unit target returns thistype
             local thistype s = Instance[GetUnitId(target)]
             
 			if s == 0 then
-                set s=.allocate(target, PRIORITY)
-                set s.caster=caster
-                set s.target=target
+                set s = .allocate(target, PRIORITY)
+                set s.caster = caster
+                set s.target = target
 				
                 if TARGET_FX!="" then
                     set s.targetFx = AddSpecialEffectTarget(TARGET_FX, target, TARGET_FX_ATTPT)
                 endif
-                set s.level=GetUnitAbilityLevel(caster, AID)
+				
+                set s.level = GetUnitAbilityLevel(caster, AID)
                 set Instance[GetUnitId(target)] = s
             else
-                if s.level < GetUnitAbilityLevel(caster, AID) then
+                if (s.level < GetUnitAbilityLevel(caster, AID)) then
                     set s.caster = caster
                     set s.level = GetUnitAbilityLevel(caster, AID)
                 endif
             endif
+			
             set .tempthis = s
-            set UnitAddBuff(caster, target, BuffType, DURATION[s.level], s.level).data = s
+            set UnitAddBuff(s.caster, s.target, BuffType, DURATION[s.level], s.level).data = s
 			
             return s
         endmethod
