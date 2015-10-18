@@ -10,6 +10,8 @@ scope Snack initializer init
 	 *     	06.05.2015: Integrated RegisterPlayerUnitEvent
 						Integrated SpellHelper for damaging and filtering
 						Code Refactoring
+	 *		17.10.2015: Changed TimerUtils to normal standard Timer (CreateTimer())
+						Fixed a bug and optimize the spell animation
      *
      */
 	 
@@ -22,7 +24,7 @@ scope Snack initializer init
 		//Stun Effect for Pause Target
         private constant string STUN_EFFECT = ""
         private constant string STUN_ATT_POINT = ""
-        private constant real STUN_DURATION = 5.0
+        private constant real STUN_DURATION = INTERVAL
 				
 		// Dealt damage configuration
         private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
@@ -45,8 +47,12 @@ scope Snack initializer init
 		private real y
         
         method onDestroy takes nothing returns nothing
-			call ReleaseTimer(.t)
-            call UnitEnableAttack(.caster)
+			call PauseTimer(.t)
+			call DestroyTimer(.t)
+			set .t = null
+            
+			call SetUnitAnimation(.caster, "stand")
+			call UnitEnableAttack(.caster)
 			set spellForUnit[GetUnitId(.caster)] = 0
             set .caster = null
             set .target = null
@@ -60,15 +66,17 @@ scope Snack initializer init
 			local thistype this = GetTimerData(GetExpiredTimer())
 			
 			if (this.count == 0 or /*
-			*/	SpellHelper.isUnitDead(this.caster) or /*
-			*/	SpellHelper.isUnitDead(this.target) or /*
+			*/	(SpellHelper.isUnitDead(this.caster) or /*
+			*/	SpellHelper.isUnitDead(this.target)) or /*
 			*/	(GetUnitX(this.caster) != this.x and /*
 			*/   GetUnitY(this.caster) != this.y)) then
 				call this.destroy()
 			else
 				set this.count = this.count - 1
 				set DamageType = PHYSICAL
-				call SpellHelper.damageTarget(this.caster,this.target,this.damage, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+				call SpellHelper.damageTarget(this.caster, this.target,this.damage, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+				//Pause Unit / Used Stun System
+				call Stun_UnitEx(this.target, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
 				
 				call SetUnitAnimation(this.caster, "stand channel" )
 				call SetUnitState(this.caster, UNIT_STATE_LIFE, GetUnitState(this.caster, UNIT_STATE_LIFE) + this.damage)
@@ -84,7 +92,7 @@ scope Snack initializer init
         static method create takes unit caster, unit target returns thistype
             local thistype this = thistype.allocate()
 			
-			set .t = NewTimer()
+			set .t = CreateTimer()
             set .caster = caster
             set .target = target
             set .count = ITERATION
@@ -92,10 +100,10 @@ scope Snack initializer init
 			set .y = GetUnitY(.caster)
             set .damage = baseDamage + ((baseDamage * damageModifier) * GetUnitAbilityLevel(.caster, SPELL_ID))
 			set spellForUnit[GetUnitId(.caster)] = this
-            //Pause Unit / Used Stun System
-            call Stun_UnitEx(target, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
-            call UnitDisableAttack(.caster)
 			
+			call Stun_UnitEx(.target, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
+			call UnitDisableAttack(.caster)
+			call SetUnitAnimation(.caster, "stand channel" )
 			call SetTimerData(.t, this)
 			call TimerStart(.t, INTERVAL, true, function thistype.onSnack)
 			
