@@ -123,31 +123,7 @@ scope BroodMotherSystem initializer init
 				call TDS.addDamage(.broodMother, .dmg)
             endif
         endmethod
-        
-        static method create takes nothing returns thistype
-            local thistype this = thistype.allocate()
-            local integer i = 0
-            local real x = 0.0
-            local real y = 0.0
-            
-            set .hp = GetGameStartRatioValue(HP, HP_FACTOR)
-            set .dmg = GetGameStartRatioValue(DAMAGE, DAMAGE_FACTOR)
-            
-            set .broodMother = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), SPIDER_ID, X, Y, FACING)
-            call SetUnitMaxState(.broodMother, UNIT_STATE_MAX_LIFE, .hp)
-            call SetUnitState(.broodMother, UNIT_STATE_LIFE, GetUnitState(.broodMother, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-            call TDS.addDamage(.broodMother, .dmg)
-            
-            set .t = NewTimer()
-            call SetTimerData(.t, this )
-            call TimerStart( .t, LAYING_TIME, true, function thistype.onMoveToHatchery )
-			
-			//on Death Event
-            call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, null, function thistype.onUnitDeath)
-            
-            return this
-        endmethod
-        
+
 		private static method onCheckEvent takes nothing returns boolean
             return GetUnitTypeId(GetTriggerUnit()) == SPIDER_ID
         endmethod
@@ -161,6 +137,8 @@ scope BroodMotherSystem initializer init
             set egg = Egg.create(GetUnitX(broodMother), GetUnitY(broodMother))
             
 			call IssuePointOrder(broodMother, ORDER_ATTACKMOVE, X, Y)
+			
+			set broodMother = null
         endmethod
 		
 		//Auf zur Brutstaette
@@ -196,10 +174,35 @@ scope BroodMotherSystem initializer init
 				set r = Rect(x, y, x + TARGET_TOLERANCE, y + TARGET_TOLERANCE)
                 call TriggerRegisterEnterRectSimple(onReach, r)
                 call TriggerAddCondition(onReach, Condition(function thistype.onCheckEvent))
-                call TriggerAddAction(onReach, function thistype.onLayingEgg )	
+                call TriggerAddAction(onReach, function thistype.onLayingEgg)
+				set onReach = null
 			endif
                     
-        endmethod 
+        endmethod
+		
+		static method create takes nothing returns thistype
+            local thistype this = thistype.allocate()
+            local integer i = 0
+            local real x = 0.0
+            local real y = 0.0
+            
+            set .hp = GetGameStartRatioValue(HP, HP_FACTOR)
+            set .dmg = GetGameStartRatioValue(DAMAGE, DAMAGE_FACTOR)
+            
+            set .broodMother = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), SPIDER_ID, X, Y, FACING)
+            call SetUnitMaxState(.broodMother, UNIT_STATE_MAX_LIFE, .hp)
+            call SetUnitState(.broodMother, UNIT_STATE_LIFE, GetUnitState(.broodMother, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
+            call TDS.addDamage(.broodMother, .dmg)
+            
+            set .t = NewTimer()
+            call SetTimerData(.t, this )
+            call TimerStart( .t, LAYING_TIME, true, function thistype.onMoveToHatchery )
+			
+			//on Death Event
+            call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, null, function thistype.onUnitDeath)
+            
+            return this
+        endmethod
         
         static method onInit takes nothing returns nothing
             local integer i = 0
