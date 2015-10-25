@@ -152,9 +152,9 @@ scope TowerSystem
 		call initTowerConfig(TOWER_SYSTEM_AI_RIGHT)
 		
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT, TowerBuildAI.create())
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).addRectangle(gg_rct_TowersBottomLeftRight)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).addRectangle(gg_rct_TowersBottomLeftLeft)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).addRectangle(gg_rct_TowersBottomLeftTop)
-		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).addRectangle(gg_rct_TowersBottomLeftRight)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).addRectangle(gg_rct_TowersBottomLeftBottom)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setBuildFromTo(true, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setTowerSize(width, height)
@@ -163,8 +163,8 @@ scope TowerSystem
 		
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT, TowerBuildAI.create())
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).addRectangle(gg_rct_TowersBottomRightLeft)
-		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).addRectangle(gg_rct_TowersBottomRightTop)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).addRectangle(gg_rct_TowersBottomRightRight)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).addRectangle(gg_rct_TowersBottomRightTop)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).addRectangle(gg_rct_TowersBottomRightBottom)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setBuildFromTo(false, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setTowerSize(width, height)
@@ -573,8 +573,9 @@ scope TowerSystem
 			local integer id = GetUnitTypeId(t)
 			local integer i = 0
             local boolean b = false
+            local integer playerId = GetPlayerId(GetOwningPlayer(t))
 			
-			if TowerAIEventListener.getTowerBuildAI(id).isEnabled() then
+			if TowerAIEventListener.getTowerBuildAI(playerId).isEnabled() then
             	call TowerAIEventListener.addBuildEvent(t)
             endif
             
@@ -600,8 +601,9 @@ scope TowerSystem
 		private static method onUpgradeStart takes nothing returns nothing
 			local unit t = GetTriggerUnit() //Tower
 			local integer id = GetUnitTypeId(t)
+            local integer playerId = GetPlayerId(GetOwningPlayer(t))
 			
-			if TowerAIEventListener.getTowerBuildAI(id).isEnabled() then
+			if TowerAIEventListener.getTowerBuildAI(playerId).isEnabled() then
             	call TowerAIEventListener.addBuildEvent(t)
             endif
 			
@@ -617,10 +619,10 @@ scope TowerSystem
 			local integer damage = getTowerValue(id, 1)
             local integer abi = getTowerValue(id, 2)
             local integer abiLvl = getTowerValue(id, 3)
-			
+            local integer playerId = GetPlayerId(GetOwningPlayer(t))
+            	
 			//add Tower AI Upgrade Event
-			call TowerAIEventListener.getTowerBuildAI(id).addTower(t)
-    		if (TowerAIEventListener.getTowerBuildAI(id).isEnabled() and TowerAIEventListener.getTowerBuildAI(id).countUpgradeQueue() > 0) then
+    		if (TowerAIEventListener.getTowerBuildAI(playerId).isEnabled() and TowerAIEventListener.getTowerBuildAI(playerId).countUpgradeQueue() > 0) then
             	call TowerAIEventListener.addUpgradeEvent(t)
             endif
 			
