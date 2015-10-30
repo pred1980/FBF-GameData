@@ -77,29 +77,52 @@ scope TowerSystem
 	/**
 	 * init the tower config for given player
 	 */
-	private function initTowerConfig takes integer playerId returns nothing
+	private function initTowerConfig takes nothing returns nothing
 		local TowerBuildConfig buildConfig = TowerBuildConfig.create()
+		//every tower 33.3%
 		call buildConfig.addBuilding('u00V')
 		call buildConfig.addBuilding('u00S')
-		call buildConfig.addBuilding('u00S')
+		call buildConfig.addBuilding('u00Z')
+		call TowerAIEventListener.getTowerBuildAI(1).setConfig(buildConfig)
+
+
+		set buildConfig = TowerBuildConfig.create()
+		//tower 100%
 		call buildConfig.addBuilding('u00V')
-		call buildConfig.addBuilding('u00S')
-		call buildConfig.addBuilding('u00V')
-		call buildConfig.addBuilding('u00S')
-		call buildConfig.addBuilding('u00V')
+		call TowerAIEventListener.getTowerBuildAI(2).setConfig(buildConfig)
+
+
+		set buildConfig  = TowerBuildConfig.create()
+		//tower 100%
+		call buildConfig.addBuilding('u00T')
+		call TowerAIEventListener.getTowerBuildAI(3).setConfig(buildConfig)
+
+
+		set buildConfig  = TowerBuildConfig.create()
+		//tower 100%
 		call buildConfig.addBuilding('u00Z')
-		call buildConfig.addBuilding('u00S')
-		call buildConfig.addBuilding('u00S')
+		call TowerAIEventListener.getTowerBuildAI(4).setConfig(buildConfig)
+
+
+		set buildConfig  = TowerBuildConfig.create()
+		//tower 100%
+		call buildConfig.addBuilding('u00W')
+		call TowerAIEventListener.getTowerBuildAI(5).setConfig(buildConfig)
+
+
+		set buildConfig  = TowerBuildConfig.create()
+		//change to build tower Z 20%, T 30%, W 50%
 		call buildConfig.addBuilding('u00Z')
 		call buildConfig.addBuilding('u00Z')
-		call buildConfig.addBuilding('u00S')
-		call buildConfig.addBuilding('u00S')
-		call buildConfig.addBuilding('u00Z')
-		call buildConfig.addBuilding('u00Z')
-		call buildConfig.addBuilding('u00S')
-		call buildConfig.addBuilding('u00Z')
-		call buildConfig.addBuilding('u00Z')
-		call TowerAIEventListener.getTowerBuildAI(playerId).setConfig(buildConfig)
+		call buildConfig.addBuilding('u00T')
+		call buildConfig.addBuilding('u00T')
+		call buildConfig.addBuilding('u00T')
+		call buildConfig.addBuilding('u00W')
+		call buildConfig.addBuilding('u00W')
+		call buildConfig.addBuilding('u00W')
+		call buildConfig.addBuilding('u00W')
+		call buildConfig.addBuilding('u00W')
+		call TowerAIEventListener.getTowerBuildAI(0).setConfig(buildConfig)
 	endfunction
 	
 	private function TowerAISetup takes nothing returns nothing
@@ -125,32 +148,28 @@ scope TowerSystem
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).setBuildFromTo(true, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).setTowers(towersHelper)
-		call initTowerConfig(TOWER_SYSTEM_AI_TOP_LEFT)
-		
+
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT, TowerBuildAI.create())
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).addRectangle(gg_rct_TowersTopRightTop)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).addRectangle(gg_rct_TowersTopRightBottom)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).setBuildFromTo(false, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).setTowers(towersHelper)
-		call initTowerConfig(TOWER_SYSTEM_AI_TOP_RIGHT)
-		
+
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_LEFT, TowerBuildAI.create())
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).addRectangle(gg_rct_TowersLeftTop)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).addRectangle(gg_rct_TowersLeftBottom)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).setBuildFromTo(true, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).setTowers(towersHelper)
-		call initTowerConfig(TOWER_SYSTEM_AI_LEFT)
-		
+
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_RIGHT, TowerBuildAI.create())
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).addRectangle(gg_rct_TowersRightTop)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).addRectangle(gg_rct_TowersRightBottom)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).setBuildFromTo(false, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).setTowers(towersHelper)
-		call initTowerConfig(TOWER_SYSTEM_AI_RIGHT)
-		
+
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT, TowerBuildAI.create())
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).addRectangle(gg_rct_TowersBottomLeftRight)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).addRectangle(gg_rct_TowersBottomLeftLeft)
@@ -159,8 +178,7 @@ scope TowerSystem
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setBuildFromTo(true, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setTowers(towersHelper)
-		call initTowerConfig(TOWER_SYSTEM_AI_BOTTOM_LEFT)
-		
+
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT, TowerBuildAI.create())
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).addRectangle(gg_rct_TowersBottomRightLeft)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).addRectangle(gg_rct_TowersBottomRightRight)
@@ -169,7 +187,7 @@ scope TowerSystem
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setBuildFromTo(false, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setTowers(towersHelper)
-		call initTowerConfig(TOWER_SYSTEM_AI_BOTTOM_RIGHT)
+		call initTowerConfig()
 	endfunction
     
     private function MainSetup takes nothing returns nothing
