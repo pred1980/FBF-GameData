@@ -80,6 +80,7 @@ scope TowerSystem
 	private function initTowerConfig takes nothing returns nothing
 		local TowerBuildConfig buildConfig = TowerBuildConfig.create()
 		//every tower 33.3%
+		call buildConfig.resetBuildings() // reset all buildings and then add new/next towers
 		call buildConfig.addBuilding('u00V')
 		call buildConfig.addBuilding('u00S')
 		call buildConfig.addBuilding('u00Z')
