@@ -68,7 +68,7 @@ scope TowerBuildAI
          * resets the buildings that can build by config
          */
         public method resetBuildings takes nothing returns nothing
-            local integer building
+            local integer building = 0
             loop
                 set .buildings[building] = 0
                 set building = building + 1
