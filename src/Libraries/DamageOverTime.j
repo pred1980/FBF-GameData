@@ -2,7 +2,7 @@ library DamageOverTime initializer Init requires DamageEvent
 
     globals
         // This is how many times the struct loop will run in a single second. 30-40 is recomended
-        private constant integer FPS = 40 
+        private constant integer FPS = 15 
         // DO NOT TUCH! =)
         private constant real Interval = (1.0 / FPS)
     endglobals
