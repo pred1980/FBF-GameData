@@ -154,9 +154,11 @@ scope RoundEndSystem
 			//Wenn akt. Runde groesser 5 und 13 ist, dann wechsel den Acolyt
             if RoundSystem.actualRound == 6 then
                 call TowerSystem.changeBuilder()
+				call TowerConfig.setBuildConfigRareTowers()
             endif
             if RoundSystem.actualRound == 13 then
                 call TowerSystem.changeBuilder()
+				call TowerConfig.setBuildConfigUniqueTowers()
             endif
 		endmethod
 		

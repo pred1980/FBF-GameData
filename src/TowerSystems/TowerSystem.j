@@ -188,7 +188,7 @@ scope TowerSystem
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setBuildFromTo(false, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setTowers(towersHelper)
-		call initTowerConfig()
+		//call initTowerConfig()
 	endfunction
     
     private function MainSetup takes nothing returns nothing
@@ -532,6 +532,7 @@ scope TowerSystem
             call SelectUnitByPlayer(ACOLYTS[id], true, Player(id))
 			
 			if not (Game.isRealPlayer(id)) then
+				call TowerConfig.setBuildConfigCommonTowers()
 				call TowerAIEventListener.getTowerBuildAI(id).setBuilder(ACOLYTS[id])
 				
 				set TowerAIEventListener.getTowerBuildAI(id).canBuild = true

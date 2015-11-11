@@ -16,6 +16,7 @@
 //! import "src\Libraries\ListModule.j"
 //! import "src\Libraries\SpellSystem.j"
 //! import "src\Libraries\SpellEvent.j"
+//! import "src\Libraries\SpellEvent.j"
 //! import "src\Libraries\SpellHelper.j"
 //! import "src\Libraries\IndexerUtils.j"
 //! import "src\Libraries\AbilityEvent.j"
@@ -182,6 +183,8 @@
 //! import "src\TowerSystems\GetTowerCost.j"
 //! import "src\TowerSystems\TowerSystem.j"
 //! import "src\AI-Systems\AI-TowerBuilder.j"
+//! import "src\TowerSystems\TowerConfig.j"
+
 // -- Common Towers --
 //! import "src\TowerSystems\CommonTowers\ZeroPoint.j"
 //! import "src\TowerSystems\CommonTowers\HotCoals.j"

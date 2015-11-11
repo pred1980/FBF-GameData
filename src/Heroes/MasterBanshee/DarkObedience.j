@@ -3,14 +3,16 @@ scope DarkObedience initializer init
      * Description: The Grim Lady expels a magic orb that chases her target around, 
 	                dealing damage to all units it passes through.
      * Changelog: 
-     *     28.10.2013: Abgleich mit OE und der Exceltabelle
-	 *     20.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
-	 *     18.04.2015: Integrated RegisterPlayerUnitEvent
+     *     	28.10.2013: Abgleich mit OE und der Exceltabelle
+	 *     	20.03.2015: Optimized Spell-Event-Handling (Conditions/Actions) + Immunity Check
+	 *     	18.04.2015: Integrated RegisterPlayerUnitEvent
+	 *		24.10.2015: Changed duration from 5s/10s/15s/20s/25s to 5s
+						Changed damage from 50/100/150/200/250 to 75/100/125/150/175
      *
      */
     globals
         private constant integer SPELL_ID = 'A04V'
-        private constant real DAMAGE = 50.0 
+        
         private constant real DURATION = 5.0
         //model of the missile
         private constant string missile = "Models\\Soulfire Missile.mdx"
@@ -25,6 +27,8 @@ scope DarkObedience initializer init
         private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
         private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_MAGIC
         private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
+		
+		private real array damage 
     endglobals
     
     private function setupDamageOptions takes xedamage d returns nothing
@@ -39,6 +43,12 @@ scope DarkObedience initializer init
         set d.damageSelf    = false    //doesn't hit self
         set d.required = UNIT_TYPE_GROUND   //doesn't hit flying units
         set d.exception = UNIT_TYPE_STRUCTURE    //doesn't hit structures
+		
+		set damage[1] = 75
+		set damage[2] = 100
+		set damage[3] = 125
+		set damage[4] = 150
+		set damage[5] = 175
     endfunction
     
     globals
@@ -53,7 +63,7 @@ scope DarkObedience initializer init
             if (damageOptions.allowedTarget( this.castingHero  , hitunit ) ) then
                 call DestroyEffect( AddSpecialEffectTarget(SFX,hitunit, "origin") )
                 set DamageType = SPELL
-                call damageOptions.damageTarget(this.castingHero  , hitunit, this.level * DAMAGE)
+                call damageOptions.damageTarget(this.castingHero  , hitunit, damage[this.level])
             endif
         endmethod
         
@@ -84,7 +94,7 @@ scope DarkObedience initializer init
         set am.z = 15.0
         set am.angleSpeed = 5.5
         set am.targetUnit = tar
-        set am.expirationTime = ( level * DURATION )
+        set am.expirationTime = DURATION
         set am.castingHero = hero
         set am.level = level
         
