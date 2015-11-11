@@ -168,7 +168,7 @@ scope TowerBuildAI
                 loop
                     set childTower = LoadInteger(.towers, .columnChildTower, tower)
                     set isParent = childTower == towerUnitId
-                    exitwhen LoadInteger(.towers, .columnUnitId, tower) == 0 or isParent
+                    exitwhen LoadInteger(.towers, .columnUnitId, tower) <= 0 or isParent
                     set tower = tower + 1
                 endloop
             endif
@@ -204,17 +204,16 @@ scope TowerBuildAI
          * @return Tower
          */
         public method getTowerKeyFirstLevelByUnitId takes integer unitId returns integer
-            local integer column = 0
-            local integer lastColumn = 0
+            local integer column = -1
+            local integer lastColumn = -1
             if (.columnUnitId >= 0 and .hasTowers) then
                 set column = .getTowerKeyByUnitId(unitId)
+                set lastColumn = column
                 loop
-                    set lastColumn = .getParentTowerKey(column)
-                    exitwhen lastColumn < 0
+                    set lastColumn = .getParentTowerKey(lastColumn)
+                    exitwhen lastColumn <= 0 and lastColumn != 1
                     set column = lastColumn
                 endloop
-            else
-                set column = -1
             endif
             return column
         endmethod
@@ -479,7 +478,7 @@ scope TowerBuildAI
                 set towerBuildKey = .towers.getTowerKeyFirstLevelByUnitId(towerUnitId)
                 set lastTowerBuildKey = towerBuildKey
                 loop
-                    if (.getTowerUnitKeyById(.towers.getColumnValue(towerBuildKey, .towers.columnUnitId)) < 60) then
+                    if (.getTowerUnitKeyById(.towers.getColumnValue(towerBuildKey, .towers.columnUnitId)) < .towerCount) then
                         set lastTowerBuildKey = towerBuildKey
                     endif
                     exitwhen .towers.getColumnValue(towerBuildKey, .towers.columnChildTower) == towerUnitId or .towers.getColumnValue(towerBuildKey, .towers.columnUnitId) == 0

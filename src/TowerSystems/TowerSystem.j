@@ -639,8 +639,9 @@ scope TowerSystem
             local integer abi = getTowerValue(id, 2)
             local integer abiLvl = getTowerValue(id, 3)
             local integer playerId = GetPlayerId(GetOwningPlayer(t))
-            	
+
 			//add Tower AI Upgrade Event
+			call TowerAIEventListener.getTowerBuildAI(playerId).addTower(t)
     		if (TowerAIEventListener.getTowerBuildAI(playerId).isEnabled() and TowerAIEventListener.getTowerBuildAI(playerId).countUpgradeQueue() > 0) then
             	call TowerAIEventListener.addUpgradeEvent(t)
             endif
