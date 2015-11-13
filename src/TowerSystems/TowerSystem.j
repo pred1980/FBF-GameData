@@ -74,58 +74,6 @@ scope TowerSystem
 		call GroupRefresh(BEING_UPGRADE_UNITS)
 	endfunction
 	
-	/**
-	 * init the tower config for given player
-	 */
-	private function initTowerConfig takes nothing returns nothing
-		local TowerBuildConfig buildConfig = TowerBuildConfig.create()
-		//every tower 33.3%
-		call buildConfig.resetBuildings() // reset all buildings and then add new/next towers
-		call buildConfig.addBuilding('u00V')
-		call buildConfig.addBuilding('u00S')
-		call buildConfig.addBuilding('u00Z')
-		call TowerAIEventListener.getTowerBuildAI(1).setConfig(buildConfig)
-
-
-		set buildConfig = TowerBuildConfig.create()
-		//tower 100%
-		call buildConfig.addBuilding('u00V')
-		call TowerAIEventListener.getTowerBuildAI(2).setConfig(buildConfig)
-
-
-		set buildConfig  = TowerBuildConfig.create()
-		//tower 100%
-		call buildConfig.addBuilding('u00T')
-		call TowerAIEventListener.getTowerBuildAI(3).setConfig(buildConfig)
-
-
-		set buildConfig  = TowerBuildConfig.create()
-		//tower 100%
-		call buildConfig.addBuilding('u00Z')
-		call TowerAIEventListener.getTowerBuildAI(4).setConfig(buildConfig)
-
-
-		set buildConfig  = TowerBuildConfig.create()
-		//tower 100%
-		call buildConfig.addBuilding('u00W')
-		call TowerAIEventListener.getTowerBuildAI(5).setConfig(buildConfig)
-
-
-		set buildConfig  = TowerBuildConfig.create()
-		//change to build tower Z 20%, T 30%, W 50%
-		call buildConfig.addBuilding('u00Z')
-		call buildConfig.addBuilding('u00Z')
-		call buildConfig.addBuilding('u00T')
-		call buildConfig.addBuilding('u00T')
-		call buildConfig.addBuilding('u00T')
-		call buildConfig.addBuilding('u00W')
-		call buildConfig.addBuilding('u00W')
-		call buildConfig.addBuilding('u00W')
-		call buildConfig.addBuilding('u00W')
-		call buildConfig.addBuilding('u00W')
-		call TowerAIEventListener.getTowerBuildAI(0).setConfig(buildConfig)
-	endfunction
-	
 	private function TowerAISetup takes nothing returns nothing
 		local unit building = CreateUnit( Player(0), 'u00U', 0, 0, bj_UNIT_FACING)
 		local TowerHelper towersHelper = TowerHelper.create()
@@ -188,7 +136,6 @@ scope TowerSystem
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setBuildFromTo(false, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setTowers(towersHelper)
-		//call initTowerConfig()
 	endfunction
     
     private function MainSetup takes nothing returns nothing
@@ -532,7 +479,6 @@ scope TowerSystem
             call SelectUnitByPlayer(ACOLYTS[id], true, Player(id))
 			
 			if not (Game.isRealPlayer(id)) then
-				call TowerConfig.setBuildConfigCommonTowers()
 				call TowerAIEventListener.getTowerBuildAI(id).setBuilder(ACOLYTS[id])
 				
 				set TowerAIEventListener.getTowerBuildAI(id).canBuild = true
@@ -731,7 +677,11 @@ scope TowerSystem
                     call TriggerRegisterPlayerUnitEvent(t4, Player(i), EVENT_PLAYER_UNIT_UPGRADE_FINISH, null)
 					call TriggerRegisterPlayerUnitEvent(t5, Player(i), EVENT_PLAYER_UNIT_UPGRADE_CANCEL, null)
                     call TriggerRegisterPlayerUnitEvent(t6, Player(i), EVENT_PLAYER_UNIT_TRAIN_FINISH, null)
+					
+					//Init TowerConfig for the Common Towers
+					call TowerConfig.setBuildConfigCommonTowers(i)
                 endif
+				
                 set i = i + 1
             endloop
             call TriggerAddCondition(t1, Filter(c1))

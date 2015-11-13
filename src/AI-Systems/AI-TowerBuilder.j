@@ -481,8 +481,8 @@ scope TowerBuildAI
                     if (.getTowerUnitKeyById(.towers.getColumnValue(towerBuildKey, .towers.columnUnitId)) < .towerCount) then
                         set lastTowerBuildKey = towerBuildKey
                     endif
-                    exitwhen .towers.getColumnValue(towerBuildKey, .towers.columnChildTower) == towerUnitId
-                        or (.towers.getColumnValue(towerBuildKey, .towers.columnUnitId) == 0 and .towers.getColumnValue(towerBuildKey, .towers.columnChildTower) == 0)
+                    exitwhen (.towers.getColumnValue(towerBuildKey, .towers.columnChildTower) == towerUnitId or /*
+                    */		 .towers.getColumnValue(towerBuildKey, .towers.columnUnitId) == 0 and .towers.getColumnValue(towerBuildKey, .towers.columnChildTower) == 0)
                     set towerBuildKey = .towers.getColumnValue(towerBuildKey, .towers.columnChildTower)
                 endloop
                 set result = .upgrade(.towers.getTowerKeyByUnitId(.towers.getColumnValue(lastTowerBuildKey, .towers.columnUnitId)))

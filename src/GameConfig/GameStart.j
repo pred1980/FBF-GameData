@@ -7,8 +7,8 @@ scope GameStart
 	    
 		//MAP SETTINGS
         public constant string NAME = "Forsaken Bastion's Fall"
-        public constant string VERSION = "0.4.4"
-        public constant string RELEASE_DATE = "03.11.2015"
+        public constant string VERSION = "0.4.5"
+        public constant string RELEASE_DATE = "xx.xx.2015"
 		
 		private string SOUND_1 = "Sound\\Interface\\Rescue.wav"
         private string SOUND_2 = "Sound\\Interface\\ItemReceived.wav"
