@@ -679,7 +679,7 @@ scope TowerSystem
                     call TriggerRegisterPlayerUnitEvent(t6, Player(i), EVENT_PLAYER_UNIT_TRAIN_FINISH, null)
 					
 					//Init TowerConfig for the Common Towers
-					call TowerConfig.setBuildConfigCommonTowers(i)
+					call TowerConfig.setBuildConfigCommonTowers(i, Game.getAIDifficulty(i))
                 endif
 				
                 set i = i + 1

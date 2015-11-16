@@ -1,84 +1,51 @@
 scope TowerConfig
 
 	struct TowerConfig
-		private static TowerBuildConfig array buildConfig[6]
+		private static TowerBuildConfig array buildConfig[3][6]
 		
-		static method setBuildConfigCommonTowers takes integer pid returns nothing
-			local integer index = GetRandomInt(0,5)
+		static method setBuildConfigCommonTowers takes integer pid, integer aiLevel returns nothing
+			local integer index = GetRandomInt(0,2)
 
 			/*
+			 * AI Level 0 (Newbie)
+			 * Config 0
+			 */
+			set buildConfig[aiLevel][0] = TowerBuildConfig.create()
+			// 80% Shady Spire
+			call buildConfig[aiLevel][0].addBuilding('u00R')
+			call buildConfig[aiLevel][0].addBuilding('u00R')
+			call buildConfig[aiLevel][0].addBuilding('u00R')
+			call buildConfig[aiLevel][0].addBuilding('u00R')
+			// 20% Cold Obelisk
+			call buildConfig[aiLevel][0].addBuilding('u00U')
+			
+			/*
+			 * AI Level 0 (Newbie)
 			 * Config 1
 			 */
-			set buildConfig[0] = TowerBuildConfig.create()
-			// 80% Black Spire
-			call buildConfig[0].addBuilding('u00T')
-			call buildConfig[0].addBuilding('u00T')
-			call buildConfig[0].addBuilding('u00T')
-			call buildConfig[0].addBuilding('u00T')
-			// 20% Glacial Obelisk
-			call buildConfig[0].addBuilding('u00W')
+			set buildConfig[aiLevel][1] = TowerBuildConfig.create()
+			// 80% Flaming Rock
+			call buildConfig[aiLevel][1].addBuilding('u00Y')
+			call buildConfig[aiLevel][1].addBuilding('u00Y')
+			call buildConfig[aiLevel][1].addBuilding('u00Y')
+			call buildConfig[aiLevel][1].addBuilding('u00Y')
+			// 20% Cold Obelisk
+			call buildConfig[aiLevel][1].addBuilding('u00U')
 			
 			/*
+			 * AI Level 0 (Newbie)
 			 * Config 2
 			 */
-			set buildConfig[1] = TowerBuildConfig.create()
-			// 80% Black Spire
-			call buildConfig[1].addBuilding('u00T')
-			call buildConfig[1].addBuilding('u00T')
-			call buildConfig[1].addBuilding('u00T')
-			call buildConfig[1].addBuilding('u00T')
-			// 20% Glacial Obelisk
-			call buildConfig[1].addBuilding('u00W')
+			set buildConfig[aiLevel][2] = TowerBuildConfig.create()
+			// 80% Cursed Gravestone
+			call buildConfig[aiLevel][2].addBuilding('u00X')
+			call buildConfig[aiLevel][2].addBuilding('u00X')
+			call buildConfig[aiLevel][2].addBuilding('u00X')
+			call buildConfig[aiLevel][2].addBuilding('u00X')
+			// 20% Cold Obelisk
+			call buildConfig[aiLevel][2].addBuilding('u00U')
 			
-			/*
-			 * Config 3
-			 */
-			set buildConfig[2] = TowerBuildConfig.create()
-			// 80% Black Spire
-			call buildConfig[2].addBuilding('u00T')
-			call buildConfig[2].addBuilding('u00T')
-			call buildConfig[2].addBuilding('u00T')
-			call buildConfig[2].addBuilding('u00T')
-			// 20% Glacial Obelisk
-			call buildConfig[2].addBuilding('u00W')
-			
-			/*
-			 * Config 4
-			 */
-			set buildConfig[3] = TowerBuildConfig.create()
-			// 80% Black Spire
-			call buildConfig[3].addBuilding('u00T')
-			call buildConfig[3].addBuilding('u00T')
-			call buildConfig[3].addBuilding('u00T')
-			call buildConfig[3].addBuilding('u00T')
-			// 20% Glacial Obelisk
-			call buildConfig[3].addBuilding('u00W')
-			
-			/*
-			 * Config 5
-			 */
-			set buildConfig[4] = TowerBuildConfig.create()
-			// 80% Black Spire
-			call buildConfig[4].addBuilding('u00T')
-			call buildConfig[4].addBuilding('u00T')
-			call buildConfig[4].addBuilding('u00T')
-			call buildConfig[4].addBuilding('u00T')
-			// 20% Glacial Obelisk
-			call buildConfig[4].addBuilding('u00W')
-			
-			/*
-			 * Config 6
-			 */
-			set buildConfig[5] = TowerBuildConfig.create()
-			// 80% Black Spire
-			call buildConfig[5].addBuilding('u00T')
-			call buildConfig[5].addBuilding('u00T')
-			call buildConfig[5].addBuilding('u00T')
-			call buildConfig[5].addBuilding('u00T')
-			// 20% Glacial Obelisk
-			call buildConfig[5].addBuilding('u00W')
-			
-			call TowerAIEventListener.getTowerBuildAI(pid).setConfig(buildConfig[index])
+			call TowerAIEventListener.getTowerBuildAI(pid).setConfig(buildConfig[aiLevel][index])
 		endmethod
 		
 		static method setBuildConfigRareTowers takes nothing returns nothing

@@ -1,0 +1,14 @@
+Row 1
+Tower 1|1 = u00R (Shady Spire)	Tower 2|1 = u00U (Cold Obelisk)		Tower 3|1 = u00Y (Flaming Rock)	Tower 4|1 = u00X (Cursed Gravestone)
+Tower 1|2 = u00S (Dark Spire)	Tower 2|2 = u00V (Frosty Obelisk)	Tower 3|2 = u00Z (Blazing Rock)	Tower 4|2 = u011 (Cursed Tombstone)
+Tower 1|3 = u00T (Black Spire)	Tower 2|3 = u00W (Glacial Obelisk)	Tower 3|3 = u010 (Magma Core)	Tower 4|3 = u012 (Cursed Memento)
+
+Row 2
+Tower 1|1 = u013 (Decayed Earth Tower)	Tower 2|1 = u016 (Ice Frenzy)	Tower 3|1 = u01A (Putrid Pot)		Tower 4|1 = u01D (Gloom Orb)
+Tower 1|2 = u014 (Plagued Earth Tower)	Tower 2|2 = u017 (Ice Fury)		Tower 3|2 = u01B (Putrid Vat)		Tower 4|2 = u01E (Ruin Orb)
+Tower 1|3 = u015 (Blighted Earth Tower)	Tower 2|3 = u018 (Icy Rage)		Tower 3|3 = u01C (Putrid Cauldron)	Tower 4|3 = u01F (Doom Orb)
+
+Row 3
+Tower 1|1 = u01G (Monolith of Hatred)		Tower 2|1 = u01J (Glacier of Sorrow)	Tower 3|1 = u01M (Totem of Infamy)
+Tower 1|2 = u01H (Monolith of Terror)		Tower 2|2 = u01K (Glacier of Misery)	Tower 3|2 = u01R (Totem of Malice)
+Tower 1|3 = u01I (Monolith of Destruction)	Tower 2|3 = u01L (Glacier of Despair)	Tower 3|3 = u01T (Totem of Corruption)
