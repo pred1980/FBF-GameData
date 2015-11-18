@@ -161,7 +161,80 @@ scope TowerConfig
 				call buildConfig[aiLevel][4].addBuilding('u011')
 				call buildConfig[aiLevel][4].addBuilding('u011')
 			else
-			
+				/*****************************/
+				/*	AI LEVEL 2 (I N S A N E) */
+				/*****************************/
+				
+				/*
+				 * AI Level 2 (Insane)
+				 * Config 0
+				 */
+				set buildConfig[aiLevel][0] = TowerBuildConfig.create()
+				// 80% Black Spire
+				call buildConfig[aiLevel][0].addBuilding('u00T')
+				call buildConfig[aiLevel][0].addBuilding('u00T')
+				call buildConfig[aiLevel][0].addBuilding('u00T')
+				call buildConfig[aiLevel][0].addBuilding('u00T')
+				// 20% Glacial Obelisk
+				call buildConfig[aiLevel][0].addBuilding('u00W')
+				
+				/*
+				 * AI Level 2 (Insane)
+				 * Config 1
+				 */
+				set buildConfig[aiLevel][1] = TowerBuildConfig.create()
+				// 80% Magma Core
+				call buildConfig[aiLevel][1].addBuilding('u010')
+				call buildConfig[aiLevel][1].addBuilding('u010')
+				call buildConfig[aiLevel][1].addBuilding('u010')
+				call buildConfig[aiLevel][1].addBuilding('u010')
+				// 20% Glacial Obelisk
+				call buildConfig[aiLevel][1].addBuilding('u00W')
+				
+				/*
+				 * AI Level 2 (Insane)
+				 * Config 2
+				 */
+				set buildConfig[aiLevel][2] = TowerBuildConfig.create()
+				// 80% Cursed Memento
+				call buildConfig[aiLevel][2].addBuilding('u012')
+				call buildConfig[aiLevel][2].addBuilding('u012')
+				call buildConfig[aiLevel][2].addBuilding('u012')
+				call buildConfig[aiLevel][2].addBuilding('u012')
+				// 20% Glacial Obelisk
+				call buildConfig[aiLevel][2].addBuilding('u00W')
+				
+				/*
+				 * AI Level 2 (Insane)
+				 * Config 3
+				 */
+				set buildConfig[aiLevel][3] = TowerBuildConfig.create()
+				// 57% Black Spire
+				call buildConfig[aiLevel][3].addBuilding('u00T')
+				call buildConfig[aiLevel][3].addBuilding('u00T')
+				call buildConfig[aiLevel][3].addBuilding('u00T')
+				call buildConfig[aiLevel][3].addBuilding('u00T')
+				// 14% Glacial Obelisk
+				call buildConfig[aiLevel][3].addBuilding('u00W')
+				// 29% Magma Core
+				call buildConfig[aiLevel][3].addBuilding('u010')
+				call buildConfig[aiLevel][3].addBuilding('u010')
+				
+				/*
+				 * AI Level 2 (Insane)
+				 * Config 4
+				 */
+				set buildConfig[aiLevel][4] = TowerBuildConfig.create()
+				// 57% Black Spire
+				call buildConfig[aiLevel][4].addBuilding('u00T')
+				call buildConfig[aiLevel][4].addBuilding('u00T')
+				call buildConfig[aiLevel][4].addBuilding('u00T')
+				call buildConfig[aiLevel][4].addBuilding('u00T')
+				// 14% Glacial Obelisk
+				call buildConfig[aiLevel][4].addBuilding('u00W')
+				// 29% Cursed Memento
+				call buildConfig[aiLevel][4].addBuilding('u012')
+				call buildConfig[aiLevel][4].addBuilding('u012')
 			endif
 			
 			call TowerAIEventListener.getTowerBuildAI(pid).setConfig(buildConfig[aiLevel][index])
