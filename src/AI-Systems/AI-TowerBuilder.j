@@ -486,6 +486,9 @@ scope TowerBuildAI
                     set towerBuildKey = .towers.getColumnValue(towerBuildKey, .towers.columnChildTower)
                 endloop
                 set result = .upgrade(.towers.getTowerKeyByUnitId(.towers.getColumnValue(lastTowerBuildKey, .towers.columnUnitId)))
+                if result then
+                    set .lumberCost = .lumberCost - .towers.getColumnValue(towerBuildKey, .towers.columnWoodCost)
+                endif
                 if result == false or .towers.getColumnValue(towerBuildKey, .towers.columnUnitId) != towerUnitId then
                     call .addToUpgradeQueue(towerUnitId)
                 endif
@@ -535,7 +538,9 @@ scope TowerBuildAI
             local real height = .towerSize[TOWER_SIZE_HEIGHT]
             local boolean builded = false
             local boolean buildX = false
-            if .topToBottom == false then
+            local real regionWidth = 0
+            local real regionHeight = 0
+            if .topToBottom == true then
                 set height = height * -1
             endif
             if .leftToRight == false then
@@ -547,14 +552,22 @@ scope TowerBuildAI
                 if .topToBottom then
                     set positionY = .positionTop[currentRegion] + (height / 2)
                 else
-                    set positionY = .positionBottom[currentRegion] - (height / 2)
+                    set positionY = .positionBottom[currentRegion] + (height / 2)
                 endif
                 if .leftToRight then
                     set positionX = .positionLeft[currentRegion] + (width / 2)
                 else
-                    set positionX = .positionRight[currentRegion] - (width / 2)
+                    set positionX = .positionRight[currentRegion] + (width / 2)
                 endif
-                set buildX = .positionTop[currentRegion] - .positionBottom[currentRegion] > .positionLeft[currentRegion] - .positionRight[currentRegion]
+                set regionWidth = .positionRight[currentRegion] - .positionLeft[currentRegion]
+                if (regionWidth < 0) then
+                    set regionWidth = regionWidth * -1
+                endif
+                set regionHeight = .positionTop[currentRegion] - .positionBottom[currentRegion]
+                if (regionHeight < 0) then
+                    set regionHeight = regionHeight * -1
+                endif
+                set buildX = regionHeight < regionWidth
 
                 loop
                     if buildX then
