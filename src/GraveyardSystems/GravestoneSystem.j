@@ -179,17 +179,39 @@ scope GravestoneSystem
         return Gravestone.getCounter() <= MAX_GRAVESTONES
 	endfunction
 	
+	private function DestructableCondition takes nothing returns boolean
+		return 	GetDestructableTypeId(GetOrderTargetDestructable()) == GRAVESTONE_SMALL or /*
+		*/		GetDestructableTypeId(GetOrderTargetDestructable()) == GRAVESTONE_MEDIUM or /*
+		*/		GetDestructableTypeId(GetOrderTargetDestructable()) == GRAVESTONE_LARGE
+	endfunction
+
+	private function DestructableActions takes nothing returns nothing
+		local unit u = GetTriggerUnit()
+
+		if (GetUnitRace(u) != RACE_UNDEAD ) then
+			call TriggerSleepAction(0.0)
+			call IssueImmediateOrder(u,"stop")
+		endif
+
+		set u = null
+	endfunction
+	
 	struct GravestoneSystem
 	
 		static method initialize takes nothing returns nothing
 			local trigger t = CreateTrigger()
-		 
-			 call MainSetup()
-			 call TriggerRegisterTimerEventPeriodic(t, GetRandomReal(MIN_TIME, MAX_TIME))
-			 call TriggerAddCondition(t, Condition(function Conditions))
-			 call TriggerAddAction(t, function Actions)
-			 
-			 set t = null
+			
+			call MainSetup()
+			call TriggerRegisterTimerEventPeriodic(t, GetRandomReal(MIN_TIME, MAX_TIME))
+			call TriggerAddCondition(t, Condition(function Conditions))
+			call TriggerAddAction(t, function Actions)
+			
+			//Add an event for the coalition heroes to make gravestones non-targetable for them!
+			//Thx Avahor from hiveworkshop.com for help!
+			//http://www.hiveworkshop.com/forums/triggers-scripts-269/destructable-event_attacked-272668/
+			call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER, function DestructableCondition, function DestructableActions)
+	 
+			set t = null
 		endmethod
 	
 	endstruct

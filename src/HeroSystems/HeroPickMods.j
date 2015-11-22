@@ -207,7 +207,7 @@ scope HeroPickMods
             loop
                 exitwhen i >= bj_MAX_PLAYERS
                 //if it's undead player, than create 1x the Acolyts for the Tower Build
-                if Game.isPlayerInGame(i) and GetPlayerRace(Player(i)) == RACE_UNDEAD and BaseMode.repickCount[i] == 0 then
+                if Game.isPlayerInGame(i) and GetPlayerRace(Player(i)) == RACE_UNDEAD then
                     //create Acolyts Builder
                     call TowerSystem.createBuilder(i)
                 endif

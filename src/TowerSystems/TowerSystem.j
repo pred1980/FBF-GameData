@@ -670,7 +670,7 @@ scope TowerSystem
             //Register Tower Events for Player 1-6
             loop
                 exitwhen i > 5
-                if Game.isPlayerInGame(i) then
+                if (Game.isPlayerInGame(i)) then
 					call TriggerRegisterPlayerUnitEvent(t1, Player(i), EVENT_PLAYER_UNIT_CONSTRUCT_START, null)
                     call TriggerRegisterPlayerUnitEvent(t2, Player(i), EVENT_PLAYER_UNIT_CONSTRUCT_FINISH, null)
 					call TriggerRegisterPlayerUnitEvent(t3, Player(i), EVENT_PLAYER_UNIT_UPGRADE_START, null)
@@ -679,7 +679,9 @@ scope TowerSystem
                     call TriggerRegisterPlayerUnitEvent(t6, Player(i), EVENT_PLAYER_UNIT_TRAIN_FINISH, null)
 					
 					//Init TowerConfig for the Common Towers
-					call TowerConfig.setBuildConfigCommonTowers(i, Game.getAIDifficulty(i))
+					if (not Game.isRealPlayer(i)) then  
+						call TowerConfig.setBuildConfigCommonTowers(i, Game.getAIDifficulty(i))
+					endif
                 endif
 				
                 set i = i + 1

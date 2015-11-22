@@ -238,7 +238,7 @@ scope Game
 		// 1 == normal
 		// 2 == insane
 		static method getAIDifficulty takes integer pid returns integer
-			if (not .isRealPlayer(pid)) then  
+			if (not .isRealPlayer(pid)) then
 				if GetAIDifficulty(Player(pid)) == AI_DIFFICULTY_NEWBIE then
 					return 0
 				elseif GetAIDifficulty(Player(pid)) == AI_DIFFICULTY_NORMAL then
