@@ -97,6 +97,7 @@ scope TowerSystem
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).setBuildFromTo(true, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).setTowers(towersHelper)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_LEFT).setSellTowerTrain(SELL)
 
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT, TowerBuildAI.create())
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).addRectangle(gg_rct_TowersTopRightTop)
@@ -104,6 +105,7 @@ scope TowerSystem
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).setBuildFromTo(false, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).setTowers(towersHelper)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_TOP_RIGHT).setSellTowerTrain(SELL)
 
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_LEFT, TowerBuildAI.create())
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).addRectangle(gg_rct_TowersLeftTop)
@@ -111,6 +113,7 @@ scope TowerSystem
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).setBuildFromTo(true, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).setTowers(towersHelper)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_LEFT).setSellTowerTrain(SELL)
 
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_RIGHT, TowerBuildAI.create())
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).addRectangle(gg_rct_TowersRightTop)
@@ -118,6 +121,7 @@ scope TowerSystem
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).setBuildFromTo(false, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).setTowers(towersHelper)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_RIGHT).setSellTowerTrain(SELL)
 
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT, TowerBuildAI.create())
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).addRectangle(gg_rct_TowersBottomLeftRight)
@@ -127,6 +131,7 @@ scope TowerSystem
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setBuildFromTo(true, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setTowers(towersHelper)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_LEFT).setSellTowerTrain(SELL)
 
 		call TowerAIEventListener.setTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT, TowerBuildAI.create())
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).addRectangle(gg_rct_TowersBottomRightLeft)
@@ -136,6 +141,7 @@ scope TowerSystem
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setBuildFromTo(false, false)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setTowerSize(width, height)
 		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setTowers(towersHelper)
+		call TowerAIEventListener.getTowerBuildAI(TOWER_SYSTEM_AI_BOTTOM_RIGHT).setSellTowerTrain(SELL)
 	endfunction
     
     private function MainSetup takes nothing returns nothing

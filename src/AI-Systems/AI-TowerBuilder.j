@@ -320,6 +320,12 @@ scope TowerBuildAI
         private integer chosenRegion = 0
 
         /**
+         * Remove tower unit id
+         * @var integer
+         */
+        private integer sellTowerTrain = 0
+
+        /**
          * @deprecated
          */
         private static integer MAX_REGIONS = 3
@@ -381,6 +387,34 @@ scope TowerBuildAI
         public method addTower takes unit tower returns nothing
             set .tower[.towerCount] = tower
             set .towerCount = .towerCount + 1
+        endmethod
+
+		/**
+		 * Sets the train unit to sell an tower.
+		 * @param integer unitId
+		 */
+		public method setSellTowerTrain takes integer unitId returns nothing
+			set .sellTowerTrain = unitId
+		endmethod
+
+		/**
+		 * sell an tower by given key
+		 * @param integer towerKey
+		 */
+        public method sellTowerByBuildUnit takes integer towerKey returns nothing
+            local integer key = 0
+            local integer currentTowerCount = .towerCount
+            if (towerKey < .towerCount and .sellTowerTrain != 0) then
+            	call IssueImmediateOrderById(.tower[towerKey], .sellTowerTrain)
+            	set .towerCount = 0
+            	loop
+                    exitwhen key == currentTowerCount
+            		if (key != towerKey) then
+                        call .addTower(.tower[key])
+                    endif
+                    set key = key + 1
+            	endloop
+            endif 
         endmethod
 
         /**
