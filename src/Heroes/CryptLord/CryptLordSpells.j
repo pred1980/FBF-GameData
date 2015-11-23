@@ -5,8 +5,8 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
      * Description: Dominus and all his minions burrow for a limited time, after which, if there is a unit in the target area, 
                     they will come out of the earth close to it, else they will unburrow at the Crypt Lords position.
      * Changelog: 
-     *     06.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     29.03.2015: Integrated RegisterPlayerUnitEvent
+     *     	06.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     	29.03.2015: Integrated RegisterPlayerUnitEvent
      *
      */
      
@@ -16,10 +16,11 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
      * Description: His giant horn allows Dominus to inject his spawn into a unit. If the unit dies within the next 5 seconds, 
                     a Grub will spawn out of the corpse. There only can be a limited amount of grubs and beetles at the same time.
      * Changelog: 
-     *     06.11.2013: Abgleich mit OE und der Exceltabelle
-	 *	   08.02.2015: Decreased max. swarms from 3/5/7/9/11 to 3/4/5/6/7
-	 *     29.03.2015: Integrated RegisterPlayerUnitEvent
-					   Integrated SpellHelper filtering
+     *     	06.11.2013: Abgleich mit OE und der Exceltabelle
+	 *	   	08.02.2015: Decreased max. swarms from 3/5/7/9/11 to 3/4/5/6/7
+	 *     	29.03.2015: Integrated RegisterPlayerUnitEvent
+						Integrated SpellHelper filtering
+	 *		23.11.2015: Decreased max. swarms from 3/4/5/6/7 to max. 4 per level
      *
      */
      
@@ -29,7 +30,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
      * Description: Gives your Grubs the ability to develop into the more powerful Carrion Beetles over 1 minute. 
                     They deal double damage and have more hp.
      * Changelog: 
-     *     	06.11.2013: Abgleich mit OE und der Exceltabelle
+     * 		06.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     	29.03.2015: Integrated RegisterPlayerUnitEvent
 	 *		18.08.2015: Bugfix (wrong beetle to a grub)
 						Bugfix (wrong position for cocoons after a round end teleport)
@@ -58,8 +59,8 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         private constant string START_BURROW_EFFECT = "Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl"
         private constant string FINISH_BURROW_EFFECT = "Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl"
         
-        private constant integer MAX_SWARM_BASE = 2
-        private constant integer MAX_SWARM_PER_LEVEL = 1
+        private constant integer MAX_SWARM_BASE = 4
+        private constant integer MAX_SWARM_PER_LEVEL = 0
         private constant real INFECTION_DURATION = 5.
         private constant real MORPH_DURATION = 60.
         private constant real BURROW_BASE_DURATION = 7.
