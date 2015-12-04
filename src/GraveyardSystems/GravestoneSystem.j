@@ -189,8 +189,9 @@ scope GravestoneSystem
 		local unit u = GetTriggerUnit()
 
 		if (GetUnitRace(u) != RACE_UNDEAD ) then
-			call TriggerSleepAction(0.0)
-			call IssueImmediateOrder(u,"stop")
+			call PauseUnit(u, true)
+			call IssueImmediateOrder(u, "stop")
+			call PauseUnit(u, false)
 		endif
 
 		set u = null
