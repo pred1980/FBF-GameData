@@ -217,6 +217,25 @@ scope TowerBuildAI
             endif
             return column
         endmethod
+
+        /**
+         * Returns the tower lumber costs includes upgrades.
+         * @param integer unitId
+         * @return integer
+         */
+        public method getTowerLumberCost takes integer unitId returns integer
+            local integer column = -1
+            local integer lumberCost = 0
+            if (.columnUnitId >= 0 and .hasTowers) then
+                set column = .getTowerKeyByUnitId(unitId)
+                loop
+                    set lumberCost = lumberCost + .getColumnValue(column, .columnWoodCost)
+                    set column = .getParentTowerKey(column)
+                    exitwhen column == -1
+                endloop
+            endif
+            return lumberCost
+        endmethod
     endstruct
 
     /**
@@ -369,6 +388,14 @@ scope TowerBuildAI
         public method setTowers takes TowerHelper towers returns nothing
             set .towers = towers
             set .hasTowersHelper = true
+        endmethod
+
+        /**
+         * Returns the towers.
+         * @return TowerHelper
+         */
+        public method getTowers takes nothing returns TowerHelper
+            return .towers
         endmethod
 
         /**

@@ -621,18 +621,43 @@ scope TowerSystem
         endmethod
         
         //This method is for giving lumber back to the player
-		private static method onSell takes nothing returns nothing
-			local unit u = GetTriggerUnit()
+        private static method onSell takes nothing returns nothing
+        local unit u = GetTriggerUnit()
             local unit t = GetTrainedUnit()
-			
+            local player thePlayer = GetOwningPlayer(u)
+            local integer playerId = GetPlayerId(thePlayer)
+            local sound goldAdded = null
+            local real x = GetUnitX(u)
+            local real y = GetUnitY(u)
+            local integer lumberCost = 0
+
             if GetUnitTypeId(t) == SELL then
                 call SetUnitInvulnerable( u, false )
-                call IssueTargetOrder( t, "transmute", u )
+                if Game.isRealPlayer(playerId) then
+                    call IssueTargetOrder( t, "transmute", u )
+                else
+                    set lumberCost = R2I(TowerAIEventListener.getTowerBuildAI(playerId).getTowers().getTowerLumberCost(GetUnitTypeId(u)) * 0.7)
+                
+                    call SetPlayerState(thePlayer, PLAYER_STATE_RESOURCE_LUMBER, GetPlayerState(thePlayer, PLAYER_STATE_RESOURCE_LUMBER) + lumberCost)
+                
+                    call DestroyEffect(AddSpecialEffect("UI\\Feedback\\GoldCredit\\GoldCredit.mdl",x,y))
+                    
+                    set goldAdded = CreateSound("Abilities\\Spells\\Other\\Transmute\\AlchemistTransmuteDeath1.wav" , false , true , true , 10 , 10 , "CombatSoundsEAX")
+                    call SetSoundParamsFromLabel(goldAdded , "TransmuteMissileImpact")
+                    call SetSoundDuration(goldAdded , 1601)
+                    
+                    call SetSoundPosition(goldAdded, x, y, 100.)
+                    call SetSoundVolume(goldAdded, 127)
+                    call StartSound(goldAdded)
+                    call KillUnit(u)
+                    call RemoveUnit(u)
+                endif
                 call UnitApplyTimedLife(t, 'BTLF', 1.50)
                 call GroupRemoveUnit(BEING_UPGRADE_UNITS, u)
-			endif
-            
-			set u = null
+            endif
+
+            set goldAdded = null
+            set u = null
             set t = null
         endmethod
         
