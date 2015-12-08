@@ -49,7 +49,13 @@ scope GameStart
 		endmethod
         
         static method initialize takes nothing returns nothing
-            //Preload Sound
+            // if debug mode, start game immediately!
+			if (DEBUG_MODE) then
+				call Game.initialize()
+				return
+			endif
+			
+			//Preload Sound
 			call Sound.preload(SOUND_1)
 			call Sound.preload(SOUND_2)
 			call Sound.preload(SOUND_3)

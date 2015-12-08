@@ -60,6 +60,7 @@
 //! import "src\Libraries\TimedEffect.j"
 //! import "src\Libraries\DamageLog.j"
 //! import "src\Libraries\GetUnitCollision.j"
+//! import "src\Libraries\IsUnitChanneling.j"
 
 /* XE Libraries */
 //! import "src\Libraries\XE\xepreload.j"
@@ -263,6 +264,11 @@
 
 /* AI Systems */
 //! import "src\AI-Systems\AI-Creeps.j"
+//! import "src\AI-Systems\HeroAI.j"
+//! import "src\AI-Systems\HeroAILearnset.j"
+//! import "src\AI-Systems\HeroAIItem.j"
+
+//! import "src\AI-Systems\HeroesAI\AbominationAI.j"
 
 /* Dialog System*/
 //! import "src\DialogSystem\DialogSystem.j"
