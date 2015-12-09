@@ -108,6 +108,11 @@ scope HeroAI
 		return GetUnitTypeId(GetFilterUnit()) == shopTypeId and shopConditions(GetFilterUnit(), tempHeroOwner)
 	endfunction
 	
+	// Returns Forsaken Safe Unit (Fountain)
+	private function forsakenSafeUnit takes nothing returns boolean
+    	return (GetUnitTypeId(GetFilterUnit()) == 'n006')
+    endfunction
+	
 	// Returns Forsaken Base Teleporter
 	private function forsakenBaseTeleporter takes nothing returns boolean
     	return (GetUnitTypeId(GetFilterUnit()) == 'n00M')
@@ -164,6 +169,18 @@ scope HeroAI
 		private integer state
 		
 		private integer itemsetIndex
+		
+		private method showState takes nothing returns nothing
+			if (.state == STATE_IDLE) then
+				debug call BJDebugMsg("STATE: STATE_IDLE")
+			elseif (.state == STATE_ENGAGED) then
+				debug call BJDebugMsg("STATE: STATE_ENGAGED")
+			elseif (.state == STATE_GO_SHOP) then
+				debug call BJDebugMsg("STATE: STATE_GO_SHOP")
+			else
+				debug call BJDebugMsg("STATE: STATE_RUN_AWAY")
+			endif
+		endmethod
 		
 		method operator gold takes nothing returns integer
     		return GetPlayerState(.owner, PLAYER_STATE_RESOURCE_GOLD)
@@ -269,10 +286,15 @@ scope HeroAI
             return false
         endmethod
 		
-		// This method defines the closest Teleporter back to base
-		private method setTeleporter takes nothing returns nothing
-        	// teleporter
+		// This method defines the closest way back to base (directly or via teleporter)
+		private method setWayBackToBase takes nothing returns nothing
+        	// teleporter and safeUnit (Fountain)
 			local unit t
+			local unit f
+			// Distance between teleporter and hero
+			local real tDist
+			// Distance between fountain and hero
+			local real fDist
 			// race of the owner
 			local race r = GetUnitRace(.hero)
 			
@@ -280,20 +302,29 @@ scope HeroAI
 			
 			if (r == RACE_UNDEAD) then
 				set t = GetClosestUnit(.hx, .hy, Filter(function forsakenBaseTeleporter))
+				set f = GetClosestUnit(.hx, .hy, Filter(function forsakenSafeUnit))
+				//Calculate which is closer to the hero
+				set tDist = Distance(.hx, .hy, GetUnitX(t), GetUnitY(t))
+				set fDist = Distance(.hx, .hy, GetUnitX(f), GetUnitY(f))
+				
+				if (tDist > fDist) then
+					set .runX = GetUnitX(f)
+					set .runY = GetUnitY(f)
+					debug call BJDebugMsg("Go directly is the closest way!")
+				else
+					set .runX = GetUnitX(t)
+					set .runY = GetUnitY(t)
+					debug call BJDebugMsg("Using the teleporter is the closest way!")
+				endif
 			else
 				set t = GetClosestUnit(.hx, .hy, Filter(function coalitionBaseTeleporter))
+				set .runX = GetUnitX(t)
+				set .runY = GetUnitY(t)
 			endif
-						
-        	if t == null then
-        		debug call BJDebugMsg("[HeroAI] Error: Couldn't find a safe unit for " + GetUnitName(.hero) + ", will run to (0, 0)")
-        	endif
-			
-			//debug call BJDebugMsg("Closest Teleporter is here...")
-			//call PingMinimap(.runX, .runY, 1.5)
-        	
-        	set .runX = GetUnitX(t)
-			set .runY = GetUnitY(t)
-			
+
+			call PingMinimap(.runX, .runY, 1.5)
+ 
+			set f = null
 			set t = null
         endmethod
 		
@@ -346,9 +377,8 @@ scope HeroAI
 		//Note: http://www.wc3c.net/showthread.php?t=107999
 		// IssuePointOrder does not work!!!
         private method run takes nothing returns nothing
-			call PingMinimap(.runX, .runY, 1.5)
-			call IssuePointOrderById(.hero, MOVE, .runX, .runY)
 			debug call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " to run to the next Teleporter.")
+			call IssuePointOrderById(.hero, MOVE, .runX, .runY)
         endmethod
 		
 		private method getItems takes nothing returns boolean
@@ -399,81 +429,24 @@ scope HeroAI
 				endif
 			endif
 			
+			if (.state == STATE_IDLE) then
+				//To-Do's for this state!
+				
+			endif
 			
-			/*if .state == STATE_RUN_AWAY then
-        		// Make the hero keep running if it's not within range
-				if not IsUnitInRangeXY(.hero, .runX, .runY, SAFETY_RANGE) then
-					static if thistype.runActions.exists then
-						// Only run if no actions were taken in runActions.
-						if not .runActions() then
-							call .run()
-						endif
-					else
-						call .run()
-					endif
+			
+			if (.state == STATE_ENGAGED) then
+				static if thistype.assaultEnemy.exists then
+					call .assaultEnemy()
 				else
-					static if thistype.safeActions.exists then
-                    	call .safeActions()
-                    else
-						// Default looping actions for fighting so that the AI will try to do something at the safe spot.
-						if not .isChanneling then
-							static if thistype.assistAlly.exists then
-								if .allyNum > 0 then
-									if .assistAlly() then
-										return
-									endif
-								endif
-							endif
-							
-							if .enemyNum > 0 then
-								static if thistype.assaultEnemy.exists then
-									call .assaultEnemy()
-								else
-									call .defaultAssaultEnemy()
-								endif
-							endif
-						endif
-					endif
+					call .defaultAssaultEnemy()
 				endif
-			else
-				if not .isChanneling then
-					static if thistype.assistAlly.exists then
-						if .allyNum > 0 then
-							if .assistAlly() then
-								return // Assisting an ally has precedence over anything else
-							endif
-						endif
-					endif
-					// Fight enemies if the hero is engaged
-					if .state == STATE_ENGAGED then
-						static if thistype.assaultEnemy.exists then
-							call .assaultEnemy()
-						else
-							call .defaultAssaultEnemy()
-						endif
-					else               
-						// Makes the hero try to get any nearby item before attempting to shop
-						if not .getItems() then
-							if .state == STATE_GO_SHOP then
-								// If the hero isn't in range of the shop, make it move there.
-								if not IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE) then
-									call IssuePointOrder(.hero, "move", GetUnitX(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2), GetUnitY(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2))
-								else
-									// Buys the item only if it was able to.
-                                    if .canBuyItem(.curItem) then
-                                        call .buyItem(.curItem)
-                                    else
-                                        set .state = STATE_IDLE
-                                    endif
-								endif
-							else
-								// STATE_IDLE, make the hero move around randomly
-								call .move()
-							endif
-						endif
-					endif
-				endif                      
-			endif*/
+			endif
+			
+			if (.state == STATE_GO_SHOP) then
+				//To-Do's for this state!
+				
+			endif
         endmethod
 		
 		// Updates information about the hero and its surroundings
@@ -504,17 +477,50 @@ scope HeroAI
 			set .allyNum = 0
 			set .jumpTeleporterNum = 0
 			call GroupEnumUnitsInRange(.units, .hx, .hy, SIGHT_RANGE, Filter(function thistype.filtUnits))
+			call showState()
 			
-			//State STATE_RUN_AWAY
-			if (state != STATE_RUN_AWAY) then
-				// Low HP? Search for the Teleporter back to the base
+			/*
+			 * State STATE_RUN_AWAY
+			 */
+			if (.state != STATE_RUN_AWAY) then
+				// Hero has low HP? Search for the Teleporter back to the base
 				if (.badCondition) then
+					// Locate the next teleporter back to base!
+					call .setWayBackToBase()
 					set .state = STATE_RUN_AWAY
-					call .setTeleporter()
 				endif
 			endif
 			
+			/*
+			 * State STATE_IDLE
+			 */
+			if (.state != STATE_IDLE) then
+				// Hero near a fountain??
+				if (.safeUnit != null) then
+					set .state = STATE_IDLE
+				endif
+			endif
 			
+			/*
+			 * State STATE_ENGAGED
+			 */
+			if (.state != STATE_ENGAGED) then
+				// Is everything ok and nearby fountain? Search for enemies...
+				if (.goodCondition and .safeUnit == null) then
+					if (.enemyNum > 0) then
+						set .state = STATE_ENGAGED
+					endif
+				endif
+			endif
+			
+			/*
+			 * State STATE_GO_SHOP
+			 */
+			 if (.state != STATE_GO_SHOP) then
+				if (.goodCondition and .safeUnit != null) then
+					set .state = STATE_GO_SHOP
+				endif
+			 endif
 		endmethod
 
 		private static method defaultLoop takes nothing returns nothing
