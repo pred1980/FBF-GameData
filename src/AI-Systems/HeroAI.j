@@ -158,6 +158,8 @@ scope HeroAI
 		private integer shopNum
 		private group shops
 		private unit shopUnit
+		private real moveX
+        private real moveY
 		private real runX
         private real runY		
 		
@@ -214,8 +216,8 @@ scope HeroAI
 		
 		// Action methods
 		private method move takes nothing returns nothing
-			debug call BJDebugMsg("[HeroAI] Move around.")
-            call IssuePointOrder(.hero, "attack", .hx + GetRandomReal(-MOVE_DIST, MOVE_DIST), .hy + GetRandomReal(-MOVE_DIST, MOVE_DIST))
+			debug call BJDebugMsg("[HeroAI] Move around to point X/Y.")
+            call IssuePointOrderById(.hero, MOVE, .moveX, .moveY)
         endmethod 
         
 		//Note: http://www.wc3c.net/showthread.php?t=107999
@@ -279,6 +281,26 @@ scope HeroAI
             return false
         endmethod
 		
+		// This method defines the closest way back to battle field (directly or via teleporter)
+		private method setWayBackToBattleField takes nothing returns nothing
+			local race r = GetUnitRace(.hero)
+			local unit t
+			
+			debug call BJDebugMsg("setWayBackToBattleField")
+			if (r == RACE_UNDEAD) then
+				set t = GetClosestUnit(.hx, .hy, Filter(function forsakenBaseTeleporter))
+			else
+				set t = GetClosestUnit(.hx, .hy, Filter(function coalitionBaseTeleporter))
+			endif
+			
+			set .moveX = GetUnitX(t)
+			set .moveY = GetUnitY(t)
+			
+			call PingMinimap(.moveX, .moveY, 1.5)
+			
+			set t = null
+		endmethod
+		
 		// This method defines the closest way back to base (directly or via teleporter)
 		private method setWayBackToBase takes nothing returns nothing
         	// teleporter and safeUnit (Fountain)
@@ -296,7 +318,7 @@ scope HeroAI
 			if (r == RACE_UNDEAD) then
 				set t = GetClosestUnit(.hx, .hy, Filter(function forsakenBaseTeleporter))
 				set f = GetClosestUnit(.hx, .hy, Filter(function forsakenSafeUnit))
-				//Calculate which is closer to the hero
+				//Calculate which is closer to the hero, fountain or teleporter?!?
 				set tDist = Distance(.hx, .hy, GetUnitX(t), GetUnitY(t))
 				set fDist = Distance(.hx, .hy, GetUnitX(f), GetUnitY(f))
 				
@@ -305,11 +327,9 @@ scope HeroAI
 				if (.safeUnit != null or tDist > fDist ) then
 					set .runX = GetUnitX(f)
 					set .runY = GetUnitY(f)
-					debug call BJDebugMsg("Go directly is the closest way!")
 				else
 					set .runX = GetUnitX(t)
 					set .runY = GetUnitY(t)
-					debug call BJDebugMsg("Using the teleporter is the closest way!")
 				endif
 			else
 				set t = GetClosestUnit(.hx, .hy, Filter(function coalitionBaseTeleporter))
@@ -346,8 +366,7 @@ scope HeroAI
         private method buyItem takes AIItem it returns nothing
             local item i
             
-			debug call BJDebugMsg("Buy Item")
-            if .itemCount == MAX_INVENTORY_SIZE then
+			if .itemCount == MAX_INVENTORY_SIZE then
                 set i = UnitItemInSlot(.hero, ModuloInteger(.itemsetIndex, MAX_INVENTORY_SIZE) )
                 if i != null then
                     call .refundItem(Item[GetItemTypeId(i)])
@@ -360,11 +379,6 @@ scope HeroAI
 			if (it.amount == 0) then
 				set .itemsetIndex = .itemsetIndex + 1
 			endif
-            
-            // Set back to state idle now that the hero is done shopping.
-            if .state == STATE_GO_SHOP then
-                set .state = STATE_IDLE
-            endif     
             
         	if it.goldCost > 0 then
 				set .gold = .gold - it.goldCost
@@ -390,19 +404,13 @@ scope HeroAI
 		// This method will be called by update periodically to check if the hero can do any shopping
         private method canShop takes nothing returns nothing
         	local AIItem it
-			local integer i = 0
 
         	loop
 				set it = .curItem
-				debug call BJDebugMsg("Item Kosten: " + I2S(it.goldCost))
-				debug call BJDebugMsg("ItemSetIndex: " + I2S(.itemsetIndex))
-				debug call BJDebugMsg("ItemBuildSize: " + I2S(.itemBuild.size))
 				exitwhen not (.canBuyItem(it) or .itemsetIndex == .itemBuild.size)
 				set shopTypeId = it.shopTypeId
 				set tempHeroOwner = .owner
 				set .shopUnit = GetClosestUnit(.hx, .hy, Filter(function shopTypeIdCheck))
-				
-				debug call BJDebugMsg("shopUnit: " + GetUnitName(.shopUnit))
 				
 				if IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE) then
 					loop
@@ -411,16 +419,19 @@ scope HeroAI
 					endloop
 				else
 					call IssuePointOrderById(.hero, MOVE, GetUnitX(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2), GetUnitY(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2))
-					set .state = STATE_GO_SHOP
 					exitwhen true
 				endif
-				set i = i + 1
-				debug call BJDebugMsg("i: " + I2S(i))
 			endloop
+			
+			// Set back to state idle now that the hero is done shopping.
+            set .state = STATE_IDLE
         endmethod
 		
 		method defaultLoopActions takes nothing returns nothing
         	if (.state == STATE_RUN_AWAY) then
+				// Locate the next teleporter back to base!
+				call .setWayBackToBase()
+				
 				static if thistype.runActions.exists then
 					// Only run if no actions were taken in runActions.
 					if not .runActions() then
@@ -432,8 +443,15 @@ scope HeroAI
 			endif
 			
 			if (.state == STATE_IDLE) then
-				//To-Do's for this state!
+				call .setWayBackToBattleField()
 				
+				static if thistype.moveActions.exists then
+					if not .moveActions() then
+						call .move()
+					endif
+				else
+					call .move()
+				endif
 			endif
 			
 			if (.state == STATE_ENGAGED) then
@@ -445,7 +463,7 @@ scope HeroAI
 			endif
 			
 			if (.state == STATE_GO_SHOP) then
-				//To-Do's for this state!
+				call .canShop()
 			endif
         endmethod
 		
@@ -485,8 +503,6 @@ scope HeroAI
 			if (.state != STATE_RUN_AWAY) then
 				// Hero has low HP? Search for the Teleporter back to the base
 				if (.badCondition) then
-					// Locate the next teleporter back to base!
-					call .setWayBackToBase()
 					set .state = STATE_RUN_AWAY
 				endif
 			endif
@@ -519,7 +535,7 @@ scope HeroAI
 				if (.goodCondition and .safeUnit != null) then
 					// Only check to do shopping if in the AI hasn't completed its itemset and it's in STATE_IDLE
 					if (.itemsetIndex < .itemBuild.size and .state == STATE_IDLE) then
-						call .canShop()
+						set .state = STATE_GO_SHOP
 					endif
 				endif
 			 endif
