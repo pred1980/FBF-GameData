@@ -137,8 +137,8 @@ scope HeroAI
         private real hx            
         private real hy
 		private timer t
-		private Itemset itemBuild        
-        private integer itemCount
+		Itemset itemBuild
+		private integer itemCount
 		private group units
 		private group allies        
         private group enemies       
@@ -183,22 +183,14 @@ scope HeroAI
 		endmethod
 		
 		method operator gold takes nothing returns integer
-    		return GetPlayerState(.owner, PLAYER_STATE_RESOURCE_GOLD)
+			return GetPlayerState(.owner, PLAYER_STATE_RESOURCE_GOLD)
     	endmethod
     	
     	method operator gold= takes integer g returns nothing
     		call SetPlayerState(.owner, PLAYER_STATE_RESOURCE_GOLD, g)
     	endmethod
     	
-    	method operator lumber takes nothing returns integer
-    		return GetPlayerState(.owner, PLAYER_STATE_RESOURCE_LUMBER)
-    	endmethod
-    	
-    	method operator lumber= takes integer l returns nothing
-    		call SetPlayerState(.owner, PLAYER_STATE_RESOURCE_LUMBER, l)
-    	endmethod
-		
-		method operator percentLife takes nothing returns real
+    	method operator percentLife takes nothing returns real
             return .life / .maxLife
         endmethod
 		
@@ -220,22 +212,23 @@ scope HeroAI
             return IsUnitChanneling(.hero)
         endmethod
 		
-		// Item-related methods
-      	method operator curItem takes nothing returns Item
-      		return .itemBuild.item(.itemsetIndex)
-      	endmethod
-		
-		private method canBuyItem takes Item it returns boolean
-            static if CHECK_REFUND_ITEM_COST then
-				local Item check
-				if .itemCount == MAX_INVENTORY_SIZE then
-					set check = Item[GetItemTypeId(UnitItemInSlot(.hero, ModuloInteger(.itemsetIndex, MAX_INVENTORY_SIZE)))]
-					return it.goldCost <= .gold + check.goldCost * SELL_ITEM_REFUND_RATE and it.lumberCost <= .lumber + check.lumberCost * SELL_ITEM_REFUND_RATE
-				endif
-            endif
-			
-        	return it.goldCost <= .gold and it.lumberCost <= .lumber
+		// Action methods
+		private method move takes nothing returns nothing
+			debug call BJDebugMsg("[HeroAI] Move around.")
+            call IssuePointOrder(.hero, "attack", .hx + GetRandomReal(-MOVE_DIST, MOVE_DIST), .hy + GetRandomReal(-MOVE_DIST, MOVE_DIST))
+        endmethod 
+        
+		//Note: http://www.wc3c.net/showthread.php?t=107999
+		// IssuePointOrder does not work!!!
+        private method run takes nothing returns nothing
+			debug call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " to run to the next Teleporter.")
+			call IssuePointOrderById(.hero, MOVE, .runX, .runY)
         endmethod
+		
+		method defaultAssaultEnemy takes nothing returns nothing
+			debug call BJDebugMsg("[HeroAI] Attack enemies.")
+			call IssueTargetOrder(.hero, "attack", GroupPickRandomUnit(.enemies))
+		endmethod
 		
 		private static method filtUnits takes nothing returns boolean
             local unit u = GetFilterUnit()
@@ -244,34 +237,34 @@ scope HeroAI
             if not SpellHelper.isUnitDead(u) and u != tempthis.hero then
                 // Filter unit --> is an ally ???
                 if (SpellHelper.isValidAlly(u, tempthis.hero)) then
-                    debug call BJDebugMsg(GetUnitName(u) + " is an Ally!")
+                    //debug call BJDebugMsg(GetUnitName(u) + " is an Ally!")
 					call GroupAddUnit(tempthis.allies, u)
                     set tempthis.allyNum = tempthis.allyNum + 1
                 // Filter unit --> is an enemy, only enum it if it's visible???
                 elseif (SpellHelper.isValidEnemy(u, tempthis.hero) and IsUnitVisible(u, tempthis.owner)) then
-                    debug call BJDebugMsg(GetUnitName(u) + " is an Enemy!")
+                    //debug call BJDebugMsg(GetUnitName(u) + " is an Enemy!")
 					call GroupAddUnit(tempthis.enemies, u)
                     set tempthis.enemyNum = tempthis.enemyNum + 1
 				// Filter unit --> is fountain???
                 elseif (isSafeUnit(u)) then
-					debug call BJDebugMsg(GetUnitName(u) + " is an Fountain!")
+					//debug call BJDebugMsg(GetUnitName(u) + " is an Fountain!")
 					set tempthis.safeUnit = u
 				// Filter unit --> is a base teleporter???
                 elseif (isBaseTeleporter(u)) then
-					debug call BJDebugMsg(GetUnitName(u) + " is a Base Teleporter!")
+					//debug call BJDebugMsg(GetUnitName(u) + " is a Base Teleporter!")
 					set tempthis.baseTeleporter = u
 				// Filter unit --> is a jum teleporter???
                 elseif (isJumpTeleporter(u)) then
-					debug call BJDebugMsg(GetUnitName(u) + " is a Jump Teleporter!")
+					//debug call BJDebugMsg(GetUnitName(u) + " is a Jump Teleporter!")
 					call GroupAddUnit(tempthis.jumpTeleporters, u)
                     set tempthis.jumpTeleporterNum = tempthis.jumpTeleporterNum + 1
 				// Filter unit --> is a jum teleporter???
                 elseif (isForsakenHeart(u)) then
-					debug call BJDebugMsg(GetUnitName(u) + " is the Forsaken Heart!")
+					//debug call BJDebugMsg(GetUnitName(u) + " is the Forsaken Heart!")
 					set tempthis.forsakenHeart = u
 				// Filter unit --> is a jum teleporter???
                 elseif (isShop(u)) then
-					debug call BJDebugMsg(GetUnitName(u) + " is a Shop!")
+					//debug call BJDebugMsg(GetUnitName(u) + " is a Shop!")
 					call GroupAddUnit(tempthis.shops, u)
                     set tempthis.shopNum = tempthis.shopNum + 1
 				else
@@ -307,7 +300,9 @@ scope HeroAI
 				set tDist = Distance(.hx, .hy, GetUnitX(t), GetUnitY(t))
 				set fDist = Distance(.hx, .hy, GetUnitX(f), GetUnitY(f))
 				
-				if (tDist > fDist) then
+				// Is the hero close to the fountain or the path is shorter?? 
+				// --> Always walk directly to the fountain!
+				if (.safeUnit != null or tDist > fDist ) then
 					set .runX = GetUnitX(f)
 					set .runY = GetUnitY(f)
 					debug call BJDebugMsg("Go directly is the closest way!")
@@ -328,19 +323,30 @@ scope HeroAI
 			set t = null
         endmethod
 		
+		/*
+		 * ITEM RELATED CODE
+		 */
+		
+		// Item-related methods
+      	method operator curItem takes nothing returns AIItem
+      		return .itemBuild.item(.itemsetIndex)
+      	endmethod
+
 		private method refundItem takes Item it returns nothing
             if it.goldCost > 0 then
                 set .gold = R2I(.gold + it.goldCost * SELL_ITEM_REFUND_RATE)
             endif
-            
-            if it.lumberCost > 0 then
-                set .lumber = R2I(.lumber + it.lumberCost * SELL_ITEM_REFUND_RATE)
-            endif
+        endmethod
+		
+		private method getItems takes nothing returns boolean
+        	set OnlyPowerUp = .itemCount == MAX_INVENTORY_SIZE
+            return IssueTargetOrder(.hero, "smart", GetClosestItemInRange(.hx, .hy, SIGHT_RANGE, Filter(function AIItemFilter)))
         endmethod
         
-        private method buyItem takes Item it returns nothing
+        private method buyItem takes AIItem it returns nothing
             local item i
             
+			debug call BJDebugMsg("Buy Item")
             if .itemCount == MAX_INVENTORY_SIZE then
                 set i = UnitItemInSlot(.hero, ModuloInteger(.itemsetIndex, MAX_INVENTORY_SIZE) )
                 if i != null then
@@ -350,7 +356,10 @@ scope HeroAI
                 endif
             endif
             
-            set .itemsetIndex = .itemsetIndex + 1
+			//count Stack Items like Potions as one item per slot
+			if (it.amount == 0) then
+				set .itemsetIndex = .itemsetIndex + 1
+			endif
             
             // Set back to state idle now that the hero is done shopping.
             if .state == STATE_GO_SHOP then
@@ -361,59 +370,52 @@ scope HeroAI
 				set .gold = .gold - it.goldCost
             endif
             
-            if it.lumberCost > 0 then
-            	set .lumber = .lumber - it.lumberCost
-            endif   
-            
-            call UnitAddItemById(.hero, it.typeId)        	
+			call UnitAddItemById(.hero, it.typeId)
+			set it.amount = 1			
         endmethod
 		
-		// Action methods
-		private method move takes nothing returns nothing
-			debug call BJDebugMsg("[HeroAI] Move around.")
-            call IssuePointOrder(.hero, "attack", .hx + GetRandomReal(-MOVE_DIST, MOVE_DIST), .hy + GetRandomReal(-MOVE_DIST, MOVE_DIST))
-        endmethod 
-        
-		//Note: http://www.wc3c.net/showthread.php?t=107999
-		// IssuePointOrder does not work!!!
-        private method run takes nothing returns nothing
-			debug call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " to run to the next Teleporter.")
-			call IssuePointOrderById(.hero, MOVE, .runX, .runY)
+		private method canBuyItem takes AIItem it returns boolean
+            static if CHECK_REFUND_ITEM_COST then
+				local AIItem check
+				if (.itemCount == MAX_INVENTORY_SIZE) then
+					set check = AIItem[GetItemTypeId(UnitItemInSlot(.hero, ModuloInteger(.itemsetIndex, MAX_INVENTORY_SIZE)))]
+					
+					return it.goldCost <= .gold + check.goldCost * SELL_ITEM_REFUND_RATE
+				endif
+            endif
+			
+        	return it.goldCost <= .gold
         endmethod
-		
-		private method getItems takes nothing returns boolean
-        	set OnlyPowerUp = .itemCount == MAX_INVENTORY_SIZE
-            return IssueTargetOrder(.hero, "smart", GetClosestItemInRange(.hx, .hy, SIGHT_RANGE, Filter(function AIItemFilter)))
-        endmethod
-		
-		method defaultAssaultEnemy takes nothing returns nothing
-			debug call BJDebugMsg("[HeroAI] Attack enemies.")
-			call IssueTargetOrder(.hero, "attack", GroupPickRandomUnit(.enemies))
-		endmethod
-		
+
 		// This method will be called by update periodically to check if the hero can do any shopping
         private method canShop takes nothing returns nothing
-        	local Item it
-			
+        	local AIItem it
+			local integer i = 0
+
         	loop
 				set it = .curItem
-				exitwhen not .canBuyItem(it) or .itemsetIndex == .itemBuild.size
-				if it.shopTypeId == 0 then
-                    call .buyItem(it)	                    
-				else
-					set shopTypeId = it.shopTypeId
-                    set tempHeroOwner = .owner
-					set .shopUnit = GetClosestUnit(.hx, .hy, Filter(function shopTypeIdCheck))
-					debug if .shopUnit == null then
-                        debug call BJDebugMsg("[Hero AI] Error: Null shop found for " + GetUnitName(.hero))
-                    debug endif
-                    if IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE) then
+				debug call BJDebugMsg("Item Kosten: " + I2S(it.goldCost))
+				debug call BJDebugMsg("ItemSetIndex: " + I2S(.itemsetIndex))
+				debug call BJDebugMsg("ItemBuildSize: " + I2S(.itemBuild.size))
+				exitwhen not (.canBuyItem(it) or .itemsetIndex == .itemBuild.size)
+				set shopTypeId = it.shopTypeId
+				set tempHeroOwner = .owner
+				set .shopUnit = GetClosestUnit(.hx, .hy, Filter(function shopTypeIdCheck))
+				
+				debug call BJDebugMsg("shopUnit: " + GetUnitName(.shopUnit))
+				
+				if IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE) then
+					loop
+						exitwhen (it.amount ==  it.amountMax or it.goldCost > .gold)
 						call .buyItem(it)
-					else
-						set .state = STATE_GO_SHOP
-						exitwhen true
-					endif
+					endloop
+				else
+					call IssuePointOrderById(.hero, MOVE, GetUnitX(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2), GetUnitY(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2))
+					set .state = STATE_GO_SHOP
+					exitwhen true
 				endif
+				set i = i + 1
+				debug call BJDebugMsg("i: " + I2S(i))
 			endloop
         endmethod
 		
@@ -434,7 +436,6 @@ scope HeroAI
 				
 			endif
 			
-			
 			if (.state == STATE_ENGAGED) then
 				static if thistype.assaultEnemy.exists then
 					call .assaultEnemy()
@@ -445,7 +446,6 @@ scope HeroAI
 			
 			if (.state == STATE_GO_SHOP) then
 				//To-Do's for this state!
-				
 			endif
         endmethod
 		
@@ -458,10 +458,10 @@ scope HeroAI
 			set .mana = GetUnitState(.hero, UNIT_STATE_MANA)
 			set .maxLife = GetUnitState(.hero, UNIT_STATE_MAX_LIFE)
 			set .itemCount = UnitInventoryCount(.hero)
+			set .gold = .gold
 			set tempthis = this
 			
 			call ClearTextMessages()
-			debug call BJDebugMsg("***** UPDATE *****")
 			
 			// clear units
 			set .safeUnit = null
@@ -495,8 +495,7 @@ scope HeroAI
 			 * State STATE_IDLE
 			 */
 			if (.state != STATE_IDLE) then
-				// Hero near a fountain??
-				if (.safeUnit != null) then
+				if (.goodCondition and .safeUnit != null) then
 					set .state = STATE_IDLE
 				endif
 			endif
@@ -518,7 +517,10 @@ scope HeroAI
 			 */
 			 if (.state != STATE_GO_SHOP) then
 				if (.goodCondition and .safeUnit != null) then
-					set .state = STATE_GO_SHOP
+					// Only check to do shopping if in the AI hasn't completed its itemset and it's in STATE_IDLE
+					if (.itemsetIndex < .itemBuild.size and .state == STATE_IDLE) then
+						call .canShop()
+					endif
 				endif
 			 endif
 		endmethod
@@ -548,6 +550,11 @@ scope HeroAI
 			set .units = CreateGroup()
 			set .enemies = CreateGroup()
             set .allies = CreateGroup()
+			
+			set .itemBuild = Itemset.create()
+            set .itemsetIndex = 0
+            
+            set .state = STATE_IDLE
 			
 			set .t = NewTimerEx(this)
             call TimerStart(.t, DEFAULT_PERIOD, true, function thistype.defaultLoop)

@@ -61,13 +61,12 @@ scope AbominationAI
 			//Heroes Will
 			call RegisterHeroAISkill(HERO_ID, 4, 'A021')
 			
+			// This is where you would define a custom item build
             set Itemsets[0] = HeroAI_Itemset.create()
-            call Itemsets[0].addItemTypeId('I000')
-            call Itemsets[0].addItemTypeId('I001') 
-            
-            set Itemsets[1] = HeroAI_Itemset.create()
-            call Itemsets[1].addItemTypeId('I003')
-            call Itemsets[1].addItemTypeId('I01R')    
+			call Itemsets[0].addItemTypeId('I000')
+			call Itemsets[0].addItemTypeId('I001')
+			call Itemsets[0].addItemTypeId('I00D') 
+			set .itemBuild = Itemsets[0] 
         endmethod
         
         implement HeroAI     

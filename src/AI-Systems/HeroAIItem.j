@@ -34,12 +34,8 @@
     endglobals
 	
 	// Don't touch the following
-	public keyword Item
+	public keyword AIItem
 	public keyword Itemset
-	globals
-		public Itemset DefaultItemBuild
-	endglobals
-	
 	// You must set up all the items the AI can buy here. Each item should only be set up once.
 	// Note that a shop type id of 0 will cause the AI to buy the item without bothering to
     // go to an actual shop.
@@ -50,34 +46,14 @@
 	private function SetupItems takes nothing returns nothing
 		// Syntax:
     	// call Item.setup(ITEM-TYPE ID, SHOP-TYPE ID, GOLD COST, LUMBER COST)
-    	
-    	call Item.setup('gcel', 'ngad', 100, 0) // Gloves of Haste
-    	call Item.setup('bspd', 'ngad', 150, 0) // Boots of Speed
-    	call Item.setup('rlif', 'ngme', 200, 0) // Ring of Regeneration
-    	call Item.setup('prvt', 'ngad', 350, 0) // Periapt of Vitality
-    	call Item.setup('rwiz', 'ngme', 400, 0) // Sobi Mask
-    	call Item.setup('pmna', 'ngad', 500, 0) // Pendant of Mana
-        
-        // Paladin Items:
-        call Item.setup('ratc', 'ngme', 500, 0) // Claws of Attack + 12
-        call Item.setup('rst1', 'ngad', 100, 0) // Gauntlets of Ogre Strength +3
-        call Item.setup('rde3', 'ngme', 500, 0) // Ring of Protection +4
-	endfunction
-	
-	// Sets up the default item build for AI heroes to get if itemBuild is not overridden.
-    // You should configure this for your own map.
-	private function SetupDefaultItemBuild takes nothing returns nothing
-		// Syntax:
-    	// call DefaultItemBuild.addItem(ITEM-TYPE ID)
-    	
-    	call DefaultItemBuild.addItemTypeId('gcel')
-    	call DefaultItemBuild.addItemTypeId('bspd')
-    	call DefaultItemBuild.addItemTypeId('rlif')
-    	call DefaultItemBuild.addItemTypeId('prvt')
-    	call DefaultItemBuild.addItemTypeId('rwiz')
-    	call DefaultItemBuild.addItemTypeId('pmna')
-        
-        call DefaultItemBuild.addItemTypeId('rwiz') // Replaces item in hero's first slot
+    	call AIItem.setup(HEALING_POTION, 'u000', 5)
+		call AIItem.setup(MANA_POTION, 'u000', 3)
+		
+		/*
+		 * Init Undead Items
+		 */
+		//ITEM_CLASS_ADVANCED: Undead
+		call AIItem.setup(BONE_HELMET, 'u001', 1)
     endfunction
 	
 //==========================================================================================
@@ -85,14 +61,17 @@
 //==========================================================================================	
     
     // serves more of an information wrapper for item cost and shop-type id
-	struct Item extends array
+	struct AIItem extends array
 		private static integer count = 0
 		private static Table info
 	
 		private static integer array typeIds
 		private static integer array shopIds
 		private static integer array goldCosts
-		private static integer array lumberCosts
+		// current amount of each item type
+		private static integer array itemAmount
+		// max amount of each item type		
+		private static integer array itemAmountMax
 	
 		static method operator [] takes integer itemTypeId returns thistype	
             debug if not info.has(itemTypeId) then
@@ -113,19 +92,28 @@
 		method operator goldCost takes nothing returns integer	
 			return goldCosts[this]	
 		endmethod
-	
-		method operator lumberCost takes nothing returns integer	
-			return lumberCosts[this]	
+		
+		method operator amount takes nothing returns integer	
+			return itemAmount[this]	
 		endmethod
-	
-		static method setup takes integer itemTypeId, integer shopTypeId, integer goldCost, integer lumberCost returns nothing
+		
+		method operator amount= takes integer amount returns nothing
+    		set itemAmount[this] = itemAmount[this]	 + amount
+    	endmethod
+		
+		method operator amountMax takes nothing returns integer	
+			return itemAmountMax[this]	
+		endmethod
+		
+		static method setup takes Item it, integer shopTypeId, integer amount returns nothing
 			if count < 8190 then	
-				set count = count + 1		
-				set info[itemTypeId] = count	
-				set typeIds[count] = itemTypeId
+				set count = count + 1
+				set info[it.id] = count	
+				set typeIds[count] = it.id
 				set shopIds[count] = shopTypeId		
-				set goldCosts[count] = goldCost		
-				set lumberCosts[count] = lumberCost		
+				set goldCosts[count] = it.goldCost
+				set itemAmount[count] = 0
+				set itemAmountMax[count] = amount
 			debug else	
 				debug call BJDebugMsg("[HeroAIItem] Error: Max number of items registered")	
 			endif
@@ -133,16 +121,23 @@
 	
 		static method onInit takes nothing returns nothing
 			set thistype.info = Table.create()
+			
+			//Item System
+			call UnitInventory.initialize()
+			call ItemShops.initialize()
+			call Item.initialize()
+			call Items.initialize()
+			
 			call SetupItems()
 		endmethod
 	endstruct
 	
 	struct Itemset extends array
 		private static integer stack = 0
-		private static Item array items
+		private static AIItem array items
 		private static integer array count
 		
-		method item takes integer index returns Item
+		method item takes integer index returns AIItem
         	return items[this * MAX_ITEMSET_SIZE + index]
         endmethod
 		
@@ -152,7 +147,7 @@
 		
 		method addItemTypeId takes integer itemTypeId returns nothing
 			if count[this] < MAX_ITEMSET_SIZE then
-				set items[this * MAX_ITEMSET_SIZE + count[this]] = Item[itemTypeId]
+				set items[this * MAX_ITEMSET_SIZE + count[this]] = AIItem[itemTypeId]
 				set count[this] = count[this] + 1
 			debug else
 				debug call BJDebugMsg("[HeroAIItemset] Error: Itemset already has max item ids, aborted")
@@ -163,11 +158,6 @@
 			set stack = stack + 1
 			set count[stack] = 0
 			return stack
-		endmethod
-		
-		static method onInit takes nothing returns nothing
-			set DefaultItemBuild = Itemset.create()
-			call SetupDefaultItemBuild()
 		endmethod
 	endstruct
 	

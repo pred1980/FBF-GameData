@@ -24,12 +24,6 @@ scope GameModules
 			//Tome Damage System System
 			call TDS.initialize()
 			
-			//Item System
-			call UnitInventory.initialize()
-			call ItemShops.initialize()
-			call Item.initialize()
-			call Items.initialize()
-			
 			//Kill Streak System
 			call KillStreakSystem.initialize()
 			

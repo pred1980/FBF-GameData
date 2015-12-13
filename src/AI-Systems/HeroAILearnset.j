@@ -10,7 +10,6 @@
         local unit u = GetTriggerUnit() 
         local integer typeId = GetUnitTypeId(u)
 		
-		call BJDebugMsg("Hero: " + GetUnitName(u))
 		call SelectHeroSkill(u, learnsetInfo[GetUnitLevel(u)][typeId])
 		
 		set u = null
