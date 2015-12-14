@@ -425,6 +425,8 @@ scope HeroAI
 			
 			// Set back to state idle now that the hero is done shopping.
             set .state = STATE_IDLE
+			// Set the Base Teleporter as the next target to leave the base
+			call .setWayBackToBattleField()
         endmethod
 		
 		method defaultLoopActions takes nothing returns nothing
@@ -443,8 +445,6 @@ scope HeroAI
 			endif
 			
 			if (.state == STATE_IDLE) then
-				call .setWayBackToBattleField()
-				
 				static if thistype.moveActions.exists then
 					if not .moveActions() then
 						call .move()
@@ -479,7 +479,7 @@ scope HeroAI
 			set .gold = .gold
 			set tempthis = this
 			
-			call ClearTextMessages()
+			debug call ClearTextMessages()
 			
 			// clear units
 			set .safeUnit = null
@@ -520,7 +520,7 @@ scope HeroAI
 			 * State STATE_ENGAGED
 			 */
 			if (.state != STATE_ENGAGED) then
-				// Is everything ok and nearby fountain? Search for enemies...
+				// Is everything ok and no nearby fountain? Search for enemies...
 				if (.goodCondition and .safeUnit == null) then
 					if (.enemyNum > 0) then
 						set .state = STATE_ENGAGED

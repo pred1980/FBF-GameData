@@ -82,6 +82,16 @@
 //! import "src\GameConfig\GameSounds.j"
 //! import "src\GameConfig\DefenseModes.j"
 
+/* AI Systems */
+//! import "src\AI-Systems\AI-Creeps.j"
+//! import "src\AI-Systems\HeroAI.j"
+//! import "src\AI-Systems\HeroAILearnset.j"
+//! import "src\AI-Systems\HeroAIItem.j"
+
+//! import "src\AI-Systems\HeroesAI\BehemotAI.j"
+//! import "src\AI-Systems\HeroesAI\NerubianWidowAI.j"
+//! import "src\AI-Systems\HeroesAI\AbominationAI.j"
+
 /* Hero Systems */
 //! import "src\HeroSystems\HeroPickInit.j"
 //! import "src\HeroSystems\HeroPickSystem.j"
@@ -261,14 +271,6 @@
 //! import "src\MiscSystems\DomeAura.j"
 // import "src\MiscSystems\MagicImmunity.j"
 // import "src\MiscSystems\DomeMagicImmunity.j"
-
-/* AI Systems */
-//! import "src\AI-Systems\AI-Creeps.j"
-//! import "src\AI-Systems\HeroAI.j"
-//! import "src\AI-Systems\HeroAILearnset.j"
-//! import "src\AI-Systems\HeroAIItem.j"
-
-//! import "src\AI-Systems\HeroesAI\AbominationAI.j"
 
 /* Dialog System*/
 //! import "src\DialogSystem\DialogSystem.j"

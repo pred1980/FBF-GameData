@@ -174,6 +174,11 @@ scope HeroPickMods
             if (GetLocalPlayer() == .p[.id]) then
                 call ClearTextMessages()
             endif
+			
+			// Register Hero for the Hero AI System if its a computer player
+			if (Game.isBot[.id]) then
+				call RunHeroAI(BaseMode.pickedHero[.id])
+			endif
             
             call PanCameraToTimedForPlayer( .p[.id], .startLocX[.id], .startLocY[.id], 0.0 )
             call SelectUnitForPlayerSingle(BaseMode.pickedHero[.id], .p[.id])
