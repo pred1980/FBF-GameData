@@ -63,9 +63,9 @@ scope AbominationAI
 			
 			// This is where you would define a custom item build
             set Itemsets[0] = HeroAI_Itemset.create()
-			call Itemsets[0].addItemTypeId('I000')
-			call Itemsets[0].addItemTypeId('I001')
-			call Itemsets[0].addItemTypeId('I00D') 
+			call Itemsets[0].addItemTypeId('u000', 'I000')
+			call Itemsets[0].addItemTypeId('u000', 'I001')
+			call Itemsets[0].addItemTypeId('u000', 'I00D') 
 			set .itemBuild = Itemsets[0]
 			
 			call BJDebugMsg("Created Abilities and Itemsets for Abomination")

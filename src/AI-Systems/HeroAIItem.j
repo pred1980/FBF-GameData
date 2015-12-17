@@ -74,7 +74,7 @@
     // serves more of an information wrapper for item cost and shop-type id
 	struct AIItem extends array
 		private static integer count = 0
-		private static Table info
+		private static TableArray info
 	
 		private static integer array typeIds
 		private static integer array shopIds
@@ -84,13 +84,13 @@
 		// max amount of each item type		
 		private static integer array itemAmountMax
 	
-		static method operator [] takes integer itemTypeId returns thistype	
-            if not (info.has(itemTypeId)) then
+		static method operator [] takes integer shopTypeId, integer itemTypeId returns thistype	
+            if not (info[shopTypeId].has(itemTypeId)) then
                 call BJDebugMsg("[HeroAIItem] Error: Item not registered with system")
                 return 0
             endif
 			call BJDebugMsg("[HeroAIItem] Error: Item already registered with system")
-			return info[itemTypeId]	
+			return info[shopTypeId][itemTypeId]	
 		endmethod
 
 		method operator typeId takes nothing returns integer
@@ -120,7 +120,8 @@
 		static method setup takes Item it, integer shopTypeId, integer amount returns nothing
 			if (count < 8190) then	
 				set count = count + 1
-				set info[it.id] = count	
+				//set info[it.id] = count
+				set info[shopTypeId][it.id] = count
 				set typeIds[count] = it.id
 				set shopIds[count] = shopTypeId		
 				set goldCosts[count] = it.goldCost
@@ -132,7 +133,8 @@
 		endmethod	
 	
 		static method onInit takes nothing returns nothing
-			set thistype.info = Table.create()
+			//set thistype.info = Table.create()
+			set thistype.info = TableArray[0x2000]
 			
 			//Item System
 			call UnitInventory.initialize()
@@ -157,9 +159,9 @@
 			return count[this]
 		endmethod
 		
-		method addItemTypeId takes integer itemTypeId returns nothing
+		method addItem takes integer shopTypeId, integer itemTypeId returns nothing
 			if count[this] < MAX_ITEMSET_SIZE then
-				set items[this * MAX_ITEMSET_SIZE + count[this]] = AIItem[itemTypeId]
+				set items[this * MAX_ITEMSET_SIZE + count[this]] = AIItem[shopTypeId][itemTypeId]
 				set count[this] = count[this] + 1
 			else
 				call BJDebugMsg("[HeroAIItemset] Error: Itemset already has max item ids, aborted")
