@@ -66,7 +66,9 @@ scope AbominationAI
 			call Itemsets[0].addItemTypeId('I000')
 			call Itemsets[0].addItemTypeId('I001')
 			call Itemsets[0].addItemTypeId('I00D') 
-			set .itemBuild = Itemsets[0] 
+			set .itemBuild = Itemsets[0]
+			
+			call BJDebugMsg("Created Abilities and Itemsets for Abomination")
         endmethod
         
         implement HeroAI     

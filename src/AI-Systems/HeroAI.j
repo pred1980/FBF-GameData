@@ -174,13 +174,13 @@ scope HeroAI
 		
 		private method showState takes nothing returns nothing
 			if (.state == STATE_IDLE) then
-				debug call BJDebugMsg("STATE: STATE_IDLE")
+				call BJDebugMsg("STATE: STATE_IDLE")
 			elseif (.state == STATE_ENGAGED) then
-				debug call BJDebugMsg("STATE: STATE_ENGAGED")
+				call BJDebugMsg("STATE: STATE_ENGAGED")
 			elseif (.state == STATE_GO_SHOP) then
-				debug call BJDebugMsg("STATE: STATE_GO_SHOP")
+				call BJDebugMsg("STATE: STATE_GO_SHOP")
 			else
-				debug call BJDebugMsg("STATE: STATE_RUN_AWAY")
+				call BJDebugMsg("STATE: STATE_RUN_AWAY")
 			endif
 		endmethod
 		
@@ -216,19 +216,19 @@ scope HeroAI
 		
 		// Action methods
 		private method move takes nothing returns nothing
-			debug call BJDebugMsg("[HeroAI] Move around to point X/Y.")
+			call BJDebugMsg("[HeroAI] Move around to point X/Y.")
             call IssuePointOrderById(.hero, MOVE, .moveX, .moveY)
         endmethod 
         
 		//Note: http://www.wc3c.net/showthread.php?t=107999
 		// IssuePointOrder does not work!!!
         private method run takes nothing returns nothing
-			debug call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " to run to the next Teleporter.")
+			call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " to run to the next Teleporter.")
 			call IssuePointOrderById(.hero, MOVE, .runX, .runY)
         endmethod
 		
 		method defaultAssaultEnemy takes nothing returns nothing
-			debug call BJDebugMsg("[HeroAI] Attack enemies.")
+			call BJDebugMsg("[HeroAI] Attack enemies.")
 			call IssueTargetOrder(.hero, "attack", GroupPickRandomUnit(.enemies))
 		endmethod
 		
@@ -239,38 +239,38 @@ scope HeroAI
             if not SpellHelper.isUnitDead(u) and u != tempthis.hero then
                 // Filter unit --> is an ally ???
                 if (SpellHelper.isValidAlly(u, tempthis.hero)) then
-                    //debug call BJDebugMsg(GetUnitName(u) + " is an Ally!")
+                    //call BJDebugMsg(GetUnitName(u) + " is an Ally!")
 					call GroupAddUnit(tempthis.allies, u)
                     set tempthis.allyNum = tempthis.allyNum + 1
                 // Filter unit --> is an enemy, only enum it if it's visible???
                 elseif (SpellHelper.isValidEnemy(u, tempthis.hero) and IsUnitVisible(u, tempthis.owner)) then
-                    //debug call BJDebugMsg(GetUnitName(u) + " is an Enemy!")
+                    //call BJDebugMsg(GetUnitName(u) + " is an Enemy!")
 					call GroupAddUnit(tempthis.enemies, u)
                     set tempthis.enemyNum = tempthis.enemyNum + 1
 				// Filter unit --> is fountain???
                 elseif (isSafeUnit(u)) then
-					//debug call BJDebugMsg(GetUnitName(u) + " is an Fountain!")
+					//call BJDebugMsg(GetUnitName(u) + " is an Fountain!")
 					set tempthis.safeUnit = u
 				// Filter unit --> is a base teleporter???
                 elseif (isBaseTeleporter(u)) then
-					//debug call BJDebugMsg(GetUnitName(u) + " is a Base Teleporter!")
+					//call BJDebugMsg(GetUnitName(u) + " is a Base Teleporter!")
 					set tempthis.baseTeleporter = u
 				// Filter unit --> is a jum teleporter???
                 elseif (isJumpTeleporter(u)) then
-					//debug call BJDebugMsg(GetUnitName(u) + " is a Jump Teleporter!")
+					//call BJDebugMsg(GetUnitName(u) + " is a Jump Teleporter!")
 					call GroupAddUnit(tempthis.jumpTeleporters, u)
                     set tempthis.jumpTeleporterNum = tempthis.jumpTeleporterNum + 1
 				// Filter unit --> is a jum teleporter???
                 elseif (isForsakenHeart(u)) then
-					//debug call BJDebugMsg(GetUnitName(u) + " is the Forsaken Heart!")
+					//call BJDebugMsg(GetUnitName(u) + " is the Forsaken Heart!")
 					set tempthis.forsakenHeart = u
 				// Filter unit --> is a jum teleporter???
                 elseif (isShop(u)) then
-					//debug call BJDebugMsg(GetUnitName(u) + " is a Shop!")
+					//call BJDebugMsg(GetUnitName(u) + " is a Shop!")
 					call GroupAddUnit(tempthis.shops, u)
                     set tempthis.shopNum = tempthis.shopNum + 1
 				else
-					debug call BJDebugMsg(GetUnitName(u) + " is actualy not defined!")
+					call BJDebugMsg(GetUnitName(u) + " is actualy not defined!")
 				endif
 				
                 set u = null
@@ -286,7 +286,7 @@ scope HeroAI
 			local race r = GetUnitRace(.hero)
 			local unit t
 			
-			debug call BJDebugMsg("setWayBackToBattleField")
+			//call BJDebugMsg("setWayBackToBattleField")
 			if (r == RACE_UNDEAD) then
 				set t = GetClosestUnit(.hx, .hy, Filter(function forsakenBaseTeleporter))
 			else
@@ -398,6 +398,12 @@ scope HeroAI
 				endif
             endif
 			
+			if (it.goldCost <= .gold) then
+				call BJDebugMsg("You have enough gold to buy this item!")
+			else
+				call BJDebugMsg("You do NOT have enough gold to buy this item!")
+			endif
+			
         	return it.goldCost <= .gold
         endmethod
 
@@ -412,6 +418,12 @@ scope HeroAI
 				set tempHeroOwner = .owner
 				set .shopUnit = GetClosestUnit(.hx, .hy, Filter(function shopTypeIdCheck))
 				
+				call BJDebugMsg("itemBuild.size: " + I2S(.itemBuild.size))
+				call BJDebugMsg("itemsetIndex: " + I2S(.itemsetIndex))
+				call BJDebugMsg("shopTypeId: " + I2S(it.shopTypeId))
+				call BJDebugMsg("itemGoldCost: " + I2S(it.goldCost))
+				call BJDebugMsg("itemAmountMax: " + I2S(it.amountMax))
+				
 				if IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE) then
 					loop
 						exitwhen (it.amount ==  it.amountMax or it.goldCost > .gold)
@@ -424,13 +436,15 @@ scope HeroAI
 			endloop
 			
 			// Set back to state idle now that the hero is done shopping.
-            set .state = STATE_IDLE
+            //set .state = STATE_IDLE
 			// Set the Base Teleporter as the next target to leave the base
-			call .setWayBackToBattleField()
+			//call .setWayBackToBattleField()
         endmethod
 		
 		method defaultLoopActions takes nothing returns nothing
-        	if (.state == STATE_RUN_AWAY) then
+        	call showState()
+			
+			if (.state == STATE_RUN_AWAY) then
 				// Locate the next teleporter back to base!
 				call .setWayBackToBase()
 				
@@ -479,7 +493,7 @@ scope HeroAI
 			set .gold = .gold
 			set tempthis = this
 			
-			debug call ClearTextMessages()
+			call ClearTextMessages()
 			
 			// clear units
 			set .safeUnit = null
@@ -495,7 +509,6 @@ scope HeroAI
 			set .allyNum = 0
 			set .jumpTeleporterNum = 0
 			call GroupEnumUnitsInRange(.units, .hx, .hy, SIGHT_RANGE, Filter(function thistype.filtUnits))
-			call showState()
 			
 			/*
 			 * State STATE_RUN_AWAY
@@ -590,7 +603,7 @@ scope HeroAI
 			set stack = stack + 1
 			set heroesAI[.hId] = this
 			
-			debug call BJDebugMsg("[HeroAI] Info: The hero " + GetUnitName(.hero) + " is registered to the Hero AI System.")
+			call BJDebugMsg("[HeroAI] Info: The hero " + GetUnitName(.hero) + " is registered to the Hero AI System.")
     		return this
 		endmethod
 	endmodule
@@ -611,14 +624,14 @@ scope HeroAI
     endstruct
 	
 	function RunHeroAI takes unit hero returns nothing
-		if heroesAI.has(GetHandleId(hero)) then
-            debug call BJDebugMsg("[Hero AI] Error: Attempt to run an AI for a unit that already has one, aborted.")
-            return
+		if (heroesAI.has(GetHandleId(hero))) then
+            call BJDebugMsg("[Hero AI] Error: Attempt to run an AI for a unit that already has one, aborted.")
+			return
         endif
 		
-		if infoAI.boolexpr[GetUnitTypeId(hero)] != null then
+		if (infoAI.boolexpr[GetUnitTypeId(hero)] != null) then
         	set registerUnit = hero
-            call FireCondition(infoAI.boolexpr[GetUnitTypeId(hero)])
+			call FireCondition(infoAI.boolexpr[GetUnitTypeId(hero)])
         else
             call DefaultHeroAI.create(hero)        
         endif
@@ -626,7 +639,7 @@ scope HeroAI
 	
 	function RegisterHeroAI takes integer unitTypeId, code register returns nothing
         if infoAI.boolexpr[unitTypeId] != null then
-            debug call BJDebugMsg("[Hero AI] Error: Attempt to register an AI struct for a unit-type id again, aborted")
+            call BJDebugMsg("[Hero AI] Error: Attempt to register an AI struct for a unit-type id again, aborted")
             return
         endif
         set infoAI.boolexpr[unitTypeId] = Filter(register)

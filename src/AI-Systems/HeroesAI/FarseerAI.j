@@ -1,6 +1,6 @@
-scope DestroyerAI
+scope FarseerAI
     globals
-        private constant integer HERO_ID = 'H009'
+        private constant integer HERO_ID = 'O005'
 		
 		private HeroAI_Itemset array Itemsets	
         private group enumGroup = CreateGroup()
@@ -36,28 +36,28 @@ scope DestroyerAI
         method onCreate takes nothing returns nothing
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
-			// Arcane Swap
-			call RegisterHeroAISkill(HERO_ID, 1, 'A06N')
-			call RegisterHeroAISkill(HERO_ID, 5, 'A06N') 
-			call RegisterHeroAISkill(HERO_ID, 9, 'A06N') 
-			call RegisterHeroAISkill(HERO_ID, 13, 'A06N') 
-			call RegisterHeroAISkill(HERO_ID, 16, 'A06N') 
-			// Mana Steal
-			call RegisterHeroAISkill(HERO_ID, 2, 'A06R') 
-			call RegisterHeroAISkill(HERO_ID, 7, 'A06R') 
-			call RegisterHeroAISkill(HERO_ID, 10, 'A06R') 
-			call RegisterHeroAISkill(HERO_ID, 14, 'A06R') 
-			call RegisterHeroAISkill(HERO_ID, 17, 'A06R') 
-			// Mind Burst
-			call RegisterHeroAISkill(HERO_ID, 3, 'A06O') 
-			call RegisterHeroAISkill(HERO_ID, 8, 'A06O') 
-			call RegisterHeroAISkill(HERO_ID, 11, 'A06O') 
-			call RegisterHeroAISkill(HERO_ID, 15, 'A06O') 
-			call RegisterHeroAISkill(HERO_ID, 19, 'A06O') 
-			// Release Mana
-			call RegisterHeroAISkill(HERO_ID, 6, 'A06Q')
-			call RegisterHeroAISkill(HERO_ID, 12, 'A06Q')
-			call RegisterHeroAISkill(HERO_ID, 18, 'A06Q')
+			// Lightning Balls
+			call RegisterHeroAISkill(HERO_ID, 1, 'A09D')
+			call RegisterHeroAISkill(HERO_ID, 5, 'A09D') 
+			call RegisterHeroAISkill(HERO_ID, 9, 'A09D') 
+			call RegisterHeroAISkill(HERO_ID, 13, 'A09D') 
+			call RegisterHeroAISkill(HERO_ID, 16, 'A09D') 
+			// Volty Crush
+			call RegisterHeroAISkill(HERO_ID, 2, 'A09E') 
+			call RegisterHeroAISkill(HERO_ID, 7, 'A09E') 
+			call RegisterHeroAISkill(HERO_ID, 10, 'A09E') 
+			call RegisterHeroAISkill(HERO_ID, 14, 'A09E') 
+			call RegisterHeroAISkill(HERO_ID, 17, 'A09E') 
+			// Reflective Shield
+			call RegisterHeroAISkill(HERO_ID, 3, 'A09G') 
+			call RegisterHeroAISkill(HERO_ID, 8, 'A09G') 
+			call RegisterHeroAISkill(HERO_ID, 11, 'A09G') 
+			call RegisterHeroAISkill(HERO_ID, 15, 'A09G') 
+			call RegisterHeroAISkill(HERO_ID, 19, 'A09G') 
+			// Spirit Arrows
+			call RegisterHeroAISkill(HERO_ID, 6, 'A09J')
+			call RegisterHeroAISkill(HERO_ID, 12, 'A09J')
+			call RegisterHeroAISkill(HERO_ID, 18, 'A09J')
 			//Heroes Will
 			call RegisterHeroAISkill(HERO_ID, 4, 'A021')
 			
@@ -66,8 +66,6 @@ scope DestroyerAI
 			call Itemsets[0].addItemTypeId('I000')
 			call Itemsets[0].addItemTypeId('I001')
 			set .itemBuild = Itemsets[0] 
-			
-			call BJDebugMsg("Created Abilities and Itemsets for Destroyer")
         endmethod
         
         implement HeroAI     

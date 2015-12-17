@@ -66,6 +66,8 @@ scope CryptLordAI
 			call Itemsets[0].addItemTypeId('I000')
 			call Itemsets[0].addItemTypeId('I001')
 			set .itemBuild = Itemsets[0] 
+			
+			call BJDebugMsg("Created Abilities and Itemsets for Crypt Lord")
         endmethod
         
         implement HeroAI     

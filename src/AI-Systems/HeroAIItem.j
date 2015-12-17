@@ -48,6 +48,17 @@
     	// call Item.setup(ITEM-TYPE ID, SHOP-TYPE ID, GOLD COST, LUMBER COST)
     	call AIItem.setup(HEALING_POTION, 'u000', 5)
 		call AIItem.setup(MANA_POTION, 'u000', 3)
+		call AIItem.setup(HEALING_ELEXIR, 'u000', 1)
+		call AIItem.setup(MANA_ELEXIR, 'u000', 1)
+		call AIItem.setup(ANTI_MAGIC_POTION, 'u000', 1)
+		call AIItem.setup(INVULNERABILITY_POTION, 'u000', 1)
+		call AIItem.setup(POTION_OF_INVISIBILITY, 'u000', 1)
+		call AIItem.setup(SPEED_UP_POTION, 'u000', 1)
+		call AIItem.setup(TELEPORT_STONE, 'u000', 1)
+		call AIItem.setup(TALISMAN_OF_TRANSLOCATION, 'u000', 1)
+
+		call AIItem.setup(HEALING_POTION, 'u00K', 5)
+		call AIItem.setup(MANA_POTION, 'u00K', 3)
 		
 		/*
 		 * Init Undead Items
@@ -74,10 +85,11 @@
 		private static integer array itemAmountMax
 	
 		static method operator [] takes integer itemTypeId returns thistype	
-            debug if not info.has(itemTypeId) then
-                debug call BJDebugMsg("[HeroAIItem] Error: Item not registered with system")
+            if not (info.has(itemTypeId)) then
+                call BJDebugMsg("[HeroAIItem] Error: Item not registered with system")
                 return 0
-            debug endif
+            endif
+			call BJDebugMsg("[HeroAIItem] Error: Item already registered with system")
 			return info[itemTypeId]	
 		endmethod
 
@@ -106,7 +118,7 @@
 		endmethod
 		
 		static method setup takes Item it, integer shopTypeId, integer amount returns nothing
-			if count < 8190 then	
+			if (count < 8190) then	
 				set count = count + 1
 				set info[it.id] = count	
 				set typeIds[count] = it.id
@@ -114,8 +126,8 @@
 				set goldCosts[count] = it.goldCost
 				set itemAmount[count] = 0
 				set itemAmountMax[count] = amount
-			debug else	
-				debug call BJDebugMsg("[HeroAIItem] Error: Max number of items registered")	
+			else	
+				call BJDebugMsg("[HeroAIItem] Error: Max number of items registered")	
 			endif
 		endmethod	
 	
@@ -149,8 +161,8 @@
 			if count[this] < MAX_ITEMSET_SIZE then
 				set items[this * MAX_ITEMSET_SIZE + count[this]] = AIItem[itemTypeId]
 				set count[this] = count[this] + 1
-			debug else
-				debug call BJDebugMsg("[HeroAIItemset] Error: Itemset already has max item ids, aborted")
+			else
+				call BJDebugMsg("[HeroAIItemset] Error: Itemset already has max item ids, aborted")
 			endif
 		endmethod
 		

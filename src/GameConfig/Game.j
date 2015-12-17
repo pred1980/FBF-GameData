@@ -90,7 +90,7 @@ scope Game
 			
             loop
                 exitwhen i >= bj_MAX_PLAYERS
-                if isPlayerInGame(i) and isRealPlayer(i) then
+                if (isPlayerInGame(i) and isRealPlayer(i)) then
                     set amount = amount + 1
                 endif
                 set i = i + 1

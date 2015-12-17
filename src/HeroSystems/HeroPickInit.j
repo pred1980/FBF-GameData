@@ -375,8 +375,8 @@ scope HeroPickInit
         set HERO_REPICK_RECT[17][1] = GetRectCenterY(gg_rct_HeroRevive19)
         set HERO_ABILITIES[17][0] = 'A09D' //Lightning Balls
         set HERO_ABILITIES[17][1] = 'A09E' //Volty Crush
-        set HERO_ABILITIES[17][2] = 'A09G' //
-        set HERO_ABILITIES[17][3] = '0000' //
+        set HERO_ABILITIES[17][2] = 'A09G' //Reflective Shield
+        set HERO_ABILITIES[17][3] = 'A09J' //Spirit Arrows
         
         //Fire Panda
         set HERO_PICK_RECT[18]  = gg_rct_HeroPick20
@@ -391,10 +391,10 @@ scope HeroPickInit
         set HERO_PICK_RECT[19]  = gg_rct_HeroPick21
         set HERO_REPICK_RECT[19][0] = GetRectCenterX(gg_rct_HeroRevive21)
         set HERO_REPICK_RECT[19][1] = GetRectCenterY(gg_rct_HeroRevive21)
-        set HERO_ABILITIES[19][0] = '0000' //Crag
-        set HERO_ABILITIES[19][1] = '0000' //Taunt
-        set HERO_ABILITIES[19][2] = '0000' //Craggy Skin
-        set HERO_ABILITIES[19][3] = '0000' //Rockfall
+        set HERO_ABILITIES[19][0] = 'A097' //Crag
+        set HERO_ABILITIES[19][1] = 'A098' //Hurl Boulder
+        set HERO_ABILITIES[19][2] = 'A099' //Craggy Exterior
+        set HERO_ABILITIES[19][3] = 'A09B' //Endurance
         
         //Cenarius
         set HERO_PICK_RECT[20]  = gg_rct_HeroPick22
