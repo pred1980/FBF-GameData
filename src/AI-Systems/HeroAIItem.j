@@ -47,7 +47,7 @@
 		// Syntax:
     	// call Item.setup(ITEM-TYPE ID, SHOP-TYPE ID, GOLD COST, LUMBER COST)
     	call AIItem.setup(HEALING_POTION, 'u000', 5)
-		call AIItem.setup(MANA_POTION, 'u000', 3)
+		/*call AIItem.setup(MANA_POTION, 'u000', 3)
 		call AIItem.setup(HEALING_ELEXIR, 'u000', 1)
 		call AIItem.setup(MANA_ELEXIR, 'u000', 1)
 		call AIItem.setup(ANTI_MAGIC_POTION, 'u000', 1)
@@ -59,12 +59,12 @@
 
 		call AIItem.setup(HEALING_POTION, 'u00K', 5)
 		call AIItem.setup(MANA_POTION, 'u00K', 3)
-		
+		*/
 		/*
 		 * Init Undead Items
 		 */
 		//ITEM_CLASS_ADVANCED: Undead
-		call AIItem.setup(BONE_HELMET, 'u001', 1)
+		//call AIItem.setup(BONE_HELMET, 'u001', 1)
     endfunction
 	
 //==========================================================================================
@@ -84,7 +84,7 @@
 		// max amount of each item type		
 		private static integer array itemAmountMax
 	
-		static method operator [] takes integer shopTypeId, integer itemTypeId returns thistype	
+		static method operator []= takes integer shopTypeId, integer itemTypeId returns thistype	
             if not (info[shopTypeId].has(itemTypeId)) then
                 call BJDebugMsg("[HeroAIItem] Error: Item not registered with system")
                 return 0
@@ -120,8 +120,10 @@
 		static method setup takes Item it, integer shopTypeId, integer amount returns nothing
 			if (count < 8190) then	
 				set count = count + 1
-				//set info[it.id] = count
-				set info[shopTypeId][it.id] = count
+				set info[count][0] = shopTypeId
+				set info[count][1] = it.id
+				call BJDebugMsg("register shopTypeId on info[" + I2S(count)+ "][0] = " + I2S(shopTypeId))
+				call BJDebugMsg("register shopTypeId on info[" + I2S(count)+ "][1] = " + I2S(it.id))
 				set typeIds[count] = it.id
 				set shopIds[count] = shopTypeId		
 				set goldCosts[count] = it.goldCost
@@ -148,11 +150,11 @@
 	
 	struct Itemset extends array
 		private static integer stack = 0
-		private static AIItem array items
+		private static AIItem array items[8190][2]
 		private static integer array count
 		
 		method item takes integer index returns AIItem
-        	return items[this * MAX_ITEMSET_SIZE + index]
+        	return items[this * MAX_ITEMSET_SIZE + index][1]
         endmethod
 		
 		method operator size takes nothing returns integer
@@ -161,7 +163,10 @@
 		
 		method addItem takes integer shopTypeId, integer itemTypeId returns nothing
 			if count[this] < MAX_ITEMSET_SIZE then
-				set items[this * MAX_ITEMSET_SIZE + count[this]] = AIItem[shopTypeId][itemTypeId]
+				set items[this * MAX_ITEMSET_SIZE + count[this]][0] = shopTypeId
+				set items[this * MAX_ITEMSET_SIZE + count[this]][1] = itemTypeId
+				call BJDebugMsg("add shopTypeId on items[" + I2S(this * MAX_ITEMSET_SIZE + count[this])+ "][0] = " + I2S(shopTypeId))
+				call BJDebugMsg("add itemTypeId on items[" + I2S(this * MAX_ITEMSET_SIZE + count[this])+ "][1] = " + I2S(itemTypeId))
 				set count[this] = count[this] + 1
 			else
 				call BJDebugMsg("[HeroAIItemset] Error: Itemset already has max item ids, aborted")

@@ -391,6 +391,7 @@ scope HeroAI
 		private method canBuyItem takes AIItem it returns boolean
             static if CHECK_REFUND_ITEM_COST then
 				local AIItem check
+				
 				if (.itemCount == MAX_INVENTORY_SIZE) then
 					set check = AIItem[GetItemTypeId(UnitItemInSlot(.hero, ModuloInteger(.itemsetIndex, MAX_INVENTORY_SIZE)))]
 					
