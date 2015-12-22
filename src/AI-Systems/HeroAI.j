@@ -348,12 +348,12 @@ scope HeroAI
 		 */
 		
 		// Item-related methods
-      	method operator curItem takes nothing returns AIItem
-      		return .itemBuild.item(.itemsetIndex)
+      	private method curItem takes integer shopTypeId, integer itemTypeId returns AIItem
+      		return .itemBuild.item(shopTypeId, itemTypeId)
       	endmethod
 
 		private method refundItem takes Item it returns nothing
-            if it.goldCost > 0 then
+            if (it.goldCost > 0) then
                 set .gold = R2I(.gold + it.goldCost * SELL_ITEM_REFUND_RATE)
             endif
         endmethod
@@ -393,7 +393,7 @@ scope HeroAI
 				local AIItem check
 				
 				if (.itemCount == MAX_INVENTORY_SIZE) then
-					set check = AIItem[GetItemTypeId(UnitItemInSlot(.hero, ModuloInteger(.itemsetIndex, MAX_INVENTORY_SIZE)))]
+					set check = AIItem[it.shopTypeId][GetItemTypeId(UnitItemInSlot(.hero, ModuloInteger(.itemsetIndex, MAX_INVENTORY_SIZE)))]
 					
 					return it.goldCost <= .gold + check.goldCost * SELL_ITEM_REFUND_RATE
 				endif

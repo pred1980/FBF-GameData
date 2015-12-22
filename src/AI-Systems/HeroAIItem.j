@@ -120,10 +120,8 @@
 		static method setup takes Item it, integer shopTypeId, integer amount returns nothing
 			if (count < 8190) then	
 				set count = count + 1
-				set info[count][0] = shopTypeId
-				set info[count][1] = it.id
-				call BJDebugMsg("register shopTypeId on info[" + I2S(count)+ "][0] = " + I2S(shopTypeId))
-				call BJDebugMsg("register shopTypeId on info[" + I2S(count)+ "][1] = " + I2S(it.id))
+				set info[shopTypeId][it.id] = count
+				call BJDebugMsg("register shopTypeId on info[" + I2S(shopTypeId) + "][" + I2S(it.id) + "]")
 				set typeIds[count] = it.id
 				set shopIds[count] = shopTypeId		
 				set goldCosts[count] = it.goldCost
@@ -150,11 +148,18 @@
 	
 	struct Itemset extends array
 		private static integer stack = 0
-		private static AIItem array items[8190][2]
+		private static AIItem array items
 		private static integer array count
 		
-		method item takes integer index returns AIItem
-        	return items[this * MAX_ITEMSET_SIZE + index][1]
+		method item takes integer shopTypeId, integer itemTypeId returns AIItem
+        	local integer index = this * MAX_ITEMSET_SIZE + index
+			
+			loop
+				exitwhen (items[index] == AIItem[shopTypeId][itemTypeId])
+				set index = index + 1
+			endloop
+			
+			return items[index]
         endmethod
 		
 		method operator size takes nothing returns integer
@@ -163,10 +168,7 @@
 		
 		method addItem takes integer shopTypeId, integer itemTypeId returns nothing
 			if count[this] < MAX_ITEMSET_SIZE then
-				set items[this * MAX_ITEMSET_SIZE + count[this]][0] = shopTypeId
-				set items[this * MAX_ITEMSET_SIZE + count[this]][1] = itemTypeId
-				call BJDebugMsg("add shopTypeId on items[" + I2S(this * MAX_ITEMSET_SIZE + count[this])+ "][0] = " + I2S(shopTypeId))
-				call BJDebugMsg("add itemTypeId on items[" + I2S(this * MAX_ITEMSET_SIZE + count[this])+ "][1] = " + I2S(itemTypeId))
+				set items[this * MAX_ITEMSET_SIZE + count[this]] = AIItem[shopTypeId][itemTypeId]
 				set count[this] = count[this] + 1
 			else
 				call BJDebugMsg("[HeroAIItemset] Error: Itemset already has max item ids, aborted")
