@@ -348,8 +348,10 @@ scope HeroAI
 		 */
 		
 		// Item-related methods
-      	private method curItem takes integer shopTypeId, integer itemTypeId returns AIItem
-      		return .itemBuild.item(shopTypeId, itemTypeId)
+      	private method curItem takes integer shopTypeId returns Item
+      		local integer itemTypeId = .itemBuild.getItemTypeId(.itemsetIndex)
+			
+			return AIItem.getItem(shopTypeId, itemTypeId)
       	endmethod
 
 		private method refundItem takes Item it returns nothing
@@ -358,22 +360,8 @@ scope HeroAI
             endif
         endmethod
 		
-		private method getItems takes nothing returns boolean
-        	set OnlyPowerUp = .itemCount == MAX_INVENTORY_SIZE
-            return IssueTargetOrder(.hero, "smart", GetClosestItemInRange(.hx, .hy, SIGHT_RANGE, Filter(function AIItemFilter)))
-        endmethod
-        
-        private method buyItem takes AIItem it returns nothing
+		private method buyItem takes AIItem it returns nothing
             local item i
-            
-			if .itemCount == MAX_INVENTORY_SIZE then
-                set i = UnitItemInSlot(.hero, ModuloInteger(.itemsetIndex, MAX_INVENTORY_SIZE) )
-                if i != null then
-                    call .refundItem(Item[GetItemTypeId(i)])
-                    call RemoveItem(i)
-                    set i = null
-                endif
-            endif
             
 			//count Stack Items like Potions as one item per slot
 			if (it.amount == 0) then
@@ -388,12 +376,12 @@ scope HeroAI
 			set it.amount = 1			
         endmethod
 		
-		private method canBuyItem takes AIItem it returns boolean
+		private method canBuyItem takes Item it returns boolean
             static if CHECK_REFUND_ITEM_COST then
-				local AIItem check
+				local Item check
 				
 				if (.itemCount == MAX_INVENTORY_SIZE) then
-					set check = AIItem[it.shopTypeId][GetItemTypeId(UnitItemInSlot(.hero, ModuloInteger(.itemsetIndex, MAX_INVENTORY_SIZE)))]
+					set check = AIItem.getItem(it.shopTypeId, it.id)
 					
 					return it.goldCost <= .gold + check.goldCost * SELL_ITEM_REFUND_RATE
 				endif
@@ -410,7 +398,7 @@ scope HeroAI
 
 		// This method will be called by update periodically to check if the hero can do any shopping
         private method canShop takes nothing returns nothing
-        	local AIItem it
+        	local Item it
 
         	loop
 				set it = .curItem
@@ -425,7 +413,7 @@ scope HeroAI
 				call BJDebugMsg("itemGoldCost: " + I2S(it.goldCost))
 				call BJDebugMsg("itemAmountMax: " + I2S(it.amountMax))
 				
-				if IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE) then
+				if (IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE)) then
 					loop
 						exitwhen (it.amount ==  it.amountMax or it.goldCost > .gold)
 						call .buyItem(it)

@@ -71,70 +71,26 @@
 // END OF USER CONFIGURATION
 //==========================================================================================	
     
-    // serves more of an information wrapper for item cost and shop-type id
-	struct AIItem extends array
-		private static integer count = 0
-		private static TableArray info
-	
-		private static integer array typeIds
-		private static integer array shopIds
-		private static integer array goldCosts
-		// current amount of each item type
-		private static integer array itemAmount
-		// max amount of each item type		
-		private static integer array itemAmountMax
-	
-		static method operator []= takes integer shopTypeId, integer itemTypeId returns thistype	
-            if not (info[shopTypeId].has(itemTypeId)) then
+    struct AIItem
+		static TableArray items
+		
+		static method getItem takes integer shopTypeId, integer itemTypeId returns Item	
+            if not (items[shopTypeId].has(itemTypeId)) then
                 call BJDebugMsg("[HeroAIItem] Error: Item not registered with system")
                 return 0
             endif
 			call BJDebugMsg("[HeroAIItem] Error: Item already registered with system")
-			return info[shopTypeId][itemTypeId]	
-		endmethod
-
-		method operator typeId takes nothing returns integer
-			return typeIds[this]
-		endmethod
-	
-		method operator shopTypeId takes nothing returns integer
-			return shopIds[this]
-		endmethod
-	
-		method operator goldCost takes nothing returns integer	
-			return goldCosts[this]	
+			return items[shopTypeId][itemTypeId]
 		endmethod
 		
-		method operator amount takes nothing returns integer	
-			return itemAmount[this]	
-		endmethod
-		
-		method operator amount= takes integer amount returns nothing
-    		set itemAmount[this] = itemAmount[this]	 + amount
-    	endmethod
-		
-		method operator amountMax takes nothing returns integer	
-			return itemAmountMax[this]	
-		endmethod
-		
-		static method setup takes Item it, integer shopTypeId, integer amount returns nothing
-			if (count < 8190) then	
-				set count = count + 1
-				set info[shopTypeId][it.id] = count
-				call BJDebugMsg("register shopTypeId on info[" + I2S(shopTypeId) + "][" + I2S(it.id) + "]")
-				set typeIds[count] = it.id
-				set shopIds[count] = shopTypeId		
-				set goldCosts[count] = it.goldCost
-				set itemAmount[count] = 0
-				set itemAmountMax[count] = amount
-			else	
-				call BJDebugMsg("[HeroAIItem] Error: Max number of items registered")	
-			endif
+		static method setup takes Item it, integer shopTypeId, integer amountMax returns nothing
+			set it.amountMax = amountMax
+			set items[shopTypeId][it.id] = it
+			call BJDebugMsg("register shopTypeId on items[" + I2S(shopTypeId) + "][" + I2S(it.id) + "] = " + I2S(it.id))
 		endmethod	
 	
-		static method onInit takes nothing returns nothing
-			//set thistype.info = Table.create()
-			set thistype.info = TableArray[0x2000]
+		private static method onInit takes nothing returns nothing
+			set thistype.items = TableArray[0x2000]
 			
 			//Item System
 			call UnitInventory.initialize()
@@ -148,27 +104,20 @@
 	
 	struct Itemset extends array
 		private static integer stack = 0
-		private static AIItem array items
+		private static integer array items
 		private static integer array count
 		
-		method item takes integer shopTypeId, integer itemTypeId returns AIItem
-        	local integer index = this * MAX_ITEMSET_SIZE + index
-			
-			loop
-				exitwhen (items[index] == AIItem[shopTypeId][itemTypeId])
-				set index = index + 1
-			endloop
-			
-			return items[index]
+		method getItemTypeId takes integer index returns integer
+        	return items[index]
         endmethod
 		
 		method operator size takes nothing returns integer
 			return count[this]
 		endmethod
 		
-		method addItem takes integer shopTypeId, integer itemTypeId returns nothing
-			if count[this] < MAX_ITEMSET_SIZE then
-				set items[this * MAX_ITEMSET_SIZE + count[this]] = AIItem[shopTypeId][itemTypeId]
+		method addItem takes integer itemTypeId returns nothing
+			if (count[this] < MAX_ITEMSET_SIZE) then
+				set items[count[this]] = itemTypeId
 				set count[this] = count[this] + 1
 			else
 				call BJDebugMsg("[HeroAIItemset] Error: Itemset already has max item ids, aborted")
@@ -179,16 +128,7 @@
 			set stack = stack + 1
 			set count[stack] = 0
 			return stack
-		endmethod
+		endmethod		
 	endstruct
-	
-	globals
-		// Used to determine if the AI could only get power ups
-		private boolean OnlyPowerUp     
-	endglobals
-	
-	private function AIItemFilter takes nothing returns boolean
-		return GetWidgetLife(GetFilterItem()) > 0.405 and IsItemVisible(GetFilterItem()) and (IsItemPowerup(GetFilterItem()) or not OnlyPowerUp)
-	endfunction
 	
 //! endtextmacro
