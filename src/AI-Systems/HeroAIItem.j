@@ -46,25 +46,25 @@
 	private function SetupItems takes nothing returns nothing
 		// Syntax:
     	// call Item.setup(ITEM-TYPE ID, SHOP-TYPE ID, GOLD COST, LUMBER COST)
-    	call AIItem.setup(HEALING_POTION, 'u000', 5)
-		/*call AIItem.setup(MANA_POTION, 'u000', 3)
-		call AIItem.setup(HEALING_ELEXIR, 'u000', 1)
-		call AIItem.setup(MANA_ELEXIR, 'u000', 1)
-		call AIItem.setup(ANTI_MAGIC_POTION, 'u000', 1)
-		call AIItem.setup(INVULNERABILITY_POTION, 'u000', 1)
-		call AIItem.setup(POTION_OF_INVISIBILITY, 'u000', 1)
-		call AIItem.setup(SPEED_UP_POTION, 'u000', 1)
-		call AIItem.setup(TELEPORT_STONE, 'u000', 1)
-		call AIItem.setup(TALISMAN_OF_TRANSLOCATION, 'u000', 1)
+    	call AIItem.register(HEALING_POTION, 'u000', 5)
+		/*call AIItem.register(MANA_POTION, 'u000', 3)
+		call AIItem.register(HEALING_ELEXIR, 'u000', 1)
+		call AIItem.register(MANA_ELEXIR, 'u000', 1)
+		call AIItem.register(ANTI_MAGIC_POTION, 'u000', 1)
+		call AIItem.register(INVULNERABILITY_POTION, 'u000', 1)
+		call AIItem.register(POTION_OF_INVISIBILITY, 'u000', 1)
+		call AIItem.register(SPEED_UP_POTION, 'u000', 1)
+		call AIItem.register(TELEPORT_STONE, 'u000', 1)
+		call AIItem.register(TALISMAN_OF_TRANSLOCATION, 'u000', 1)
 
-		call AIItem.setup(HEALING_POTION, 'u00K', 5)
-		call AIItem.setup(MANA_POTION, 'u00K', 3)
+		call AIItem.register(HEALING_POTION, 'u00K', 5)
+		call AIItem.register(MANA_POTION, 'u00K', 3)
 		*/
 		/*
 		 * Init Undead Items
 		 */
 		//ITEM_CLASS_ADVANCED: Undead
-		//call AIItem.setup(BONE_HELMET, 'u001', 1)
+		//call AIItem.register(BONE_HELMET, 'u001', 1)
     endfunction
 	
 //==========================================================================================
@@ -83,7 +83,7 @@
 			return items[shopTypeId][itemTypeId]
 		endmethod
 		
-		static method setup takes Item it, integer shopTypeId, integer amountMax returns nothing
+		static method register takes Item it, integer shopTypeId, integer amountMax returns nothing
 			set it.amountMax = amountMax
 			set items[shopTypeId][it.id] = it
 			call BJDebugMsg("register shopTypeId on items[" + I2S(shopTypeId) + "][" + I2S(it.id) + "] = " + I2S(it.id))
@@ -104,10 +104,10 @@
 	
 	struct Itemset extends array
 		private static integer stack = 0
-		private static integer array items
+		private static AIItem array items
 		private static integer array count
 		
-		method getItemTypeId takes integer index returns integer
+		method item takes integer index returns AIItem
         	return items[index]
         endmethod
 		
@@ -115,9 +115,9 @@
 			return count[this]
 		endmethod
 		
-		method addItem takes integer itemTypeId returns nothing
+		method addItem takes integer shopTypeId, integer itemTypeId returns nothing
 			if (count[this] < MAX_ITEMSET_SIZE) then
-				set items[count[this]] = itemTypeId
+				set items[count[this]] = AIItem.getItem(shopTypeId, itemTypeId)
 				set count[this] = count[this] + 1
 			else
 				call BJDebugMsg("[HeroAIItemset] Error: Itemset already has max item ids, aborted")

@@ -63,7 +63,7 @@ scope BehemotAI
 			
 			// This is where you would define a custom item build
             set Itemsets[0] = HeroAI_Itemset.create()
-			call Itemsets[0].addItem('I000')
+			call Itemsets[0].addItem('u000', 'I000')
 			//call Itemsets[0].addItem('u000', 'I001')
 			//call Itemsets[0].addItem('u000', 'I00D') 
 			set .itemBuild = Itemsets[0] 

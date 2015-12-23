@@ -348,10 +348,8 @@ scope HeroAI
 		 */
 		
 		// Item-related methods
-      	private method curItem takes integer shopTypeId returns Item
-      		local integer itemTypeId = .itemBuild.getItemTypeId(.itemsetIndex)
-			
-			return AIItem.getItem(shopTypeId, itemTypeId)
+      	private method curItem takes nothing returns AIItem
+      		return .itemBuild.item(.itemsetIndex)
       	endmethod
 
 		private method refundItem takes Item it returns nothing
@@ -361,9 +359,7 @@ scope HeroAI
         endmethod
 		
 		private method buyItem takes AIItem it returns nothing
-            local item i
-            
-			//count Stack Items like Potions as one item per slot
+            //count Stack Items like Potions as one item per slot
 			if (it.amount == 0) then
 				set .itemsetIndex = .itemsetIndex + 1
 			endif
@@ -376,29 +372,13 @@ scope HeroAI
 			set it.amount = 1			
         endmethod
 		
-		private method canBuyItem takes Item it returns boolean
-            static if CHECK_REFUND_ITEM_COST then
-				local Item check
-				
-				if (.itemCount == MAX_INVENTORY_SIZE) then
-					set check = AIItem.getItem(it.shopTypeId, it.id)
-					
-					return it.goldCost <= .gold + check.goldCost * SELL_ITEM_REFUND_RATE
-				endif
-            endif
-			
-			if (it.goldCost <= .gold) then
-				call BJDebugMsg("You have enough gold to buy this item!")
-			else
-				call BJDebugMsg("You do NOT have enough gold to buy this item!")
-			endif
-			
-        	return it.goldCost <= .gold
+		private method canBuyItem takes AIItem it returns boolean
+            return it.goldCost <= .gold
         endmethod
 
 		// This method will be called by update periodically to check if the hero can do any shopping
         private method canShop takes nothing returns nothing
-        	local Item it
+        	local AIItem it
 
         	loop
 				set it = .curItem
