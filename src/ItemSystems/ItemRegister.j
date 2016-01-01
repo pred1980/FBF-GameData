@@ -21,8 +21,6 @@ scope ItemRegister
         readonly integer class
         readonly race r
 		readonly string path
-		integer amount = 0
-		integer amountMax = 0
         
         private onPickup array callbacks[3]
         private integer callbackCount

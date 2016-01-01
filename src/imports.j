@@ -89,6 +89,17 @@
 //! import "src\AI-Systems\HeroAIItem.j"
 
 //! import "src\AI-Systems\HeroesAI\BehemotAI.j"
+//! import "src\AI-Systems\HeroesAI\NerubianWidowAI.j"
+//! import "src\AI-Systems\HeroesAI\IceAvatarAI.j"
+//! import "src\AI-Systems\HeroesAI\GhoulAI.j"
+//! import "src\AI-Systems\HeroesAI\MasterBansheeAI.j"
+//! import "src\AI-Systems\HeroesAI\DeathMarcherAI.j"
+//! import "src\AI-Systems\HeroesAI\SkeletonMageAI.j"
+//! import "src\AI-Systems\HeroesAI\MasterNecromancerAI.j"
+//! import "src\AI-Systems\HeroesAI\CryptLordAI.j"
+//! import "src\AI-Systems\HeroesAI\AbominationAI.j"
+//! import "src\AI-Systems\HeroesAI\DestroyerAI.j"
+//! import "src\AI-Systems\HeroesAI\DarkRangerAI.j"
 
 
 /* Hero Systems */

@@ -3,16 +3,6 @@ scope HeroAI
 //  HeroAI v1.0.0
 //      by pred1980
 //==========================================================================================
-/*
- * This library contains general hero behaviour like
- * - moving around the map
- * - attacking an enemy unit
- * - spending gold on items
- * - running to a "safe point"
- * - use teleporter
- * - register hero for ai
- */
- 
 	globals
 		// The period in which the hero AI will do actions. A very low period can cause strain.
 		public constant real DEFAULT_PERIOD = 2.0
@@ -130,7 +120,9 @@ scope HeroAI
 	module HeroAI
 		private unit hero
     	private player owner
+		private integer pid
         private integer hId
+		private integer aiLevel
 		private real life
         private real maxLife
         private real mana           
@@ -174,13 +166,13 @@ scope HeroAI
 		
 		private method showState takes nothing returns nothing
 			if (.state == STATE_IDLE) then
-				call BJDebugMsg("STATE: STATE_IDLE")
+				call BJDebugMsg(GetUnitName(.hero) + "-STATE: STATE_IDLE")
 			elseif (.state == STATE_ENGAGED) then
-				call BJDebugMsg("STATE: STATE_ENGAGED")
+				call BJDebugMsg(GetUnitName(.hero) + "-STATE_ENGAGED")
 			elseif (.state == STATE_GO_SHOP) then
-				call BJDebugMsg("STATE: STATE_GO_SHOP")
+				call BJDebugMsg(GetUnitName(.hero) + "-STATE_GO_SHOP")
 			else
-				call BJDebugMsg("STATE: STATE_RUN_AWAY")
+				call BJDebugMsg(GetUnitName(.hero) + "-STATE_RUN_AWAY")
 			endif
 		endmethod
 		
@@ -198,16 +190,31 @@ scope HeroAI
 		
 		// The condition in which the hero will return to its normal activities
 		method operator goodCondition takes nothing returns boolean
-        	return 	.percentLife >= .85 and /*
-			*/		.mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) >= .65      
+        	/* COMPUTER EASY */
+			if (.aiLevel == 0) then
+				return 	(.percentLife >= .65) and (.mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) >= .45)
+			/* COMPUTER NORMAL */
+			elseif (.aiLevel == 1) then
+				return 	(.percentLife >= .75) and (.mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) >= .55)
+			/* COMPUTER INSANE */
+			else
+				return 	(.percentLife >= .85) and (.mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) >= .65)
+			endif       
         endmethod
 		
 		// The condition in which the hero will try to run away to a safe spot. 
 		// Optionally complemented by the threat library
 		method operator badCondition takes nothing returns boolean
-        	return 	.percentLife <= .35 or /*
-			*/	   	(.percentLife <= .55 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .3) or /*
-			*/		(.maxLife < 700 and .life <= 250.)      
+        	/* COMPUTER EASY */
+			if (.aiLevel == 0) then
+				return 	(.percentLife <= .25) or (.percentLife <= .25 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .25)
+			/* COMPUTER NORMAL */
+			elseif (.aiLevel == 1) then
+				return 	(.percentLife <= .35) or (.percentLife <= .35 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .35)
+			/* COMPUTER INSANE */
+			else
+				return 	(.percentLife <= .45) or (.percentLife <= .45 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .45)
+			endif   
         endmethod
 		
 		method operator isChanneling takes nothing returns boolean
@@ -216,14 +223,13 @@ scope HeroAI
 		
 		// Action methods
 		private method move takes nothing returns nothing
-			call BJDebugMsg("[HeroAI] Move around to point X/Y.")
-            call IssuePointOrderById(.hero, MOVE, .moveX, .moveY)
+			call IssuePointOrderById(.hero, MOVE, .moveX, .moveY)
         endmethod 
         
 		//Note: http://www.wc3c.net/showthread.php?t=107999
 		// IssuePointOrder does not work!!!
         private method run takes nothing returns nothing
-			call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " to run to the next Teleporter.")
+			//call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " to run to the next Teleporter.")
 			call IssuePointOrderById(.hero, MOVE, .runX, .runY)
         endmethod
 		
@@ -270,7 +276,7 @@ scope HeroAI
 					call GroupAddUnit(tempthis.shops, u)
                     set tempthis.shopNum = tempthis.shopNum + 1
 				else
-					call BJDebugMsg(GetUnitName(u) + " is actualy not defined!")
+					//call BJDebugMsg(GetUnitName(u) + " is actualy not defined!")
 				endif
 				
                 set u = null
@@ -347,71 +353,54 @@ scope HeroAI
 		 * ITEM RELATED CODE
 		 */
 		
-		// Item-related methods
-      	private method curItem takes nothing returns AIItem
-      		return .itemBuild.item(.itemsetIndex)
-      	endmethod
-
-		private method refundItem takes Item it returns nothing
-            if (it.goldCost > 0) then
-                set .gold = R2I(.gold + it.goldCost * SELL_ITEM_REFUND_RATE)
-            endif
-        endmethod
-		
-		private method buyItem takes AIItem it returns nothing
-            //count Stack Items like Potions as one item per slot
-			if (it.amount == 0) then
-				set .itemsetIndex = .itemsetIndex + 1
-			endif
-            
-        	if it.goldCost > 0 then
+		private method buyItem takes Item it returns nothing
+			if (it.goldCost > 0) then
 				set .gold = .gold - it.goldCost
             endif
             
-			call UnitAddItemById(.hero, it.typeId)
-			set it.amount = 1			
+			call UnitAddItemById(.hero, it.id)		
         endmethod
 		
-		private method canBuyItem takes AIItem it returns boolean
-            return it.goldCost <= .gold
+		private method canBuyItem takes Item it returns boolean
+			return it.goldCost <= .gold
         endmethod
 
 		// This method will be called by update periodically to check if the hero can do any shopping
         private method canShop takes nothing returns nothing
-        	local AIItem it
-
-        	loop
-				set it = .curItem
+			local Item it
+			
+			loop
+				set it = .itemBuild.item(.itemsetIndex)
 				exitwhen not (.canBuyItem(it) or .itemsetIndex == .itemBuild.size)
-				set shopTypeId = it.shopTypeId
+				set shopTypeId = .itemBuild.shop(.itemsetIndex)
 				set tempHeroOwner = .owner
 				set .shopUnit = GetClosestUnit(.hx, .hy, Filter(function shopTypeIdCheck))
 				
-				call BJDebugMsg("itemBuild.size: " + I2S(.itemBuild.size))
-				call BJDebugMsg("itemsetIndex: " + I2S(.itemsetIndex))
-				call BJDebugMsg("shopTypeId: " + I2S(it.shopTypeId))
-				call BJDebugMsg("itemGoldCost: " + I2S(it.goldCost))
-				call BJDebugMsg("itemAmountMax: " + I2S(it.amountMax))
-				
 				if (IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE)) then
 					loop
-						exitwhen (it.amount ==  it.amountMax or it.goldCost > .gold)
+						exitwhen (.itemBuild.getStack(.itemsetIndex) == .itemBuild.getStackMax(.itemsetIndex) or it.goldCost > .gold)
 						call .buyItem(it)
+						// Increase the stack of this item
+						call .itemBuild.setStack(.itemsetIndex)
 					endloop
+					
+					//count Stack Items like Potions as one item per slot
+					set .itemsetIndex = .itemsetIndex + 1
 				else
 					call IssuePointOrderById(.hero, MOVE, GetUnitX(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2), GetUnitY(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2))
 					exitwhen true
 				endif
-			endloop
 			
+			endloop
+					
 			// Set back to state idle now that the hero is done shopping.
-            //set .state = STATE_IDLE
+            set .state = STATE_IDLE
 			// Set the Base Teleporter as the next target to leave the base
-			//call .setWayBackToBattleField()
+			call .setWayBackToBattleField()
         endmethod
 		
 		method defaultLoopActions takes nothing returns nothing
-        	call showState()
+        	//call showState()
 			
 			if (.state == STATE_RUN_AWAY) then
 				// Locate the next teleporter back to base!
@@ -462,8 +451,6 @@ scope HeroAI
 			set .gold = .gold
 			set tempthis = this
 			
-			call ClearTextMessages()
-			
 			// clear units
 			set .safeUnit = null
 			set .forsakenHeart = null
@@ -485,7 +472,7 @@ scope HeroAI
 			if (.state != STATE_RUN_AWAY) then
 				// Hero has low HP? Search for the Teleporter back to the base
 				if (.badCondition) then
-					set .state = STATE_RUN_AWAY
+					//set .state = STATE_RUN_AWAY
 				endif
 			endif
 			
@@ -494,7 +481,7 @@ scope HeroAI
 			 */
 			if (.state != STATE_IDLE) then
 				if (.goodCondition and .safeUnit != null) then
-					set .state = STATE_IDLE
+					//set .state = STATE_IDLE
 				endif
 			endif
 			
@@ -505,7 +492,7 @@ scope HeroAI
 				// Is everything ok and no nearby fountain? Search for enemies...
 				if (.goodCondition and .safeUnit == null) then
 					if (.enemyNum > 0) then
-						set .state = STATE_ENGAGED
+						//set .state = STATE_ENGAGED
 					endif
 				endif
 			endif
@@ -524,9 +511,9 @@ scope HeroAI
 		endmethod
 
 		private static method defaultLoop takes nothing returns nothing
-        	local thistype this = GetTimerData(GetExpiredTimer())
-        	
-			if not (SpellHelper.isUnitDead(.hero)) then
+			local thistype this = GetTimerData(GetExpiredTimer())
+			
+        	if not (SpellHelper.isUnitDead(.hero)) then
 				call .update()
 				static if thistype.loopActions.exists then
 					call .loopActions()
@@ -543,23 +530,14 @@ scope HeroAI
 			
 			set .hero = hero
             set .owner = GetOwningPlayer(.hero)
+			set .pid = GetPlayerId(.owner)
             set .hId = GetHandleId(.hero)
-			
+			set .aiLevel = Game.getAIDifficulty(.pid)
 			set .units = CreateGroup()
 			set .enemies = CreateGroup()
             set .allies = CreateGroup()
-			
-			set .itemBuild = Itemset.create()
-            set .itemsetIndex = 0
-            
+			set .itemsetIndex = 0
             set .state = STATE_IDLE
-			
-			set .t = NewTimerEx(this)
-            call TimerStart(.t, DEFAULT_PERIOD, true, function thistype.defaultLoop)
-			
-			static if thistype.onCreate.exists then
-				call .onCreate()
-			endif
 			
 			if (GetHeroSkillPoints(.hero) > 0) then
 				loop
@@ -569,11 +547,17 @@ scope HeroAI
 				endloop
 			endif
 			
+			static if thistype.onCreate.exists then
+				call .onCreate(.aiLevel)
+			endif
+			
+			set .t = NewTimerEx(this)
+            call TimerStart(.t, DEFAULT_PERIOD, true, function thistype.defaultLoop)
+			
 			set stack = stack + 1
 			set heroesAI[.hId] = this
 			
-			call BJDebugMsg("[HeroAI] Info: The hero " + GetUnitName(.hero) + " is registered to the Hero AI System.")
-    		return this
+			return this
 		endmethod
 	endmodule
 	

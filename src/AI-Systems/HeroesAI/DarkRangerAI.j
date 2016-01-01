@@ -33,7 +33,7 @@ scope DarkRangerAI
         
 		endmethod
         
-        method onCreate takes nothing returns nothing
+        method onCreate takes integer aiLevel returns nothing
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
 			// Ghost Form
@@ -61,13 +61,23 @@ scope DarkRangerAI
 			//Heroes Will
 			call RegisterHeroAISkill(HERO_ID, 4, 'A021')
 			
-			// This is where you would define a custom item build
-            set Itemsets[0] = HeroAI_Itemset.create()
-			call Itemsets[0].addItemTypeId('I000')
-			call Itemsets[0].addItemTypeId('I001')
-			set .itemBuild = Itemsets[0] 
+            // This is where you would define a custom item build
+			set Itemsets[aiLevel] = HeroAI_Itemset.create()
 			
-			call BJDebugMsg("Created Abilities and Itemsets for Dark Ranger")
+            /* COMPUTER EASY */
+			call Itemsets[0].addItem('u000', HEALING_POTION, 2)
+			call Itemsets[0].addItem('u000', MANA_POTION, 1)
+			
+			/* COMPUTER NORMAL */
+			call Itemsets[1].addItem('u000', HEALING_POTION, 4)
+			call Itemsets[1].addItem('u000', MANA_POTION, 2)
+			
+			/* COMPUTER INSANE */
+			call Itemsets[2].addItem('u000', HEALING_POTION, 5)
+			call Itemsets[2].addItem('u000', MANA_POTION, 3)
+
+			set .itemBuild = Itemsets[aiLevel]
+			call BJDebugMsg("Registered Itemset[" + I2S(aiLevel) + "] for Dark Ranger.")
         endmethod
         
         implement HeroAI     

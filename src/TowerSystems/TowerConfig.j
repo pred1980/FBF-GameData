@@ -6,8 +6,8 @@ scope TowerConfig
 		static method setBuildConfigCommonTowers takes integer pid, integer aiLevel returns nothing
 			local integer index = GetRandomInt(0,4)
 			
-			call BJDebugMsg("AI Level: " + I2S(aiLevel))
-			call BJDebugMsg("AI Index: " + I2S(index))
+			//call BJDebugMsg("AI Level: " + I2S(aiLevel))
+			//call BJDebugMsg("AI Index: " + I2S(index))
 			
 			if (aiLevel == 0) then
 				/*****************************/

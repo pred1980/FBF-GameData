@@ -1,20 +1,3 @@
-//==========================================================================================
-// This is separated from the main system of HeroAI to provide better organization.
-//
-// It covers what items the AI will buy and how the data structures are set up.
-// Configuration of what kinds of items shops sell is also done here.
-//##########################################################################################
-//  Itemset API:
-//
-//	* struct HeroAI_Itemset
-//		The data structure for storing the item ids and costs. Only holds up to MAX_INVENTORY_SIZE 
-//		items. You should treat instances of these as being static since they shouldn't be destroyed.
-//
-//  * method addItemTypeId takes integer itemTypeId returns nothing *
-//      Adds an item type to the itemset instance.  
-//==========================================================================================
-
-// Please don't call this textmacro.
 //! textmacro HeroAIItem 
 
 	globals		
@@ -34,7 +17,6 @@
     endglobals
 	
 	// Don't touch the following
-	public keyword AIItem
 	public keyword Itemset
 	// You must set up all the items the AI can buy here. Each item should only be set up once.
 	// Note that a shop type id of 0 will cause the AI to buy the item without bothering to
@@ -43,11 +25,11 @@
     // they will be refunded properly.
     //
     // Currently, multiple shops selling the same item is not supported.
-	private function SetupItems takes nothing returns nothing
+	private function registerItems takes nothing returns nothing
 		// Syntax:
     	// call Item.setup(ITEM-TYPE ID, SHOP-TYPE ID, GOLD COST, LUMBER COST)
-    	call AIItem.register(HEALING_POTION, 'u000', 5)
-		/*call AIItem.register(MANA_POTION, 'u000', 3)
+    	/*call AIItem.register(HEALING_POTION, 'u000')
+		call AIItem.register(MANA_POTION, 'u000', 3)
 		call AIItem.register(HEALING_ELEXIR, 'u000', 1)
 		call AIItem.register(MANA_ELEXIR, 'u000', 1)
 		call AIItem.register(ANTI_MAGIC_POTION, 'u000', 1)
@@ -69,66 +51,67 @@
 	
 //==========================================================================================
 // END OF USER CONFIGURATION
-//==========================================================================================	
-    
-    struct AIItem
-		static TableArray items
+//==========================================================================================
+
+	struct Itemset
+		private integer count = 0
+		private TableArray items
 		
-		static method getItem takes integer shopTypeId, integer itemTypeId returns Item	
-            if not (items[shopTypeId].has(itemTypeId)) then
-                call BJDebugMsg("[HeroAIItem] Error: Item not registered with system")
-                return 0
-            endif
-			call BJDebugMsg("[HeroAIItem] Error: Item already registered with system")
-			return items[shopTypeId][itemTypeId]
-		endmethod
+		// Returns the shop_id
+		method shop takes integer index returns integer
+        	return items[index][0]
+        endmethod
 		
-		static method register takes Item it, integer shopTypeId, integer amountMax returns nothing
-			set it.amountMax = amountMax
-			set items[shopTypeId][it.id] = it
-			call BJDebugMsg("register shopTypeId on items[" + I2S(shopTypeId) + "][" + I2S(it.id) + "] = " + I2S(it.id))
-		endmethod	
-	
-		private static method onInit takes nothing returns nothing
-			set thistype.items = TableArray[0x2000]
-			
-			//Item System
-			call UnitInventory.initialize()
-			call ItemShops.initialize()
-			call Item.initialize()
-			call Items.initialize()
-			
-			call SetupItems()
-		endmethod
-	endstruct
-	
-	struct Itemset extends array
-		private static integer stack = 0
-		private static AIItem array items
-		private static integer array count
+		// Returns the Item
+		method item takes integer index returns Item
+        	return items[index][1]
+        endmethod
 		
-		method item takes integer index returns AIItem
-        	return items[index]
+		// Get the current amount of the item
+		method getStack takes integer index returns integer
+        	return items[index][2]
+        endmethod
+		
+		// Get the current amount of the item
+		method setStack takes integer index returns nothing
+        	set items[index][2] = items[index][2] + 1
+        endmethod
+		
+		// Returns the max amount of item the hero can buy
+		method getStackMax takes integer index returns integer
+        	return items[index][3]
         endmethod
 		
 		method operator size takes nothing returns integer
-			return count[this]
+			return .count
 		endmethod
 		
-		method addItem takes integer shopTypeId, integer itemTypeId returns nothing
-			if (count[this] < MAX_ITEMSET_SIZE) then
-				set items[count[this]] = AIItem.getItem(shopTypeId, itemTypeId)
-				set count[this] = count[this] + 1
+		method addItem takes integer shopTypeId, Item it, integer amountMax returns nothing
+			if (.count < MAX_ITEMSET_SIZE) then
+				set items[.count][0] = shopTypeId
+				set items[.count][1] = it
+				set items[.count][2] = 0
+				set items[.count][3] = amountMax
+				set .count = .count + 1
 			else
 				call BJDebugMsg("[HeroAIItemset] Error: Itemset already has max item ids, aborted")
 			endif
 		endmethod
 		
 		static method create takes nothing returns thistype
-			set stack = stack + 1
-			set count[stack] = 0
-			return stack
-		endmethod		
+			local thistype this = thistype.allocate()
+			set .items = TableArray[0x2000]
+			
+			return this
+		endmethod
+
+		private static method onInit takes nothing returns nothing
+			//Item System
+			call UnitInventory.initialize()
+			call ItemShops.initialize()
+			call Item.initialize()
+			call Items.initialize()
+		endmethod				
 	endstruct
 	
 //! endtextmacro
