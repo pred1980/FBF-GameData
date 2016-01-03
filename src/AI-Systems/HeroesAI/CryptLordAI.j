@@ -33,7 +33,7 @@ scope CryptLordAI
         
 		endmethod
         
-        method onCreate takes integer aiLevel returns nothing
+        method onCreate takes nothing returns nothing
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
 			// Carrion Swarm
@@ -62,7 +62,7 @@ scope CryptLordAI
 			call RegisterHeroAISkill(HERO_ID, 4, 'A021')
 			
             // This is where you would define a custom item build
-			set Itemsets[aiLevel] = HeroAI_Itemset.create()
+			set Itemsets[.aiLevel] = HeroAI_Itemset.create()
 			
             /* COMPUTER EASY */
             call Itemsets[0].addItem('u000', HEALING_POTION, 2)
@@ -76,7 +76,7 @@ scope CryptLordAI
 			call Itemsets[2].addItem('u000', HEALING_POTION, 5)
 			call Itemsets[2].addItem('u000', MANA_POTION, 3)  
 			
-			set .itemBuild = Itemsets[aiLevel]
+			set .itemBuild = Itemsets[.aiLevel]
 			call BJDebugMsg("Registered Itemset[" + I2S(aiLevel) + "] for Crypt Lord.")
         endmethod
         

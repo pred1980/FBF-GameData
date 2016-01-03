@@ -72,9 +72,14 @@
         	return items[index][2]
         endmethod
 		
-		// Get the current amount of the item
-		method setStack takes integer index returns nothing
+		// increase the current amount of the item
+		method increaseStack takes integer index returns nothing
         	set items[index][2] = items[index][2] + 1
+        endmethod
+		
+		// increase the current amount of the item
+		method decreaseStack takes integer index returns nothing
+        	set items[index][2] = items[index][2] - 1
         endmethod
 		
 		// Returns the max amount of item the hero can buy

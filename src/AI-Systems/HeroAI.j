@@ -23,15 +23,16 @@ scope HeroAI
 		/*
 		 * HERO STATES
 		 */
-		// The state in which the hero is doing nothing in particular
-		public constant integer STATE_IDLE = 0 
 		// The state in which the hero is fighting an enemy
-		public constant integer STATE_ENGAGED = 1 
+		public constant integer STATE_ENGAGED = 0 
 		// The state in which the hero is running to a shop in order to buy an item
-		public constant integer STATE_GO_SHOP = 2 
+		public constant integer STATE_GO_SHOP = 1 
 		// The state in which the hero is trying to run away  
-        public constant integer STATE_RUN_AWAY = 3
-
+        public constant integer STATE_RUN_AWAY = 2
+		// The state in which the hero is searching one of the teleporters (base/jump)
+		public constant integer STATE_GO_TELEPORT = 3
+		// The state in which the hero is doing nothing and waiting for some action
+		public constant integer STATE_IDLE = 4 
 		// Tracks the AI struct a hero has
 		private Table heroesAI
 		// Tracks custom AI structs defined for specific unit-type ids
@@ -122,7 +123,7 @@ scope HeroAI
     	private player owner
 		private integer pid
         private integer hId
-		private integer aiLevel
+		integer aiLevel
 		private real life
         private real maxLife
         private real mana           
@@ -130,7 +131,7 @@ scope HeroAI
         private real hy
 		private timer t
 		Itemset itemBuild
-		private integer itemCount
+		private integer itemSlotCount
 		private group units
 		private group allies        
         private group enemies       
@@ -161,17 +162,19 @@ scope HeroAI
 		private static thistype tempthis
 		// Holds the state of the AI
 		private integer state
-		
+		// Index of the itemset
 		private integer itemsetIndex
 		
 		private method showState takes nothing returns nothing
-			if (.state == STATE_IDLE) then
-				call BJDebugMsg(GetUnitName(.hero) + "-STATE: STATE_IDLE")
+			if (.state == STATE_GO_TELEPORT) then
+				call BJDebugMsg(GetUnitName(.hero) + "-STATE: STATE_GO_TELEPORT")
 			elseif (.state == STATE_ENGAGED) then
 				call BJDebugMsg(GetUnitName(.hero) + "-STATE_ENGAGED")
 			elseif (.state == STATE_GO_SHOP) then
 				call BJDebugMsg(GetUnitName(.hero) + "-STATE_GO_SHOP")
-			else
+			elseif (.state == STATE_IDLE) then
+				call BJDebugMsg(GetUnitName(.hero) + "-STATE_IDLE")
+			elseif (.state == STATE_RUN_AWAY) then
 				call BJDebugMsg(GetUnitName(.hero) + "-STATE_RUN_AWAY")
 			endif
 		endmethod
@@ -234,8 +237,14 @@ scope HeroAI
         endmethod
 		
 		method defaultAssaultEnemy takes nothing returns nothing
-			call BJDebugMsg("[HeroAI] Attack enemies.")
-			call IssueTargetOrder(.hero, "attack", GroupPickRandomUnit(.enemies))
+			static if thistype.setPriorityEnemy.exists then
+                call .setPriorityEnemy(.enemies)
+                call IssueTargetOrder(.hero, "attack", .priorityEnemy)
+				call BJDebugMsg("[HeroAI] Attack enemy with priority.")
+			else
+				call IssueTargetOrder(.hero, "attack", GroupPickRandomUnit(.enemies))
+				call BJDebugMsg("[HeroAI] Attack enemy.")
+			endif
 		endmethod
 		
 		private static method filtUnits takes nothing returns boolean
@@ -292,7 +301,6 @@ scope HeroAI
 			local race r = GetUnitRace(.hero)
 			local unit t
 			
-			//call BJDebugMsg("setWayBackToBattleField")
 			if (r == RACE_UNDEAD) then
 				set t = GetClosestUnit(.hx, .hy, Filter(function forsakenBaseTeleporter))
 			else
@@ -349,10 +357,31 @@ scope HeroAI
 			set t = null
         endmethod
 		
+		private method useHealingPotion takes nothing returns nothing
+			local Item it
+			
+			loop
+				set it = .itemBuild.item(.itemsetIndex)
+				exitwhen (.itemsetIndex == .itemBuild.size)
+				if (it == HEALING_POTION) then
+					loop
+						exitwhen (.goodCondition or .itemBuild.getStack(.itemsetIndex) == 0)
+						call UnitUseItem(.hero, UnitItemInSlot(.hero, .itemsetIndex))
+						call .itemBuild.decreaseStack(.itemsetIndex)
+					endloop
+				endif
+				set .itemsetIndex = .itemsetIndex + 1
+			endloop
+		endmethod
+		
+		private method useManaPotion takes nothing returns nothing
+		
+		
+		endmethod
+		
 		/*
 		 * ITEM RELATED CODE
 		 */
-		
 		private method buyItem takes Item it returns nothing
 			if (it.goldCost > 0) then
 				set .gold = .gold - it.goldCost
@@ -364,7 +393,7 @@ scope HeroAI
 		private method canBuyItem takes Item it returns boolean
 			return it.goldCost <= .gold
         endmethod
-
+		
 		// This method will be called by update periodically to check if the hero can do any shopping
         private method canShop takes nothing returns nothing
 			local Item it
@@ -381,7 +410,7 @@ scope HeroAI
 						exitwhen (.itemBuild.getStack(.itemsetIndex) == .itemBuild.getStackMax(.itemsetIndex) or it.goldCost > .gold)
 						call .buyItem(it)
 						// Increase the stack of this item
-						call .itemBuild.setStack(.itemsetIndex)
+						call .itemBuild.increaseStack(.itemsetIndex)
 					endloop
 					
 					//count Stack Items like Potions as one item per slot
@@ -390,39 +419,58 @@ scope HeroAI
 					call IssuePointOrderById(.hero, MOVE, GetUnitX(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2), GetUnitY(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2))
 					exitwhen true
 				endif
-			
-			endloop
-					
-			// Set back to state idle now that the hero is done shopping.
-            set .state = STATE_IDLE
-			// Set the Base Teleporter as the next target to leave the base
-			call .setWayBackToBattleField()
+			endloop			
         endmethod
 		
 		method defaultLoopActions takes nothing returns nothing
-        	//call showState()
+        	call showState()
 			
-			if (.state == STATE_RUN_AWAY) then
-				// Locate the next teleporter back to base!
-				call .setWayBackToBase()
+			if (.state == STATE_GO_SHOP) then
+				call .canShop()
 				
-				static if thistype.runActions.exists then
-					// Only run if no actions were taken in runActions.
-					if not .runActions() then
-						call .run()
+				//let the hero walk to the teleporter back to the battlefield
+				if (.itemsetIndex == .itemBuild.size) then
+					set .state = STATE_GO_TELEPORT
+					
+					// if hero is ok, leave base with the teleporter
+					if (.goodCondition) then
+						// Set the Base Teleporter as the next target to leave the base
+						call .setWayBackToBattleField()
 					endif
-				else
-					call .run()
+				endif
+			endif
+			
+			if (.state == STATE_GO_TELEPORT) then
+				if (.goodCondition) then
+					static if thistype.moveActions.exists then
+						if not .moveActions() then
+							call .move()
+						endif
+					else
+						call .move()
+					endif
 				endif
 			endif
 			
 			if (.state == STATE_IDLE) then
-				static if thistype.moveActions.exists then
-					if not .moveActions() then
-						call .move()
+				call IssuePointOrderById(.hero, MOVE, -6535.1, 2039.7)
+			endif
+			
+			if (.state == STATE_RUN_AWAY) then
+				//First use heal potions before run away
+				call useHealingPotion()
+				// if still need more hp/mana, run away!
+				if (.badCondition) then
+					// Locate the next teleporter back to base!
+					call .setWayBackToBase()
+					static if thistype.runActions.exists then
+						// Only run if no actions were taken in runActions.
+						if not .runActions() then
+							call .run()
+						endif
+					else
+						call .run()
 					endif
-				else
-					call .move()
 				endif
 			endif
 			
@@ -432,10 +480,6 @@ scope HeroAI
 				else
 					call .defaultAssaultEnemy()
 				endif
-			endif
-			
-			if (.state == STATE_GO_SHOP) then
-				call .canShop()
 			endif
         endmethod
 		
@@ -447,7 +491,8 @@ scope HeroAI
 			set .life = GetWidgetLife(.hero)
 			set .mana = GetUnitState(.hero, UNIT_STATE_MANA)
 			set .maxLife = GetUnitState(.hero, UNIT_STATE_MAX_LIFE)
-			set .itemCount = UnitInventoryCount(.hero)
+			set .itemSlotCount = UnitInventoryCount(.hero)
+			set .itemsetIndex = 0
 			set .gold = .gold
 			set tempthis = this
 			
@@ -465,49 +510,51 @@ scope HeroAI
 			set .allyNum = 0
 			set .jumpTeleporterNum = 0
 			call GroupEnumUnitsInRange(.units, .hx, .hy, SIGHT_RANGE, Filter(function thistype.filtUnits))
-			
+
 			/*
-			 * State STATE_RUN_AWAY
+			 * STATE_GO_SHOP
 			 */
-			if (.state != STATE_RUN_AWAY) then
-				// Hero has low HP? Search for the Teleporter back to the base
-				if (.badCondition) then
-					//set .state = STATE_RUN_AWAY
+			 if (.state != STATE_GO_SHOP) then
+				if ((.goodCondition) 	and /*
+				*/	(.safeUnit != null) and /*
+				*/	(.state != STATE_GO_TELEPORT)) then
+				set .state = STATE_GO_SHOP
 				endif
-			endif
-			
+			 endif
+			 
 			/*
-			 * State STATE_IDLE
-			 */
-			if (.state != STATE_IDLE) then
-				if (.goodCondition and .safeUnit != null) then
-					//set .state = STATE_IDLE
-				endif
-			endif
-			
-			/*
-			 * State STATE_ENGAGED
+			 * STATE_ENGAGED
 			 */
 			if (.state != STATE_ENGAGED) then
 				// Is everything ok and no nearby fountain? Search for enemies...
 				if (.goodCondition and .safeUnit == null) then
 					if (.enemyNum > 0) then
-						//set .state = STATE_ENGAGED
+						set .state = STATE_ENGAGED
 					endif
 				endif
 			endif
 			
 			/*
-			 * State STATE_GO_SHOP
+			 * STATE_IDLE
 			 */
-			 if (.state != STATE_GO_SHOP) then
-				if (.goodCondition and .safeUnit != null) then
-					// Only check to do shopping if in the AI hasn't completed its itemset and it's in STATE_IDLE
-					if (.itemsetIndex < .itemBuild.size and .state == STATE_IDLE) then
-						set .state = STATE_GO_SHOP
-					endif
+			if (.state != STATE_IDLE) then
+				if ((.goodCondition) and /*
+				*/	(.safeUnit == null) and /*
+				*/	(.state != STATE_RUN_AWAY) and /*
+				*/	(.state != STATE_ENGAGED)) then
+					set .state = STATE_IDLE
 				endif
-			 endif
+			endif
+			
+			/*
+			 * STATE_RUN_AWAY
+			 */
+			if (.state != STATE_RUN_AWAY) then
+				// Hero has low HP? Search for the Teleporter back to the base
+				if (.badCondition) then
+					set .state = STATE_RUN_AWAY
+				endif
+			endif
 		endmethod
 
 		private static method defaultLoop takes nothing returns nothing
@@ -537,7 +584,7 @@ scope HeroAI
 			set .enemies = CreateGroup()
             set .allies = CreateGroup()
 			set .itemsetIndex = 0
-            set .state = STATE_IDLE
+			set .itemSlotCount = 0
 			
 			if (GetHeroSkillPoints(.hero) > 0) then
 				loop
@@ -548,7 +595,7 @@ scope HeroAI
 			endif
 			
 			static if thistype.onCreate.exists then
-				call .onCreate(.aiLevel)
+				call .onCreate()
 			endif
 			
 			set .t = NewTimerEx(this)
