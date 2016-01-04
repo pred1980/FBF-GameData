@@ -18,7 +18,6 @@ scope CryptLordAI
         endmethod
         
         method assaultEnemy takes nothing returns nothing  
-            //debug call BJDebugMsg("Abomination assault Enemy.")
 			call .defaultAssaultEnemy()
         endmethod
         
@@ -32,8 +31,8 @@ scope CryptLordAI
         static method onLoop takes nothing returns nothing
         
 		endmethod
-        
-        method onCreate takes nothing returns nothing
+		
+		method onCreate takes nothing returns nothing
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
 			// Carrion Swarm

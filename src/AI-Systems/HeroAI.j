@@ -119,7 +119,7 @@ scope HeroAI
 	//! runtextmacro HeroAIItem()
 	
 	module HeroAI
-		private unit hero
+		unit hero
     	private player owner
 		private integer pid
         private integer hId
@@ -133,8 +133,8 @@ scope HeroAI
 		Itemset itemBuild
 		private integer itemSlotCount
 		private group units
-		private group allies        
-        private group enemies       
+		group allies        
+        group enemies       
         private integer allyNum   
         private integer enemyNum
 		
@@ -210,13 +210,13 @@ scope HeroAI
 		method operator badCondition takes nothing returns boolean
         	/* COMPUTER EASY */
 			if (.aiLevel == 0) then
-				return 	(.percentLife <= .25) or (.percentLife <= .25 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .25)
+				return 	(.percentLife <= .35) or (.percentLife <= .35 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .25)
 			/* COMPUTER NORMAL */
 			elseif (.aiLevel == 1) then
-				return 	(.percentLife <= .35) or (.percentLife <= .35 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .35)
+				return 	(.percentLife <= .45) or (.percentLife <= .45 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .35)
 			/* COMPUTER INSANE */
 			else
-				return 	(.percentLife <= .45) or (.percentLife <= .45 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .45)
+				return 	(.percentLife <= .55) or (.percentLife <= .55 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .45)
 			endif   
         endmethod
 		
@@ -237,14 +237,11 @@ scope HeroAI
         endmethod
 		
 		method defaultAssaultEnemy takes nothing returns nothing
-			static if thistype.setPriorityEnemy.exists then
-                call .setPriorityEnemy(.enemies)
-                call IssueTargetOrder(.hero, "attack", .priorityEnemy)
-				call BJDebugMsg("[HeroAI] Attack enemy with priority.")
-			else
-				call IssueTargetOrder(.hero, "attack", GroupPickRandomUnit(.enemies))
-				call BJDebugMsg("[HeroAI] Attack enemy.")
-			endif
+			call GroupClear(ENUM_GROUP)
+			call GroupAddGroup(.enemies, ENUM_GROUP)
+			call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
+			call IssueTargetOrder(.hero, "attack", FirstOfGroup(ENUM_GROUP))
+			call BJDebugMsg("[HeroAI] Attack enemy.")
 		endmethod
 		
 		private static method filtUnits takes nothing returns boolean

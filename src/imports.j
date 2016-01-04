@@ -87,7 +87,8 @@
 //! import "src\AI-Systems\HeroAI.j"
 //! import "src\AI-Systems\HeroAILearnset.j"
 //! import "src\AI-Systems\HeroAIItem.j"
-//! import "src\AI-Systems\HeroAIPriority.j"
+//! import "src\AI-Systems\PruneGroup.j"
+//! import "src\AI-Systems\FitnessFunc.j"
 
 //! import "src\AI-Systems\HeroesAI\BehemotAI.j"
 //! import "src\AI-Systems\HeroesAI\NerubianWidowAI.j"
