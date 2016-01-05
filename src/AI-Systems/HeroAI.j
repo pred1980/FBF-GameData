@@ -126,7 +126,8 @@ scope HeroAI
 		integer aiLevel
 		private real life
         private real maxLife
-        private real mana           
+        private real mana 
+		private real maxMana
         private real hx            
         private real hy
 		private timer t
@@ -187,36 +188,53 @@ scope HeroAI
     		call SetPlayerState(.owner, PLAYER_STATE_RESOURCE_GOLD, g)
     	endmethod
     	
+		// Returns current percent Life value
     	method operator percentLife takes nothing returns real
-            return .life / .maxLife
+			return .life / .maxLife
         endmethod
+		
+		// Returns current percent Mana value
+    	method operator percentMana takes nothing returns real
+			return .mana / .maxMana
+        endmethod
+		
+		method updateLifeAndMana takes nothing returns nothing
+			set .life = GetWidgetLife(.hero)
+			set .maxLife = GetUnitState(.hero, UNIT_STATE_MAX_LIFE)
+			set .mana = GetUnitState(.hero, UNIT_STATE_MANA)
+			set .maxMana = GetUnitState(.hero, UNIT_STATE_MAX_MANA)
+		endmethod
 		
 		// The condition in which the hero will return to its normal activities
 		method operator goodCondition takes nothing returns boolean
-        	/* COMPUTER EASY */
+        	call .updateLifeAndMana()
+			
+			/* COMPUTER EASY */
 			if (.aiLevel == 0) then
-				return 	(.percentLife >= .65) and (.mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) >= .45)
+				return 	((.percentLife >= .65) and (.percentMana >= .45))
 			/* COMPUTER NORMAL */
 			elseif (.aiLevel == 1) then
-				return 	(.percentLife >= .75) and (.mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) >= .55)
+				return 	((.percentLife >= .75) and (.percentMana >= .55))
 			/* COMPUTER INSANE */
 			else
-				return 	(.percentLife >= .85) and (.mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) >= .65)
+				return 	((.percentLife >= .85) and (.percentMana >= .65))
 			endif       
         endmethod
 		
 		// The condition in which the hero will try to run away to a safe spot. 
 		// Optionally complemented by the threat library
 		method operator badCondition takes nothing returns boolean
+			call .updateLifeAndMana()
+			
         	/* COMPUTER EASY */
 			if (.aiLevel == 0) then
-				return 	(.percentLife <= .35) or (.percentLife <= .35 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .25)
+				return 	((.percentLife <= .35) or (.percentLife <= .35 and .percentMana <= .25))
 			/* COMPUTER NORMAL */
 			elseif (.aiLevel == 1) then
-				return 	(.percentLife <= .45) or (.percentLife <= .45 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .35)
+				return 	((.percentLife <= .45) or (.percentLife <= .45 and .percentMana <= .35))
 			/* COMPUTER INSANE */
 			else
-				return 	(.percentLife <= .55) or (.percentLife <= .55 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .45)
+				return  ((.percentLife <= .55) or (.percentLife <= .55 and .percentMana <= .45))
 			endif   
         endmethod
 		
@@ -362,9 +380,11 @@ scope HeroAI
 				exitwhen (.itemsetIndex == .itemBuild.size)
 				if (it == HEALING_POTION) then
 					loop
-						exitwhen (.goodCondition or .itemBuild.getStack(.itemsetIndex) == 0)
+						exitwhen ((not .badCondition) or .itemBuild.getStack(.itemsetIndex) == 0)
 						call UnitUseItem(.hero, UnitItemInSlot(.hero, .itemsetIndex))
+						call BJDebugMsg(I2S(.itemsetIndex) + ": Stack vorher (USE): " + I2S(.itemBuild.getStack(.itemsetIndex)))
 						call .itemBuild.decreaseStack(.itemsetIndex)
+						call BJDebugMsg(I2S(.itemsetIndex) + ": Stack nachher (USE): " + I2S(.itemBuild.getStack(.itemsetIndex)))
 					endloop
 				endif
 				set .itemsetIndex = .itemsetIndex + 1
@@ -395,6 +415,9 @@ scope HeroAI
         private method canShop takes nothing returns nothing
 			local Item it
 			
+			//First reset .itemsetIndex before looping through the hero's Itemset
+			set .itemsetIndex = 0
+			
 			loop
 				set it = .itemBuild.item(.itemsetIndex)
 				exitwhen not (.canBuyItem(it) or .itemsetIndex == .itemBuild.size)
@@ -406,8 +429,10 @@ scope HeroAI
 					loop
 						exitwhen (.itemBuild.getStack(.itemsetIndex) == .itemBuild.getStackMax(.itemsetIndex) or it.goldCost > .gold)
 						call .buyItem(it)
+						call BJDebugMsg(I2S(.itemsetIndex) + ": Stack vorher (BUY): " + I2S(.itemBuild.getStack(.itemsetIndex)))
 						// Increase the stack of this item
 						call .itemBuild.increaseStack(.itemsetIndex)
+						call BJDebugMsg(I2S(.itemsetIndex) + ": Stack nachher (BUY): " + I2S(.itemBuild.getStack(.itemsetIndex)))
 					endloop
 					
 					//count Stack Items like Potions as one item per slot
@@ -485,9 +510,6 @@ scope HeroAI
 			// Information about self
 			set .hx = GetUnitX(.hero)
 			set .hy = GetUnitY(.hero)
-			set .life = GetWidgetLife(.hero)
-			set .mana = GetUnitState(.hero, UNIT_STATE_MANA)
-			set .maxLife = GetUnitState(.hero, UNIT_STATE_MAX_LIFE)
 			set .itemSlotCount = UnitInventoryCount(.hero)
 			set .itemsetIndex = 0
 			set .gold = .gold
@@ -582,6 +604,14 @@ scope HeroAI
             set .allies = CreateGroup()
 			set .itemsetIndex = 0
 			set .itemSlotCount = 0
+			set .life = GetWidgetLife(.hero)
+			set .maxLife = GetUnitState(.hero, UNIT_STATE_MAX_LIFE)
+			set .mana = GetUnitState(.hero, UNIT_STATE_MANA)
+			set .maxMana = GetUnitState(.hero, UNIT_STATE_MAX_MANA)
+			
+			static if thistype.onCreate.exists then
+				call .onCreate()
+			endif
 			
 			if (GetHeroSkillPoints(.hero) > 0) then
 				loop
@@ -590,11 +620,7 @@ scope HeroAI
 					set lvl = lvl + 1
 				endloop
 			endif
-			
-			static if thistype.onCreate.exists then
-				call .onCreate()
-			endif
-			
+
 			set .t = NewTimerEx(this)
             call TimerStart(.t, DEFAULT_PERIOD, true, function thistype.defaultLoop)
 			
