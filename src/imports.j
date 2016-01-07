@@ -102,6 +102,7 @@
 //! import "src\AI-Systems\HeroesAI\AbominationAI.j"
 //! import "src\AI-Systems\HeroesAI\DestroyerAI.j"
 //! import "src\AI-Systems\HeroesAI\DarkRangerAI.j"
+//! import "src\AI-Systems\HeroesAI\DreadLordAI.j"
 
 
 /* Hero Systems */

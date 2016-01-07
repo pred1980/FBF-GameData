@@ -1,6 +1,14 @@
 library TableBC requires Table
 /*
-    Backwards-compatibility add-on for scripts employing Vexorians Table.
+    Backwards-compatibility add-on for scripts employing Vexorian's Table.
+
+    Added 31 July 2015: introduced static method operator [] and
+    static method flush2D for Table, HandleTable and StringTable. Now,
+    almost all of the Vexorian API has been replicated (minus the .flush paradox).
+
+    The Table library itself was unchanged to implement these
+    enhancements, so you need only update this library to experience the
+    improved syntax compatibility.
    
     Disclaimer:
    
@@ -12,7 +20,7 @@ library TableBC requires Table
     the new Table. For the scripts that use this method, they need to be up-
     dated to use the more fitting this.remove(key) method.
    
-    Please do not try using StringTables/HandleTables with features exclusive
+    Please don't try using StringTables/HandleTables with features exclusive
     to the new Table as they will cause syntax errors. I do not have any plan
     to endorse these types of Tables because delegation in JassHelper is not
     advanced enough for three types of Tables without copying every single
@@ -28,10 +36,33 @@ library TableBC requires Table
     method exists takes integer key returns boolean
         return this.has(key)
     endmethod
+    static method operator [] takes string id returns Table
+        local integer index = StringHash(id)
+        local Table t = Table(thistype.typeid)[index]
+        if t == 0 then
+            set t = Table.create()
+            set Table(thistype.typeid)[index] = t
+        endif
+        return t
+    endmethod
+    static method flush2D takes string id returns nothing
+        local integer index = StringHash(id)
+        local Table t = Table(thistype.typeid)[index]
+        if t != 0 then
+            call t.destroy()
+            call Table(thistype.typeid).remove(index)
+        endif
+    endmethod
 //! endtextmacro
 
 //! textmacro TABLE_BC_STRUCTS
 struct HandleTable extends array
+    static method operator [] takes string index returns thistype
+        return Table[index]
+    endmethod
+    static method flush2D takes string index returns nothing
+        call Table.flush2D(index)
+    endmethod
     method operator [] takes handle key returns integer
         return Table(this)[GetHandleId(key)]
     endmethod
@@ -56,6 +87,12 @@ struct HandleTable extends array
 endstruct
 
 struct StringTable extends array
+    static method operator [] takes string index returns thistype
+        return Table[index]
+    endmethod
+    static method flush2D takes string index returns nothing
+        call Table.flush2D(index)
+    endmethod
     method operator [] takes string key returns integer
         return Table(this)[StringHash(key)]
     endmethod

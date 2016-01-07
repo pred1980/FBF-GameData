@@ -382,9 +382,9 @@ scope HeroAI
 					loop
 						exitwhen ((not .badCondition) or .itemBuild.getStack(.itemsetIndex) == 0)
 						call UnitUseItem(.hero, UnitItemInSlot(.hero, .itemsetIndex))
-						call BJDebugMsg(I2S(.itemsetIndex) + ": Stack vorher (USE): " + I2S(.itemBuild.getStack(.itemsetIndex)))
+						//call BJDebugMsg(GetUnitName(.hero) + " - " + I2S(.itemsetIndex) + ": Stack vorher (USE): " + I2S(.itemBuild.getStack(.itemsetIndex)))
 						call .itemBuild.decreaseStack(.itemsetIndex)
-						call BJDebugMsg(I2S(.itemsetIndex) + ": Stack nachher (USE): " + I2S(.itemBuild.getStack(.itemsetIndex)))
+						//call BJDebugMsg(GetUnitName(.hero) + " - " + I2S(.itemsetIndex) + ": Stack nachher (USE): " + I2S(.itemBuild.getStack(.itemsetIndex)))
 					endloop
 				endif
 				set .itemsetIndex = .itemsetIndex + 1
@@ -425,14 +425,16 @@ scope HeroAI
 				set tempHeroOwner = .owner
 				set .shopUnit = GetClosestUnit(.hx, .hy, Filter(function shopTypeIdCheck))
 				
+				//call BJDebugMsg(GetUnitName(.hero) + " - Stack: " + I2S(.itemBuild.getStack(.itemsetIndex)))
+				//call BJDebugMsg(GetUnitName(.hero) + " - Max-Stack: " + I2S(.itemBuild.getStackMax(.itemsetIndex)))
 				if (IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE)) then
 					loop
 						exitwhen (.itemBuild.getStack(.itemsetIndex) == .itemBuild.getStackMax(.itemsetIndex) or it.goldCost > .gold)
 						call .buyItem(it)
-						call BJDebugMsg(I2S(.itemsetIndex) + ": Stack vorher (BUY): " + I2S(.itemBuild.getStack(.itemsetIndex)))
+						//call BJDebugMsg(GetUnitName(.hero) + " - " + I2S(.itemsetIndex) + ": Stack vorher (BUY): " + I2S(.itemBuild.getStack(.itemsetIndex)))
 						// Increase the stack of this item
 						call .itemBuild.increaseStack(.itemsetIndex)
-						call BJDebugMsg(I2S(.itemsetIndex) + ": Stack nachher (BUY): " + I2S(.itemBuild.getStack(.itemsetIndex)))
+						//call BJDebugMsg(GetUnitName(.hero) + " - " + I2S(.itemsetIndex) + ": Stack nachher (BUY): " + I2S(.itemBuild.getStack(.itemsetIndex)))
 					endloop
 					
 					//count Stack Items like Potions as one item per slot
@@ -445,7 +447,7 @@ scope HeroAI
         endmethod
 		
 		method defaultLoopActions takes nothing returns nothing
-        	call showState()
+        	//call showState()
 			
 			if (.state == STATE_GO_SHOP) then
 				call .canShop()

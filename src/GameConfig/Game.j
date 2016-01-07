@@ -417,15 +417,12 @@ scope Game
 				if IsUnitEnemy(killedUnit, killingPlayer) then
 					if GetOwningPlayer(killedUnit) != Player(PLAYER_NEUTRAL_PASSIVE) then // Helden bei der Auswahl
 						call BonusGoldOnDeath.showDeathMessageAndUpdateGold(killedUnit, killingUnit)
-						if GetPlayerController(GetOwningPlayer(killingUnit)) == MAP_CONTROL_USER then
-							call FBFMultiboard.onUpdateUnitKills(pidKilling)
-							call FBFMultiboard.onUpdateTowerKills(pidKilling)
-						endif
+						call FBFMultiboard.onUpdateUnitKills(pidKilling)
+						call FBFMultiboard.onUpdateTowerKills(pidKilling)
 					endif
 				endif
 				
-				if (IsUnitType(killedUnit, UNIT_TYPE_HERO) and /*
-				*/	GetPlayerController(GetOwningPlayer(killedUnit)) == MAP_CONTROL_USER) then
+				if (IsUnitType(killedUnit, UNIT_TYPE_HERO)) then
 					call PlayerStats.setPlayerDeath(killedPlayer)
 					//Update Multiboard (Deaths)
 					call FBFMultiboard.onUpdateDeaths(pidKilled)
@@ -435,8 +432,7 @@ scope Game
 					call HeroRespawn.create(killedUnit, true)
 				endif
 				
-				if (IsUnitType(killingUnit, UNIT_TYPE_HERO) and /*
-				*/	GetPlayerController(GetOwningPlayer(killingUnit)) == MAP_CONTROL_USER) then
+				if (IsUnitType(killingUnit, UNIT_TYPE_HERO)) then
 					call FBFMultiboard.onUpdateHeroKills(pidKilling)
 				endif
 				

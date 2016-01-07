@@ -1,6 +1,13 @@
-library Table /* made by Bribe, special thanks to Vexorian & Nestharus, version 3.1.0.1
+library Table /* made by Bribe, special thanks to Vexorian & Nestharus, version 4.1.0.1.
    
-    One map, one hashtable. Welcome to NewTable 3.1
+    One map, one hashtable. Welcome to NewTable 4.1.0.1
+   
+    This newest iteration of Table introduces the new HashTable struct.
+    You can now instantiate HashTables which enables the use of large
+    parent and large child keys, just like a standard hashtable. Previously,
+    the user would have to instantiate a Table to do this on their own which -
+    while doable - is something the user should not have to do if I can add it
+    to this resource myself (especially if they are inexperienced).
    
     This library was originally called NewTable so it didn't conflict with
     the API of Table by Vexorian. However, the damage is done and it's too
@@ -118,6 +125,12 @@ private struct $TYPE$s extends array
     method operator []= takes integer key, $TYPE$ value returns nothing
         call Save$FUNC$Handle(ht, this, key, value)
     endmethod
+    method has takes integer key returns boolean
+        return HaveSavedHandle(ht, this, key)
+    endmethod
+    method remove takes integer key returns nothing
+        call RemoveSavedHandle(ht, this, key)
+    endmethod
 endstruct
 private module $TYPE$m
     method operator $TYPE$ takes nothing returns $TYPE$s
@@ -132,6 +145,8 @@ endmodule
 //! runtextmacro NEW_ARRAY_BASIC("Real", "Real", "real")
 //! runtextmacro NEW_ARRAY_BASIC("Boolean", "Boolean", "boolean")
 //! runtextmacro NEW_ARRAY_BASIC("String", "Str", "string")
+//New textmacro to allow table.integer[] syntax for compatibility with textmacros that might desire it.
+//! runtextmacro NEW_ARRAY_BASIC("Integer", "Integer", "integer")
    
 //! runtextmacro NEW_ARRAY("Player", "player")
 //! runtextmacro NEW_ARRAY("Widget", "widget")
@@ -176,6 +191,7 @@ struct Table extends array
    
     // Implement modules for intuitive syntax (tb.handle; tb.unit; etc.)
     implement realm
+    implement integerm
     implement booleanm
     implement stringm
     implement playerm
@@ -227,22 +243,22 @@ struct Table extends array
    
     //set this = tb[GetSpellAbilityId()]
     method operator [] takes integer key returns Table
-        return LoadInteger(ht, this, key)
+        return LoadInteger(ht, this, key) //return this.integer[key]
     endmethod
    
     //set tb[389034] = 8192
     method operator []= takes integer key, Table tb returns nothing
-        call SaveInteger(ht, this, key, tb)
+        call SaveInteger(ht, this, key, tb) //set this.integer[key] = tb
     endmethod
    
     //set b = tb.has(2493223)
     method has takes integer key returns boolean
-        return HaveSavedInteger(ht, this, key)
+        return HaveSavedInteger(ht, this, key) //return this.integer.has(key)
     endmethod
    
     //call tb.remove(294080)
     method remove takes integer key returns nothing
-        call RemoveSavedInteger(ht, this, key)
+        call RemoveSavedInteger(ht, this, key) //call this.integer.remove(key)
     endmethod
    
     //Remove all data from a Table instance
@@ -403,4 +419,47 @@ struct TableArray extends array
    
 endstruct
    
+//NEW: Added in Table 4.0. A fairly simple struct but allows you to do more
+//than that which was previously possible.
+struct HashTable extends array
+
+    //Enables myHash[parentKey][childKey] syntax.
+    //Basically, it creates a Table in the place of the parent key if
+    //it didn't already get created earlier.
+    method operator [] takes integer index returns Table
+        local Table t = Table(this)[index]
+        if t == 0 then
+            set t = Table.create()
+            set Table(this)[index] = t //whoops! Forgot that line. I'm out of practice!
+        endif
+        return t
+    endmethod
+
+    //You need to call this on each parent key that you used if you
+    //intend to destroy the HashTable or simply no longer need that key.
+    method remove takes integer index returns nothing
+        local Table t = Table(this)[index]
+        if t != 0 then
+            call t.destroy()
+            call Table(this).remove(index)
+        endif
+    endmethod
+   
+    //Added in version 4.1
+    method has takes integer index returns boolean
+        return Table(this).has(index)
+    endmethod
+   
+    //HashTables are just fancy Table indices.
+    method destroy takes nothing returns nothing
+        call Table(this).destroy()
+    endmethod
+   
+    //Like I said above...
+    static method create takes nothing returns thistype
+        return Table.create()
+    endmethod
+
+endstruct
+
 endlibrary

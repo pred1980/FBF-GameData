@@ -59,32 +59,32 @@
 		
 		// Returns the shop_id
 		method shop takes integer index returns integer
-        	return items[index][0]
+        	return .items[index][0]
         endmethod
 		
 		// Returns the Item
 		method item takes integer index returns Item
-        	return items[index][1]
+        	return .items[index][1]
         endmethod
 		
 		// Get the current amount of the item
 		method getStack takes integer index returns integer
-        	return items[index][2]
+        	return .items[index][2]
         endmethod
 		
 		// increase the current amount of the item
 		method increaseStack takes integer index returns nothing
-        	set items[index][2] = items[index][2] + 1
+        	set .items[index][2] = .items[index][2] + 1
         endmethod
 		
 		// increase the current amount of the item
 		method decreaseStack takes integer index returns nothing
-        	set items[index][2] = items[index][2] - 1
+        	set .items[index][2] = .items[index][2] - 1
         endmethod
 		
 		// Returns the max amount of item the hero can buy
 		method getStackMax takes integer index returns integer
-        	return items[index][3]
+        	return .items[index][3]
         endmethod
 		
 		method operator size takes nothing returns integer
@@ -92,11 +92,12 @@
 		endmethod
 		
 		method addItem takes integer shopTypeId, Item it, integer amountMax returns nothing
+			call BJDebugMsg("Add Item on Index " + I2S(.count))
 			if (.count < MAX_ITEMSET_SIZE) then
-				set items[.count][0] = shopTypeId
-				set items[.count][1] = it
-				set items[.count][2] = 0
-				set items[.count][3] = amountMax
+				set .items[.count][0] = shopTypeId
+				set .items[.count][1] = it
+				set .items[.count][2] = 0
+				set .items[.count][3] = amountMax
 				set .count = .count + 1
 			else
 				call BJDebugMsg("[HeroAIItemset] Error: Itemset already has max item ids, aborted")
