@@ -19,7 +19,7 @@ scope Items
         /*
          * Undead Items
          */
-        //ITEM_CLASS_ADVANCED: Undead
+        //ITEM_CLASS_ADVANCED: Forsaken
         Item BONE_HELMET = 0
         Item BELT_OF_GIANT_STRENGTH = 0
         Item DARK_PLATES = 0
@@ -33,7 +33,7 @@ scope Items
         Item UNHOLY_ICON = 0
         Item SKULL_ROD = 0
         
-        //ITEM_CLASS_ANCIENT: Undead
+        //ITEM_CLASS_ANCIENT: Forsaken
         Item BLOOD_PLATE_ARMOR = 0
         Item DEMONIC_AMULET = 0
         Item METAL_HAND = 0
