@@ -68,22 +68,22 @@ scope DarkRangerAI
 				/* COMPUTER EASY */
 				call Itemsets[0].addItem('u000', HEALING_POTION, 2)
 				call Itemsets[0].addItem('u000', MANA_POTION, 1)
-				call Itemsets[0].addItem('u001', ITEM, 1)
+				call Itemsets[0].addItem('u001', SPIDER_BRACELET, 1)
 			elseif (.aiLevel == 1) then
 				/* COMPUTER NORMAL */
 				call Itemsets[1].addItem('u000', HEALING_POTION, 4)
 				call Itemsets[1].addItem('u000', MANA_POTION, 2)
-				call Itemsets[1].addItem('u001', ITEM, 1)
-				call Itemsets[1].addItem('u001', ITEM, 1)
-				call Itemsets[1].addItem('u003', ITEM, 1)
+				call Itemsets[1].addItem('u001', SPIDER_BRACELET, 1)
+				call Itemsets[1].addItem('u001', PLATE_GLOVE, 1)
+				call Itemsets[1].addItem('u003', METAL_HAND, 1)
 			else
 				/* COMPUTER INSANE */
 				call Itemsets[2].addItem('u000', HEALING_POTION, 5)
 				call Itemsets[2].addItem('u000', MANA_POTION, 3)
-				call Itemsets[2].addItem('u001', ITEM, 1)
-				call Itemsets[2].addItem('u001', ITEM, 1)
-				call Itemsets[2].addItem('u003', ITEM, 1)
-				call Itemsets[2].addItem('u003', ITEM, 1)
+				call Itemsets[2].addItem('u001', SPIDER_BRACELET, 1)
+				call Itemsets[2].addItem('u001', PLATE_GLOVE, 1)
+				call Itemsets[2].addItem('u003', SPEAR_OF_VENGEANCE, 1)
+				call Itemsets[2].addItem('u003', METAL_HAND, 1)
 			endif
 
 			set .itemBuild = Itemsets[.aiLevel]

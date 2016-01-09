@@ -414,40 +414,46 @@ scope HeroAI
 		// This method will be called by update periodically to check if the hero can do any shopping
         private method canShop takes nothing returns nothing
 			local Item it
-			
-			//First reset .itemsetIndex before looping through the hero's Itemset
-			set .itemsetIndex = 0
+			local integer stack = 0
+			local integer maxStack = 0
 			
 			loop
+				// get all nessessary data
 				set it = .itemBuild.item(.itemsetIndex)
-				exitwhen not (.canBuyItem(it) or .itemsetIndex == .itemBuild.size)
+				set stack = .itemBuild.getStack(.itemsetIndex)
+				set maxStack = .itemBuild.getStackMax(.itemsetIndex)
 				set shopTypeId = .itemBuild.shop(.itemsetIndex)
 				set tempHeroOwner = .owner
 				set .shopUnit = GetClosestUnit(.hx, .hy, Filter(function shopTypeIdCheck))
 				
-				//call BJDebugMsg(GetUnitName(.hero) + " - Stack: " + I2S(.itemBuild.getStack(.itemsetIndex)))
-				//call BJDebugMsg(GetUnitName(.hero) + " - Max-Stack: " + I2S(.itemBuild.getStackMax(.itemsetIndex)))
-				if (IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE)) then
-					loop
-						exitwhen (.itemBuild.getStack(.itemsetIndex) == .itemBuild.getStackMax(.itemsetIndex) or it.goldCost > .gold)
-						call .buyItem(it)
-						//call BJDebugMsg(GetUnitName(.hero) + " - " + I2S(.itemsetIndex) + ": Stack vorher (BUY): " + I2S(.itemBuild.getStack(.itemsetIndex)))
-						// Increase the stack of this item
-						call .itemBuild.increaseStack(.itemsetIndex)
-						//call BJDebugMsg(GetUnitName(.hero) + " - " + I2S(.itemsetIndex) + ": Stack nachher (BUY): " + I2S(.itemBuild.getStack(.itemsetIndex)))
-					endloop
-					
-					//count Stack Items like Potions as one item per slot
-					set .itemsetIndex = .itemsetIndex + 1
+				exitwhen (.itemsetIndex == .itemBuild.size)
+				if (.canBuyItem(it) and (stack < maxStack)) then
+					if (IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE)) then
+						loop
+							//refresh stack data
+							set stack = .itemBuild.getStack(.itemsetIndex)
+							set maxStack = .itemBuild.getStackMax(.itemsetIndex)
+							exitwhen (stack == maxStack or not .canBuyItem(it))
+							call .buyItem(it)
+							// Increase the stack of this item
+							call .itemBuild.increaseStack(.itemsetIndex)
+						endloop
+						
+						//count Stack Items like Potions as one item per slot
+						set .itemsetIndex = .itemsetIndex + 1
+					else
+						call IssuePointOrderById(.hero, MOVE, GetUnitX(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2), GetUnitY(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2))
+						exitwhen true
+					endif
 				else
-					call IssuePointOrderById(.hero, MOVE, GetUnitX(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2), GetUnitY(.shopUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2))
-					exitwhen true
-				endif
-			endloop			
+					//do also increase when can't buy the item to get the next item
+					set .itemsetIndex = .itemsetIndex + 1
+				endif				
+			endloop
         endmethod
 		
 		method defaultLoopActions takes nothing returns nothing
-        	//call showState()
+        	call showState()
 			
 			if (.state == STATE_GO_SHOP) then
 				call .canShop()

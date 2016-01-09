@@ -15,44 +15,9 @@
         // Decides if the AI should consider an item's refund price when deciding to buy items
 		private constant boolean CHECK_REFUND_ITEM_COST = true  
     endglobals
-	
-	// Don't touch the following
+
 	public keyword Itemset
-	// You must set up all the items the AI can buy here. Each item should only be set up once.
-	// Note that a shop type id of 0 will cause the AI to buy the item without bothering to
-    // go to an actual shop.
-    // It is also advised to set up all items the hero can pick up and sell so that
-    // they will be refunded properly.
-    //
-    // Currently, multiple shops selling the same item is not supported.
-	private function registerItems takes nothing returns nothing
-		// Syntax:
-    	// call Item.setup(ITEM-TYPE ID, SHOP-TYPE ID, GOLD COST, LUMBER COST)
-    	/*call AIItem.register(HEALING_POTION, 'u000')
-		call AIItem.register(MANA_POTION, 'u000', 3)
-		call AIItem.register(HEALING_ELEXIR, 'u000', 1)
-		call AIItem.register(MANA_ELEXIR, 'u000', 1)
-		call AIItem.register(ANTI_MAGIC_POTION, 'u000', 1)
-		call AIItem.register(INVULNERABILITY_POTION, 'u000', 1)
-		call AIItem.register(POTION_OF_INVISIBILITY, 'u000', 1)
-		call AIItem.register(SPEED_UP_POTION, 'u000', 1)
-		call AIItem.register(TELEPORT_STONE, 'u000', 1)
-		call AIItem.register(TALISMAN_OF_TRANSLOCATION, 'u000', 1)
-
-		call AIItem.register(HEALING_POTION, 'u00K', 5)
-		call AIItem.register(MANA_POTION, 'u00K', 3)
-		*/
-		/*
-		 * Init Undead Items
-		 */
-		//ITEM_CLASS_ADVANCED: Undead
-		//call AIItem.register(BONE_HELMET, 'u001', 1)
-    endfunction
 	
-//==========================================================================================
-// END OF USER CONFIGURATION
-//==========================================================================================
-
 	struct Itemset
 		private integer count = 0
 		private TableArray items
@@ -92,7 +57,6 @@
 		endmethod
 		
 		method addItem takes integer shopTypeId, Item it, integer amountMax returns nothing
-			call BJDebugMsg("Add Item on Index " + I2S(.count))
 			if (.count < MAX_ITEMSET_SIZE) then
 				set .items[.count][0] = shopTypeId
 				set .items[.count][1] = it
