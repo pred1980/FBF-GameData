@@ -220,7 +220,7 @@ scope HeroPickInit
         set HERO_REPICK_RECT[0][0] = GetRectCenterX(gg_rct_HeroRevive1)
         set HERO_REPICK_RECT[0][1] = GetRectCenterY(gg_rct_HeroRevive1)
         //Abilities
-        set HERO_ABILITIES[0][0] = 'A01L' //Explosive Tantrum
+        set HERO_ABILITIES[0][0] = 'A05J' //Explosive Tantrum
         set HERO_ABILITIES[0][1] = 'A00D' //Beast Stomp
         set HERO_ABILITIES[0][2] = 'A00B' //Roar
         set HERO_ABILITIES[0][3] = 'A02L' //Adrenaline Rush

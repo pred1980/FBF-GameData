@@ -1,4 +1,4 @@
-scope ExplosivTantrum initializer init
+scope ExplosiveTantrum initializer init
     /*
      * Description: Mundzuk orders Octar to thrust with his horn, damaging and knocking its target back.
      * Changelog: 
@@ -9,7 +9,7 @@ scope ExplosivTantrum initializer init
      *
      */
     globals
-        private constant integer SPELL_ID = 'A01L'
+        private constant integer SPELL_ID = 'A05J'
         private constant real START_DAMAGE = 25
         private constant real DAMAGE_PER_LEVEL = 75
         private constant string EFFECT = "Abilities\\Spells\\Human\\FlakCannons\\FlakTarget.mdl"

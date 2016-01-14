@@ -27,7 +27,6 @@ scope RoundEndSystem
 					*/ IsUnitType(u, UNIT_TYPE_STRUCTURE) and not /*
 					*/ IsUnitType(u, UNIT_TYPE_PEON) and not /*
 					*/ IsUnitType(u, UNIT_TYPE_MECHANICAL) and /*
-					*/ GetPlayerController(GetOwningPlayer(u)) == MAP_CONTROL_USER and /*
 					*/ (Devour.getDevouredUnit() != u)) then
 					set b = true
 			endif

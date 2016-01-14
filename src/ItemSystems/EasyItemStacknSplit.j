@@ -222,7 +222,7 @@ endglobals
                             set p = GetOwningPlayer( u )
                             // Play the "Item Get" sound
                             //! runtextmacro EasyItemStacknSplit_PLAYITEMSOUND( "PickUpItem" )
-                            call IssueImmediateOrder( u, "stop" )
+                            //call IssueImmediateOrder( u, "stop" )
                             call SetUnitFacing( u, bj_RADTODEG * Atan2(GetItemY(i) - GetUnitY(u), GetItemX(i) - GetUnitX(u)) )
                             if UnitStackItem(u, i) then
                                 // Play the "Item Drop" sound

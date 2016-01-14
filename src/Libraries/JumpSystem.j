@@ -58,7 +58,7 @@ library Jump initializer Init
         if i then
           call SetDestructableInvulnerable(d, true)
         endif
-        call IssueImmediateOrder(Dummy, "stop")
+        //call IssueImmediateOrder(Dummy, "stop")
         set d = null
         return result
     endfunction

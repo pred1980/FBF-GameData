@@ -91,8 +91,8 @@ scope BeastStomper initializer init
             set .targets = NewGroup()
             set .t = NewTimer()
             set .tempthis = this
-            
-            call Sound.runSoundOnUnit(SOUND, .caster)
+			
+			call Sound.runSoundOnUnit(SOUND, .caster)
             call GroupEnumUnitsInRange( .targets, GetUnitX(.caster), GetUnitY(.caster), RADIUS, function thistype.group_filter_callback )
             call ForGroup( .targets, function thistype.jump )
             call SetTimerData(.t, this)
@@ -104,7 +104,8 @@ scope BeastStomper initializer init
     endstruct
 
     private function Actions takes nothing returns nothing
-        call BeastStomper.create( GetTriggerUnit() )
+		call BJDebugMsg("BLAH")
+		call BeastStomper.create( GetTriggerUnit() )
     endfunction
 	
 	private function Conditions takes nothing returns boolean
@@ -113,7 +114,7 @@ scope BeastStomper initializer init
 
     private function init takes nothing returns nothing
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
-        call Preload(STUN_EFFECT)
+		call Preload(STUN_EFFECT)
 		call Sound.preload(SOUND)
     endfunction
 endscope

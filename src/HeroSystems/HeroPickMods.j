@@ -129,7 +129,11 @@ scope HeroPickMods
                             exitwhen BaseMode.onEnterFilter(GET_HERO_PICK_UNIT(i), randomIndex)
                             set randomIndex = BaseMode.getRandomHero()
                         endloop
-                        call createRandomHero( Player(i), GET_HERO_PICK_UNIT(i), randomIndex )
+						if (DEBUG_MODE) then
+							call createRandomHero( Player(i), GET_HERO_PICK_UNIT(i), 0 )
+						else
+							call createRandomHero( Player(i), GET_HERO_PICK_UNIT(i), randomIndex )
+						endif
                     endif
                     set i = i + 1
                 endloop

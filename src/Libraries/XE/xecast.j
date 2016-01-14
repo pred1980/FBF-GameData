@@ -163,11 +163,12 @@ struct xecast[MAXINSTANCES]
     // private dorecycle method, sorry but I need this up here.
     //
     private static method dorecycle takes nothing returns nothing
-     local unit u =.recycle[0]
-     local integer l
-     local integer r
-     local integer p
-     local real    lt
+		local unit u =.recycle[0]
+		local integer l
+		local integer r
+		local integer p
+		local real    lt
+	 
         call IssueImmediateOrder(u,"stop")// bugfix, see: http://www.wc3c.net/showpost.php?p=1131163&postcount=5
         call UnitRemoveAbility(u,GetUnitUserData(u))
         call SetUnitUserData(u,0)

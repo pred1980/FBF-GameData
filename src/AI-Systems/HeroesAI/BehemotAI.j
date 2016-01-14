@@ -4,6 +4,18 @@ scope BehemotAI
 		
 		private HeroAI_Itemset array Itemsets
         private group enumGroup = CreateGroup()
+		
+		/* Explosiv Tantrum */
+		// Chance to cast ability
+		private integer array ET_Chance
+		
+		/* Beast Stomper */
+		// This constant must be the same like in the BeastStomper.j
+		private constant integer RADIUS = 250
+		// How many units have to be in radius to cast Beast Stomper
+		private integer array BS_Enemies
+		// Chance to cast ability
+		private integer array BS_Chance
     endglobals
     
     private struct AI extends array
@@ -16,11 +28,54 @@ scope BehemotAI
         method onAcquire takes unit target returns nothing
             //debug call BJDebugMsg("Abomination acquires " + GetUnitName(target))
         endmethod
+		
+		method assistAlly takes nothing returns boolean
+			call GroupClear(enumGroup)
+            call GroupAddGroup(.allies, enumGroup)
+			
+			return false
+		endmethod
         
         method assaultEnemy takes nothing returns nothing  
-            //debug call BJDebugMsg("Abomination assault Enemy.")
-			call .defaultAssaultEnemy()
-        endmethod
+            local integer amountOfNearEnemies = 0
+			local boolean abilityCasted = false
+			local unit u
+			
+			if (.enemyNum > 0) then
+				/* Explosiv Tantrum */
+				if (GetRandomInt(0,100) <= ET_Chance[.aiLevel]) then
+					call GroupClear(ENUM_GROUP)
+					call GroupAddGroup(.enemies, ENUM_GROUP)
+					call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
+					call IssueTargetOrder(.hero, "taunt", FirstOfGroup(ENUM_GROUP))
+					
+					set abilityCasted = true
+				endif
+				
+				/* Beast Stomper */
+				if (GetRandomInt(0,100) <= BS_Chance[.aiLevel]) then
+					call GroupClear(ENUM_GROUP)
+					call GroupAddGroup(.enemies, ENUM_GROUP)
+					loop
+						set u = FirstOfGroup(ENUM_GROUP) 
+						exitwhen u == null 
+						if (Distance(.hx, .hy, GetUnitX(u), GetUnitY(u)) <= RADIUS ) then
+							set amountOfNearEnemies = amountOfNearEnemies + 1
+						endif
+						call GroupRemoveUnit(ENUM_GROUP, u)
+					endloop
+					// stomp only if enough enemies around and in the distance to behemot
+					if (amountOfNearEnemies > BS_Enemies[.aiLevel]) then
+						call IssueImmediateOrder(.hero, "stomp")
+						set abilityCasted = true
+					endif
+				endif
+			endif
+			
+			if not(abilityCasted) then
+				call .defaultAssaultEnemy()
+			endif
+		endmethod
         
         // Cast wind walk if there's an enemy nearby
         method loopActions takes nothing returns nothing
@@ -37,11 +92,11 @@ scope BehemotAI
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
 			// Explosive Tantrum
-			call RegisterHeroAISkill(HERO_ID, 1, 'A01L')
-			call RegisterHeroAISkill(HERO_ID, 5, 'A01L') 
-			call RegisterHeroAISkill(HERO_ID, 9, 'A01L') 
-			call RegisterHeroAISkill(HERO_ID, 13, 'A01L') 
-			call RegisterHeroAISkill(HERO_ID, 16, 'A01L') 
+			call RegisterHeroAISkill(HERO_ID, 1, 'A05J')
+			call RegisterHeroAISkill(HERO_ID, 5, 'A05J') 
+			call RegisterHeroAISkill(HERO_ID, 9, 'A05J') 
+			call RegisterHeroAISkill(HERO_ID, 13, 'A05J') 
+			call RegisterHeroAISkill(HERO_ID, 16, 'A05J') 
 			// Beast Stomp
 			call RegisterHeroAISkill(HERO_ID, 2, 'A00D') 
 			call RegisterHeroAISkill(HERO_ID, 7, 'A00D') 
@@ -88,6 +143,23 @@ scope BehemotAI
 
 			set .itemBuild = Itemsets[.aiLevel]
 			call BJDebugMsg("Registered Itemset[" + I2S(.aiLevel) + "] for Behemot.")
+			
+			/* Ability Setup */
+			//Note: 0 == Computer easy | 1 == Computer normal | 2 == Computer insane
+			//Explosiv Tantrum
+			set ET_Chance[0] = 70
+			set ET_Chance[1] = 80
+			set ET_Chance[2] = 90
+			
+			//Beast Stomper
+			set BS_Enemies[0] = 2
+			set BS_Enemies[1] = 4
+			set BS_Enemies[2] = 6
+			
+			set BS_Chance[0] = 50
+			set BS_Chance[1] = 60
+			set BS_Chance[2] = 70
+			
         endmethod
         
         implement HeroAI     

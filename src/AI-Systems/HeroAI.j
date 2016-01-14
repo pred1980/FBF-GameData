@@ -128,16 +128,16 @@ scope HeroAI
         private real maxLife
         private real mana 
 		private real maxMana
-        private real hx            
-        private real hy
+        real hx            
+        real hy
 		private timer t
 		Itemset itemBuild
 		private integer itemSlotCount
 		private group units
 		group allies        
         group enemies       
-        private integer allyNum   
-        private integer enemyNum
+        integer allyNum   
+        integer enemyNum
 		
 		// The Forsaken Heart
 		private unit forsakenHeart
@@ -259,7 +259,6 @@ scope HeroAI
 			call GroupAddGroup(.enemies, ENUM_GROUP)
 			call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
 			call IssueTargetOrder(.hero, "attack", FirstOfGroup(ENUM_GROUP))
-			call BJDebugMsg("[HeroAI] Attack enemy.")
 		endmethod
 		
 		private static method filtUnits takes nothing returns boolean
@@ -382,9 +381,7 @@ scope HeroAI
 					loop
 						exitwhen ((not .badCondition) or .itemBuild.getStack(.itemsetIndex) == 0)
 						call UnitUseItem(.hero, UnitItemInSlot(.hero, .itemsetIndex))
-						//call BJDebugMsg(GetUnitName(.hero) + " - " + I2S(.itemsetIndex) + ": Stack vorher (USE): " + I2S(.itemBuild.getStack(.itemsetIndex)))
 						call .itemBuild.decreaseStack(.itemsetIndex)
-						//call BJDebugMsg(GetUnitName(.hero) + " - " + I2S(.itemsetIndex) + ": Stack nachher (USE): " + I2S(.itemBuild.getStack(.itemsetIndex)))
 					endloop
 				endif
 				set .itemsetIndex = .itemsetIndex + 1
@@ -392,8 +389,20 @@ scope HeroAI
 		endmethod
 		
 		private method useManaPotion takes nothing returns nothing
-		
-		
+			local Item it
+			
+			loop
+				set it = .itemBuild.item(.itemsetIndex)
+				exitwhen (.itemsetIndex == .itemBuild.size)
+				if (it == MANA_POTION) then
+					loop
+						exitwhen ((not .badCondition) or .itemBuild.getStack(.itemsetIndex) == 0)
+						call UnitUseItem(.hero, UnitItemInSlot(.hero, .itemsetIndex))
+						call .itemBuild.decreaseStack(.itemsetIndex)
+					endloop
+				endif
+				set .itemsetIndex = .itemsetIndex + 1
+			endloop
 		endmethod
 		
 		/*
@@ -453,7 +462,7 @@ scope HeroAI
         endmethod
 		
 		method defaultLoopActions takes nothing returns nothing
-        	call showState()
+        	//call showState()
 			
 			if (.state == STATE_GO_SHOP) then
 				call .canShop()
