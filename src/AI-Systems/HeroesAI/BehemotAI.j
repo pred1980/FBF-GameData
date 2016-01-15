@@ -59,10 +59,12 @@ scope BehemotAI
             local integer amountOfNearEnemies = 0
 			// Roar
 			local integer amountOfNearAllies = 0
-			//Adrenalin Rush
-			local group g
+			// Adrenalin Rush
 			local unit furthestUnit
+			// current distance of group unit 
 			local real dist = 0.0
+			// maximum distance of group unit
+			local real maxDist = 0.0
 			
 			local boolean abilityCasted = false
 			local string order = OrderId2String(GetUnitCurrentOrder(.hero))
@@ -118,41 +120,33 @@ scope BehemotAI
 				
 				/* Adrenalin Rush */
 				if ((order != "avatar") and (GetRandomInt(0,100) <= AR_Chance[.aiLevel])) then
-					set g = CreateGroup()
 					set amountOfNearEnemies = 0
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
 					loop
 						set u = FirstOfGroup(ENUM_GROUP) 
 						exitwhen u == null 
+						// 1. Check if enemy is in range of Behemot
+						// 2. Check if enemy is in the path of Behemot
 						if ((Distance(.hx, .hy, GetUnitX(u), GetUnitY(u)) <= AR_RADIUS) and /*
 						*/	(IsUnitInSightOfUnit(.hero, u, VISION_FIELD))) then
 							set amountOfNearEnemies = amountOfNearEnemies + 1
-							call GroupAddUnit(g, u)
+							set dist = Distance(.hx, .hy, GetUnitX(u), GetUnitY(u))
+							
+							// 3. Check which unit is the furthest of Behemot and attack it!
+							if ((dist) > maxDist)
+								set furthestUnit = u
+								set maxDist = dist
+							endif
 						endif
 						call GroupRemoveUnit(ENUM_GROUP, u)
 					endloop
 				
 					// Cast Adrenalin Rush when enough units in his way
 					if (amountOfNearEnemies >= AR_Enemies[.aiLevel]) then
-						//ermittle die am weitest entfernteste Einheit und caste auf die AR
-						loop
-							set u = FirstOfGroup(g) 
-							if (Distance(.hx, .hy, GetUnitX(u), GetUnitY(u)) > dist) then
-								set furthestUnit = u
-							
-								
-							endif
-							call GroupRemoveUnit(ENUM_GROUP, u)
-						endloop
-						call GroupClear(ENUM_GROUP)
-						call DestroyGroup(g)
-						set g = null
-						
 						call IssueTargetOrder(.hero, "avatar", furthestUnit)
 						set abilityCasted = true
 					endif
-				
 			endif
 			
 			if not (abilityCasted) then
