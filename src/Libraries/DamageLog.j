@@ -17,7 +17,6 @@ scope DamageLog initializer Init
 			call ReleaseTimer(t)
 			call GroupRemoveUnit(.g, data.u)
 			call data.destroy()
-			debug call BJDebugMsg("Remove Unit " + GetUnitName(data.u) + " from the System.")
 		endmethod
 		
 		static method add takes unit u returns nothing
@@ -32,7 +31,6 @@ scope DamageLog initializer Init
 				call TimerStart(t, DURATION, false, function thistype.remove)
 				call GroupAddUnit(.g, u)
 				set t = null
-				debug call BJDebugMsg("Add Unit " + GetUnitName(u) + " to the System.")
 			endif
 		endmethod
 		

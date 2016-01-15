@@ -61,6 +61,8 @@
 //! import "src\Libraries\DamageLog.j"
 //! import "src\Libraries\GetUnitCollision.j"
 //! import "src\Libraries\IsUnitChanneling.j"
+//! import "src\Libraries\FieldOfView.j"
+
 
 /* XE Libraries */
 //! import "src\Libraries\XE\xepreload.j"
@@ -297,8 +299,9 @@
  // import "src\Heroes\HerosWill.j"
  
 /* Behemoth */
-//! import "src\Heroes\Behemoth\ExplosivTantrum.j"
+//! import "src\Heroes\Behemoth\ExplosiveTantrum.j"
 //! import "src\Heroes\Behemoth\BeastStomper.j"
+//! import "src\Heroes\Behemoth\Roar.j"
 //! import "src\Heroes\Behemoth\AdrenalinRush.j"
  
 /* Nerubian Widow */

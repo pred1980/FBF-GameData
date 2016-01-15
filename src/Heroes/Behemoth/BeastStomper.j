@@ -104,7 +104,6 @@ scope BeastStomper initializer init
     endstruct
 
     private function Actions takes nothing returns nothing
-		call BJDebugMsg("BLAH")
 		call BeastStomper.create( GetTriggerUnit() )
     endfunction
 	

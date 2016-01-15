@@ -222,7 +222,7 @@ scope HeroPickInit
         //Abilities
         set HERO_ABILITIES[0][0] = 'A05J' //Explosive Tantrum
         set HERO_ABILITIES[0][1] = 'A00D' //Beast Stomp
-        set HERO_ABILITIES[0][2] = 'A00B' //Roar
+        set HERO_ABILITIES[0][2] = 'A07B' //Roar
         set HERO_ABILITIES[0][3] = 'A02L' //Adrenaline Rush
         
         //Nerubian Widow
