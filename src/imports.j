@@ -21,6 +21,7 @@
 //! import "src\Libraries\IndexerUtils.j"
 //! import "src\Libraries\AbilityEvent.j"
 //! import "src\Libraries\GetClosestWidget.j"
+//! import "src\Libraries\GetFurthestWidget.j"
 //! import "src\Libraries\DestructableLib.j"
 //! import "src\Libraries\SimError.j"
 //! import "src\Libraries\GroupUtils.j"
@@ -62,7 +63,7 @@
 //! import "src\Libraries\GetUnitCollision.j"
 //! import "src\Libraries\IsUnitChanneling.j"
 //! import "src\Libraries\FieldOfView.j"
-
+//! import "src\Libraries\Escort.j"
 
 /* XE Libraries */
 //! import "src\Libraries\XE\xepreload.j"
@@ -104,6 +105,21 @@
 //! import "src\AI-Systems\HeroesAI\AbominationAI.j"
 //! import "src\AI-Systems\HeroesAI\DestroyerAI.j"
 //! import "src\AI-Systems\HeroesAI\DarkRangerAI.j"
+
+//! import "src\AI-Systems\HeroesAI\ArchmageAI.j"
+//! import "src\AI-Systems\HeroesAI\TaurenChieftainAI.j"
+//! import "src\AI-Systems\HeroesAI\PriestessOfTheMoonAI.j"
+//! import "src\AI-Systems\HeroesAI\NagaMatriarchAI.j"
+//! import "src\AI-Systems\HeroesAI\OrcishWarlockAI.j"
+//! import "src\AI-Systems\HeroesAI\FarseerAI.j"
+//! import "src\AI-Systems\HeroesAI\FirePandaAI.j"
+//! import "src\AI-Systems\HeroesAI\MountainGiantAI.j"
+//! import "src\AI-Systems\HeroesAI\CenariusAI.j"
+//! import "src\AI-Systems\HeroesAI\PaladinAI.j"
+//! import "src\AI-Systems\HeroesAI\RoyalKnightAI.j"
+//! import "src\AI-Systems\HeroesAI\BloodMageAI.j"
+//! import "src\AI-Systems\HeroesAI\OgreWarriorAI.j"
+//! import "src\AI-Systems\HeroesAI\GiantTurtleAI.j"
 
 
 /* Hero Systems */

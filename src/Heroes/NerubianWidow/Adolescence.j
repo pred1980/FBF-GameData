@@ -48,7 +48,9 @@ scope Adolescence initializer init
     endfunction
 
     private struct Adolescence
-        private unit caster
+		private player p
+		private integer pid
+		private unit caster
         private unit egg
         private unit child
         private real size = 0.00
@@ -82,7 +84,7 @@ scope Adolescence initializer init
 			local timer t = GetExpiredTimer()
             local thistype this = GetTimerData(t)
             
-            set .child = CreateUnit( GetOwningPlayer( this.caster ), CHILD_ID, GetUnitX(this.egg), GetUnitY(this.egg), 0 )
+            set this.child = CreateUnit( this.p, CHILD_ID, GetUnitX(this.egg), GetUnitY(this.egg), 0 )
             call Sound.runSoundOnUnit(SOUND_2, this.child)
             call UnitApplyTimedLife(this.child, 'BTLF', LIFE_TIME)
             call SetUnitScale(this.child, START_SIZE, START_SIZE, START_SIZE)
@@ -91,7 +93,12 @@ scope Adolescence initializer init
             call SetUnitMaxState(this.child, UNIT_STATE_MAX_LIFE, START_HP[this.level])
             
             call SetTimerData(t, this )
-            call TimerStart(t, TIMER_INTERVAL, true, function thistype.onGrowUp )
+            call TimerStart(t, TIMER_INTERVAL, true, function thistype.onGrowUp)
+			
+			// add to Escort System (only for Bots)
+			//if (Game.isBot[this.pid]) then
+				call Escort.addUnit(this.caster, this.child)
+			//endif
             
 			set t = null
             endmethod
@@ -112,9 +119,11 @@ scope Adolescence initializer init
             local thistype this = thistype.allocate()
 			local timer t = CreateTimer()
             
-            set .caster = caster
+			set .caster = caster
+			set .p = GetOwningPlayer(.caster)
+			set .pid = GetPlayerId(.p)
 			set .level = GetUnitAbilityLevel(this.caster, SPELL_ID)
-            set .egg = CreateUnit(GetOwningPlayer(.caster), EGG_ID, tx, ty, 0)
+            set .egg = CreateUnit(p, EGG_ID, tx, ty, 0)
             call UnitApplyTimedLife(.egg, 'BTLF', HATCHING_TIME)
             
             call SetTimerData(t, this )

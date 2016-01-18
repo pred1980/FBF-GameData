@@ -82,54 +82,46 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
 						set deathString = deathString + " Killed Streak Bonus: " + "(|cffffcc00+" + I2S(BonusGoldOnStreak.getStreakBonus(streak)) + ")|r"
 					endif
 				
-					//Ist der Killer ein Spieler?
-					if GetPlayerController(GetOwningPlayer(killer)) == MAP_CONTROL_USER then
-						//add Gold and Streak Gold for the Killer
-						call Game.playerAddGold(pidKiller, gold + streak)
-						//Show Gold Bounty over the killed
-						call TextTagGoldBounty(killed, gold + streak, GetOwningPlayer(killer))
-					endif
+					//add Gold and Streak Gold for the Killer
+					call Game.playerAddGold(pidKiller, gold + streak)
+					//Show Gold Bounty over the killed
+					call TextTagGoldBounty(killed, gold + streak, GetOwningPlayer(killer))
+					
 					//Display Death Message
                     call DisplayTextToForce(bj_FORCE_ALL_PLAYERS, deathString)
-					//Nur wenn der Killer auch ein richtiger Spieler gewesen ist, zähle die Assists + Streak
-					if GetPlayerController(GetOwningPlayer(killer)) == MAP_CONTROL_USER then
-						//Display Assists
-						call BonusGoldOnAssist.showAssistMessage(killed, killer)
-						//Assists resetten
-						call AssistSystem.resetAllAssistsOfPlayer(GetOwningPlayer(killed))
-						//Kill Streak?
-						call KillStreakSystem.increaseKillStreak(GetOwningPlayer(killer))
-						call KillStreakSystem.displayKillStreakMessage(GetOwningPlayer(killer))
-						call KillStreakSystem.resetKillStreak(GetOwningPlayer(killed))
-					endif
+					//Display Assists
+					call BonusGoldOnAssist.showAssistMessage(killed, killer)
+					//Assists resetten
+					call AssistSystem.resetAllAssistsOfPlayer(GetOwningPlayer(killed))
+					//Kill Streak?
+					call KillStreakSystem.increaseKillStreak(GetOwningPlayer(killer))
+					call KillStreakSystem.displayKillStreakMessage(GetOwningPlayer(killer))
+					call KillStreakSystem.resetKillStreak(GetOwningPlayer(killed))
 				else
-					//Solange der Killer kein Computer ist, mach folgendes...
-					if not Game.isBot[GetPlayerId(GetOwningPlayer(killer))] then
-						//Ist die getoetet normale Einheit (also kein Held) eine Untote Einheit?
-						if GetUnitRace(killed) == RACE_UNDEAD then
-							set gold = ForsakenDefenseUnits.getBounty(killed) // Gold(Bounty) //Forsaken Units
-						else
-							set gold = GET_UNIT_VALUE(GetUnitTypeId(killed), 3) // Gold(Bounty) //Creep Round Units
-						endif
-						/*******************************************************************************
-						 * Wenn Gold immer noch 0 ist, dann pruefe auf alle anderen normalen Einheiten, *
-						 * die im struct Unit (Unit System) abgespeichert sind und hole dort           *
-						 * den Bounty Wert heraus. Falls -1 zurueck kommt, muss die getoetete Einheit    *
-						 * in diesem System erfasst werden                                             *
-						 *******************************************************************************/
-						 if gold <= 0 then
-							set gold = Unit.getBounty(killed) // Gold(Bounty)
-						 endif
-						
-						//display Gold Text Tag
-						if gold > 0 then
-							//add Gold and Streak Gold for the Killer
-							call Game.playerAddGold(pidKiller, gold)
-							//Show Gold Bounty over the killed
-							call TextTagGoldBounty(killed, gold, GetOwningPlayer(killer))
-						else
-							call Usability.getTextMessage(2, 0, true, GetOwningPlayer(killer), true, 0.1)
-						endif
+					//Ist die getoetet normale Einheit (also kein Held) eine Untote Einheit?
+					if GetUnitRace(killed) == RACE_UNDEAD then
+						set gold = ForsakenDefenseUnits.getBounty(killed) // Gold(Bounty) //Forsaken Units
+					else
+						set gold = GET_UNIT_VALUE(GetUnitTypeId(killed), 3) // Gold(Bounty) //Creep Round Units
+					endif
+					/*******************************************************************************
+					 * Wenn Gold immer noch 0 ist, dann pruefe auf alle anderen normalen Einheiten, *
+					 * die im struct Unit (Unit System) abgespeichert sind und hole dort           *
+					 * den Bounty Wert heraus. Falls -1 zurueck kommt, muss die getoetete Einheit    *
+					 * in diesem System erfasst werden                                             *
+					 *******************************************************************************/
+					 if gold <= 0 then
+						set gold = Unit.getBounty(killed) // Gold(Bounty)
+					 endif
+					
+					//display Gold Text Tag
+					if gold > 0 then
+						//add Gold and Streak Gold for the Killer
+						call Game.playerAddGold(pidKiller, gold)
+						//Show Gold Bounty over the killed
+						call TextTagGoldBounty(killed, gold, GetOwningPlayer(killer))
+					else
+						call Usability.getTextMessage(2, 0, true, GetOwningPlayer(killer), true, 0.1)
 					endif
                 endif
             endif

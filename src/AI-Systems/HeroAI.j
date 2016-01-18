@@ -124,6 +124,8 @@ scope HeroAI
 		private integer pid
         private integer hId
 		integer aiLevel
+		integer heroLevel
+		integer orderId
 		private real life
         private real maxLife
         private real mana 
@@ -138,11 +140,15 @@ scope HeroAI
         group enemies       
         integer allyNum   
         integer enemyNum
+		unit closestEnemy
+		unit closestAlly
+		unit furthestEnemy
+		unit furthestAlly
 		
 		// The Forsaken Heart
 		private unit forsakenHeart
 		// Fountain
-		private unit safeUnit
+		unit safeUnit
 		// Jump Teleporter
 		private integer jumpTeleporterNum
 		private group jumpTeleporters
@@ -249,16 +255,19 @@ scope HeroAI
         
 		//Note: http://www.wc3c.net/showthread.php?t=107999
 		// IssuePointOrder does not work!!!
-        private method run takes nothing returns nothing
+        method run takes nothing returns nothing
 			//call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " to run to the next Teleporter.")
 			call IssuePointOrderById(.hero, MOVE, .runX, .runY)
         endmethod
 		
 		method defaultAssaultEnemy takes nothing returns nothing
-			call GroupClear(ENUM_GROUP)
-			call GroupAddGroup(.enemies, ENUM_GROUP)
-			call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
-			call IssueTargetOrder(.hero, "attack", FirstOfGroup(ENUM_GROUP))
+			if (.orderId == 0) then
+				call GroupClear(ENUM_GROUP)
+				call GroupAddGroup(.enemies, ENUM_GROUP)
+				call SetFitnessPosition(GetUnitX(.hero), GetUnitY(.hero))
+				call PruneGroup(ENUM_GROUP, FitnessFunc_LowDistance, 1, NO_FITNESS_LIMIT)
+				call IssueTargetOrder(.hero, "attack", FirstOfGroup(ENUM_GROUP))
+			endif
 		endmethod
 		
 		private static method filtUnits takes nothing returns boolean
@@ -463,6 +472,8 @@ scope HeroAI
 		
 		method defaultLoopActions takes nothing returns nothing
         	//call showState()
+			// Don't ignore attacks
+			call UnitRemoveType(.hero, UNIT_TYPE_PEON)
 			
 			if (.state == STATE_GO_SHOP) then
 				call .canShop()
@@ -496,17 +507,16 @@ scope HeroAI
 			endif
 			
 			if (.state == STATE_RUN_AWAY) then
-				//First use heal potions before run away
+				// Ignore all attacks from enemies to get a clean teleport back
+				call UnitAddType(.hero, UNIT_TYPE_PEON)
+				// First use heal potions before run away
 				call useHealingPotion()
 				// if still need more hp/mana, run away!
 				if (.badCondition) then
 					// Locate the next teleporter back to base!
 					call .setWayBackToBase()
 					static if thistype.runActions.exists then
-						// Only run if no actions were taken in runActions.
-						if not .runActions() then
-							call .run()
-						endif
+						call .runActions()
 					else
 						call .run()
 					endif
@@ -525,6 +535,8 @@ scope HeroAI
 		// Updates information about the hero and its surroundings
         method update takes nothing returns nothing
 			// Information about self
+			set .heroLevel = GetUnitLevel(.hero)
+			set .orderId = GetUnitCurrentOrder(.hero)
 			set .hx = GetUnitX(.hero)
 			set .hy = GetUnitY(.hero)
 			set .itemSlotCount = UnitInventoryCount(.hero)
@@ -547,6 +559,11 @@ scope HeroAI
 			set .jumpTeleporterNum = 0
 			call GroupEnumUnitsInRange(.units, .hx, .hy, SIGHT_RANGE, Filter(function thistype.filtUnits))
 
+			set .closestEnemy = GetClosestUnitInGroup(.hx, .hy, .enemies)
+			set .closestAlly = GetClosestUnitInGroup(.hx, .hy, .allies)
+			set .furthestEnemy = GetFurthestUnitInGroup(.hx, .hy, .enemies)
+			set .furthestAlly = GetFurthestUnitInGroup(.hx, .hy, .allies)
+			
 			/*
 			 * STATE_GO_SHOP
 			 */
@@ -616,6 +633,8 @@ scope HeroAI
 			set .pid = GetPlayerId(.owner)
             set .hId = GetHandleId(.hero)
 			set .aiLevel = Game.getAIDifficulty(.pid)
+			set .heroLevel = GetUnitLevel(.hero)
+			set .orderId = GetUnitCurrentOrder(.hero)
 			set .units = CreateGroup()
 			set .enemies = CreateGroup()
             set .allies = CreateGroup()

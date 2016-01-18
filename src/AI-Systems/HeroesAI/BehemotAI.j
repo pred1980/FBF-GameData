@@ -3,7 +3,6 @@ scope BehemotAI
         private constant integer HERO_ID = 'U01N'
 		
 		private HeroAI_Itemset array Itemsets
-        private group enumGroup = CreateGroup()
 		
 		/* Explosiv Tantrum */
 		// Chance to cast ability
@@ -27,9 +26,9 @@ scope BehemotAI
 		
 		/* Adrenalin Rush */
 		// Let's use a value that represents natural human field of view: ~135°  (2*67.5)
-		private constant real VISION_FIELD = 7.5  
+		private constant real VISION_FIELD = 10  
 		// This Radius is just for the AI
-		private constant integer AR_RADIUS = 500
+		private constant integer AR_RADIUS = 750
 		// How many units have to be in radius to cast Adrenalin Rush
 		private integer array AR_Enemies
 		// Chance to cast ability
@@ -37,24 +36,11 @@ scope BehemotAI
     endglobals
     
     private struct AI extends array
-        // The following two methods will print out debug messages only when the events
-        // are enabled
-        method onAttacked takes unit attacker returns nothing
-            //debug call BJDebugMsg("Abomination attacked by " + GetUnitName(attacker))
-        endmethod
         
-        method onAcquire takes unit target returns nothing
-            //debug call BJDebugMsg("Abomination acquires " + GetUnitName(target))
-        endmethod
-		
-		method assistAlly takes nothing returns boolean
-			call GroupClear(enumGroup)
-            call GroupAddGroup(.allies, enumGroup)
+        method assaultEnemy takes nothing returns nothing
+			// Ability Chance value
+			local integer random = GetRandomInt(0,100)
 			
-			return false
-		endmethod
-        
-        method assaultEnemy takes nothing returns nothing 
 			// Beast Stomper and Roar
             local integer amountOfNearEnemies = 0
 			// Roar
@@ -67,12 +53,11 @@ scope BehemotAI
 			local real maxDist = 0.0
 			
 			local boolean abilityCasted = false
-			local string order = OrderId2String(GetUnitCurrentOrder(.hero))
 			local unit u
 			
 			if (.enemyNum > 0) then
 				/* Explosiv Tantrum */
-				if ((order != "taunt") and (GetRandomInt(0,100) <= ET_Chance[.aiLevel])) then
+				if ((.orderId == 0) and (random <= ET_Chance[.aiLevel])) then
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
 					call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
@@ -81,7 +66,7 @@ scope BehemotAI
 				endif
 				
 				/* Beast Stomper */
-				if ((order != "stomp") and (GetRandomInt(0,100) <= BS_Chance[.aiLevel])) then
+				if ((.orderId == 0) and (random <= BS_Chance[.aiLevel]) and not abilityCasted) then
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
 					loop
@@ -100,7 +85,7 @@ scope BehemotAI
 				endif
 				
 				/* Roar */
-				if ((order != "thunderclap") and (GetRandomInt(0,100) <= R_Chance[.aiLevel])) then
+				if ((.orderId == 0) and (random <= R_Chance[.aiLevel]) and not abilityCasted) then
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.allies, ENUM_GROUP)
 					loop
@@ -119,7 +104,7 @@ scope BehemotAI
 				endif
 				
 				/* Adrenalin Rush */
-				if ((order != "avatar") and (GetRandomInt(0,100) <= AR_Chance[.aiLevel])) then
+				if ((.heroLevel >= 6) and (.orderId == 0) and (random <= AR_Chance[.aiLevel]) and not abilityCasted) then
 					set amountOfNearEnemies = 0
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
@@ -134,35 +119,27 @@ scope BehemotAI
 							set dist = Distance(.hx, .hy, GetUnitX(u), GetUnitY(u))
 							
 							// 3. Check which unit is the furthest of Behemot and attack it!
-							if ((dist) > maxDist)
+							if (dist > maxDist) then
 								set furthestUnit = u
 								set maxDist = dist
 							endif
 						endif
 						call GroupRemoveUnit(ENUM_GROUP, u)
 					endloop
-				
+
 					// Cast Adrenalin Rush when enough units in his way
 					if (amountOfNearEnemies >= AR_Enemies[.aiLevel]) then
 						call IssueTargetOrder(.hero, "avatar", furthestUnit)
 						set abilityCasted = true
 					endif
+				endif
 			endif
+			
+			set u = null
 			
 			if not (abilityCasted) then
 				call .defaultAssaultEnemy()
 			endif
-		endmethod
-        
-        // Cast wind walk if there's an enemy nearby
-        method loopActions takes nothing returns nothing
-            call .defaultLoopActions()
-        endmethod
-        
-        // A custom periodic method is defined for this hero as the AI constantly
-        // searches for units that have their backs to her in order to use Backstab.
-        static method onLoop takes nothing returns nothing
-        
 		endmethod
         
 		method onCreate takes nothing returns nothing
@@ -219,41 +196,40 @@ scope BehemotAI
 			endif
 
 			set .itemBuild = Itemsets[.aiLevel]
-			call BJDebugMsg("Registered Itemset[" + I2S(.aiLevel) + "] for Behemot.")
 			
 			/* Ability Setup */
 			// Note: 0 == Computer easy | 1 == Computer normal | 2 == Computer insane
 			// Explosiv Tantrum
-			set ET_Chance[0] = 70
-			set ET_Chance[1] = 80
-			set ET_Chance[2] = 90
+			set ET_Chance[0] = 35
+			set ET_Chance[1] = 30
+			set ET_Chance[2] = 25
 			
 			// Beast Stomper
 			set BS_Enemies[0] = 2
 			set BS_Enemies[1] = 4
 			set BS_Enemies[2] = 6
 			
-			set BS_Chance[0] = 50
-			set BS_Chance[1] = 60
-			set BS_Chance[2] = 70
+			set BS_Chance[0] = 20
+			set BS_Chance[1] = 30
+			set BS_Chance[2] = 40
 			
 			// Roar
 			set R_Allies[0] = 3
 			set R_Allies[1] = 5
 			set R_Allies[2] = 7
 			
-			set R_Chance[0] = 35
-			set R_Chance[1] = 45
-			set R_Chance[2] = 55
+			set R_Chance[0] = 25
+			set R_Chance[1] = 35
+			set R_Chance[2] = 45
 			
 			// Adrenalin Rush
 			set AR_Enemies[0] = 6
 			set AR_Enemies[1] = 8
 			set AR_Enemies[2] =	10
 			
-			set AR_Chance[0] = 75
-			set AR_Chance[1] = 85
-			set AR_Chance[2] = 95
+			set AR_Chance[0] = 30
+			set AR_Chance[1] = 40
+			set AR_Chance[2] = 50
         endmethod
         
         implement HeroAI     
