@@ -24,38 +24,38 @@
 *
 *       Units:
 *
-*          function GetClosestUnit takes real x, real y, boolexpr filter returns unit
-*             returns unit closest to coords(x, y)
+*          	function GetClosestUnit takes real x, real y, boolexpr filter returns unit
+*             	returns unit closest to coords(x, y)
 *
-*          function GetClosestUnitInRange takes real x, real y, real radius, boolexpr filter returns unit
-*             returns unit closest to coords(x, y) within range radius
+*          	function GetClosestUnitInRange takes real x, real y, real radius, boolexpr filter returns unit
+*             	returns unit closest to coords(x, y) within range radius
 *
-*          function GetClosestUnitInGroup takes real x, real y, group g returns unit
-*             returns unit closest to coords(x, y) within group g
-*
+*          	function GetClosestUnitInGroup takes real x, real y, group g returns unit
+*             	returns unit closest to coords(x, y) within group g
+
 *       Group:
 *
-*          function GetClosestNUnitsInRange takes real x, real y, real radius, integer n, group dest, boolexpr filter returns nothing
-*             adds up to N units, closest to coords(x, y) within range radius to group dest
+*          	function GetClosestNUnitsInRange takes real x, real y, real radius, integer n, group dest, boolexpr filter returns nothing
+*             	adds up to N units, closest to coords(x, y) within range radius to group dest
 *
-*          function GetClosestNUnitsInGroup takes real x, real y, integer n, group source, group dest returns nothing
-*             adds up to N units, closest to coords(x, y) within group source to group dest
+*          	function GetClosestNUnitsInGroup takes real x, real y, integer n, group source, group dest returns nothing
+*             	adds up to N units, closest to coords(x, y) within group source to group dest
 *
 *       Items:
 *
-*          function GetClosestItem takes real x, real y, boolexpr filter returns item
-*             returns item closest to coords(x, y)
+*          	function GetClosestItem takes real x, real y, boolexpr filter returns item
+*             	returns item closest to coords(x, y)
 *
-*          function GetClosestItemInRange takes real x, real y, real radius, boolexpr filter returns item
-*             returns item closest to coords(x, y) within range radius
+*          	function GetClosestItemInRange takes real x, real y, real radius, boolexpr filter returns item
+*             	returns item closest to coords(x, y) within range radius
 *
 *       Destructables:
 *
-*          function GetClosestDestructable takes real x, real y, boolexpr filter returns destructable
-*             returns destructable closest to coords(x, y)
+*          	function GetClosestDestructable takes real x, real y, boolexpr filter returns destructable
+*             	returns destructable closest to coords(x, y)
 *
-*          function GetClosestDestructableInRange takes real x, real y, real radius, boolexpr filter returns destructable
-*             returns destructable closest to coords(x, y) within range radius
+*          	function GetClosestDestructableInRange takes real x, real y, real radius, boolexpr filter returns destructable
+*             	returns destructable closest to coords(x, y) within range radius
 *
 *****************************************************************************/
 library GetClosestWidget

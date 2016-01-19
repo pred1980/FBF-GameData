@@ -81,8 +81,8 @@ scope Sprint initializer init
 		local unit u = GetTriggerUnit()
 		local boolean b = false
 		
-		if (GetUnitAbilityLevel(u, SPELL_ID) > 0 and /*
-		*/	GetPlayerController(GetOwningPlayer(u)) == MAP_CONTROL_USER) then
+		if ((GetUnitAbilityLevel(u, SPELL_ID) > 0) and /*
+		*/	(GetOwningPlayer(u) != Player(PLAYER_NEUTRAL_PASSIVE))) then
 			set b = true
 		endif
 		

@@ -18,9 +18,14 @@ scope NerubianWidowAI
 		
 		/* Sprint */
 		// Chance to cast ability
-		private integer array S_Chance
 		private constant string S_ORDER_1 = "immolation"
         private constant string S_ORDER_2 = "unimmolation"
+		private integer array S_Chance
+		private boolean S_isCasted = false
+		
+		/* Widow Bite */
+		private integer array WB_Chance
+		private constant string WB_ORDER = "creepheal"
     endglobals
 	
 	private struct AI extends array
@@ -32,20 +37,22 @@ scope NerubianWidowAI
             local boolean abilityCasted = false
 			
 			/* Spider Web */
-			if (random <= SW_Chance[.aiLevel]) then
+			if (random <= SW_Chance[.aiLevel] and not abilityCasted) then
 				call IssueImmediateOrder(.hero, SW_ORDER)
 				set abilityCasted = true
 			endif
 			
 			/* Sprint */
-			if ((random <= S_Chance[.aiLevel]) and (.orderId != OrderId(S_ORDER_1))) then
+			if (random <= S_Chance[.aiLevel] and not S_isCasted) then
 				call IssueImmediateOrder(.hero, S_ORDER_1)
 				set abilityCasted = true
+				set S_isCasted = true
 			endif
 			
 			// if hero is in base stop "Sprint"
-			if ((.safeUnit != null) and (.orderId == OrderId(S_ORDER_1)))then
+			if ((.safeUnit != null) and (S_isCasted))then
 				call IssueImmediateOrder(.hero, S_ORDER_2)
+				set S_isCasted = false
 			endif
 			
 			if not (abilityCasted) then
@@ -61,19 +68,23 @@ scope NerubianWidowAI
 			
 			if (.enemyNum > 0) then
 				/* Adolescence */
-				if ((.orderId == 0) and (random <= A_Chance[.aiLevel])) then
+				if ((.orderId == 0) and /*
+				*/	(random <= A_Chance[.aiLevel])) then
 					if (Distance(.hx, .hy, GetUnitX(.closestEnemy), GetUnitY(.closestEnemy)) > A_MIN_DISTANCE) then
 						call IssuePointOrder(.hero, A_ORDER, GetUnitX(.hero), GetUnitY(.hero))
 						set abilityCasted = true
 					endif
 				endif
 				
-				
-				
-				/* Spell 3 */
-				
-				
-				/* Spell 4 */
+				/* Widow Bite */
+				if ((.heroLevel >= 6) and /*
+				*/	(.orderId == 0)   and /*
+				*/	(random <= WB_Chance[.aiLevel]) and /*
+				*/	(.closestEnemyHero != null)		and not /*
+				*/	(abilityCasted)) then
+					call IssueTargetOrder(.hero, WB_ORDER, .closestEnemyHero)
+					set abilityCasted = true
+				endif
 			endif
 			
 			if not (abilityCasted) then
@@ -152,6 +163,11 @@ scope NerubianWidowAI
 			set S_Chance[0] = 50
 			set S_Chance[1] = 55
 			set S_Chance[2] = 60
+			
+			// Spider Web
+			set WB_Chance[0] = 40
+			set WB_Chance[1] = 50
+			set WB_Chance[2] = 60
         endmethod
         
         implement HeroAI     

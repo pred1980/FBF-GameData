@@ -137,13 +137,21 @@ scope HeroAI
 		private integer itemSlotCount
 		private group units
 		group allies        
-        group enemies       
+        group enemies
+		group enemyHeroes
+		group allyHeroes
         integer allyNum   
         integer enemyNum
+		// closest and furthest enemies
 		unit closestEnemy
-		unit closestAlly
+		unit closestEnemyHero
 		unit furthestEnemy
+		unit furthestEnemyHero
+		// closest and furthest allies
+		unit closestAlly
+		unit closestAllyHero
 		unit furthestAlly
+		unit furthestAllyHero
 		
 		// The Forsaken Heart
 		private unit forsakenHeart
@@ -278,12 +286,20 @@ scope HeroAI
                 // Filter unit --> is an ally ???
                 if (SpellHelper.isValidAlly(u, tempthis.hero)) then
                     //call BJDebugMsg(GetUnitName(u) + " is an Ally!")
-					call GroupAddUnit(tempthis.allies, u)
+					if (IsUnitType(u, UNIT_TYPE_HERO)) then
+						call GroupAddUnit(tempthis.allyHeroes, u)
+					else
+						call GroupAddUnit(tempthis.allies, u)
+					endif
                     set tempthis.allyNum = tempthis.allyNum + 1
                 // Filter unit --> is an enemy, only enum it if it's visible???
                 elseif (SpellHelper.isValidEnemy(u, tempthis.hero) and IsUnitVisible(u, tempthis.owner)) then
                     //call BJDebugMsg(GetUnitName(u) + " is an Enemy!")
-					call GroupAddUnit(tempthis.enemies, u)
+					if (IsUnitType(u, UNIT_TYPE_HERO)) then
+						call GroupAddUnit(tempthis.enemyHeroes, u)
+					else
+						call GroupAddUnit(tempthis.enemies, u)
+					endif
                     set tempthis.enemyNum = tempthis.enemyNum + 1
 				// Filter unit --> is fountain???
                 elseif (isSafeUnit(u)) then
@@ -559,10 +575,16 @@ scope HeroAI
 			set .jumpTeleporterNum = 0
 			call GroupEnumUnitsInRange(.units, .hx, .hy, SIGHT_RANGE, Filter(function thistype.filtUnits))
 
+			// closest and furthest enemies
 			set .closestEnemy = GetClosestUnitInGroup(.hx, .hy, .enemies)
-			set .closestAlly = GetClosestUnitInGroup(.hx, .hy, .allies)
+			set .closestEnemyHero = GetClosestUnitInGroup(.hx, .hy, .enemyHeroes)
 			set .furthestEnemy = GetFurthestUnitInGroup(.hx, .hy, .enemies)
+			set .furthestEnemyHero = GetFurthestUnitInGroup(.hx, .hy, .enemyHeroes)
+			// closest and furthest allies
+			set .closestAlly = GetClosestUnitInGroup(.hx, .hy, .allies)
+			set .closestAllyHero = GetClosestUnitInGroup(.hx, .hy, .allyHeroes)
 			set .furthestAlly = GetFurthestUnitInGroup(.hx, .hy, .allies)
+			set .furthestAllyHero = GetFurthestUnitInGroup(.hx, .hy, .allyHeroes)
 			
 			/*
 			 * STATE_GO_SHOP
