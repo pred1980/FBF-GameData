@@ -38,9 +38,6 @@ scope BehemotAI
     private struct AI extends array
         
         method assaultEnemy takes nothing returns nothing
-			// Ability Chance value
-			local integer random = GetRandomInt(0,100)
-			
 			// Beast Stomper and Roar
             local integer amountOfNearEnemies = 0
 			// Roar
@@ -57,7 +54,7 @@ scope BehemotAI
 			
 			if (.enemyNum > 0) then
 				/* Explosiv Tantrum */
-				if ((.orderId == 0) and (random <= ET_Chance[.aiLevel])) then
+				if ((GetRandomInt(0,100) <= ET_Chance[.aiLevel])) then
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
 					call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
@@ -66,7 +63,7 @@ scope BehemotAI
 				endif
 				
 				/* Beast Stomper */
-				if ((.orderId == 0) and (random <= BS_Chance[.aiLevel]) and not abilityCasted) then
+				if ((GetRandomInt(0,100) <= BS_Chance[.aiLevel]) and not abilityCasted) then
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
 					loop
@@ -85,7 +82,7 @@ scope BehemotAI
 				endif
 				
 				/* Roar */
-				if ((.orderId == 0) and (random <= R_Chance[.aiLevel]) and not abilityCasted) then
+				if ((GetRandomInt(0,100) <= R_Chance[.aiLevel]) and not abilityCasted) then
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.allies, ENUM_GROUP)
 					loop
@@ -104,7 +101,7 @@ scope BehemotAI
 				endif
 				
 				/* Adrenalin Rush */
-				if ((.heroLevel >= 6) and (.orderId == 0) and (random <= AR_Chance[.aiLevel]) and not abilityCasted) then
+				if ((.orderId == 0) and (GetRandomInt(0,100) <= AR_Chance[.aiLevel]) and not abilityCasted) then
 					set amountOfNearEnemies = 0
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
@@ -198,7 +195,7 @@ scope BehemotAI
 			set .itemBuild = Itemsets[.aiLevel]
 			
 			/* Ability Setup */
-			// Note: 0 == Computer easy | 1 == Computer normal | 2 == Computer insane
+			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
 			// Explosiv Tantrum
 			set ET_Chance[0] = 35
 			set ET_Chance[1] = 30

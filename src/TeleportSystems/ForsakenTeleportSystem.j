@@ -87,6 +87,11 @@ scope ForsakenTeleportSystem initializer init
             set data.x = x
             set data.y = y
             set data.p = p
+			
+			// Stop hero for computer to get a clean teleport back to base
+			if (Game.isBot[GetPlayerId(p)]) then
+				call IssueImmediateOrder(u, "holdposition")
+			endif
             
             call SetTimerData(t, data)
             call TimerStart(t, TELEPORT_DELAY, true, function thistype.onReturnToBaseDelay)

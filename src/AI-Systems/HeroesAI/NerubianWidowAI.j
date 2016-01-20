@@ -31,19 +31,16 @@ scope NerubianWidowAI
 	private struct AI extends array
 	
 		method runActions takes nothing returns nothing
-			// Ability Chance value
-			local integer random = GetRandomInt(0,100)
-			
             local boolean abilityCasted = false
 			
 			/* Spider Web */
-			if (random <= SW_Chance[.aiLevel] and not abilityCasted) then
+			if (GetRandomInt(0,100) <= SW_Chance[.aiLevel] and not abilityCasted) then
 				call IssueImmediateOrder(.hero, SW_ORDER)
 				set abilityCasted = true
 			endif
 			
 			/* Sprint */
-			if (random <= S_Chance[.aiLevel] and not S_isCasted) then
+			if (GetRandomInt(0,100) <= S_Chance[.aiLevel] and not S_isCasted) then
 				call IssueImmediateOrder(.hero, S_ORDER_1)
 				set abilityCasted = true
 				set S_isCasted = true
@@ -61,15 +58,12 @@ scope NerubianWidowAI
 		endmethod
 		
 		method assaultEnemy takes nothing returns nothing
-			// Ability Chance value
-			local integer random = GetRandomInt(0,100)
-			
             local boolean abilityCasted = false
 			
 			if (.enemyNum > 0) then
 				/* Adolescence */
 				if ((.orderId == 0) and /*
-				*/	(random <= A_Chance[.aiLevel])) then
+				*/	(GetRandomInt(0,100) <= A_Chance[.aiLevel])) then
 					if (Distance(.hx, .hy, GetUnitX(.closestEnemy), GetUnitY(.closestEnemy)) > A_MIN_DISTANCE) then
 						call IssuePointOrder(.hero, A_ORDER, GetUnitX(.hero), GetUnitY(.hero))
 						set abilityCasted = true
@@ -78,9 +72,8 @@ scope NerubianWidowAI
 				
 				/* Widow Bite */
 				if ((.heroLevel >= 6) and /*
-				*/	(.orderId == 0)   and /*
-				*/	(random <= WB_Chance[.aiLevel]) and /*
-				*/	(.closestEnemyHero != null)		and not /*
+				*/	(GetRandomInt(0,100) <= WB_Chance[.aiLevel]) and /*
+				*/	(.closestEnemyHero != null)	and not /*
 				*/	(abilityCasted)) then
 					call IssueTargetOrder(.hero, WB_ORDER, .closestEnemyHero)
 					set abilityCasted = true
@@ -148,26 +141,26 @@ scope NerubianWidowAI
 			set .itemBuild = Itemsets[.aiLevel]
 			
 			/* Ability Setup */
-			// Note: 0 == Computer easy | 1 == Computer normal | 2 == Computer insane
+			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
 			// Adolescence
-			set A_Chance[0] = 10
-			set A_Chance[1] = 15
-			set A_Chance[2] = 20
+			set A_Chance[0] = 20
+			set A_Chance[1] = 25
+			set A_Chance[2] = 30
 			
 			// Spider Web
-			set SW_Chance[0] = 45
-			set SW_Chance[1] = 55
-			set SW_Chance[2] = 65
+			set SW_Chance[0] = 10
+			set SW_Chance[1] = 15
+			set SW_Chance[2] = 20
 			
 			// Sprint
-			set S_Chance[0] = 50
-			set S_Chance[1] = 55
-			set S_Chance[2] = 60
+			set S_Chance[0] = 10
+			set S_Chance[1] = 15
+			set S_Chance[2] = 20
 			
-			// Spider Web
-			set WB_Chance[0] = 40
-			set WB_Chance[1] = 50
-			set WB_Chance[2] = 60
+			// Widow Bite
+			set WB_Chance[0] = 20
+			set WB_Chance[1] = 25
+			set WB_Chance[2] = 30
         endmethod
         
         implement HeroAI     

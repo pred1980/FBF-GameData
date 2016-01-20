@@ -19,6 +19,7 @@ scope HeroAI
 		 */
 		private constant integer MOVE = 851986
 		private constant integer ATTACK = 851983
+		private constant integer HOLD_POSITION = 851993
 	
 		/*
 		 * HERO STATES
@@ -285,8 +286,8 @@ scope HeroAI
             if not SpellHelper.isUnitDead(u) and u != tempthis.hero then
                 // Filter unit --> is an ally ???
                 if (SpellHelper.isValidAlly(u, tempthis.hero)) then
-                    //call BJDebugMsg(GetUnitName(u) + " is an Ally!")
-					if (IsUnitType(u, UNIT_TYPE_HERO)) then
+                    if (IsUnitType(u, UNIT_TYPE_HERO)) then
+						//call BJDebugMsg(GetUnitName(u) + " is an ally hero!")
 						call GroupAddUnit(tempthis.allyHeroes, u)
 					else
 						call GroupAddUnit(tempthis.allies, u)
@@ -294,8 +295,8 @@ scope HeroAI
                     set tempthis.allyNum = tempthis.allyNum + 1
                 // Filter unit --> is an enemy, only enum it if it's visible???
                 elseif (SpellHelper.isValidEnemy(u, tempthis.hero) and IsUnitVisible(u, tempthis.owner)) then
-                    //call BJDebugMsg(GetUnitName(u) + " is an Enemy!")
-					if (IsUnitType(u, UNIT_TYPE_HERO)) then
+                   if (IsUnitType(u, UNIT_TYPE_HERO)) then
+						//call BJDebugMsg(GetUnitName(u) + " is an enemy hero!")
 						call GroupAddUnit(tempthis.enemyHeroes, u)
 					else
 						call GroupAddUnit(tempthis.enemies, u)
@@ -488,8 +489,6 @@ scope HeroAI
 		
 		method defaultLoopActions takes nothing returns nothing
         	//call showState()
-			// Don't ignore attacks
-			call UnitRemoveType(.hero, UNIT_TYPE_PEON)
 			
 			if (.state == STATE_GO_SHOP) then
 				call .canShop()
@@ -523,8 +522,6 @@ scope HeroAI
 			endif
 			
 			if (.state == STATE_RUN_AWAY) then
-				// Ignore all attacks from enemies to get a clean teleport back
-				call UnitAddType(.hero, UNIT_TYPE_PEON)
 				// First use heal potions before run away
 				call useHealingPotion()
 				// if still need more hp/mana, run away!
@@ -532,7 +529,9 @@ scope HeroAI
 					// Locate the next teleporter back to base!
 					call .setWayBackToBase()
 					static if thistype.runActions.exists then
-						call .runActions()
+						if (.orderId != HOLD_POSITION) then
+							call .runActions()
+						endif
 					else
 						call .run()
 					endif
@@ -568,7 +567,9 @@ scope HeroAI
 			// Group enumeration
 			call GroupClear(.units)
 			call GroupClear(.enemies)
+			call GroupClear(.enemyHeroes)
 			call GroupClear(.allies)
+			call GroupClear(.allyHeroes)
 			call GroupClear(.jumpTeleporters)
 			set .enemyNum = 0
 			set .allyNum = 0
@@ -659,7 +660,9 @@ scope HeroAI
 			set .orderId = GetUnitCurrentOrder(.hero)
 			set .units = CreateGroup()
 			set .enemies = CreateGroup()
+			set .enemyHeroes = CreateGroup()
             set .allies = CreateGroup()
+			set .allyHeroes = CreateGroup()
 			set .itemsetIndex = 0
 			set .itemSlotCount = 0
 			set .life = GetWidgetLife(.hero)
