@@ -21,7 +21,6 @@ scope NerubianWidowAI
 		private constant string S_ORDER_1 = "immolation"
         private constant string S_ORDER_2 = "unimmolation"
 		private integer array S_Chance
-		private boolean S_isCasted = false
 		
 		/* Widow Bite */
 		private integer array WB_Chance
@@ -34,7 +33,7 @@ scope NerubianWidowAI
             local boolean abilityCasted = false
 			
 			/* Spider Web */
-			if (GetRandomInt(0,100) <= SW_Chance[.aiLevel] and not abilityCasted) then
+			if (GetRandomInt(0,100) <= SW_Chance[.aiLevel]) then
 				call IssueImmediateOrder(.hero, SW_ORDER)
 				set abilityCasted = true
 			endif
@@ -62,8 +61,7 @@ scope NerubianWidowAI
 			
 			if (.enemyNum > 0) then
 				/* Adolescence */
-				if ((.orderId == 0) and /*
-				*/	(GetRandomInt(0,100) <= A_Chance[.aiLevel])) then
+				if ((GetRandomInt(0,100) <= A_Chance[.aiLevel])) then
 					if (Distance(.hx, .hy, GetUnitX(.closestEnemy), GetUnitY(.closestEnemy)) > A_MIN_DISTANCE) then
 						call IssuePointOrder(.hero, A_ORDER, GetUnitX(.hero), GetUnitY(.hero))
 						set abilityCasted = true

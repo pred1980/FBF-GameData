@@ -5,7 +5,7 @@ scope HeroAI
 //==========================================================================================
 	globals
 		// The period in which the hero AI will do actions. A very low period can cause strain.
-		public constant real DEFAULT_PERIOD = 2.0
+		public constant real DEFAULT_PERIOD = 1.7
 		// Determines how the hero looks for items and units.
 		public constant real SIGHT_RANGE = 1500.
 		// The random amount of distance the hero will move

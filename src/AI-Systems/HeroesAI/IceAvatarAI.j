@@ -2,36 +2,59 @@ scope IceAvatarAI
     globals
         private constant integer HERO_ID = 'U004'
 		
-		private HeroAI_Itemset array Itemsets	
-        private group enumGroup = CreateGroup()
+		private HeroAI_Itemset array Itemsets
+		
+		/* Ice Tornado */
+		private constant string IT_ORDER = "spellshield"
+		// This constant must be the sum of AOE_RANGE + CRCL_RADIUS in the IceTornado.j
+		private constant integer IT_RADIUS = 308
+		// How many units have to be in radius to cast Ice Tornado?
+		private integer array IT_Enemies
+		// Chance to cast ability
+		private integer array IT_Chance
+		
+		/* Freezing Breath */
+		private constant string FB_ORDER = "spellshield"
     endglobals
     
     private struct AI extends array
-        // The following two methods will print out debug messages only when the events
-        // are enabled
-        method onAttacked takes unit attacker returns nothing
-            //debug call BJDebugMsg("Abomination attacked by " + GetUnitName(attacker))
+		
+		method assaultEnemy takes nothing returns nothing  
+			local boolean abilityCasted = false
+			local unit u
+			
+			// Ice Tornado
+			local integer amountOfNearEnemies = 0
+			
+			
+			
+			if (.enemyNum > 0) then
+				/* Ice Tornado */
+				if ((GetRandomInt(0,100) <= IT_Chance[.aiLevel])) then
+					call GroupClear(ENUM_GROUP)
+					call GroupAddGroup(.enemies, ENUM_GROUP)
+					loop
+						set u = FirstOfGroup(ENUM_GROUP) 
+						exitwhen u == null 
+						if (Distance(.hx, .hy, GetUnitX(u), GetUnitY(u)) <= IT_RADIUS) then
+							set amountOfNearEnemies = amountOfNearEnemies + 1
+						endif
+						call GroupRemoveUnit(ENUM_GROUP, u)
+					endloop
+					// stomp only if enough enemies around and in the distance to behemot
+					if (amountOfNearEnemies >= IT_Enemies[.aiLevel]) then
+						call IssueImmediateOrder(.hero, IT_ORDER)
+						set abilityCasted = true
+					endif
+				endif
+			endif
+			
+			set u = null
+			
+			if not (abilityCasted) then
+				call .defaultAssaultEnemy()
+			endif
         endmethod
-        
-        method onAcquire takes unit target returns nothing
-            //debug call BJDebugMsg("Abomination acquires " + GetUnitName(target))
-        endmethod
-        
-        method assaultEnemy takes nothing returns nothing  
-            //debug call BJDebugMsg("Abomination assault Enemy.")
-			call .defaultAssaultEnemy()
-        endmethod
-        
-        // Cast wind walk if there's an enemy nearby
-        method loopActions takes nothing returns nothing
-            call .defaultLoopActions()
-        endmethod
-        
-        // A custom periodic method is defined for this hero as the AI constantly
-        // searches for units that have their backs to her in order to use Backstab.
-        static method onLoop takes nothing returns nothing
-        
-		endmethod
         
         method onCreate takes nothing returns nothing
 			// Learnset Syntax:
@@ -87,7 +110,18 @@ scope IceAvatarAI
 			endif
 
 			set .itemBuild = Itemsets[.aiLevel]
-			call BJDebugMsg("Registered Itemset[" + I2S(.aiLevel) + "] for Ice Avatar.")
+			
+			/* Ability Setup */
+			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
+			// Ice Tornado
+			set IT_Chance[0] = 20
+			set IT_Chance[1] = 25
+			set IT_Chance[2] = 20
+			
+			set IT_Enemies[0] = 2
+			set IT_Enemies[1] = 4
+			set IT_Enemies[2] = 6
+			
         endmethod
         
         implement HeroAI     
