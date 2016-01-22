@@ -12,7 +12,7 @@ scope FreezingBreath initializer init
      *
      */
     globals
-        private constant integer SPELL_ID = 'A04K'
+        private constant integer SPELL_ID = 'A0AF'
         private constant integer DUMMY_ID = 'e00Q'
         private constant integer DEBUF_ID = 'A04L'
         private constant string EFFECT = "Models\\AnthraxBetaBomb.mdx"

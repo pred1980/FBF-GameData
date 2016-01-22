@@ -15,8 +15,30 @@ scope IceAvatarAI
 		
 		/* Freezing Breath */
 		private constant string FB_ORDER = "spellshield"
+		// Chance to cast ability
+		private integer array FB_Chance
+		private integer array FB_Random
+		private integer array FB_Enemies
+		private unit array randomUnits
+		// How many random units has to be checked for nearby enemies?
+		private integer array BR_Random
+		// Radius for each random unit (have to be the same like in the FreezingBreath.j)
+		private constant integer FB_RADIUS = 350 
     endglobals
-    
+	
+	private function GetRandomUnitFromGroup takes group g returns unit
+		local integer i = 0
+		
+		loop
+			set randomUnits[i] = FirstOfGroup(g)
+			exitwhen randomUnits[i] == null
+			call GroupRemoveUnit(g, randomUnits[i])
+			set i = i + 1
+		endloop
+
+		return randomUnits[GetRandomInt(0, i)]
+	endfunction
+	    
     private struct AI extends array
 		
 		method assaultEnemy takes nothing returns nothing  
@@ -26,13 +48,17 @@ scope IceAvatarAI
 			// Ice Tornado
 			local integer amountOfNearEnemies = 0
 			
-			
+			// Freezing Breath
+			local group FB_groupRandomUnits = CreateGroup()
+			local unit FB_randomUnit
+			local integer FB_index = 0
 			
 			if (.enemyNum > 0) then
 				/* Ice Tornado */
 				if ((GetRandomInt(0,100) <= IT_Chance[.aiLevel])) then
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
+					
 					loop
 						set u = FirstOfGroup(ENUM_GROUP) 
 						exitwhen u == null 
@@ -41,11 +67,49 @@ scope IceAvatarAI
 						endif
 						call GroupRemoveUnit(ENUM_GROUP, u)
 					endloop
-					// stomp only if enough enemies around and in the distance to behemot
+					
+					// cast tornado only if enough enemies around and in the distance to the Ice Avatar
 					if (amountOfNearEnemies >= IT_Enemies[.aiLevel]) then
 						call IssueImmediateOrder(.hero, IT_ORDER)
 						set abilityCasted = true
 					endif
+				endif
+				
+				/* Freezing Breath */
+				if ((GetRandomInt(0,100) <= FB_Chance[.aiLevel]) and not abilityCasted) then
+					call GroupClear(ENUM_GROUP)
+					call GroupAddGroup(.enemies, ENUM_GROUP)
+					
+					loop
+						exitwhen ((FB_index == FB_Random[.aiLevel]) or (amountOfNearEnemies >= FB_Enemies[.aiLevel]))
+						set amountOfNearEnemies = 0
+						set u = GetRandomUnitFromGroup(ENUM_GROUP) 
+						call GroupEnumUnitsInRange(FB_groupRandomUnits, GetUnitX(u), GetUnitY(u), FB_RADIUS, null)
+						
+						loop
+							set FB_randomUnit = FirstOfGroup(FB_groupRandomUnits)
+							exitwhen FB_randomUnit == null
+							if (SpellHelper.isValidEnemy(FB_randomUnit, .hero)) then
+								set amountOfNearEnemies = amountOfNearEnemies + 1
+							endif
+							call GroupRemoveUnit(FB_groupRandomUnits, FB_randomUnit)
+						endloop
+						
+						set FB_index = FB_index + 1
+					endloop
+					
+					call DestroyGroup(FB_groupRandomUnits)
+					set FB_groupRandomUnits = null
+				endif
+				
+				// Manchmal ist "u" leer... warum?
+				call BJDebugMsg("Anzahl: " + I2S(amountOfNearEnemies))
+				call BJDebugMsg("Ziel: " + GetUnitName(u))
+				// cast tornado only if enough enemies around and in the distance to the Ice Avatar
+				if (amountOfNearEnemies >= FB_Enemies[.aiLevel]) then
+					call BJDebugMsg("Cast Freezing Breath on: " + GetUnitName(u))
+					call IssueTargetOrder(.hero, FB_ORDER, u)
+					set abilityCasted = true
 				endif
 			endif
 			
@@ -66,11 +130,11 @@ scope IceAvatarAI
 			call RegisterHeroAISkill(HERO_ID, 13, 'A04J') 
 			call RegisterHeroAISkill(HERO_ID, 16, 'A04J') 
 			// Freezing Breath
-			call RegisterHeroAISkill(HERO_ID, 2, 'A04K') 
-			call RegisterHeroAISkill(HERO_ID, 7, 'A04K') 
-			call RegisterHeroAISkill(HERO_ID, 10, 'A04K') 
-			call RegisterHeroAISkill(HERO_ID, 14, 'A04K') 
-			call RegisterHeroAISkill(HERO_ID, 17, 'A04K') 
+			call RegisterHeroAISkill(HERO_ID, 2, 'A0AF') 
+			call RegisterHeroAISkill(HERO_ID, 7, 'A0AF') 
+			call RegisterHeroAISkill(HERO_ID, 10, 'A0AF') 
+			call RegisterHeroAISkill(HERO_ID, 14, 'A0AF') 
+			call RegisterHeroAISkill(HERO_ID, 17, 'A0AF') 
 			// Frost Aura
 			call RegisterHeroAISkill(HERO_ID, 3, 'A04Q') 
 			call RegisterHeroAISkill(HERO_ID, 8, 'A04Q') 
@@ -121,6 +185,19 @@ scope IceAvatarAI
 			set IT_Enemies[0] = 2
 			set IT_Enemies[1] = 4
 			set IT_Enemies[2] = 6
+			
+			// Freezing Breath
+			set FB_Chance[0] = 80
+			set FB_Chance[1] = 25
+			set FB_Chance[2] = 20
+			
+			set FB_Random[0] = 2
+			set FB_Random[1] = 4
+			set FB_Random[2] = 6
+			
+			set FB_Enemies[0] = 1
+			set FB_Enemies[1] = 5
+			set FB_Enemies[2] = 7
 			
         endmethod
         

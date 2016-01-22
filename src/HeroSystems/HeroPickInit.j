@@ -239,7 +239,7 @@ scope HeroPickInit
         set HERO_REPICK_RECT[2][0] = GetRectCenterX(gg_rct_HeroRevive3)
         set HERO_REPICK_RECT[2][1] = GetRectCenterY(gg_rct_HeroRevive3)
         set HERO_ABILITIES[2][0] = 'A04J' //Ice Tornado
-        set HERO_ABILITIES[2][1] = 'A04K' //Freezing Breath
+        set HERO_ABILITIES[2][1] = 'A0AF' //Freezing Breath
         set HERO_ABILITIES[2][2] = 'A04Q' //Frost Aura
         set HERO_ABILITIES[2][3] = 'A04M' //Fog of Death
         

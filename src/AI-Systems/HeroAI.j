@@ -284,6 +284,8 @@ scope HeroAI
 			
 			// Filter out dead units, the hero itself, and neutral units
             if not SpellHelper.isUnitDead(u) and u != tempthis.hero then
+				// Add Unit to .units group (all units are stored in this group!!!)
+				call GroupAddUnit(tempthis.units, u)
                 // Filter unit --> is an ally ???
                 if (SpellHelper.isValidAlly(u, tempthis.hero)) then
                     if (IsUnitType(u, UNIT_TYPE_HERO)) then

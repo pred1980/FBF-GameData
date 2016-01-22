@@ -21,6 +21,7 @@ scope NerubianWidowAI
 		private constant string S_ORDER_1 = "immolation"
         private constant string S_ORDER_2 = "unimmolation"
 		private integer array S_Chance
+		private boolean S_isCasted = false
 		
 		/* Widow Bite */
 		private integer array WB_Chance
