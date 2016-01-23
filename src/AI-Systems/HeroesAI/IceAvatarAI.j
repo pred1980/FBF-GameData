@@ -24,6 +24,14 @@ scope IceAvatarAI
 		private integer array BR_Random
 		// Radius for each random unit (have to be the same like in the FreezingBreath.j)
 		private constant integer FB_RADIUS = 350 
+		
+		/* Fog of Death */
+		private constant string FOD_ORDER = "cloudoffog"
+		// This constant have to be the same like in the FogOfDeath.j
+		private constant integer FOD_RADIUS = 700
+		// Chance to cast ability
+		private integer array FOD_Chance
+		private integer array FOD_Enemies
     endglobals
 	
 	private function GetRandomUnitFromGroup takes group g returns unit
@@ -76,6 +84,7 @@ scope IceAvatarAI
 				endif
 				
 				/* Freezing Breath */
+				// Pick x Random Units and check how many enemies are around it, if enough... cast spell!
 				if ((GetRandomInt(0,100) <= FB_Chance[.aiLevel]) and not abilityCasted) then
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
@@ -100,16 +109,36 @@ scope IceAvatarAI
 					
 					call DestroyGroup(FB_groupRandomUnits)
 					set FB_groupRandomUnits = null
+					
+					// cast tornado only if enough enemies around and in the distance to the Random Unit
+					if (amountOfNearEnemies >= FB_Enemies[.aiLevel]) then
+						call IssueTargetOrder(.hero, FB_ORDER, u)
+						set abilityCasted = true
+					endif
 				endif
 				
-				// Manchmal ist "u" leer... warum?
-				call BJDebugMsg("Anzahl: " + I2S(amountOfNearEnemies))
-				call BJDebugMsg("Ziel: " + GetUnitName(u))
-				// cast tornado only if enough enemies around and in the distance to the Ice Avatar
-				if (amountOfNearEnemies >= FB_Enemies[.aiLevel]) then
-					call BJDebugMsg("Cast Freezing Breath on: " + GetUnitName(u))
-					call IssueTargetOrder(.hero, FB_ORDER, u)
-					set abilityCasted = true
+				/* Fog of Death */
+				// Pick x Random Units and check how many enemies are around it, if enough... cast spell!
+				if ((GetRandomInt(0,100) <= FOD_Chance[.aiLevel]) and not abilityCasted) then
+					set amountOfNearEnemies = 0
+					
+					call GroupClear(ENUM_GROUP)
+					call GroupAddGroup(.enemies, ENUM_GROUP)
+					
+					loop
+						set u = FirstOfGroup(ENUM_GROUP) 
+						exitwhen u == null 
+						if (Distance(.hx, .hy, GetUnitX(u), GetUnitY(u)) <= FOD_RADIUS) then
+							set amountOfNearEnemies = amountOfNearEnemies + 1
+						endif
+						call GroupRemoveUnit(ENUM_GROUP, u)
+					endloop
+					
+					// cast tornado only if enough enemies around and in the distance to the Ice Avatar
+					if (amountOfNearEnemies >= FOD_Enemies[.aiLevel]) then
+						call IssueImmediateOrder(.hero, FOD_ORDER)
+						set abilityCasted = true
+					endif
 				endif
 			endif
 			
@@ -180,25 +209,33 @@ scope IceAvatarAI
 			// Ice Tornado
 			set IT_Chance[0] = 20
 			set IT_Chance[1] = 25
-			set IT_Chance[2] = 20
+			set IT_Chance[2] = 30
 			
 			set IT_Enemies[0] = 2
 			set IT_Enemies[1] = 4
 			set IT_Enemies[2] = 6
 			
 			// Freezing Breath
-			set FB_Chance[0] = 80
+			set FB_Chance[0] = 20
 			set FB_Chance[1] = 25
-			set FB_Chance[2] = 20
+			set FB_Chance[2] = 30
 			
 			set FB_Random[0] = 2
 			set FB_Random[1] = 4
 			set FB_Random[2] = 6
 			
-			set FB_Enemies[0] = 1
+			set FB_Enemies[0] = 3
 			set FB_Enemies[1] = 5
 			set FB_Enemies[2] = 7
 			
+			// Fog of Death
+			set FOD_Chance[0] = 20
+			set FOD_Chance[1] = 30
+			set FOD_Chance[2] = 40
+			
+			set FOD_Enemies[0] = 6
+			set FOD_Enemies[1] = 8
+			set FOD_Enemies[2] = 10
         endmethod
         
         implement HeroAI     
