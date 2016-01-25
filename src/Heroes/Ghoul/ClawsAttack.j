@@ -33,6 +33,15 @@ scope ClawsAttack initializer init
 		*/	DamageType == PHYSICAL ) then
             call addDamage(damageSource, damagedUnit, damage)
         endif
+		
+		/*
+		 * FOR AI HERO SYSTEM NEEDED!!!
+		 */
+		// If true, then it's self damage
+		if ((damageSource == damagedUnit) and /*
+		*/	(GetPlayerController(GetOwningPlayer(damageSource)) == MAP_CONTROL_COMPUTER)) then
+			call IssueImmediateOrder(damageSource, "holdposition")
+		endif
     endfunction
     
     private function init takes nothing returns nothing

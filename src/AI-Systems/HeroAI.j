@@ -283,7 +283,7 @@ scope HeroAI
             local unit u = GetFilterUnit()
 			
 			// Filter out dead units, the hero itself, and neutral units
-            if not SpellHelper.isUnitDead(u) and u != tempthis.hero then
+            if (u != tempthis.hero) then
 				// Add Unit to .units group (all units are stored in this group!!!)
 				call GroupAddUnit(tempthis.units, u)
                 // Filter unit --> is an ally ???
@@ -565,6 +565,14 @@ scope HeroAI
 			set .safeUnit = null
 			set .forsakenHeart = null
 			set .baseTeleporter = null
+			set .closestEnemy = null
+			set .closestEnemyHero = null
+			set .furthestEnemy = null
+			set .furthestEnemyHero = null
+			set .closestAlly = null
+			set .closestAllyHero = null
+			set .furthestAlly = null
+			set .furthestAllyHero = null
 			
 			// Group enumeration
 			call GroupClear(.units)

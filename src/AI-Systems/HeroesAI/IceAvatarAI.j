@@ -23,7 +23,7 @@ scope IceAvatarAI
 		// How many random units has to be checked for nearby enemies?
 		private integer array BR_Random
 		// Radius for each random unit (have to be the same like in the FreezingBreath.j)
-		private constant integer FB_RADIUS = 350 
+		private constant integer FB_RADIUS = 350
 		
 		/* Fog of Death */
 		private constant string FOD_ORDER = "cloudoffog"
@@ -70,7 +70,8 @@ scope IceAvatarAI
 					loop
 						set u = FirstOfGroup(ENUM_GROUP) 
 						exitwhen u == null 
-						if (Distance(.hx, .hy, GetUnitX(u), GetUnitY(u)) <= IT_RADIUS) then
+						if ((Distance(.hx, .hy, GetUnitX(u), GetUnitY(u)) <= IT_RADIUS) and /*
+						*/	(IsUnitType(u, UNIT_TYPE_GROUND))) then
 							set amountOfNearEnemies = amountOfNearEnemies + 1
 						endif
 						call GroupRemoveUnit(ENUM_GROUP, u)

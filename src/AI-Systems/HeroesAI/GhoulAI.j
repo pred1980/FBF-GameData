@@ -3,36 +3,123 @@ scope GhoulAI
         private constant integer HERO_ID = 'U00A'
 		
 		private HeroAI_Itemset array Itemsets	
-        private group enumGroup = CreateGroup()
+		
+		/* Claws Attack */
+		// Chance to cast ability
+		private constant string CA_ORDER_1 = "immolation"
+        private constant string CA_ORDER_2 = "unimmolation"
+		private constant real CA_RADIUS = 300
+		// Chance to cast ability
+		private integer array CA_Chance
+		private integer array CA_HeroHP
+		private boolean CA_isCasted = false
+		
+		/* Cannibalize */
+		private constant string C_ORDER = "cannibalize"
+		private constant integer C_ORDER_ID = 852188 // cannibalize
+		private constant integer C_RADIUS = 500 
+		// Chance to cast ability
+		private integer array C_Chance
+		private integer array C_Enemies
     endglobals
     
     private struct AI extends array
-        // The following two methods will print out debug messages only when the events
-        // are enabled
-        method onAttacked takes unit attacker returns nothing
-            //debug call BJDebugMsg("Abomination attacked by " + GetUnitName(attacker))
-        endmethod
-        
-        method onAcquire takes unit target returns nothing
-            //debug call BJDebugMsg("Abomination acquires " + GetUnitName(target))
-        endmethod
-        
-        method assaultEnemy takes nothing returns nothing  
-            //debug call BJDebugMsg("Abomination assault Enemy.")
-			call .defaultAssaultEnemy()
-        endmethod
-        
-        // Cast wind walk if there's an enemy nearby
-        method loopActions takes nothing returns nothing
-            call .defaultLoopActions()
-        endmethod
-        
-        // A custom periodic method is defined for this hero as the AI constantly
-        // searches for units that have their backs to her in order to use Backstab.
-        static method onLoop takes nothing returns nothing
-        
+	
+		method runActions takes nothing returns nothing
+			local unit u
+			local boolean abilityCasted = false
+			
+			// Cannibalize
+			local unit corpse
+			local boolean canCannibalize = false
+			local group g = CreateGroup()
+			
+			/* Claws Attack */
+			// Deactivate Claws Attack because the Ghoul is running away!
+			if (CA_isCasted) then
+				call IssueImmediateOrder(.hero, CA_ORDER_2)
+				set CA_isCasted = false
+			endif
+			
+			/* Cannibalize */
+			if ((GetRandomInt(0,100) <= C_Chance[.aiLevel]) and (.orderId != C_ORDER_ID)) then
+				call GroupClear(ENUM_GROUP)
+				call GroupAddGroup(.units, ENUM_GROUP)
+				
+				loop
+					set corpse = FirstOfGroup(ENUM_GROUP) 
+					exitwhen corpse == null 
+					if (SpellHelper.isUnitDead(corpse)) then
+						call GroupEnumUnitsInRange(g, GetUnitX(corpse), GetUnitY(corpse), C_RADIUS, null)
+						
+						loop
+							set u = FirstOfGroup(g)
+							exitwhen u == null
+							if (SpellHelper.isValidEnemy(u, .hero)) then
+								set canCannibalize = true
+							endif
+							call GroupRemoveUnit(g, u)
+						endloop
+						
+						set u = null
+					endif
+					call GroupRemoveUnit(ENUM_GROUP, corpse)
+				endloop
+				
+				set corpse = null
+				
+				// cast tornado only if enough enemies around and in the distance to the Ice Avatar
+				if (canCannibalize) then
+					call IssueImmediateOrder(.hero, C_ORDER)
+					set abilityCasted = true
+				endif
+			endif
+
+			if not (abilityCasted) then
+				call .run()
+			endif
 		endmethod
-        
+       
+        method assaultEnemy takes nothing returns nothing  
+            local boolean abilityCasted = false
+			
+			// Claws Attack
+			local real CA_distance
+			
+			if (.enemyNum > 0) then
+				/* Claws Attack */
+				set CA_distance = Distance(.hx, .hy, GetUnitX(.closestEnemyHero), GetUnitY(.closestEnemyHero))
+				
+				if (CA_isCasted) then
+					// is enemy hero out of range (radius)??
+					if (CA_distance >= CA_RADIUS or .closestEnemyHero == null) then
+						call IssueImmediateOrder(.hero, CA_ORDER_2)
+						set abilityCasted = false
+						set CA_isCasted = false
+					else
+						call IssueTargetOrder(.hero, "attack", .closestEnemyHero)
+					endif
+				else
+					if (GetRandomInt(0,100) <= CA_Chance[.aiLevel]) then
+						// Cast only if closest enemy hero in distance to the ghoul and
+						// the enemy hero has low hp
+						if ((CA_distance <= CA_RADIUS) and /*
+						*/	(GetUnitLifePercent(.closestEnemyHero) <= CA_HeroHP[.aiLevel]))then
+							call IssueImmediateOrder(.hero, CA_ORDER_1)
+							set abilityCasted = true
+							set CA_isCasted = true
+						endif
+					endif
+				endif
+				
+				
+			endif
+			
+            if (not abilityCasted and not CA_isCasted) then
+				call .defaultAssaultEnemy()
+			endif
+        endmethod
+
         method onCreate takes nothing returns nothing
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
@@ -87,7 +174,26 @@ scope GhoulAI
 			endif
 			
 			set .itemBuild = Itemsets[.aiLevel]
-			call BJDebugMsg("Registered Itemset[" + I2S(.aiLevel) + "] for Ghoul.")
+			
+			/* Ability Setup */
+			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
+			// Claws Attack
+			set CA_Chance[0] = 20
+			set CA_Chance[1] = 25
+			set CA_Chance[2] = 30
+			
+			set CA_HeroHP[0] = 50
+			set CA_HeroHP[1] = 45
+			set CA_HeroHP[2] = 40
+			
+			// Cannibalize
+			set C_Chance[0] = 20
+			set C_Chance[1] = 25
+			set C_Chance[2] = 30
+			
+			set C_Enemies[0] = 4
+			set C_Enemies[1] = 3
+			set C_Enemies[2] = 2
         endmethod
         
         implement HeroAI     

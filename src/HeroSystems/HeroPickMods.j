@@ -130,7 +130,7 @@ scope HeroPickMods
                             set randomIndex = BaseMode.getRandomHero()
                         endloop
 						if (DEBUG_MODE) then
-							call createRandomHero( Player(i), GET_HERO_PICK_UNIT(i), 2 )
+							call createRandomHero( Player(i), GET_HERO_PICK_UNIT(i), 3 )
 						else
 							call createRandomHero( Player(i), GET_HERO_PICK_UNIT(i), randomIndex )
 						endif
