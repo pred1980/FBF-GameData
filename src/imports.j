@@ -335,6 +335,7 @@
 /* Ghoul */
 //! import "src\Heroes\Ghoul\ClawsAttack.j"
 //! import "src\Heroes\Ghoul\FleshWound.j"
+// import "src\Heroes\Ghoul\Cannibalize.j"
 //! import "src\Heroes\Ghoul\Rage.j"
 
 /* Master Banshee */

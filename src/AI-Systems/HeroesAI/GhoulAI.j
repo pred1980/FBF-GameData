@@ -15,7 +15,7 @@ scope GhoulAI
 		private boolean CA_isCasted = false
 		
 		/* Cannibalize */
-		private constant string C_ORDER = "cannibalize"
+		private constant string C_ORDER = "doom"
 		private constant integer C_ORDER_ID = 852188 // cannibalize
 		private constant integer C_RADIUS = 500 
 		// Chance to cast ability
@@ -25,13 +25,29 @@ scope GhoulAI
     
     private struct AI extends array
 	
+		method idleActions takes nothing returns  nothing
+			/* Claws Attack */
+			// Deactivate Claws Attack because the Ghoul is running away!
+			if (CA_isCasted) then
+				call IssueImmediateOrder(.hero, CA_ORDER_2)
+				set CA_isCasted = false
+			endif
+			
+			if not (CA_isCasted) then
+				// just for development...
+				set .moveX = -6535.1
+				set .moveY = 2039.7
+				call .move()
+			endif
+		endmethod
+	
 		method runActions takes nothing returns nothing
 			local unit u
 			local boolean abilityCasted = false
 			
 			// Cannibalize
 			local unit corpse
-			local boolean canCannibalize = false
+			local boolean canCannibalize = true
 			local group g = CreateGroup()
 			
 			/* Claws Attack */
@@ -56,7 +72,7 @@ scope GhoulAI
 							set u = FirstOfGroup(g)
 							exitwhen u == null
 							if (SpellHelper.isValidEnemy(u, .hero)) then
-								set canCannibalize = true
+								set canCannibalize = false
 							endif
 							call GroupRemoveUnit(g, u)
 						endloop
@@ -68,7 +84,6 @@ scope GhoulAI
 				
 				set corpse = null
 				
-				// cast tornado only if enough enemies around and in the distance to the Ice Avatar
 				if (canCannibalize) then
 					call IssueImmediateOrder(.hero, C_ORDER)
 					set abilityCasted = true
@@ -111,8 +126,6 @@ scope GhoulAI
 						endif
 					endif
 				endif
-				
-				
 			endif
 			
             if (not abilityCasted and not CA_isCasted) then
@@ -130,11 +143,11 @@ scope GhoulAI
 			call RegisterHeroAISkill(HERO_ID, 13, 'A04N') 
 			call RegisterHeroAISkill(HERO_ID, 16, 'A04N') 
 			// Cannibalize
-			call RegisterHeroAISkill(HERO_ID, 2, 'A04R') 
-			call RegisterHeroAISkill(HERO_ID, 7, 'A04R') 
-			call RegisterHeroAISkill(HERO_ID, 10, 'A04R') 
-			call RegisterHeroAISkill(HERO_ID, 14, 'A04R') 
-			call RegisterHeroAISkill(HERO_ID, 17, 'A04R') 
+			call RegisterHeroAISkill(HERO_ID, 2, 'A04K') 
+			call RegisterHeroAISkill(HERO_ID, 7, 'A04K') 
+			call RegisterHeroAISkill(HERO_ID, 10, 'A04K') 
+			call RegisterHeroAISkill(HERO_ID, 14, 'A04K') 
+			call RegisterHeroAISkill(HERO_ID, 17, 'A04K') 
 			// Flesh Wound
 			call RegisterHeroAISkill(HERO_ID, 3, 'A04T') 
 			call RegisterHeroAISkill(HERO_ID, 8, 'A04T') 
@@ -187,7 +200,7 @@ scope GhoulAI
 			set CA_HeroHP[2] = 40
 			
 			// Cannibalize
-			set C_Chance[0] = 20
+			set C_Chance[0] = 0
 			set C_Chance[1] = 25
 			set C_Chance[2] = 30
 			

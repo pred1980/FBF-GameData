@@ -136,7 +136,7 @@ scope HeroAI
 		private timer t
 		Itemset itemBuild
 		private integer itemSlotCount
-		private group units
+		group units
 		group allies        
         group enemies
 		group enemyHeroes
@@ -167,8 +167,8 @@ scope HeroAI
 		private integer shopNum
 		private group shops
 		private unit shopUnit
-		private real moveX
-        private real moveY
+		real moveX
+        real moveY
 		private real runX
         private real runY		
 		
@@ -258,7 +258,7 @@ scope HeroAI
         endmethod
 		
 		// Action methods
-		private method move takes nothing returns nothing
+		method move takes nothing returns nothing
 			call IssuePointOrderById(.hero, MOVE, .moveX, .moveY)
         endmethod 
         
@@ -298,12 +298,13 @@ scope HeroAI
                 // Filter unit --> is an enemy, only enum it if it's visible???
                 elseif (SpellHelper.isValidEnemy(u, tempthis.hero) and IsUnitVisible(u, tempthis.owner)) then
                    if (IsUnitType(u, UNIT_TYPE_HERO)) then
-						//call BJDebugMsg(GetUnitName(u) + " is an enemy hero!")
+						call BJDebugMsg(GetUnitName(u) + " is an enemy hero!")
 						call GroupAddUnit(tempthis.enemyHeroes, u)
 					else
 						call GroupAddUnit(tempthis.enemies, u)
 					endif
-                    set tempthis.enemyNum = tempthis.enemyNum + 1
+					set tempthis.enemyNum = tempthis.enemyNum + 1
+					//call BJDebugMsg("enemyNum: " + I2S(tempthis.enemyNum))
 				// Filter unit --> is fountain???
                 elseif (isSafeUnit(u)) then
 					//call BJDebugMsg(GetUnitName(u) + " is an Fountain!")
@@ -520,7 +521,15 @@ scope HeroAI
 			endif
 			
 			if (.state == STATE_IDLE) then
-				call IssuePointOrderById(.hero, MOVE, -6535.1, 2039.7)
+				static if thistype.idleActions.exists then
+					call .idleActions()
+				else
+					// just for development...
+					// REMOVE later from AI: Ghoul, ...
+					set .moveX = -6535.1
+					set .moveY = 2039.7
+					call .move()
+				endif
 			endif
 			
 			if (.state == STATE_RUN_AWAY) then
@@ -625,9 +634,10 @@ scope HeroAI
 			 */
 			if (.state != STATE_IDLE) then
 				if ((.goodCondition) and /*
-				*/	(.safeUnit == null) and /*
+				*/	(.state != STATE_GO_SHOP) and /*
 				*/	(.state != STATE_RUN_AWAY) and /*
-				*/	(.state != STATE_ENGAGED)) then
+				*/	(.state != STATE_ENGAGED) or /*
+				*/	(.enemyNum == 0)) then
 					set .state = STATE_IDLE
 				endif
 			endif
