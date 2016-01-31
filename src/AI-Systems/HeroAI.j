@@ -175,7 +175,7 @@ scope HeroAI
 		// Used for creating
 		private static integer stack = 1
 		// Set whenever update is called
-		private static thistype tempthis
+		static thistype tempthis
 		// Holds the state of the AI
 		private integer state
 		// Index of the itemset
@@ -183,15 +183,15 @@ scope HeroAI
 		
 		private method showState takes nothing returns nothing
 			if (.state == STATE_GO_TELEPORT) then
-				call BJDebugMsg(GetUnitName(.hero) + "-STATE: STATE_GO_TELEPORT")
+				call BJDebugMsg(GetUnitName(.hero) + ": STATE_GO_TELEPORT")
 			elseif (.state == STATE_ENGAGED) then
-				call BJDebugMsg(GetUnitName(.hero) + "-STATE_ENGAGED")
+				call BJDebugMsg(GetUnitName(.hero) + ": STATE_ENGAGED")
 			elseif (.state == STATE_GO_SHOP) then
-				call BJDebugMsg(GetUnitName(.hero) + "-STATE_GO_SHOP")
+				call BJDebugMsg(GetUnitName(.hero) + ": STATE_GO_SHOP")
 			elseif (.state == STATE_IDLE) then
-				call BJDebugMsg(GetUnitName(.hero) + "-STATE_IDLE")
+				call BJDebugMsg(GetUnitName(.hero) + ": STATE_IDLE")
 			elseif (.state == STATE_RUN_AWAY) then
-				call BJDebugMsg(GetUnitName(.hero) + "-STATE_RUN_AWAY")
+				call BJDebugMsg(GetUnitName(.hero) + ": STATE_RUN_AWAY")
 			endif
 		endmethod
 		
@@ -298,7 +298,7 @@ scope HeroAI
                 // Filter unit --> is an enemy, only enum it if it's visible???
                 elseif (SpellHelper.isValidEnemy(u, tempthis.hero) and IsUnitVisible(u, tempthis.owner)) then
                    if (IsUnitType(u, UNIT_TYPE_HERO)) then
-						call BJDebugMsg(GetUnitName(u) + " is an enemy hero!")
+						//call BJDebugMsg(GetUnitName(u) + " is an enemy hero!")
 						call GroupAddUnit(tempthis.enemyHeroes, u)
 					else
 						call GroupAddUnit(tempthis.enemies, u)
@@ -491,7 +491,7 @@ scope HeroAI
         endmethod
 		
 		method defaultLoopActions takes nothing returns nothing
-        	//call showState()
+        	call showState()
 			
 			if (.state == STATE_GO_SHOP) then
 				call .canShop()

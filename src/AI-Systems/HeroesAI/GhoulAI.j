@@ -12,92 +12,93 @@ scope GhoulAI
 		// Chance to cast ability
 		private integer array CA_Chance
 		private integer array CA_HeroHP
-		private boolean CA_isCasted = false
+		private boolean CA_casted = false
 		
 		/* Cannibalize */
 		private constant string C_ORDER = "doom"
 		private constant integer C_ORDER_ID = 852188 // cannibalize
-		private constant integer C_RADIUS = 500 
+		private constant integer C_RADIUS = 500
+		private constant real C_RADIUS_MULTPLIER = 1.3
 		// Chance to cast ability
 		private integer array C_Chance
 		private integer array C_Enemies
     endglobals
-    
+
     private struct AI extends array
+	
+		private static method corpseFilter takes nothing returns boolean
+			return SpellHelper.isValidEnemy(GetFilterUnit(), tempthis.hero)
+		endmethod
+	
+		private method doCannibalize takes nothing returns nothing
+			local unit corpse
+			local unit u
+			local group g
+			
+			if ((GetRandomInt(0,100) <= C_Chance[.aiLevel]) and (.orderId != C_ORDER_ID)) then
+				set g = CreateGroup()
+				call GroupClear(ENUM_GROUP)
+				call GroupAddGroup(.units, ENUM_GROUP)
+				
+				loop
+					set corpse = FirstOfGroup(ENUM_GROUP)
+					exitwhen corpse == null 
+					if ((SpellHelper.isUnitDead(corpse)) and /*
+					*/	(Distance(.hx, .hy, GetUnitX(corpse), GetUnitY(corpse)) < (C_RADIUS/C_RADIUS_MULTPLIER))) then
+						call GroupEnumUnitsInRange(g, GetUnitX(corpse), GetUnitY(corpse), C_RADIUS, Filter(function thistype.corpseFilter))
+						
+						if (CountUnitsInGroup(g) == 0) then
+							call GroupClear(g)
+							call GroupClear(ENUM_GROUP)
+							call IssueImmediateOrder(.hero, C_ORDER)
+						endif
+					endif
+					call GroupRemoveUnit(ENUM_GROUP, corpse)
+				endloop
+				
+				call DestroyGroup(g)
+				set g = null
+				set corpse = null	
+				set u = null
+			endif
+		endmethod
 	
 		method idleActions takes nothing returns  nothing
 			/* Claws Attack */
 			// Deactivate Claws Attack because the Ghoul is running away!
-			if (CA_isCasted) then
+			if (CA_casted) then
 				call IssueImmediateOrder(.hero, CA_ORDER_2)
-				set CA_isCasted = false
+				set CA_casted = false
 			endif
 			
-			if not (CA_isCasted) then
+			if ((not CA_casted) and (.orderId != C_ORDER_ID))then
 				// just for development...
 				set .moveX = -6535.1
 				set .moveY = 2039.7
 				call .move()
 			endif
+			
+			/* Cannibalize */
+			call doCannibalize()
 		endmethod
 	
 		method runActions takes nothing returns nothing
-			local unit u
-			local boolean abilityCasted = false
-			
-			// Cannibalize
-			local unit corpse
-			local boolean canCannibalize = true
-			local group g = CreateGroup()
-			
 			/* Claws Attack */
 			// Deactivate Claws Attack because the Ghoul is running away!
-			if (CA_isCasted) then
+			if (CA_casted) then
 				call IssueImmediateOrder(.hero, CA_ORDER_2)
-				set CA_isCasted = false
+				set CA_casted = false
+			endif
+			
+			if (.orderId != C_ORDER_ID) then
+				call .run()
 			endif
 			
 			/* Cannibalize */
-			if ((GetRandomInt(0,100) <= C_Chance[.aiLevel]) and (.orderId != C_ORDER_ID)) then
-				call GroupClear(ENUM_GROUP)
-				call GroupAddGroup(.units, ENUM_GROUP)
-				
-				loop
-					set corpse = FirstOfGroup(ENUM_GROUP) 
-					exitwhen corpse == null 
-					if (SpellHelper.isUnitDead(corpse)) then
-						call GroupEnumUnitsInRange(g, GetUnitX(corpse), GetUnitY(corpse), C_RADIUS, null)
-						
-						loop
-							set u = FirstOfGroup(g)
-							exitwhen u == null
-							if (SpellHelper.isValidEnemy(u, .hero)) then
-								set canCannibalize = false
-							endif
-							call GroupRemoveUnit(g, u)
-						endloop
-						
-						set u = null
-					endif
-					call GroupRemoveUnit(ENUM_GROUP, corpse)
-				endloop
-				
-				set corpse = null
-				
-				if (canCannibalize) then
-					call IssueImmediateOrder(.hero, C_ORDER)
-					set abilityCasted = true
-				endif
-			endif
-
-			if not (abilityCasted) then
-				call .run()
-			endif
+			call doCannibalize()
 		endmethod
        
         method assaultEnemy takes nothing returns nothing  
-            local boolean abilityCasted = false
-			
 			// Claws Attack
 			local real CA_distance
 			
@@ -105,12 +106,11 @@ scope GhoulAI
 				/* Claws Attack */
 				set CA_distance = Distance(.hx, .hy, GetUnitX(.closestEnemyHero), GetUnitY(.closestEnemyHero))
 				
-				if (CA_isCasted) then
+				if (CA_casted) then
 					// is enemy hero out of range (radius)??
 					if (CA_distance >= CA_RADIUS or .closestEnemyHero == null) then
 						call IssueImmediateOrder(.hero, CA_ORDER_2)
-						set abilityCasted = false
-						set CA_isCasted = false
+						set CA_casted = false
 					else
 						call IssueTargetOrder(.hero, "attack", .closestEnemyHero)
 					endif
@@ -121,23 +121,25 @@ scope GhoulAI
 						if ((CA_distance <= CA_RADIUS) and /*
 						*/	(GetUnitLifePercent(.closestEnemyHero) <= CA_HeroHP[.aiLevel]))then
 							call IssueImmediateOrder(.hero, CA_ORDER_1)
-							set abilityCasted = true
-							set CA_isCasted = true
+							set CA_casted = true
 						endif
 					endif
 				endif
 			endif
 			
-            if (not abilityCasted and not CA_isCasted) then
+			if ((not CA_casted) and (.orderId != C_ORDER_ID)) then
 				call .defaultAssaultEnemy()
 			endif
+			
+			/* Cannibalize */
+			call doCannibalize()
         endmethod
 
         method onCreate takes nothing returns nothing
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
 			// Claws Attack
-			call RegisterHeroAISkill(HERO_ID, 1, 'A04N')
+			call RegisterHeroAISkill(HERO_ID, 3, 'A04N')
 			call RegisterHeroAISkill(HERO_ID, 5, 'A04N') 
 			call RegisterHeroAISkill(HERO_ID, 9, 'A04N') 
 			call RegisterHeroAISkill(HERO_ID, 13, 'A04N') 
@@ -149,7 +151,7 @@ scope GhoulAI
 			call RegisterHeroAISkill(HERO_ID, 14, 'A04K') 
 			call RegisterHeroAISkill(HERO_ID, 17, 'A04K') 
 			// Flesh Wound
-			call RegisterHeroAISkill(HERO_ID, 3, 'A04T') 
+			call RegisterHeroAISkill(HERO_ID, 1, 'A04T') 
 			call RegisterHeroAISkill(HERO_ID, 8, 'A04T') 
 			call RegisterHeroAISkill(HERO_ID, 11, 'A04T') 
 			call RegisterHeroAISkill(HERO_ID, 15, 'A04T') 
@@ -200,7 +202,7 @@ scope GhoulAI
 			set CA_HeroHP[2] = 40
 			
 			// Cannibalize
-			set C_Chance[0] = 0
+			set C_Chance[0] = 20
 			set C_Chance[1] = 25
 			set C_Chance[2] = 30
 			
