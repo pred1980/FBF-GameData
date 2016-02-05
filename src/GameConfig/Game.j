@@ -395,14 +395,9 @@ scope Game
         endmethod
         
 		static method onHeroLevelUp takes nothing returns nothing
-            local player p = GetTriggerPlayer()
-			local integer id = GetPlayerId(p)
-			
-			if GetPlayerController(p) == MAP_CONTROL_USER then
-				//Update Multiboard
-				call FBFMultiboard.onUpdateHeroLevel(id, GetLevelingUnit())
-			endif
-        endmethod
+			//Update Multiboard
+			call FBFMultiboard.onUpdateHeroLevel(GetPlayerId(GetTriggerPlayer()), GetLevelingUnit())
+		endmethod
         
         static method onUnitDeath takes nothing returns nothing
             local integer i = 0
@@ -451,8 +446,6 @@ scope Game
         endmethod
         
         public static method onGameOver takes nothing returns nothing
-            local timer t = NewTimer()
-            
             call ClearMapMusicBJ()
             call StopMusicBJ(false)
             call VolumeGroupSetVolumeBJ(SOUND_VOLUMEGROUP_AMBIENTSOUNDS, 0.00)
@@ -464,7 +457,7 @@ scope Game
             call ClearTextMessages()
             call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, 5.00, "Thank you for playing Forsaken Bastion's Fall!")
             
-            call TimerStart(t, 10.0, false, function thistype.onGameOverOutro )
+            call TimerStart(NewTimer(), 10.0, false, function thistype.onGameOverOutro )
         endmethod
         
         static method onGameOverOutro takes nothing returns nothing

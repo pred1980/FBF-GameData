@@ -64,6 +64,8 @@
 //! import "src\Libraries\IsUnitChanneling.j"
 //! import "src\Libraries\FieldOfView.j"
 //! import "src\Libraries\Escort.j"
+//! import "src\Libraries\WorldBounds.j"
+
 
 /* XE Libraries */
 //! import "src\Libraries\XE\xepreload.j"
@@ -288,7 +290,7 @@
 //! import "src\WeatherSystem\WeatherSystem.j"
 
 /* Camera System */
-//! import "src\CameraSystem\CameraSystem.j"
+// import "src\CameraSystem\CameraSystem.j"
 
 /* Usability System */
 //! import "src\UsabilitySystem\UsabilitySystem.j"

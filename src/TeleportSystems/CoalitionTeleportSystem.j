@@ -33,6 +33,8 @@ scope CoalitionTeleportSystem initializer init
         static method onReturnToBaseDelay takes nothing returns nothing
             local TeleportData data = GetTimerData(GetExpiredTimer())
             
+			call UnitRemoveType(data.target, UNIT_TYPE_PEON)
+			
             if IsUnitInRegion(data.reg, data.target) and not SpellHelper.isUnitDead(data.target) then
                 if data.counter > 1 then
                     call SetUnitPosition(data.target, data.x, data.y)
@@ -42,6 +44,7 @@ scope CoalitionTeleportSystem initializer init
                     endif
 					call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(data.target), GetUnitY(data.target)))
                     call IssueImmediateOrder(data.target, "holdposition")
+					
 					
 					return
                 endif
@@ -99,6 +102,9 @@ scope CoalitionTeleportSystem initializer init
             set data.x = x
             set data.y = y
             set data.p = p
+			
+			// Ignore attacks from enemies
+			call UnitAddType(u, UNIT_TYPE_PEON)
             
             call SetTimerData(t, data)
             call TimerStart(t, TELEPORT_DELAY, true, function thistype.onReturnToBaseDelay)

@@ -1,6 +1,6 @@
 scope FleshWound initializer init
     /*
-     * Description: Every second hit weakens the enemys armor by 2 points for 3 seconds. 
+     * Description: Every second hit weakens the enemys armor by 2 points for 5 seconds. 
 	                The effect can stack several times.
      * Changelog: 
      *      28.10.2013: Abgleich mit OE und der Exceltabelle
@@ -10,84 +10,155 @@ scope FleshWound initializer init
      *
      */
     private keyword FleshWound
+	private keyword FleshWoundData
 
     globals
         private constant integer SPELL_ID = 'A04T'
         private constant integer HITS = 2
-        private constant real STACK_DURATION = 3.0
+		// This duration is to check every 2s if after each stroke comes a new
+		private constant real MAIN_DURATION = 2.0
+		// This delay is for reseting the hitCounter + stackCounter if no stroke comes after the last one
+		private constant real HIT_DELAY = 3.0
+		// This duration describes how long the "-armor" works
+        private constant real STACK_DURATION = 5.0
+		// this duration is for the effect
+		private constant real EFFECT_DURATION = 1.5
 		private constant string EFFECT = "Abilities\\Spells\\Other\\HowlOfTerror\\HowlTarget.mdl"
         
-		private integer array STACK
-        private FleshWound array spellForUnit
+		private integer array ARMOR_REDUCE
+        private FleshWound array fleshWoundForCaster
+		private FleshWoundData array fleshWoundForTarget
     endglobals
     
     private function MainSetup takes nothing returns nothing
-        set STACK[1] = 2
-        set STACK[2] = 4
-        set STACK[3] = 6
-        set STACK[4] = 8
-        set STACK[5] = 10
+		set ARMOR_REDUCE[1] = -2
+        set ARMOR_REDUCE[2] = -4
+        set ARMOR_REDUCE[3] = -6
+        set ARMOR_REDUCE[4] = -8
+        set ARMOR_REDUCE[5] = -10
     endfunction
-    
-    private struct FleshWound
-        private unit attacker
-        private unit target
-        private integer hitCounter = 0
-        private timer t
-		private effect sfx 
+	
+	private struct FleshWoundData
+		unit target
+		integer hitCounter
+		integer stackCounter
+		timer main
+		timer hitTimer
+		timer stackTimer
+		boolean isHitInTime
+		real time
 		
 		method onDestroy takes nothing returns nothing
-			call DestroyEffect(.sfx)
-			call SetUnitBonus(.target, BONUS_ARMOR, 0)
-			
-            set spellForUnit[GetUnitId(.attacker)] = 0
-            set .attacker = null
-            set .target = null
-        endmethod
-        
-		static method getForUnit takes unit u returns thistype
-			return spellForUnit[GetUnitId(u)]
+			set .target = null
 		endmethod
 		
-        static method create takes unit damageSource, unit damagedUnit returns thistype
-            local thistype this = thistype.allocate()
-
-			set .attacker = damageSource
-            set .hitCounter = 1
-			set .target = damagedUnit
-			set spellForUnit[GetUnitId(damageSource)] = this
-            
-			return this
-        endmethod
+		static method getForUnit takes unit u returns thistype
+			return fleshWoundForTarget[GetUnitId(u)]
+		endmethod
 		
-		static method onStackReset takes nothing returns nothing
-            local timer t = GetExpiredTimer()
-			local thistype data = GetTimerData(t)
-            
-			call DestroyTimer(t)
-			set t = null
-			call data.destroy()
-        endmethod
-		
-		method onAttack takes unit t, real dmg returns nothing
-			local integer level = GetUnitAbilityLevel(.attacker, SPELL_ID)
-			
-            // same unit ???
-			if (t == .target) then 
-                set .hitCounter = .hitCounter + 1
-                if (.hitCounter == HITS) then
-					call SetUnitBonus(.target, BONUS_ARMOR, -STACK[level])
-					
-					set .sfx = AddSpecialEffect(EFFECT, GetUnitX(.target), GetUnitY(.target))
-					set .t = CreateTimer()
-					call SetTimerData(.t, this)
-					call TimerStart(.t, STACK_DURATION, false, function thistype.onStackReset)
-                endif
-			else 
-				set .target = t
-				set .hitCounter = 1
+		static method onFleshWoundEnd takes nothing returns nothing
+			local thistype data = GetTimerData(GetExpiredTimer())
+           
+			set data.time = data.time - 1.0
+			if (data.time <= 0) then
+				call ReleaseTimer(GetExpiredTimer())
+				call SetUnitBonus(data.target, BONUS_ARMOR, 0)
+				set data.stackCounter = 0
 			endif
 		endmethod
+		
+		private static method onCheckHit takes nothing returns nothing
+			local thistype data = GetTimerData(GetExpiredTimer())
+		
+			if (SpellHelper.isUnitDead(data.target)) then
+				call ReleaseTimer(GetExpiredTimer())
+				call data.destroy()
+			else
+				set data.isHitInTime = false
+			endif
+		endmethod
+		
+		static method onHitReset takes nothing returns nothing
+			local thistype data = GetTimerData(GetExpiredTimer())
+			
+			if (not data.isHitInTime) then
+				call ReleaseTimer(GetExpiredTimer())
+				set data.hitCounter = 0
+				set data.stackCounter = 0
+			endif
+		endmethod
+
+		static method create takes unit damagedUnit returns thistype
+			local thistype this = thistype.allocate()
+
+			set fleshWoundForTarget[GetUnitId(damagedUnit)] = this
+			
+			set .main = NewTimer()
+			call SetTimerData(.main, this)
+			call TimerStart(.main, MAIN_DURATION, true, function thistype.onCheckHit)
+			
+			return this
+		endmethod
+	endstruct
+    
+    private struct FleshWound
+		
+		static method getForUnit takes unit u returns thistype
+			return fleshWoundForCaster[GetUnitId(u)]
+		endmethod
+
+		method onAttack takes unit damageSource, unit damagedUnit, real dmg returns nothing
+			local integer level = GetUnitAbilityLevel(damageSource, SPELL_ID)
+			local FleshWoundData data = FleshWoundData.getForUnit(damagedUnit)
+
+			if (data == 0) then
+				set data = FleshWoundData.create(damagedUnit)
+				set data.target = damagedUnit
+				set data.hitCounter = 1
+				set data.stackCounter = 0
+			endif
+
+			set data.hitCounter = data.hitCounter + 1
+			set data.isHitInTime = true
+			
+			if (data.hitCounter == HITS) then
+				set data.hitCounter = 0
+
+				if (data.stackCounter <= level) then
+					if (data.stackCounter < level) then
+						set data.stackCounter = data.stackCounter + 1
+					endif
+					
+					if (GetUnitBonus(data.target, BONUS_ARMOR) != ARMOR_REDUCE[data.stackCounter]) then
+						call SetUnitBonus(data.target, BONUS_ARMOR, ARMOR_REDUCE[data.stackCounter])
+						call TimedEffect.createOnUnit(EFFECT, data.target, "origin", EFFECT_DURATION)
+					endif
+					
+					if (data.time <= 0) then
+						set data.time = STACK_DURATION
+						set data.stackTimer = NewTimer()
+						call SetTimerData(data.stackTimer, data)
+						call TimerStart(data.stackTimer, 1.0, true, function FleshWoundData.onFleshWoundEnd)
+					else
+						set data.time = STACK_DURATION
+					endif
+				endif			
+			endif
+			
+			if (TimerGetRemaining(data.hitTimer) <= 0) then
+				set data.hitTimer = NewTimer()
+				call SetTimerData(data.hitTimer, data)
+				call TimerStart(data.hitTimer, HIT_DELAY, false, function FleshWoundData.onHitReset)
+			endif
+		endmethod
+
+		static method create takes unit damageSource, unit damagedUnit returns thistype
+            local thistype this = thistype.allocate()
+
+			set fleshWoundForCaster[GetUnitId(damageSource)] = this
+			
+			return this
+        endmethod
     endstruct
 
 	// damageSource == Ghoul
@@ -101,7 +172,7 @@ scope FleshWound initializer init
 			if (fw == 0) then
 				set fw = FleshWound.create(damageSource, damagedUnit)
 			else
-				call fw.onAttack(damagedUnit, damage)
+				call fw.onAttack(damageSource, damagedUnit, damage)
 			endif
         endif
     endfunction

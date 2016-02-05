@@ -1,5 +1,4 @@
-library ClearItems initializer init requires TimerUtils
-
+library ClearItems requires optional WorldBounds
 /*
     This library fixes the leak and the lag caused by unremoved items,
     including powerups and manually-destroyed items.
@@ -13,59 +12,69 @@ library ClearItems initializer init requires TimerUtils
     you can still change their life.  If you set their life to more than 0.405,
     they won't be properly cleaned. You should also remove items manually
     if you kill them when they are carried by a unit.
+	
+	http://www.hiveworkshop.com/forums/jass-resources-412/system-item-cleanup-175663/
 */
-
+   
     globals
         // Interval between item-cleanups.
-        private constant real CLEANING_PERIOD = 5.0
-
-        // Time for the item's death animation; optimized for tomes and runes.
+        private constant real CLEANING_PERIOD = 15
+   
+        // Time for the item's death animation, optimized for tomes and runes.
         private constant real DEATH_TIME = 1.5
     endglobals
-    
-    private struct object
-        item Item
-    endstruct
-    
+   
     globals
-        private object obj
-        private timer tim
+        private keyword S
+        private integer N = 0
+        private code s_code
+        private boolexpr s_bool
+        private timer s_timer = CreateTimer()
+        private item array I
     endglobals
-
-    private function DeleteItem takes nothing returns nothing
-        set tim = GetExpiredTimer()
-        set obj = GetTimerData(tim)
-        call ReleaseTimer(tim)
-        call SetWidgetLife(obj.Item, 1.0)
-        call RemoveItem(obj.Item)
-        set obj.Item = null
-        call obj.destroy()
+   
+    private function DeleteItems takes nothing returns nothing
+        loop
+            set N = N - 1
+            call SetWidgetLife(I[N], 1)
+            call RemoveItem(I[N])
+            set I[N] = null
+            exitwhen (N == 0)
+        endloop
+        call TimerStart(s_timer, CLEANING_PERIOD - DEATH_TIME, true, s_code)
     endfunction
-
+   
     private function CleanItems takes nothing returns boolean
         if (GetWidgetLife(GetFilterItem()) < 0.405) then
-            set tim = NewTimer()
-            set obj = object.create()
-            set obj.Item = GetFilterItem()
-            call SetTimerData(tim, integer(obj))
-            call TimerStart(tim, DEATH_TIME, false, function DeleteItem)
+            set I[N] = GetFilterItem()
+            set N = N + 1
         endif
         return false
     endfunction
-    
-    globals
-        private rect WorldBounds = null
-        private filterfunc Detect = null
-    endglobals
-    
+   
     private function SweepItems takes nothing returns nothing
-        call EnumItemsInRect(WorldBounds, Detect, null)
+        static if (LIBRARY_WorldBounds) then
+            call EnumItemsInRect(WorldBounds.world, s_bool, null)
+        else
+            call EnumItemsInRect(S.world, s_bool, null)
+        endif
+        if (N > 0) then
+            call TimerStart(s_timer, DEATH_TIME, false, function DeleteItems)
+        endif
     endfunction
-
-    private function init takes nothing returns nothing
-        call TimerStart(CreateTimer(), CLEANING_PERIOD, true, function SweepItems)
-        set WorldBounds = GetWorldBounds()
-        set Detect = Filter(function CleanItems)
-    endfunction
-
+   
+    private struct S extends array
+        static if (not LIBRARY_WorldBounds) then
+            static rect world
+        endif
+        static method onInit takes nothing returns nothing
+            static if (not LIBRARY_WorldBounds) then
+                set world = GetWorldBounds()
+            endif
+            set s_code = function SweepItems
+            set s_bool = Filter(function CleanItems)
+            call TimerStart(s_timer, CLEANING_PERIOD, true, s_code)
+        endmethod
+    endstruct
+   
 endlibrary

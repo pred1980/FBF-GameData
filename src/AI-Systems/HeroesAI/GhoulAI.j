@@ -22,6 +22,13 @@ scope GhoulAI
 		// Chance to cast ability
 		private integer array C_Chance
 		private integer array C_Enemies
+		
+		/* Rage */
+		private constant string R_ORDER = "berserk"
+		private constant integer R_RADIUS = 250
+		// Chance to cast ability
+		private integer array R_Chance
+		private integer array R_Enemies
     endglobals
 
     private struct AI extends array
@@ -99,16 +106,22 @@ scope GhoulAI
 		endmethod
        
         method assaultEnemy takes nothing returns nothing  
+			local boolean abilityCasted = false
+			
 			// Claws Attack
-			local real CA_distance
+			local real distance
+			
+			// Rage
+			local unit u
+			local integer amountOfNearEnemies = 0
 			
 			if (.enemyNum > 0) then
 				/* Claws Attack */
-				set CA_distance = Distance(.hx, .hy, GetUnitX(.closestEnemyHero), GetUnitY(.closestEnemyHero))
+				set distance = Distance(.hx, .hy, GetUnitX(.closestEnemyHero), GetUnitY(.closestEnemyHero))
 				
 				if (CA_casted) then
 					// is enemy hero out of range (radius)??
-					if (CA_distance >= CA_RADIUS or .closestEnemyHero == null) then
+					if (distance >= CA_RADIUS or .closestEnemyHero == null) then
 						call IssueImmediateOrder(.hero, CA_ORDER_2)
 						set CA_casted = false
 					else
@@ -118,16 +131,41 @@ scope GhoulAI
 					if (GetRandomInt(0,100) <= CA_Chance[.aiLevel]) then
 						// Cast only if closest enemy hero in distance to the ghoul and
 						// the enemy hero has low hp
-						if ((CA_distance <= CA_RADIUS) and /*
+						if ((distance <= CA_RADIUS) and /*
 						*/	(GetUnitLifePercent(.closestEnemyHero) <= CA_HeroHP[.aiLevel]))then
 							call IssueImmediateOrder(.hero, CA_ORDER_1)
 							set CA_casted = true
+							set abilityCasted = true
 						endif
 					endif
 				endif
+				
+				/* Rage */
+				if (GetRandomInt(0,100) <= R_Chance[.aiLevel]) then
+					call GroupClear(ENUM_GROUP)
+					call GroupAddGroup(.enemies, ENUM_GROUP)
+					
+					loop
+						set u = FirstOfGroup(ENUM_GROUP) 
+						exitwhen u == null 
+						if (Distance(.hx, .hy, GetUnitX(u), GetUnitY(u)) <= R_RADIUS) then
+							set amountOfNearEnemies = amountOfNearEnemies + 1
+						endif
+						call GroupRemoveUnit(ENUM_GROUP, u)
+					endloop
+					
+					// cast Rage only if enough enemies around and in the distance to the Ghoul
+					if (amountOfNearEnemies >= R_Enemies[.aiLevel]) then
+						call IssueImmediateOrder(.hero, R_ORDER)
+						set abilityCasted = true
+					endif
+					
+					set u = null
+				endif
 			endif
-			
-			if ((not CA_casted) and (.orderId != C_ORDER_ID)) then
+
+			if ((not abilityCasted) and /*
+			*/	(.orderId != C_ORDER_ID)) then
 				call .defaultAssaultEnemy()
 			endif
 			
@@ -139,7 +177,7 @@ scope GhoulAI
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
 			// Claws Attack
-			call RegisterHeroAISkill(HERO_ID, 3, 'A04N')
+			call RegisterHeroAISkill(HERO_ID, 1, 'A04N')
 			call RegisterHeroAISkill(HERO_ID, 5, 'A04N') 
 			call RegisterHeroAISkill(HERO_ID, 9, 'A04N') 
 			call RegisterHeroAISkill(HERO_ID, 13, 'A04N') 
@@ -151,7 +189,7 @@ scope GhoulAI
 			call RegisterHeroAISkill(HERO_ID, 14, 'A04K') 
 			call RegisterHeroAISkill(HERO_ID, 17, 'A04K') 
 			// Flesh Wound
-			call RegisterHeroAISkill(HERO_ID, 1, 'A04T') 
+			call RegisterHeroAISkill(HERO_ID, 3, 'A04T') 
 			call RegisterHeroAISkill(HERO_ID, 8, 'A04T') 
 			call RegisterHeroAISkill(HERO_ID, 11, 'A04T') 
 			call RegisterHeroAISkill(HERO_ID, 15, 'A04T') 
@@ -194,8 +232,8 @@ scope GhoulAI
 			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
 			// Claws Attack
 			set CA_Chance[0] = 20
-			set CA_Chance[1] = 25
-			set CA_Chance[2] = 30
+			set CA_Chance[1] = 30
+			set CA_Chance[2] = 40
 			
 			set CA_HeroHP[0] = 50
 			set CA_HeroHP[1] = 45
@@ -203,12 +241,21 @@ scope GhoulAI
 			
 			// Cannibalize
 			set C_Chance[0] = 20
-			set C_Chance[1] = 25
+			set C_Chance[1] = 20
 			set C_Chance[2] = 30
 			
 			set C_Enemies[0] = 4
 			set C_Enemies[1] = 3
 			set C_Enemies[2] = 2
+			
+			// Rage
+			set R_Chance[0] = 20
+			set R_Chance[1] = 30
+			set R_Chance[2] = 30
+			
+			set R_Enemies[0] = 2
+			set R_Enemies[1] = 3
+			set R_Enemies[2] = 4
         endmethod
         
         implement HeroAI     

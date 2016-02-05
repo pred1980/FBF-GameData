@@ -145,10 +145,8 @@ scope WebSystem
 	struct WebSystem
 	
 		static method initialize takes nothing returns nothing
-			local timer t = NewTimer()
-			
 			call MainSetup()
-			call TimerStart(t, GetRandomReal(MIN_TIME, MAX_TIME), true, function Actions )
+			call TimerStart(NewTimer(), GetRandomReal(MIN_TIME, MAX_TIME), true, function Actions )
 		endmethod
 	
 	endstruct

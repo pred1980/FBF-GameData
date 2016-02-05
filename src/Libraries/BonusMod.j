@@ -647,7 +647,7 @@ function SetUnitBonus takes unit u, Bonus abstractBonus, integer amount returns 
             call UnitAddAbility(u, bonus.rawcode + i)
             call UnitMakeAbilityPermanent(u, true, bonus.rawcode + i)
             
-            static if DEBUG_MODE then
+			static if DEBUG_MODE then
                 if GetUnitAbilityLevel(u, bonus.rawcode + i) <= 0 then
                     call ErrorMsg("SetUnitBonus()", "Failed to give the 2^" + I2S(i) + " ability to the unit!")
                 endif

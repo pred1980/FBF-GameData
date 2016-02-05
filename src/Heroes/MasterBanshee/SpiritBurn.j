@@ -114,8 +114,6 @@ scope SpiritBurn initializer Init
         
 		call SetTimerData(t, integer(D))
         call TimerStart(t, manaTimer, true, function Loop)
-        
-		set t = null
     endfunction
 	
 	private function Conditions takes nothing returns boolean

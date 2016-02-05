@@ -258,7 +258,7 @@ scope HeroPickInit
         set HERO_REPICK_RECT[4][1] = GetRectCenterY(gg_rct_HeroRevive5)
         set HERO_ABILITIES[4][0] = 'A04V' //Dark Obedience
         set HERO_ABILITIES[4][1] = 'A04W' //Spirit Burn
-        set HERO_ABILITIES[4][2] = 'A04X' //Cursed Soul
+        set HERO_ABILITIES[4][2] = 'A04S' //Cursed Soul
         set HERO_ABILITIES[4][3] = 'A04Y' //Barrage
         
         //Death Marcher

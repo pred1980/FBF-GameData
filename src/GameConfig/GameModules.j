@@ -7,7 +7,7 @@ scope GameModules
             call FBFMultiboard.create()
 			
 			//Camera System
-			call CameraSystem.initialize()
+			//call CameraSystem.initialize()
 			
 			//Hero Pick Systems
 			call HeroPickInit.initialize()

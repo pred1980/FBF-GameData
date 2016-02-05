@@ -55,6 +55,7 @@ scope Adolescence initializer init
         private unit child
         private real size = 0.00
 		private integer level = 0
+		private timer t
 		
 		method onDestroy takes nothing returns nothing
             set .caster = null
@@ -62,9 +63,8 @@ scope Adolescence initializer init
             set .child = null
         endmethod
         
-        static method onGrowUp takes nothing returns nothing
-			local timer t = GetExpiredTimer()
-            local thistype this = GetTimerData(t)
+        private static method onGrowUp takes nothing returns nothing
+            local thistype this = GetTimerData(GetExpiredTimer())
             
             if not (SpellHelper.isUnitDead(this.child)) then
                 set this.size = this.size + 0.01
@@ -73,16 +73,13 @@ scope Adolescence initializer init
                 call TDS.addDamage(this.child, DAMAGE_PER_SECOND[this.level])
             else
 				//Release Timer
-				call PauseTimer(t)
-				call DestroyTimer(t)
-				set t = null
+				call ReleaseTimer(GetExpiredTimer())
                 call this.destroy()
             endif
         endmethod
         
-        static method onBornChild takes nothing returns nothing
-			local timer t = GetExpiredTimer()
-            local thistype this = GetTimerData(t)
+        private static method onBornChild takes nothing returns nothing
+            local thistype this = GetTimerData(GetExpiredTimer())
             
             set this.child = CreateUnit( this.p, CHILD_ID, GetUnitX(this.egg), GetUnitY(this.egg), 0 )
             call Sound.runSoundOnUnit(SOUND_2, this.child)
@@ -91,33 +88,25 @@ scope Adolescence initializer init
             call SetUnitVertexColor(this.child, PercentTo255(GetRandomReal(1.00, 100.00)), PercentTo255(GetRandomReal(1.00, 100.00)), PercentTo255(GetRandomReal(1.00, 100.00)), PercentTo255(100))
             call UnitAddAbility(this.child, DUMMY_INVENTAR_ID )
             call SetUnitMaxState(this.child, UNIT_STATE_MAX_LIFE, START_HP[this.level])
-            
-            call SetTimerData(t, this )
-            call TimerStart(t, TIMER_INTERVAL, true, function thistype.onGrowUp)
+
+			call TimerStart(GetExpiredTimer(), TIMER_INTERVAL, true, function thistype.onGrowUp)
 			
 			// add to Escort System (only for Bots)
-			//if (Game.isBot[this.pid]) then
+			if (Game.isBot[this.pid]) then
 				call Escort.addUnit(this.caster, this.child)
-			//endif
-            
-			set t = null
-            endmethod
-        
-        static method onEgg takes nothing returns nothing
-			local timer t = GetExpiredTimer()
-            local thistype this = GetTimerData(t)
+			endif
+        endmethod
+		
+        private static method onEgg takes nothing returns nothing
+            local thistype this = GetTimerData(GetExpiredTimer())
             
             call Sound.runSoundOnUnit(SOUND_1, this.egg)
-            
-            call SetTimerData(t, this )
-            call TimerStart(t, CRY_TIME, false, function thistype.onBornChild)
 			
-			set t = null
+			call TimerStart(GetExpiredTimer(), CRY_TIME, false, function thistype.onBornChild)
         endmethod
         
         static method create takes unit caster, real tx, real ty returns thistype
             local thistype this = thistype.allocate()
-			local timer t = CreateTimer()
             
 			set .caster = caster
 			set .p = GetOwningPlayer(.caster)
@@ -126,8 +115,9 @@ scope Adolescence initializer init
             set .egg = CreateUnit(p, EGG_ID, tx, ty, 0)
             call UnitApplyTimedLife(.egg, 'BTLF', HATCHING_TIME)
             
-            call SetTimerData(t, this )
-            call TimerStart(t, HATCHING_TIME, false, function thistype.onEgg )
+			set .t = NewTimer()
+            call SetTimerData(.t, this)
+            call TimerStart(.t, HATCHING_TIME, false, function thistype.onEgg)
         
             return this
         endmethod

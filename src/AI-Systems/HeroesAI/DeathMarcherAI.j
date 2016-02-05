@@ -3,35 +3,13 @@ scope DeathMarcherAI
         private constant integer HERO_ID = 'U019'
 		
 		private HeroAI_Itemset array Itemsets	
-        private group enumGroup = CreateGroup()
     endglobals
     
     private struct AI extends array
-        // The following two methods will print out debug messages only when the events
-        // are enabled
-        method onAttacked takes unit attacker returns nothing
-            //debug call BJDebugMsg("Abomination attacked by " + GetUnitName(attacker))
-        endmethod
-        
-        method onAcquire takes unit target returns nothing
-            //debug call BJDebugMsg("Abomination acquires " + GetUnitName(target))
-        endmethod
-        
         method assaultEnemy takes nothing returns nothing  
-            //debug call BJDebugMsg("Abomination assault Enemy.")
+
 			call .defaultAssaultEnemy()
         endmethod
-        
-        // Cast wind walk if there's an enemy nearby
-        method loopActions takes nothing returns nothing
-            call .defaultLoopActions()
-        endmethod
-        
-        // A custom periodic method is defined for this hero as the AI constantly
-        // searches for units that have their backs to her in order to use Backstab.
-        static method onLoop takes nothing returns nothing
-        
-		endmethod
         
         method onCreate takes nothing returns nothing
 			// Learnset Syntax:
@@ -87,7 +65,6 @@ scope DeathMarcherAI
 			endif
 
 			set .itemBuild = Itemsets[.aiLevel]
-			call BJDebugMsg("Registered Itemset[" + I2S(.aiLevel) + "] for Death Marcher.")
         endmethod
         
         implement HeroAI     

@@ -56,7 +56,7 @@ library TimerUtils initializer init
         private          integer VOFFSET    = OFFSET
               
         //Timers to preload at map init:
-        private constant integer QUANTITY   = 512 //256
+        private constant integer QUANTITY   = 256
         
         //Changing this  to something big will allow you to keep recycling
         // timers even when there are already AN INCREDIBLE AMOUNT of timers in
@@ -129,7 +129,7 @@ library TimerUtils initializer init
         private constant integer HELD=0x28829022
         //use a totally random number here, the more improbable someone uses it, the better.
         
-        private boolean       didinit = false
+        private boolean didinit = false
     endglobals
     private keyword init
 
@@ -142,7 +142,7 @@ library TimerUtils initializer init
     //! endtextmacro
 
     function NewTimerEx takes integer value returns timer
-        if (tN==0) then
+		if (tN==0) then
             if (not didinit) then 
                 //This extra if shouldn't represent a major performance drawback
                 //because QUANTITY rule is not supposed to be broken every day. 
@@ -151,7 +151,7 @@ library TimerUtils initializer init
             else
                 //If this happens then the QUANTITY rule has already been broken, try to fix the
                 // issue, else fail.
-                debug call BJDebugMsg("NewTimer: Warning, Exceeding TimerUtils_QUANTITY, make sure all timers are getting recycled correctly")
+                debug call BJDebugMsg("NewTimer: Warning, Exceeding TimerUtils_QUANTITY, make sure all timers are getting recycled correctly. " + I2S(tN) + "/" + I2S(QUANTITY) + " available!!!")
                 set tT[0]=CreateTimer()
                 static if( not USE_HASH_TABLE) then
                     debug call BJDebugMsg("In case of errors, please increase it accordingly, or set TimerUtils_USE_HASH_TABLE to true")

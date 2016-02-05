@@ -74,5 +74,11 @@ library SpellHelper uses SimError, MiscFunctions, RestoreMana
 			call SetUnitExploded(target, true)
 			call KillUnit(target)
 		endmethod
+		
+		static method switchAbility takes unit caster, integer oldSpellId, integer newSpellId, integer level returns nothing
+			call UnitRemoveAbility(caster, oldSpellId)
+			call UnitAddAbility(caster, newSpellId)
+			call SetUnitAbilityLevel(caster, newSpellId, level)
+		endmethod
 	endstruct
 endlibrary

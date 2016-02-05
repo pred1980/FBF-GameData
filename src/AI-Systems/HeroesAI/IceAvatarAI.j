@@ -7,14 +7,16 @@ scope IceAvatarAI
 		/* Ice Tornado */
 		private constant string IT_ORDER = "spellshield"
 		// This constant must be the sum of AOE_RANGE + CRCL_RADIUS in the IceTornado.j
-		private constant integer IT_RADIUS = 308
+		private constant integer IT_RADIUS = 200
 		// How many units have to be in radius to cast Ice Tornado?
 		private integer array IT_Enemies
 		// Chance to cast ability
 		private integer array IT_Chance
+		// min percent hp to cast ability
+		private real array IT_MIN_HP
 		
 		/* Freezing Breath */
-		private constant string FB_ORDER = "spellshield"
+		private constant string FB_ORDER = "chemicalrage"
 		// Chance to cast ability
 		private integer array FB_Chance
 		private integer array FB_Random
@@ -63,7 +65,8 @@ scope IceAvatarAI
 			
 			if (.enemyNum > 0) then
 				/* Ice Tornado */
-				if ((GetRandomInt(0,100) <= IT_Chance[.aiLevel])) then
+				if ((GetRandomInt(0,100) <= IT_Chance[.aiLevel]) and /*
+				*/	(.percentLife >= IT_MIN_HP[.aiLevel])) then
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
 					
@@ -212,9 +215,14 @@ scope IceAvatarAI
 			set IT_Chance[1] = 25
 			set IT_Chance[2] = 30
 			
-			set IT_Enemies[0] = 2
-			set IT_Enemies[1] = 4
-			set IT_Enemies[2] = 6
+			set IT_Enemies[0] = 4
+			set IT_Enemies[1] = 6
+			set IT_Enemies[2] = 8
+			
+			// percent value
+			set IT_MIN_HP[0] = .25
+			set IT_MIN_HP[1] = .30
+			set IT_MIN_HP[2] = .35
 			
 			// Freezing Breath
 			set FB_Chance[0] = 20
@@ -234,9 +242,9 @@ scope IceAvatarAI
 			set FOD_Chance[1] = 30
 			set FOD_Chance[2] = 40
 			
-			set FOD_Enemies[0] = 6
-			set FOD_Enemies[1] = 8
-			set FOD_Enemies[2] = 10
+			set FOD_Enemies[0] = 8
+			set FOD_Enemies[1] = 10
+			set FOD_Enemies[2] = 12
         endmethod
         
         implement HeroAI     

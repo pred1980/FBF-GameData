@@ -148,7 +148,6 @@ scope ShatteringJavelin initializer Init
 
 		static method create takes unit caster, unit target, integer level returns thistype
             local thistype this = thistype.allocate(GetWidgetX(caster), GetWidgetY(caster), Z_START, target, Z_END)
-            local timer t = NewTimer()
             
             set this.fxpath = LANCE_MODEL
             set this.scale = MISSILE_SCALE

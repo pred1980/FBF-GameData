@@ -128,10 +128,8 @@ scope SkeletonSystem
     struct SkeletonSystem
 	
 		static method initialize takes nothing returns nothing
-			local timer t = NewTimer()
-			
 			call MainSetup()
-			call TimerStart(t, GetRandomReal(MIN_TIME, MAX_TIME), true, function onCreate )
+			call TimerStart(NewTimer(), GetRandomReal(MIN_TIME, MAX_TIME), true, function onCreate )
 		endmethod
 	
 	endstruct

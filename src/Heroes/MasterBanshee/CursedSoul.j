@@ -10,15 +10,16 @@ scope CursedSoul initializer init
      *
      */ 
     globals
-        private constant integer SPELL_ID = 'A04X'
-        private constant integer DUMMY_SPELL_ID_1 = 'Abun'
+        private constant integer SPELL_ID = 'A04S'
+		// RANGE must be the same value like in the ability!
+		private constant real RANGE = 600
+		private constant integer DUMMY_SPELL_ID_1 = 'Abun'
         private constant integer DUMMY_SPELL_ID_2 = 'Aloc'
         private constant integer DUMMY_SPELL_ID_3 = 'Amrf'
         private constant real POSSESSION_DUR = 10.0
         private constant real MAX_LIFE_TIME_SOUL = 120.0
         private constant real INTERVAL = 1.0
         private constant real PERIOD = 3.5
-        private constant real AOE = 600
         private constant real RADIUS = 350
         private constant real NORMAL_MOVEMENT_SPEED = 300.0
         private constant string START_EFFECT = "Abilities\\Spells\\Undead\\AnimateDead\\AnimateDeadTarget.mdl"
@@ -50,7 +51,7 @@ scope CursedSoul initializer init
         set targets = NewGroup()
         set taggedTargets = NewGroup()
     endfunction
-    
+	
     private struct CursedSoul
         private unit caster
         private unit target
@@ -61,10 +62,10 @@ scope CursedSoul initializer init
         private timer t
         private effect fx
         
-        static thistype tempthis = 0
+        private static thistype tempthis = 0
         
 		method onDestroy takes nothing returns nothing
-            set .caster = null
+			set .caster = null
             set .target = null
             set .soul = null
             set .t = null
@@ -123,8 +124,7 @@ scope CursedSoul initializer init
             local player pt = GetOwningPlayer(this.target)
             local player ps = GetOwningPlayer(this.soul)
             local boolean b = false
-			local integer level = GetUnitAbilityLevel(this.caster, SPELL_ID)
-            
+			
             if (IsUnitInRange(this.soul, this.target, 50.0) or SpellHelper.isUnitDead(this.soul) or SpellHelper.isUnitDead(this.target)) then
                 set b = true
                 call ReleaseTimer(GetExpiredTimer())
@@ -143,10 +143,10 @@ scope CursedSoul initializer init
                         call RemoveUnit(this.soul)
                         call DestroyEffect(AddSpecialEffectTarget(SPIRIT_EFFECT_POSSESSION, this.target, "origin"))
                         call SetUnitOwner(this.target, ps, true)
-                        call UnitApplyTimedLife(this.target, 'Bpos', POSSESSION_DUR * level)
+                        call UnitApplyTimedLife(this.target, 'Bpos', POSSESSION_DUR * this.level)
                     else
                         set DamageType = SPELL
-						call SpellHelper.damageTarget(this.caster, this.target, DAMAGE[level], false, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+						call SpellHelper.damageTarget(this.caster, this.target, DAMAGE[this.level], false, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
                         call RemoveUnit(this.soul)
                     endif
                 endif
@@ -156,14 +156,14 @@ scope CursedSoul initializer init
             set pt = null
             set ps = null
         endmethod
-        
+		
 		static method create takes unit caster, unit target returns thistype
             local thistype this = thistype.allocate()
-            
+			
             set .caster = caster
 			set .target = target
-            set .soul = CreateUnit(GetOwningPlayer(caster), GetUnitTypeId(target), GetUnitX(target), GetUnitY(target), GetUnitFacing(target))
-            
+            set .level = GetUnitAbilityLevel(.caster, SPELL_ID)
+			set .soul = CreateUnit(GetOwningPlayer(caster), GetUnitTypeId(target), GetUnitX(target), GetUnitY(target), GetUnitFacing(target))
             call SetUnitMoveSpeed(.soul, NORMAL_MOVEMENT_SPEED)
             call UnitApplyTimedLife( .soul, 'BTLF', MAX_LIFE_TIME_SOUL )
             call DestroyEffect(AddSpecialEffect(START_EFFECT, GetUnitX(target), GetUnitY(target)))
@@ -182,14 +182,41 @@ scope CursedSoul initializer init
             call SetTimerData(.t, this)
             call TimerStart(.t, INTERVAL, true, function thistype.onWaitNearbyEnemy)
             
-            set .tempthis = this
+			set .tempthis = this
             return this
         endmethod
               
     endstruct
+	
+	private function filtUnits takes nothing returns boolean
+		return SpellHelper.isUnitDead(GetFilterUnit())
+	endfunction
 
-   private function Actions takes nothing returns nothing
-        call CursedSoul.create(GetTriggerUnit(), GetSpellTargetUnit())
+    private function Actions takes nothing returns nothing
+		local unit caster = GetTriggerUnit()
+		local unit target
+		local integer level = GetUnitAbilityLevel(caster, SPELL_ID)
+		local group g = CreateGroup()
+		
+		call GroupEnumUnitsInRange(g, GetUnitX(caster), GetUnitY(caster), RANGE, Filter(function filtUnits))
+		set target = FirstOfGroup(g)
+		
+		if (target != null) then
+			call CursedSoul.create(caster, target)
+		else
+			//Return Mana Costs
+			call SpellHelper.restoreMana(SPELL_ID, caster, null, 0., 0.)
+			//Reset Cooldown of the Ability
+			call SpellHelper.resetAbility(caster, SPELL_ID)
+			//Error Message
+			call SimError(GetOwningPlayer(caster), "There are no usable corpses nearby.")
+		endif
+		
+		call GroupClear(g)
+		call DestroyGroup(g)
+		set g = null
+		set caster = null
+		set target = null
     endfunction
 	
 	private function Conditions takes nothing returns boolean

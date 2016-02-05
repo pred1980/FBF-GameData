@@ -125,14 +125,14 @@ scope HeroPickMods
                     exitwhen i >= bj_MAX_PLAYERS
                     if not BaseMode.hasPicked[i] and Game.isPlayerInGame(i) then
                         if (DEBUG_MODE) then
-								set randomIndex = 3//GetRandomInt(0,3)
+								set randomIndex = GetRandomInt(0,4)
 							else
 								set randomIndex = BaseMode.getRandomHero()
 							endif
 						loop
                             exitwhen BaseMode.onEnterFilter(GET_HERO_PICK_UNIT(i), randomIndex)
                             if (DEBUG_MODE) then
-								set randomIndex = 3//GetRandomInt(0,3)
+								set randomIndex = GetRandomInt(0,4)
 							else
 								set randomIndex = BaseMode.getRandomHero()
 							endif
@@ -265,7 +265,11 @@ scope HeroPickMods
             endloop
 			
             call Repick.setRepick(true)
-            call TimerStart(t, ALL_PICK_HERO_PICK_END_DURATION + 5.0, false, function thistype.onHeroPickEndCallback )
+			if (DEBUG_MODE) then
+				call TimerStart(t, 1.0, false, function thistype.onHeroPickEndCallback)
+			else
+				call TimerStart(t, ALL_PICK_HERO_PICK_END_DURATION + 5.0, false, function thistype.onHeroPickEndCallback)
+			endif
         endmethod
         
         private method cleanup takes integer i returns nothing

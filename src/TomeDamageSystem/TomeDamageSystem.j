@@ -24,8 +24,10 @@ scope TomeDamageSystem
             local integer index = 0
 			local integer tempDmg = 0
 			local integer damage = oriDamage
+			local item ite
 			
 			call UnitAddAbility(target, HERO_INVENTAR_ID)
+
 			loop
                 exitwhen i == max
 				//Schaden ermitteln und vergleichen
@@ -38,23 +40,26 @@ scope TomeDamageSystem
 					endif
 					
 					if (isBonus) then
-						call UnitAddItemByIdSwapped(POSITIVE_ITEMS[index], target )
+						set ite = CreateItem(POSITIVE_ITEMS[index], GetUnitX(target), GetUnitY(target))
 					else
-						call UnitAddItemByIdSwapped(NEGATIVE_ITEMS[index], target )
+						set ite = CreateItem(NEGATIVE_ITEMS[index], GetUnitX(target), GetUnitY(target))
 					endif
+					call UnitAddItem(target, ite)
+					call RemoveItem(ite)
 					
 					set tempDmg = tempDmg + ITEM_VALUES[index]
 					set damage = damage - ITEM_VALUES[index]
 					
 					if (damage == 0) then
-						set i = max-1
+						set i = max - 1
 					endif
-					call RemoveItem( GetLastCreatedItem() )
+					
+					set ite = null
 				endif
 				set i = i + 1
 			endloop
-			call UnitRemoveAbility(target, HERO_INVENTAR_ID)
 			
+			call UnitRemoveAbility(target, HERO_INVENTAR_ID)		
 		endmethod
 		
 		static method resetDamage takes unit target returns nothing

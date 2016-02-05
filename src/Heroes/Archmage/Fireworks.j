@@ -120,16 +120,12 @@ scope Fireworks initializer init
     endfunction
     
     private function Actions takes nothing returns nothing
-        local timer t
+        local timer t = NewTimer()
         local Fireworks f
 		
-        set t = NewTimer()
 		set f = Fireworks.create(GetSpellAbilityUnit(), t)
 		call SetTimerData(t, integer(f))
 		call TimerStart(t, INTERVAL, true, function Shower)
-		
-		
-        //set t = null
     endfunction
 	
 	private function Conditions takes nothing returns boolean

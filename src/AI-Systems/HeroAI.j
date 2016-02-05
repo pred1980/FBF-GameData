@@ -491,7 +491,7 @@ scope HeroAI
         endmethod
 		
 		method defaultLoopActions takes nothing returns nothing
-        	call showState()
+        	//call showState()
 			
 			if (.state == STATE_GO_SHOP) then
 				call .canShop()
@@ -634,6 +634,7 @@ scope HeroAI
 			 */
 			if (.state != STATE_IDLE) then
 				if ((.goodCondition) and /*
+				*/	(.safeUnit == null) and /*
 				*/	(.state != STATE_GO_SHOP) and /*
 				*/	(.state != STATE_RUN_AWAY) and /*
 				*/	(.state != STATE_ENGAGED) or /*
