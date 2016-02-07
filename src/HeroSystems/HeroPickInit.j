@@ -266,7 +266,7 @@ scope HeroPickInit
         set HERO_REPICK_RECT[5][0] = GetRectCenterX(gg_rct_HeroRevive6)
         set HERO_REPICK_RECT[5][1] = GetRectCenterY(gg_rct_HeroRevive6)
         set HERO_ABILITIES[5][0] = 'A04Z' //Death Pact
-        set HERO_ABILITIES[5][1] = 'A050' //Soul Trap
+        set HERO_ABILITIES[5][1] = 'A00I' //Soul Trap
         set HERO_ABILITIES[5][2] = 'A052' //Mana Concentration
         set HERO_ABILITIES[5][3] = 'A053' //Boiling Blood
         

@@ -2,30 +2,97 @@ scope DeathMarcherAI
     globals
         private constant integer HERO_ID = 'U019'
 		
-		private HeroAI_Itemset array Itemsets	
+		private HeroAI_Itemset array Itemsets
+		private group enumGroup = CreateGroup()
+		
+		/* Death Pact */
+		private constant string DP_ORDER = "deathpact"
+		// DP_RADIUS must be the same value like in DeathPact.j (RADIUS)
+		private constant real DP_RADIUS = 800
+		// Chance to cast ability
+		private integer array DP_Chance
+		private integer array DP_Allies
+		private real array DP_Min_HP
     endglobals
     
     private struct AI extends array
-        method assaultEnemy takes nothing returns nothing  
+		
+		private method doDeathPact takes nothing returns boolean
+			// Death Pact
+			local integer amountOfNearAllies = 0
+			local unit ally
+			local unit allyLowHP
+			local boolean abilityCasted = false
+			
+			call GroupClear(ENUM_GROUP)
+			call GroupAddGroup(.allies, ENUM_GROUP)
+			
+			loop
+				set ally = FirstOfGroup(ENUM_GROUP)
+				exitwhen ((ally == null) or (amountOfNearAllies >= DP_Allies[.aiLevel]))
+				set amountOfNearAllies = 0
+				// Has the ally full hp?
+				if (GetUnitLifePercent(ally) == 100.) then
+					call GroupEnumUnitsInRange(enumGroup, GetUnitX(ally), GetUnitY(ally), DP_RADIUS, null)
+					call GroupRemoveUnit(enumGroup, .hero)
+					// loop and check ho
+					loop
+						set allyLowHP = FirstOfGroup(enumGroup)
+						exitwhen (allyLowHP == null)
+						if ((SpellHelper.isValidAlly(allyLowHP, .hero)) and /*
+						*/	(GetUnitLifePercent(allyLowHP) <= DP_Min_HP[.aiLevel])) then
+							set amountOfNearAllies = amountOfNearAllies + 1
+							// if reached amount of near Allies, stop and cast ability!
+							if (amountOfNearAllies >= DP_Allies[.aiLevel]) then
+								call GroupClear(ENUM_GROUP)
+								call GroupClear(enumGroup)
+								set abilityCasted = IssueTargetOrder(.hero, DP_ORDER, ally)
+							endif
+						endif
+						call GroupRemoveUnit(enumGroup, allyLowHP)
+					endloop
+				endif
+				call GroupRemoveUnit(ENUM_GROUP, ally)
+			endloop
 
-			call .defaultAssaultEnemy()
+			call GroupClear(ENUM_GROUP)
+			call GroupClear(enumGroup)
+			set ally = null
+			set allyLowHP = null
+			
+			return abilityCasted
+		endmethod
+		
+        method assaultEnemy takes nothing returns nothing  
+			local boolean abilityCasted = false
+			
+			if (.enemyNum > 0) then
+				/* Death Pact */
+				if (GetRandomInt(0,100) <= DP_Chance[.aiLevel]) then
+					set abilityCasted = doDeathPact()
+				endif
+			endif	
+
+			if (not abilityCasted) then
+				call .defaultAssaultEnemy()
+			endif
         endmethod
         
         method onCreate takes nothing returns nothing
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
-			// Soul Trap
-			call RegisterHeroAISkill(HERO_ID, 1, 'A050')
-			call RegisterHeroAISkill(HERO_ID, 5, 'A050') 
-			call RegisterHeroAISkill(HERO_ID, 9, 'A050') 
-			call RegisterHeroAISkill(HERO_ID, 13, 'A050') 
-			call RegisterHeroAISkill(HERO_ID, 16, 'A050') 
 			// Death Pact
-			call RegisterHeroAISkill(HERO_ID, 2, 'A04Z') 
+			call RegisterHeroAISkill(HERO_ID, 1, 'A04Z') 
 			call RegisterHeroAISkill(HERO_ID, 7, 'A04Z') 
 			call RegisterHeroAISkill(HERO_ID, 10, 'A04Z') 
 			call RegisterHeroAISkill(HERO_ID, 14, 'A04Z') 
 			call RegisterHeroAISkill(HERO_ID, 17, 'A04Z') 
+			// Soul Trap
+			call RegisterHeroAISkill(HERO_ID, 2, 'A00I')
+			call RegisterHeroAISkill(HERO_ID, 5, 'A00I') 
+			call RegisterHeroAISkill(HERO_ID, 9, 'A00I') 
+			call RegisterHeroAISkill(HERO_ID, 13, 'A00I') 
+			call RegisterHeroAISkill(HERO_ID, 16, 'A00I') 
 			// Mana Concentration
 			call RegisterHeroAISkill(HERO_ID, 3, 'A052') 
 			call RegisterHeroAISkill(HERO_ID, 8, 'A052') 
@@ -65,6 +132,22 @@ scope DeathMarcherAI
 			endif
 
 			set .itemBuild = Itemsets[.aiLevel]
+			
+			/* Ability Setup */
+			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
+			// Death Pact
+			set DP_Chance[0] = 10
+			set DP_Chance[1] = 20
+			set DP_Chance[2] = 30
+			
+			set DP_Allies[0] = 3
+			set DP_Allies[1] = 5
+			set DP_Allies[2] = 7
+			
+			// percent value
+			set DP_Min_HP[0] = 20.
+			set DP_Min_HP[1] = 25.
+			set DP_Min_HP[2] = 30.
         endmethod
         
         implement HeroAI     

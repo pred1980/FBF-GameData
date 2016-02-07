@@ -29,10 +29,11 @@ scope MasterBansheeAI
     
     private struct AI extends array
 	
-		private method doCursedSoul takes nothing returns nothing
+		private method doCursedSoul takes nothing returns boolean
 			local unit corpse
 			local unit u
 			local group g
+			local boolean abilityCasted = false
 			
 			set g = CreateGroup()
 			call GroupClear(ENUM_GROUP)
@@ -43,7 +44,7 @@ scope MasterBansheeAI
 				exitwhen corpse == null 
 				if ((SpellHelper.isUnitDead(corpse)) and /*
 				*/	(Distance(.hx, .hy, GetUnitX(corpse), GetUnitY(corpse)) < CS_RADIUS)) then
-					call IssueImmediateOrder(.hero, CS_ORDER)
+					set abilityCasted = IssueImmediateOrder(.hero, CS_ORDER)
 					call GroupClear(ENUM_GROUP)
 				endif
 				call GroupRemoveUnit(ENUM_GROUP, corpse)
@@ -53,6 +54,8 @@ scope MasterBansheeAI
 			set g = null
 			set corpse = null	
 			set u = null
+			
+			return abilityCasted
 		endmethod
 	
         method assaultEnemy takes nothing returns nothing  
@@ -64,8 +67,7 @@ scope MasterBansheeAI
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
 					call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
-					call IssueTargetOrder(.hero, DO_ORDER, FirstOfGroup(ENUM_GROUP))
-					set abilityCasted = true
+					set abilityCasted = IssueTargetOrder(.hero, DO_ORDER, FirstOfGroup(ENUM_GROUP))
 				endif
 				
 				/* Spirit Burn */
@@ -73,14 +75,12 @@ scope MasterBansheeAI
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
 					call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
-					call IssueTargetOrder(.hero, SB_ORDER, FirstOfGroup(ENUM_GROUP))
-					set abilityCasted = true
+					set abilityCasted = IssueTargetOrder(.hero, SB_ORDER, FirstOfGroup(ENUM_GROUP))
 				endif
 				
 				/* Cursed Soul */
 				if ((GetRandomInt(0,100) <= CS_Chance[.aiLevel]) and (not abilityCasted)) then
-					call doCursedSoul()
-					set abilityCasted = true
+					set abilityCasted = doCursedSoul()
 				endif
 				
 				/* Barrage */
@@ -89,8 +89,7 @@ scope MasterBansheeAI
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
 					call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
-					call IssueTargetOrder(.hero, B_ORDER, FirstOfGroup(ENUM_GROUP))
-					set abilityCasted = true
+					set abilityCasted = IssueTargetOrder(.hero, B_ORDER, FirstOfGroup(ENUM_GROUP))
 				endif
 			endif
 			

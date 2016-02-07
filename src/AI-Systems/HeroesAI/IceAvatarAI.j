@@ -82,8 +82,7 @@ scope IceAvatarAI
 					
 					// cast tornado only if enough enemies around and in the distance to the Ice Avatar
 					if (amountOfNearEnemies >= IT_Enemies[.aiLevel]) then
-						call IssueImmediateOrder(.hero, IT_ORDER)
-						set abilityCasted = true
+						set abilityCasted = IssueImmediateOrder(.hero, IT_ORDER)
 					endif
 				endif
 				
@@ -116,8 +115,7 @@ scope IceAvatarAI
 					
 					// cast tornado only if enough enemies around and in the distance to the Random Unit
 					if (amountOfNearEnemies >= FB_Enemies[.aiLevel]) then
-						call IssueTargetOrder(.hero, FB_ORDER, u)
-						set abilityCasted = true
+						set abilityCasted = IssueTargetOrder(.hero, FB_ORDER, u)
 					endif
 				endif
 				
@@ -140,8 +138,7 @@ scope IceAvatarAI
 					
 					// cast tornado only if enough enemies around and in the distance to the Ice Avatar
 					if (amountOfNearEnemies >= FOD_Enemies[.aiLevel]) then
-						call IssueImmediateOrder(.hero, FOD_ORDER)
-						set abilityCasted = true
+						set abilityCasted = IssueImmediateOrder(.hero, FOD_ORDER)
 					endif
 				endif
 			endif
