@@ -7,6 +7,7 @@ scope FleshWound initializer init
 	 *		13.04.2015: Code Refactoring
 	 *					Integrated SpellHelper for filtering
 	 *		31.01.2016: Reworked stack process (was necessary for working correctly in AI System)
+	 *		07.02.2016: Bugfixing
      *
      */
     private keyword FleshWound
@@ -15,8 +16,6 @@ scope FleshWound initializer init
     globals
         private constant integer SPELL_ID = 'A04T'
         private constant integer HITS = 2
-		// This duration is to check every 2s if after each stroke comes a new
-		private constant real MAIN_DURATION = 2.0
 		// This delay is for reseting the hitCounter + stackCounter if no stroke comes after the last one
 		private constant real HIT_DELAY = 3.0
 		// This duration describes how long the "-armor" works
@@ -42,14 +41,20 @@ scope FleshWound initializer init
 		unit target
 		integer hitCounter
 		integer stackCounter
-		timer main
 		timer hitTimer
 		timer stackTimer
 		boolean isHitInTime
-		real time
+		real time = 0.
+		trigger t
+		private static thistype tempthis = 0
 		
 		method onDestroy takes nothing returns nothing
+			set fleshWoundForTarget[GetUnitId(.target)] = 0
 			set .target = null
+		endmethod
+		
+		private static method onUnitDeath takes nothing returns nothing
+			call .tempthis.destroy()
 		endmethod
 		
 		static method getForUnit takes unit u returns thistype
@@ -63,39 +68,31 @@ scope FleshWound initializer init
 			if (data.time <= 0) then
 				call ReleaseTimer(GetExpiredTimer())
 				call SetUnitBonus(data.target, BONUS_ARMOR, 0)
-				set data.stackCounter = 0
-			endif
-		endmethod
-		
-		private static method onCheckHit takes nothing returns nothing
-			local thistype data = GetTimerData(GetExpiredTimer())
-		
-			if (SpellHelper.isUnitDead(data.target)) then
-				call ReleaseTimer(GetExpiredTimer())
-				call data.destroy()
-			else
-				set data.isHitInTime = false
 			endif
 		endmethod
 		
 		static method onHitReset takes nothing returns nothing
 			local thistype data = GetTimerData(GetExpiredTimer())
 			
+			call ReleaseTimer(GetExpiredTimer())
 			if (not data.isHitInTime) then
-				call ReleaseTimer(GetExpiredTimer())
 				set data.hitCounter = 0
 				set data.stackCounter = 0
+				set data.isHitInTime = false
 			endif
 		endmethod
 
 		static method create takes unit damagedUnit returns thistype
 			local thistype this = thistype.allocate()
+			local trigger t = CreateTrigger()
 
 			set fleshWoundForTarget[GetUnitId(damagedUnit)] = this
 			
-			set .main = NewTimer()
-			call SetTimerData(.main, this)
-			call TimerStart(.main, MAIN_DURATION, true, function thistype.onCheckHit)
+			call TriggerRegisterUnitEvent(t, damagedUnit, EVENT_UNIT_DEATH)
+			call TriggerAddAction(t, function thistype.onUnitDeath)
+			set t = null
+			
+			set .tempthis = this
 			
 			return this
 		endmethod
@@ -114,7 +111,7 @@ scope FleshWound initializer init
 			if (data == 0) then
 				set data = FleshWoundData.create(damagedUnit)
 				set data.target = damagedUnit
-				set data.hitCounter = 1
+				set data.hitCounter = 0
 				set data.stackCounter = 0
 			endif
 
@@ -134,7 +131,7 @@ scope FleshWound initializer init
 						call TimedEffect.createOnUnit(EFFECT, data.target, "origin", EFFECT_DURATION)
 					endif
 					
-					if (data.time <= 0) then
+					if (data.time <= 0.) then
 						set data.time = STACK_DURATION
 						set data.stackTimer = NewTimer()
 						call SetTimerData(data.stackTimer, data)
@@ -145,14 +142,16 @@ scope FleshWound initializer init
 				endif			
 			endif
 			
-			if (TimerGetRemaining(data.hitTimer) <= 0) then
+			if (TimerGetRemaining(data.hitTimer) <= 0.) then
 				set data.hitTimer = NewTimer()
 				call SetTimerData(data.hitTimer, data)
 				call TimerStart(data.hitTimer, HIT_DELAY, false, function FleshWoundData.onHitReset)
+				
+				set data.isHitInTime = false
 			endif
 		endmethod
 
-		static method create takes unit damageSource, unit damagedUnit returns thistype
+		static method create takes unit damageSource returns thistype
             local thistype this = thistype.allocate()
 
 			set fleshWoundForCaster[GetUnitId(damageSource)] = this
@@ -160,7 +159,7 @@ scope FleshWound initializer init
 			return this
         endmethod
     endstruct
-
+	
 	// damageSource == Ghoul
 	// damagedUnit  == Target
     private function Actions takes unit damagedUnit, unit damageSource, real damage returns nothing
@@ -169,15 +168,30 @@ scope FleshWound initializer init
         if (GetUnitAbilityLevel(damageSource, SPELL_ID) > 0 	and /*
 		*/	SpellHelper.isValidEnemy(damagedUnit, damageSource) and /*
 		*/	DamageType == PHYSICAL ) then
-			if (fw == 0) then
-				set fw = FleshWound.create(damageSource, damagedUnit)
-			else
+			if (fw != 0) then
 				call fw.onAttack(damageSource, damagedUnit, damage)
 			endif
         endif
     endfunction
+	
+	private function SkillActions takes nothing returns nothing
+		local unit caster = GetTriggerUnit()
+		local FleshWound fw = FleshWound.getForUnit(caster)
+		
+		if (fw == 0) then
+			set fw = FleshWound.create(caster)
+		endif
+		
+        set caster = null
+	endfunction
+	
+	//The condition if trigger should run (refers to the event : EVENT_PLAYER_HERO_SKILL)
+    private function Conditions takes nothing returns boolean
+        return GetUnitAbilityLevel(GetTriggerUnit(), SPELL_ID) != 0
+    endfunction
 
     private function init takes nothing returns nothing
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_HERO_SKILL, function Conditions, function SkillActions)
         call RegisterDamageResponse( Actions )
 		call MainSetup()
     endfunction

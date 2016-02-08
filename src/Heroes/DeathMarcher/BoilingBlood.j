@@ -4,7 +4,6 @@ scope BoilingBlood initializer init
                     burning them from within. The spells effects last as long as they stay around The Gatekeeper. 
                     When their HP falls below 25%, they have a chance to explode, dealing area damage to nearby units. 
                     Mana Concentration increases damage and explosion chance.
-     * Last Update: 01.11.2013
      * Changelog: 
      *     01.11.2013: Abgleich mit OE und der Exceltabelle
 	 *     18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
@@ -47,18 +46,18 @@ scope BoilingBlood initializer init
     endglobals
 
     private struct BoilingBlood
-        unit caster
-        integer level = 0
-        integer id
-        real x
-        real y
-        real damage
-        real chance
-        real explodeDamage
-        timer t
-        group targets
-        group explodes
-        static thistype tempthis = 0
+        private unit caster
+        private integer level = 0
+        private integer id
+        private real x
+        private real y
+        private real damage
+        private real chance
+        private real explodeDamage
+        private timer t
+        private group targets
+        private group explodes
+        private static thistype tempthis = 0
         
         static method getForUnit takes unit u returns thistype
 			return spellForUnit[GetUnitId(u)]
@@ -144,10 +143,8 @@ scope BoilingBlood initializer init
     endfunction
     
     private function Actions takes nothing returns nothing
-        local BoilingBlood bb = 0
-		local unit u = GetTriggerUnit()
-        
-        set bb = BoilingBlood.getForUnit(u)
+        local unit u = GetTriggerUnit()
+		local BoilingBlood bb = BoilingBlood.getForUnit(u)
 		
 		if bb == 0 then
 			set bb = BoilingBlood.create(u, GetSpellTargetX(), GetSpellTargetY())

@@ -56,8 +56,7 @@ scope BehemotAI
 					call GroupClear(ENUM_GROUP)
 					call GroupAddGroup(.enemies, ENUM_GROUP)
 					call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
-					call IssueTargetOrder(.hero, ET_ORDER, FirstOfGroup(ENUM_GROUP))
-					set abilityCasted = true
+					set abilityCasted = IssueTargetOrder(.hero, ET_ORDER, FirstOfGroup(ENUM_GROUP))
 				endif
 				
 				/* Beast Stomper */
@@ -74,8 +73,7 @@ scope BehemotAI
 					endloop
 					// stomp only if enough enemies around and in the distance to behemot
 					if (amountOfNearEnemies >= BS_Enemies[.aiLevel]) then
-						call IssueImmediateOrder(.hero, BS_ORDER)
-						set abilityCasted = true
+						set abilityCasted = IssueImmediateOrder(.hero, BS_ORDER)
 					endif
 				endif
 				
@@ -91,10 +89,9 @@ scope BehemotAI
 						endif
 						call GroupRemoveUnit(ENUM_GROUP, u)
 					endloop
-					// stomp only if enough enemies around and in the distance to behemot
+					
 					if (amountOfNearAllies >= R_Allies[.aiLevel]) then
-						call IssueImmediateOrder(.hero, R_ORDER)
-						set abilityCasted = true
+						set abilityCasted = IssueImmediateOrder(.hero, R_ORDER)
 					endif
 				endif
 				
@@ -117,8 +114,7 @@ scope BehemotAI
 
 					// Cast Adrenalin Rush when enough units in his way
 					if (amountOfNearEnemies >= AR_Enemies[.aiLevel]) then
-						call IssueTargetOrder(.hero, AR_ORDER, .furthestEnemy)
-						set abilityCasted = true
+						set abilityCasted = IssueTargetOrder(.hero, AR_ORDER, .furthestEnemy)
 					endif
 				endif
 			endif

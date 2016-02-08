@@ -35,15 +35,13 @@ scope NerubianWidowAI
 			
 			/* Spider Web */
 			if (GetRandomInt(0,100) <= SW_Chance[.aiLevel]) then
-				call IssueImmediateOrder(.hero, SW_ORDER)
-				set abilityCasted = true
+				set abilityCasted = IssueImmediateOrder(.hero, SW_ORDER)
 			endif
 			
 			/* Sprint */
 			if (GetRandomInt(0,100) <= S_Chance[.aiLevel] and not S_isCasted) then
-				call IssueImmediateOrder(.hero, S_ORDER_1)
-				set abilityCasted = true
-				set S_isCasted = true
+				set abilityCasted = IssueImmediateOrder(.hero, S_ORDER_1)
+				set S_isCasted = IssueImmediateOrder(.hero, S_ORDER_1)
 			endif
 			
 			// if hero is in base stop "Sprint"
@@ -64,8 +62,7 @@ scope NerubianWidowAI
 				/* Adolescence */
 				if ((GetRandomInt(0,100) <= A_Chance[.aiLevel])) then
 					if (Distance(.hx, .hy, GetUnitX(.closestEnemy), GetUnitY(.closestEnemy)) > A_MIN_DISTANCE) then
-						call IssuePointOrder(.hero, A_ORDER, GetUnitX(.hero), GetUnitY(.hero))
-						set abilityCasted = true
+						set abilityCasted = IssuePointOrder(.hero, A_ORDER, GetUnitX(.hero), GetUnitY(.hero))
 					endif
 				endif
 				
@@ -74,8 +71,7 @@ scope NerubianWidowAI
 				*/	(GetRandomInt(0,100) <= WB_Chance[.aiLevel]) and /*
 				*/	(.closestEnemyHero != null)	and not /*
 				*/	(abilityCasted)) then
-					call IssueTargetOrder(.hero, WB_ORDER, .closestEnemyHero)
-					set abilityCasted = true
+					set abilityCasted = IssueTargetOrder(.hero, WB_ORDER, .closestEnemyHero)
 				endif
 			endif
 			

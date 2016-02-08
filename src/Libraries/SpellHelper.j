@@ -5,6 +5,7 @@ library SpellHelper uses SimError, MiscFunctions, RestoreMana
     endglobals
 
 	struct SpellHelper
+		private static real pause = 0.0
 	
 		static method isValidEnemy takes unit target, unit caster returns boolean
 			return IsUnitEnemy(target, GetOwningPlayer(caster)) and not /*
@@ -79,6 +80,15 @@ library SpellHelper uses SimError, MiscFunctions, RestoreMana
 			call UnitRemoveAbility(caster, oldSpellId)
 			call UnitAddAbility(caster, newSpellId)
 			call SetUnitAbilityLevel(caster, newSpellId, level)
+		endmethod
+		
+		static method unpauseUnit takes unit target returns nothing
+			call SetUnitPropWindow(target, .pause)
+		endmethod
+		
+		static method pauseUnit takes unit target returns nothing
+			set .pause = GetUnitPropWindow(target)
+			call SetUnitPropWindow(target, 0) 
 		endmethod
 	endstruct
 endlibrary

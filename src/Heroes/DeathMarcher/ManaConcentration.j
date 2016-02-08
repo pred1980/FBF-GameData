@@ -9,7 +9,9 @@ library ManaConcentration initializer init requires TimerUtils
      *
      */
     globals
-        private constant integer SPELL_ID = 'A052'
+        private constant integer SPELL_ID = 'A04X'
+		private constant integer BUFF_PLACER_ID = 'A052'
+        private constant integer BUFF_ID = 'B00I'
         private constant real SACRIFICED = 0.5 //50%
         private constant real array DURATION
         private constant boolean SHOW_MESSAGE = false
@@ -37,29 +39,41 @@ library ManaConcentration initializer init requires TimerUtils
     endfunction
 
     private struct ManaConcentration
-        unit caster
-        unit dummy
-        integer level = 0
-        integer id = 0
-        real mana
-        real maxMana
-        real percent
-        timer t
+        private unit caster
+        private unit dummy
+        private integer level = 0
+        private integer id = 0
+        private real mana
+        private real maxMana
+        private real percent
+		private static integer buffType = 0
+		private dbuff buff = 0
 		
 		method onDestroy takes nothing returns nothing
-            call ReleaseTimer( .t )
-            set .t = null
             set .caster = null
             set .dummy = null
         endmethod
 		
-		static method onEnd takes nothing returns nothing
-            local thistype this = GetTimerData(GetExpiredTimer())
-            //Reset ManaAmout Multiplier
+		static method onBuffEnd takes nothing returns nothing
+			local dbuff b = GetEventBuff()
+			local thistype this = thistype(b.data)
+			
+			//Reset ManaAmout Multiplier
             set ManaAmount[.id] = 1.0
-            call this.destroy()
+            
+			if b.isExpired then
+                call thistype(b.data).destroy()
+            endif
         endmethod
-
+		
+		static method onBuffAdd takes nothing returns nothing
+			local dbuff b = GetEventBuff()
+            local thistype this = allocate()
+			
+			set b.data = integer(this)
+			set buff = b
+		endmethod
+		
         static method create takes unit caster returns thistype
             local thistype this = thistype.allocate()
             
@@ -69,19 +83,23 @@ library ManaConcentration initializer init requires TimerUtils
             set .mana = GetUnitState(.caster, UNIT_STATE_MANA)
             set .maxMana = GetUnitState(.caster, UNIT_STATE_MAX_MANA)
             set .percent = .mana / .maxMana
-            set .t = NewTimer()
-            call SetTimerData(.t, this)
-            call TimerStart(.t, DURATION[.level], false, function thistype.onEnd)
-            //save Mana Amount Multiplier for Player
+            
+			//save Mana Amount Multiplier for Player
             set ManaAmount[.id] = ( percent * ( SACRIFICED + ( SACRIFICED * I2R(.level) ) ) ) + 1
             call SetUnitState( .caster, UNIT_STATE_MANA, .mana/2 )
             
             static if SHOW_MESSAGE then
                 call DisplayTextToPlayer( GetOwningPlayer(.caster),0,0, "Mana sacrificed: " + R2S(.mana/2) + " Multiplier: " + R2SW(ManaAmount[.id],3,2))
             endif
-            
+
+			call UnitAddBuff(.caster, .caster, .buffType, DURATION[.level], .level)
+			
             return this
         endmethod
+		
+		static method onInit takes nothing returns nothing
+			set .buffType = DefineBuffType(BUFF_PLACER_ID, BUFF_ID, 0, false, true, thistype.onBuffAdd, 0, thistype.onBuffEnd)
+		endmethod
     endstruct
 
     private function Actions takes nothing returns nothing

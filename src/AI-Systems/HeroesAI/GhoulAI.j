@@ -37,10 +37,11 @@ scope GhoulAI
 			return SpellHelper.isValidEnemy(GetFilterUnit(), tempthis.hero)
 		endmethod
 	
-		private method doCannibalize takes nothing returns nothing
+		private method doCannibalize takes nothing returns boolean
 			local unit corpse
 			local unit u
 			local group g
+			local boolean abilityCasted = false
 			
 			if ((GetRandomInt(0,100) <= C_Chance[.aiLevel]) and (.orderId != C_ORDER_ID)) then
 				set g = CreateGroup()
@@ -57,7 +58,7 @@ scope GhoulAI
 						if (CountUnitsInGroup(g) == 0) then
 							call GroupClear(g)
 							call GroupClear(ENUM_GROUP)
-							call IssueImmediateOrder(.hero, C_ORDER)
+							set abilityCasted = IssueImmediateOrder(.hero, C_ORDER)
 						endif
 					endif
 					call GroupRemoveUnit(ENUM_GROUP, corpse)
@@ -68,9 +69,13 @@ scope GhoulAI
 				set corpse = null	
 				set u = null
 			endif
+			
+			return abilityCasted
 		endmethod
 	
 		method idleActions takes nothing returns  nothing
+			local boolean abilityCasted = false
+			
 			/* Claws Attack */
 			// Deactivate Claws Attack because the Ghoul is running away!
 			if (CA_casted) then
@@ -78,18 +83,20 @@ scope GhoulAI
 				set CA_casted = false
 			endif
 			
-			if ((not CA_casted) and (.orderId != C_ORDER_ID))then
+			/* Cannibalize */
+			set abilityCasted = doCannibalize()
+			
+			if ((not CA_casted) and (.orderId != C_ORDER_ID) and (not abilityCasted))then
 				// just for development...
 				set .moveX = -6535.1
 				set .moveY = 2039.7
 				call .move()
 			endif
-			
-			/* Cannibalize */
-			call doCannibalize()
 		endmethod
 	
 		method runActions takes nothing returns nothing
+			local boolean abilityCasted = false
+			
 			/* Claws Attack */
 			// Deactivate Claws Attack because the Ghoul is running away!
 			if (CA_casted) then
@@ -97,12 +104,12 @@ scope GhoulAI
 				set CA_casted = false
 			endif
 			
-			if (.orderId != C_ORDER_ID) then
+			/* Cannibalize */
+			set abilityCasted = doCannibalize()
+			
+			if ((.orderId != C_ORDER_ID) and (not abilityCasted)) then
 				call .run()
 			endif
-			
-			/* Cannibalize */
-			call doCannibalize()
 		endmethod
        
         method assaultEnemy takes nothing returns nothing  
@@ -133,9 +140,8 @@ scope GhoulAI
 						// the enemy hero has low hp
 						if ((distance <= CA_RADIUS) and /*
 						*/	(GetUnitLifePercent(.closestEnemyHero) <= CA_HeroHP[.aiLevel]))then
-							call IssueImmediateOrder(.hero, CA_ORDER_1)
-							set CA_casted = true
-							set abilityCasted = true
+							set CA_casted = IssueImmediateOrder(.hero, CA_ORDER_1)
+							set abilityCasted = IssueImmediateOrder(.hero, CA_ORDER_1)
 						endif
 					endif
 				endif
@@ -156,21 +162,20 @@ scope GhoulAI
 					
 					// cast Rage only if enough enemies around and in the distance to the Ghoul
 					if (amountOfNearEnemies >= R_Enemies[.aiLevel]) then
-						call IssueImmediateOrder(.hero, R_ORDER)
-						set abilityCasted = true
+						set abilityCasted = IssueImmediateOrder(.hero, R_ORDER)
 					endif
 					
 					set u = null
 				endif
 			endif
+			
+			/* Cannibalize */
+			set abilityCasted = doCannibalize()
 
 			if ((not abilityCasted) and /*
 			*/	(.orderId != C_ORDER_ID)) then
 				call .defaultAssaultEnemy()
 			endif
-			
-			/* Cannibalize */
-			call doCannibalize()
         endmethod
 
         method onCreate takes nothing returns nothing
