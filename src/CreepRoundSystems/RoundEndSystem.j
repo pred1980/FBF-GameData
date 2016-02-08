@@ -133,6 +133,9 @@ scope RoundEndSystem
                     call DisplayTimedTextToPlayer(Player(i),0.0 ,0.0 ,TEXT_DURATION , "You received " + "|cffffcc00" + I2S(Evaluation.getLumber(RoundSystem.actualRound)) +"|r Lumber.")
 					
 					set TowerAIEventListener.getTowerBuildAI(i).canBuild = true
+					if (TowerAIEventListener.getTowerBuildAI(i).countUpgradeQueue() > 0) then
+						call TowerAIEventListener.getTowerBuildAI(i).upgradeFirstFromQueue()
+					endif
 					call TowerAIEventListener.getTowerBuildAI(i).buildNext()
 				endif
                 set i = i + 1

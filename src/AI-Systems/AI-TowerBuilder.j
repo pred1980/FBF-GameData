@@ -543,12 +543,17 @@ scope TowerBuildAI
                         set lastTowerBuildKey = towerBuildKey
                     endif
                     exitwhen (.towers.getColumnValue(towerBuildKey, .towers.columnChildTower) == towerUnitId or /*
-                    */		 .towers.getColumnValue(towerBuildKey, .towers.columnUnitId) == 0 and .towers.getColumnValue(towerBuildKey, .towers.columnChildTower) == 0)
-                    set towerBuildKey = .towers.getColumnValue(towerBuildKey, .towers.columnChildTower)
+                    */		 (.towers.getColumnValue(towerBuildKey, .towers.columnUnitId) == 0 and .towers.getColumnValue(towerBuildKey, .towers.columnChildTower) == 0))
+
+                    set towerBuildKey = .towers.getTowerKeyByUnitId(.towers.getColumnValue(towerBuildKey, .towers.columnChildTower))
+
                 endloop
                 set result = .upgrade(.towers.getTowerKeyByUnitId(.towers.getColumnValue(lastTowerBuildKey, .towers.columnUnitId)))
                 if result then
                     set .lumberCost = .lumberCost - .towers.getColumnValue(towerBuildKey, .towers.columnWoodCost)
+                    if .lumberCost < 0 then
+                        set .lumberCost = 0
+                    endif
                 endif
                 if result == false or .towers.getColumnValue(towerBuildKey, .towers.columnUnitId) != towerUnitId then
                     call .addToUpgradeQueue(towerUnitId)
@@ -682,8 +687,9 @@ scope TowerBuildAI
             local integer towerUnitId
             local integer parentTowerKey
             local integer towerKey
+            
             if (.isEnabled()) then
-                if (.canBuild) then
+                if (.canBuild and playerLumber > .lumberCost) then
                     set .builded = false
                     set towerUnitId = .config.getRandomBuilding()
                     set towerKey = .towers.getTowerKeyByUnitId(towerUnitId)

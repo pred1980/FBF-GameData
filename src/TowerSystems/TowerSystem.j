@@ -622,7 +622,7 @@ scope TowerSystem
         
         //This method is for giving lumber back to the player
         private static method onSell takes nothing returns nothing
-        local unit u = GetTriggerUnit()
+        	local unit u = GetTriggerUnit()
             local unit t = GetTrainedUnit()
             local player thePlayer = GetOwningPlayer(u)
             local integer playerId = GetPlayerId(thePlayer)
@@ -710,7 +710,7 @@ scope TowerSystem
                     call TriggerRegisterPlayerUnitEvent(t6, Player(i), EVENT_PLAYER_UNIT_TRAIN_FINISH, null)
 					
 					//Init TowerConfig for the Common Towers
-					if (not Game.isRealPlayer(i)) then  
+					if (not Game.isRealPlayer(i)) then
 						call TowerConfig.setBuildConfigCommonTowers(i, Game.getAIDifficulty(i))
 					endif
                 endif
