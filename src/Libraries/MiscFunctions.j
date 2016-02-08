@@ -646,5 +646,22 @@ library MiscFunctions requires GroupUtils
 		set u = null
 		call ReleaseGroup(g)
 	endfunction
+	
+	globals
+		private unit array randomUnits
+	endglobals
+	
+	function GetRandomUnitFromGroup takes group g returns unit
+		local integer i = 0
+		
+		loop
+			set randomUnits[i] = FirstOfGroup(g)
+			exitwhen randomUnits[i] == null
+			call GroupRemoveUnit(g, randomUnits[i])
+			set i = i + 1
+		endloop
+
+		return randomUnits[GetRandomInt(0, i)]
+	endfunction
 
 endlibrary

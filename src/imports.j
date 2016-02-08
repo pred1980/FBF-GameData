@@ -159,6 +159,8 @@
 //! import "src\ItemAbilities\SkullRod.j"
 //! import "src\ItemAbilities\ReflectionOfIllidan.j"
 //! import "src\ItemAbilities\TalismanOfTranslocation.j"
+//! import "src\ItemAbilities\HealingPotion.j"
+//! import "src\ItemAbilities\ManaPotion.j"
 
 /* Tome Damage System */
 //! import "src\TomeDamageSystem\TomeDamageSystem.j"

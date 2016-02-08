@@ -21,8 +21,7 @@ scope IceAvatarAI
 		private integer array FB_Chance
 		private integer array FB_Random
 		private integer array FB_Enemies
-		private unit array randomUnits
-		// How many random units has to be checked for nearby enemies?
+				// How many random units has to be checked for nearby enemies?
 		private integer array BR_Random
 		// Radius for each random unit (have to be the same like in the FreezingBreath.j)
 		private constant integer FB_RADIUS = 350
@@ -36,20 +35,7 @@ scope IceAvatarAI
 		private integer array FOD_Enemies
     endglobals
 	
-	private function GetRandomUnitFromGroup takes group g returns unit
-		local integer i = 0
-		
-		loop
-			set randomUnits[i] = FirstOfGroup(g)
-			exitwhen randomUnits[i] == null
-			call GroupRemoveUnit(g, randomUnits[i])
-			set i = i + 1
-		endloop
-
-		return randomUnits[GetRandomInt(0, i)]
-	endfunction
-	    
-    private struct AI extends array
+	private struct AI extends array
 		
 		method assaultEnemy takes nothing returns nothing  
 			local boolean abilityCasted = false
@@ -113,7 +99,6 @@ scope IceAvatarAI
 					call DestroyGroup(FB_groupRandomUnits)
 					set FB_groupRandomUnits = null
 					
-					// cast tornado only if enough enemies around and in the distance to the Random Unit
 					if (amountOfNearEnemies >= FB_Enemies[.aiLevel]) then
 						set abilityCasted = IssueTargetOrder(.hero, FB_ORDER, u)
 					endif

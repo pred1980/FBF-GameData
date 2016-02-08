@@ -18,9 +18,10 @@ scope ForsakenTeleportSystem initializer init
         real x
         real y
         player p
+		integer pid
         
         method onDestroy takes nothing returns nothing
-            set .target = null
+			set .target = null
             set .reg = null
         endmethod
     endstruct
@@ -50,19 +51,21 @@ scope ForsakenTeleportSystem initializer init
         /* Nach kurzem Delay zur Basis zurueck teleportieren */
         static method onReturnToBaseDelay takes nothing returns nothing
             local TeleportData data = GetTimerData(GetExpiredTimer())
-			
-			call UnitRemoveType(data.target, UNIT_TYPE_PEON)
-			
+						
             if IsUnitInRegion(data.reg, data.target) and not IsUnitDead(data.target) then
-                if data.counter > 1 then
+				if (data.counter > 1) then
                     call SetUnitPosition(data.target, data.x, data.y)
             
                     if ((GetLocalPlayer() == data.p) and IsUnitType(data.target, UNIT_TYPE_HERO)) then
                         call PanCameraToTimed(data.x, data.y, 0.00)
                     endif
 					call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(data.target), GetUnitY(data.target)))
-                    call IssueImmediateOrder(data.target, "holdposition")
 					
+					if (Game.isBot[data.pid]) then
+						call SpellHelper.unpauseUnit(data.target)
+					else
+						call IssueImmediateOrder(data.target, "holdposition")
+					endif
 					
                     return
                 endif
@@ -80,6 +83,7 @@ scope ForsakenTeleportSystem initializer init
             local region r = GetTriggeringRegion()
             local unit u = GetTriggerUnit()
             local player p = GetOwningPlayer(u)
+			local integer pid = GetPlayerId(p)
             local real x = GetRectCenterX(TELEPORT_RECTS[1])
             local real y = GetRectCenterY(TELEPORT_RECTS[1])
             local timer t = NewTimer()
@@ -90,11 +94,13 @@ scope ForsakenTeleportSystem initializer init
             set data.x = x
             set data.y = y
             set data.p = p
+			set data.pid = pid
+
+			if (Game.isBot[pid]) then
+				call SpellHelper.pauseUnit(data.target)
+			endif
 			
-			// Ignore attacks from enemies
-			call UnitAddType(u, UNIT_TYPE_PEON)
-			
-            call SetTimerData(t, data)
+			call SetTimerData(t, data)
             call TimerStart(t, TELEPORT_DELAY, true, function thistype.onReturnToBaseDelay)
             
             set u = null

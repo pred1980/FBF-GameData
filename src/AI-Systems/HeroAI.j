@@ -192,6 +192,8 @@ scope HeroAI
 				call BJDebugMsg(GetUnitName(.hero) + ": STATE_IDLE")
 			elseif (.state == STATE_RUN_AWAY) then
 				call BJDebugMsg(GetUnitName(.hero) + ": STATE_RUN_AWAY")
+			else
+				call BJDebugMsg(GetUnitName(.hero) + OrderId2StringBJ(GetUnitCurrentOrder(GetTriggerUnit())))
 			endif
 		endmethod
 		
@@ -212,6 +214,10 @@ scope HeroAI
     	method operator percentMana takes nothing returns real
 			return .mana / .maxMana
         endmethod
+		
+		method operator isChanneling takes nothing returns boolean
+            return IsUnitChanneling(.hero)
+		endmethod
 		
 		method updateLifeAndMana takes nothing returns nothing
 			set .life = GetWidgetLife(.hero)
@@ -251,10 +257,6 @@ scope HeroAI
 			else
 				return  ((.percentLife <= .55) or (.percentLife <= .55 and .percentMana <= .45))
 			endif   
-        endmethod
-		
-		method operator isChanneling takes nothing returns boolean
-            return IsUnitChanneling(.hero)
         endmethod
 		
 		// Action methods
@@ -492,7 +494,7 @@ scope HeroAI
 		
 		method defaultLoopActions takes nothing returns nothing
         	//call showState()
-			
+
 			if (.state == STATE_GO_SHOP) then
 				call .canShop()
 				
@@ -521,14 +523,16 @@ scope HeroAI
 			endif
 			
 			if (.state == STATE_IDLE) then
-				static if thistype.idleActions.exists then
-					call .idleActions()
-				else
-					// just for development...
-					// REMOVE later from AI: Ghoul, ...
-					set .moveX = -6535.1
-					set .moveY = 2039.7
-					call .move()
+				if (not .isChanneling) then
+					static if thistype.idleActions.exists then
+						call .idleActions()
+					else
+						// just for development...
+						// REMOVE later from AI: Ghoul, ...
+						set .moveX = -6535.1
+						set .moveY = 2039.7
+						call .move()
+					endif
 				endif
 			endif
 			
@@ -550,10 +554,13 @@ scope HeroAI
 			endif
 			
 			if (.state == STATE_ENGAGED) then
-				static if thistype.assaultEnemy.exists then
-					call .assaultEnemy()
+				if (not .isChanneling) then
+					static if thistype.assaultEnemy.exists then
+						call .assaultEnemy()
+					else
+						call .defaultAssaultEnemy()
+					endif
 				else
-					call .defaultAssaultEnemy()
 				endif
 			endif
         endmethod
