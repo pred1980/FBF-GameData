@@ -510,6 +510,9 @@ scope TowerSystem
                     else
                         set ACOLYTS[i] = CreateUnit(Player(i), ACOLYTE_III_ID, START_POS_X[i], START_POS_Y[i], bj_UNIT_FACING)
                     endif
+					if not (Game.isRealPlayer(i)) then
+	                    call TowerAIEventListener.getTowerBuildAI(i).setBuilder(ACOLYTS[i])
+                    endif
                     call Usability.getTextMessage(0, 8, true, Player(i), true, 3.5)
                 endif
                 set i = i + 1
