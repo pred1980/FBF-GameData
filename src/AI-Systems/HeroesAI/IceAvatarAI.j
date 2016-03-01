@@ -21,8 +21,6 @@ scope IceAvatarAI
 		private integer array FB_Chance
 		private integer array FB_Random
 		private integer array FB_Enemies
-				// How many random units has to be checked for nearby enemies?
-		private integer array BR_Random
 		// Radius for each random unit (have to be the same like in the FreezingBreath.j)
 		private constant integer FB_RADIUS = 350
 		

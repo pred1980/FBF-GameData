@@ -176,15 +176,18 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                 endloop
             endmethod
 
-            static method create takes unit u, integer level, real x, real y returns thistype
+            static method create takes unit caster, integer level, real x, real y returns thistype
                 local thistype this = allocate()
+				local player p = GetOwningPlayer(caster)
+				local integer pid = GetPlayerId(p)
+				
                 set lvl = level - 1
                 
                 if ZOMBIE_SPAWN_EFFECT != "" then
                     call DestroyEffect(AddSpecialEffect(ZOMBIE_SPAWN_EFFECT, x, y))
                 endif
                 
-                set zombie = CreateUnit(GetOwningPlayer(u), ZOMBIE_ID[lvl], x, y, GetRandomReal(0.00, 360.00))
+                set zombie = CreateUnit(p, ZOMBIE_ID[lvl], x, y, GetRandomReal(0.00, 360.00))
                 call SetUnitMaxState(zombie, UNIT_STATE_MAX_LIFE, ZOMBIE_HP[lvl])
 				call SetUnitState(zombie, UNIT_STATE_LIFE, GetUnitState(zombie, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
 				call TDS.addDamage(zombie, ZOMBIE_DAMAGE[lvl])
@@ -194,15 +197,22 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                 call SetUnitAbilityLevel(zombie, ZOMBIE_AURA_ABILITY, lvl + 1)
                 call SetUnitAnimation(zombie, "birth")
                 set t[zombie] = integer(this)
+				
+				// add to Escort System (only for Bots)
+				if (Game.isBot[pid]) then
+					call Escort.addUnit(caster, zombie)
+				endif
                 
-                set summoner = u
+                set summoner = caster
                 set dmgBoni = DamageBonus.create(zombie)
                 call dmgBoni.add(TEMP_ZOMBIE_DAMAGE_NEW[GetUnitId(summoner)])
                 call TriggerRegisterUnitEvent(onDeath, zombie, EVENT_UNIT_DEATH)
                 call listAdd()
+				
                 if count == 1 then
                     call TimerStart(ticker, ZOMBIE_AURA_DAMAGE_INTERVAL, true, function thistype.doAuraDamage)
                 endif
+				
                 return this
             endmethod
             

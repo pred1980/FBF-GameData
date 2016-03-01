@@ -106,23 +106,27 @@ scope MasterBansheeAI
 			call RegisterHeroAISkill(HERO_ID, 5, 'A04V') 
 			call RegisterHeroAISkill(HERO_ID, 9, 'A04V') 
 			call RegisterHeroAISkill(HERO_ID, 13, 'A04V') 
-			call RegisterHeroAISkill(HERO_ID, 16, 'A04V') 
+			call RegisterHeroAISkill(HERO_ID, 16, 'A04V')
+			
 			// Spirit Burn
 			call RegisterHeroAISkill(HERO_ID, 3, 'A04W') 
 			call RegisterHeroAISkill(HERO_ID, 8, 'A04W') 
 			call RegisterHeroAISkill(HERO_ID, 11, 'A04W') 
 			call RegisterHeroAISkill(HERO_ID, 15, 'A04W') 
 			call RegisterHeroAISkill(HERO_ID, 19, 'A04W') 
+			
 			// Cursed Soul
 			call RegisterHeroAISkill(HERO_ID, 2, 'A04S') 
 			call RegisterHeroAISkill(HERO_ID, 7, 'A04S') 
 			call RegisterHeroAISkill(HERO_ID, 10, 'A04S') 
 			call RegisterHeroAISkill(HERO_ID, 14, 'A04S') 
 			call RegisterHeroAISkill(HERO_ID, 17, 'A04S') 
+			
 			// Barrage
 			call RegisterHeroAISkill(HERO_ID, 6, 'A04Y')
 			call RegisterHeroAISkill(HERO_ID, 12, 'A04Y')
 			call RegisterHeroAISkill(HERO_ID, 18, 'A04Y')
+			
 			//Heroes Will
 			call RegisterHeroAISkill(HERO_ID, 4, 'A021')
 			

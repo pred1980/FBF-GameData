@@ -16,7 +16,6 @@
 //! import "src\Libraries\ListModule.j"
 //! import "src\Libraries\SpellSystem.j"
 //! import "src\Libraries\SpellEvent.j"
-//! import "src\Libraries\SpellEvent.j"
 //! import "src\Libraries\SpellHelper.j"
 //! import "src\Libraries\IndexerUtils.j"
 //! import "src\Libraries\AbilityEvent.j"
@@ -65,7 +64,6 @@
 //! import "src\Libraries\FieldOfView.j"
 //! import "src\Libraries\Escort.j"
 //! import "src\Libraries\WorldBounds.j"
-
 
 /* XE Libraries */
 //! import "src\Libraries\XE\xepreload.j"
@@ -123,7 +121,6 @@
 //! import "src\AI-Systems\HeroesAI\OgreWarriorAI.j"
 //! import "src\AI-Systems\HeroesAI\GiantTurtleAI.j"
 
-
 /* Hero Systems */
 //! import "src\HeroSystems\HeroPickInit.j"
 //! import "src\HeroSystems\HeroPickSystem.j"
@@ -138,7 +135,7 @@
 //! import "src\ItemSystems\ItemShops.j"
 //! import "src\ItemSystems\ItemRegister.j"
 //! import "src\ItemSystems\Items.j"
-//! import "src\ItemSystems\EasyItemStacknSplit.j"
+//! import "src\ItemSystems\ItemStacking.j"
 
 /* Item Abilities */
 //! import "src\ItemAbilities\AngerOfThrall.j"
@@ -288,9 +285,6 @@
 //! import "src\BroodMotherSystems\BroodMotherSystem.j"
 // import "src\BroodMotherSystems\Eggshack.j"
 
-/* Weather System */
-//! import "src\WeatherSystem\WeatherSystem.j"
-
 /* Camera System */
 // import "src\CameraSystem\CameraSystem.j"
 
@@ -306,7 +300,7 @@
 // import "src\MiscSystems\MagicImmunity.j"
 // import "src\MiscSystems\DomeMagicImmunity.j"
 
-/* Dialog System*/
+/* Dialog System */
 //! import "src\DialogSystem\DialogSystem.j"
 //! import "src\DialogSystem\Dialog.j"
 
@@ -316,7 +310,7 @@
  * HEROES
  */
  
- // import "src\Heroes\HerosWill.j"
+// import "src\Heroes\HerosWill.j"
  
 /* Behemoth */
 //! import "src\Heroes\Behemoth\ExplosiveTantrum.j"

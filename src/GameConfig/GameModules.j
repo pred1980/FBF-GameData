@@ -5,10 +5,7 @@ scope GameModules
 		static method initialize takes nothing returns nothing
 			//Multiboard
             call FBFMultiboard.create()
-			
-			//Camera System
-			//call CameraSystem.initialize()
-			
+						
 			//Hero Pick Systems
 			call HeroPickInit.initialize()
 			call HeroPickSystem.initialize()
@@ -32,9 +29,6 @@ scope GameModules
 			
 			//XP System
 			call XPSystem.initialize()
-			
-			//Weather System
-			//call IWS.initialize()
 			
 			//Tower System
 			call TowerSystem.initialize()
@@ -92,6 +86,9 @@ scope GameModules
 			
 			//Test: Send Unit System
 			call CustomCreepSystem.initialize()
+			
+			// Regional Fog (Graveyard)
+			//Game.initRegionalFog()
 		endmethod
 	
 	endstruct

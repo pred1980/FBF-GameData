@@ -136,6 +136,7 @@ scope HeroAI
 		private timer t
 		Itemset itemBuild
 		private integer itemSlotCount
+		group deads
 		group units
 		group allies        
         group enemies
@@ -196,7 +197,7 @@ scope HeroAI
 				call BJDebugMsg(GetUnitName(.hero) + OrderId2StringBJ(GetUnitCurrentOrder(GetTriggerUnit())))
 			endif
 		endmethod
-		
+				
 		method operator gold takes nothing returns integer
 			return GetPlayerState(.owner, PLAYER_STATE_RESOURCE_GOLD)
     	endmethod
@@ -293,18 +294,16 @@ scope HeroAI
                     if (IsUnitType(u, UNIT_TYPE_HERO)) then
 						//call BJDebugMsg(GetUnitName(u) + " is an ally hero!")
 						call GroupAddUnit(tempthis.allyHeroes, u)
-					else
-						call GroupAddUnit(tempthis.allies, u)
 					endif
+					call GroupAddUnit(tempthis.allies, u)
                     set tempthis.allyNum = tempthis.allyNum + 1
                 // Filter unit --> is an enemy, only enum it if it's visible???
                 elseif (SpellHelper.isValidEnemy(u, tempthis.hero) and IsUnitVisible(u, tempthis.owner)) then
-                   if (IsUnitType(u, UNIT_TYPE_HERO)) then
+                    if (IsUnitType(u, UNIT_TYPE_HERO)) then
 						//call BJDebugMsg(GetUnitName(u) + " is an enemy hero!")
 						call GroupAddUnit(tempthis.enemyHeroes, u)
-					else
-						call GroupAddUnit(tempthis.enemies, u)
 					endif
+					call GroupAddUnit(tempthis.enemies, u)
 					set tempthis.enemyNum = tempthis.enemyNum + 1
 					//call BJDebugMsg("enemyNum: " + I2S(tempthis.enemyNum))
 				// Filter unit --> is fountain???
@@ -329,6 +328,9 @@ scope HeroAI
 					//call BJDebugMsg(GetUnitName(u) + " is a Shop!")
 					call GroupAddUnit(tempthis.shops, u)
                     set tempthis.shopNum = tempthis.shopNum + 1
+				elseif (SpellHelper.isUnitDead(u)) then
+					//call BJDebugMsg(GetUnitName(u) + " is a Shop!")
+					call GroupAddUnit(tempthis.deads, u)
 				else
 					//call BJDebugMsg(GetUnitName(u) + " is actualy not defined!")
 				endif
@@ -404,13 +406,14 @@ scope HeroAI
 		
 		private method useHealingPotion takes nothing returns nothing
 			local Item it
+			set .itemsetIndex = 0
 			
 			loop
 				set it = .itemBuild.item(.itemsetIndex)
 				exitwhen (.itemsetIndex == .itemBuild.size)
 				if (it == HEALING_POTION) then
 					loop
-						exitwhen ((not .badCondition) or .itemBuild.getStack(.itemsetIndex) == 0)
+						exitwhen (.itemBuild.getStack(.itemsetIndex) == 0)
 						call UnitUseItem(.hero, UnitItemInSlot(.hero, .itemsetIndex))
 						call .itemBuild.decreaseStack(.itemsetIndex)
 					endloop
@@ -421,13 +424,14 @@ scope HeroAI
 		
 		private method useManaPotion takes nothing returns nothing
 			local Item it
+			set .itemsetIndex = 0
 			
 			loop
 				set it = .itemBuild.item(.itemsetIndex)
 				exitwhen (.itemsetIndex == .itemBuild.size)
 				if (it == MANA_POTION) then
 					loop
-						exitwhen ((not .badCondition) or .itemBuild.getStack(.itemsetIndex) == 0)
+						exitwhen (.itemBuild.getStack(.itemsetIndex) == 0)
 						call UnitUseItem(.hero, UnitItemInSlot(.hero, .itemsetIndex))
 						call .itemBuild.decreaseStack(.itemsetIndex)
 					endloop
@@ -494,6 +498,12 @@ scope HeroAI
 		
 		method defaultLoopActions takes nothing returns nothing
         	//call showState()
+			
+			// If the hero feel bad... use heal and mana potions
+			if (.badCondition) then
+				call useHealingPotion()
+				call useManaPotion()
+			endif
 
 			if (.state == STATE_GO_SHOP) then
 				call .canShop()
@@ -537,8 +547,6 @@ scope HeroAI
 			endif
 			
 			if (.state == STATE_RUN_AWAY) then
-				// First use heal potions before run away
-				call useHealingPotion()
 				// if still need more hp/mana, run away!
 				if (.badCondition) then
 					// Locate the next teleporter back to base!
@@ -591,6 +599,7 @@ scope HeroAI
 			set .furthestAllyHero = null
 			
 			// Group enumeration
+			call GroupClear(.deads)
 			call GroupClear(.units)
 			call GroupClear(.enemies)
 			call GroupClear(.enemyHeroes)
@@ -686,6 +695,7 @@ scope HeroAI
 			set .aiLevel = Game.getAIDifficulty(.pid)
 			set .heroLevel = GetUnitLevel(.hero)
 			set .orderId = GetUnitCurrentOrder(.hero)
+			set .deads = CreateGroup()
 			set .units = CreateGroup()
 			set .enemies = CreateGroup()
 			set .enemyHeroes = CreateGroup()
@@ -709,7 +719,7 @@ scope HeroAI
 					set lvl = lvl + 1
 				endloop
 			endif
-
+			
 			set .t = NewTimerEx(this)
             call TimerStart(.t, DEFAULT_PERIOD, true, function thistype.defaultLoop)
 			

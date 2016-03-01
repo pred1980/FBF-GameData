@@ -31,7 +31,7 @@ scope CoalitionTeleportSystem initializer init
 		static unit teleporter
 		
 		/* Nach kurzem Delay zur Basis zurueck teleportieren */
-        static method onReturnToBaseDelay takes nothing returns nothing
+        private static method onReturnToBaseDelay takes nothing returns nothing
             local TeleportData data = GetTimerData(GetExpiredTimer())
 			
             if IsUnitInRegion(data.reg, data.target) and not SpellHelper.isUnitDead(data.target) then
@@ -45,9 +45,8 @@ scope CoalitionTeleportSystem initializer init
                     
 					if (Game.isBot[data.pid]) then
 						call SpellHelper.unpauseUnit(data.target)
-					else
-						call IssueImmediateOrder(data.target, "holdposition")
 					endif
+					call IssueImmediateOrder(data.target, "holdposition")
 					
 					return
                 endif
@@ -60,7 +59,7 @@ scope CoalitionTeleportSystem initializer init
             endif
         endmethod
         
-		static method onReturnToBaseConditions takes nothing returns boolean
+		private static method onReturnToBaseConditions takes nothing returns boolean
 			local unit u = GetTriggerUnit()
 			local boolean b = false
 			
@@ -78,8 +77,15 @@ scope CoalitionTeleportSystem initializer init
 			return b
 		endmethod
 		
+		private static method onStop takes nothing returns nothing
+            local TeleportData data = GetTimerData(GetExpiredTimer())
+			
+			call ReleaseTimer(GetExpiredTimer())
+			call SpellHelper.pauseUnit(data.target)
+		endmethod
+		
         /* vom Schlachtfeld zur Base zurueck */
-        static method onReturnToBase takes nothing returns nothing
+        private static method onReturnToBase takes nothing returns nothing
             local region reg = GetTriggeringRegion()
             local unit u = GetTriggerUnit()
             local player p = GetOwningPlayer(u)
@@ -87,7 +93,8 @@ scope CoalitionTeleportSystem initializer init
 			local race r = GetPlayerRace(p)
             local real x = 0.00
             local real y = 0.00
-            local timer t = NewTimer()
+            local timer t1
+			local timer t2
             local TeleportData data = TeleportData.create()
             
 			if r == RACE_ORC then
@@ -109,11 +116,14 @@ scope CoalitionTeleportSystem initializer init
 			set data.pid = pid
 			
 			if (Game.isBot[pid]) then
-				call SpellHelper.pauseUnit(data.target)
+				set t1 = NewTimer()
+				call SetTimerData(t1, data)
+				call TimerStart(t1, 0.25, false, function thistype.onStop)
 			endif
             
-            call SetTimerData(t, data)
-            call TimerStart(t, TELEPORT_DELAY, true, function thistype.onReturnToBaseDelay)
+			set t2 = NewTimer()
+            call SetTimerData(t2, data)
+            call TimerStart(t2, TELEPORT_DELAY, true, function thistype.onReturnToBaseDelay)
             
             set u = null
         endmethod

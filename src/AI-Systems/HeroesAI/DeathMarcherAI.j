@@ -82,7 +82,6 @@ scope DeathMarcherAI
 		endmethod
 		
 		private method doDeathPact takes nothing returns boolean
-			// Death Pact
 			local integer amountOfNearAllies = 0
 			local unit ally
 			local unit allyLowHP
@@ -177,7 +176,6 @@ scope DeathMarcherAI
 			endif	
 
 			if (not abilityCasted) then
-				call BJDebugMsg("defaultAssaultEnemy")
 				call .defaultAssaultEnemy()
 			endif
         endmethod
@@ -207,6 +205,7 @@ scope DeathMarcherAI
 			call RegisterHeroAISkill(HERO_ID, 6, 'A053')
 			call RegisterHeroAISkill(HERO_ID, 12, 'A053')
 			call RegisterHeroAISkill(HERO_ID, 18, 'A053')
+			
 			//Heroes Will
 			call RegisterHeroAISkill(HERO_ID, 4, 'A021')
 			

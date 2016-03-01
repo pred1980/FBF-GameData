@@ -30,7 +30,7 @@ scope ForsakenTeleportSystem initializer init
 		static fogmodifier visibibleArea
 		static unit teleporter = null
     
-        static method onReturnToBaseConditions takes nothing returns boolean
+        private static method onReturnToBaseConditions takes nothing returns boolean
             local unit u = GetTriggerUnit()
             local boolean b = false
             
@@ -49,7 +49,7 @@ scope ForsakenTeleportSystem initializer init
         endmethod
         
         /* Nach kurzem Delay zur Basis zurueck teleportieren */
-        static method onReturnToBaseDelay takes nothing returns nothing
+        private static method onReturnToBaseDelay takes nothing returns nothing
             local TeleportData data = GetTimerData(GetExpiredTimer())
 						
             if IsUnitInRegion(data.reg, data.target) and not IsUnitDead(data.target) then
@@ -63,9 +63,8 @@ scope ForsakenTeleportSystem initializer init
 					
 					if (Game.isBot[data.pid]) then
 						call SpellHelper.unpauseUnit(data.target)
-					else
-						call IssueImmediateOrder(data.target, "holdposition")
 					endif
+					call IssueImmediateOrder(data.target, "holdposition")
 					
                     return
                 endif
@@ -77,6 +76,13 @@ scope ForsakenTeleportSystem initializer init
                 call data.destroy()
             endif
         endmethod
+		
+		private static method onStop takes nothing returns nothing
+            local TeleportData data = GetTimerData(GetExpiredTimer())
+			
+			call ReleaseTimer(GetExpiredTimer())
+			call SpellHelper.pauseUnit(data.target)
+		endmethod
         
         /* vom Schlachtfeld zur Base zurueck */
         static method onReturnToBase takes nothing returns nothing
@@ -86,7 +92,8 @@ scope ForsakenTeleportSystem initializer init
 			local integer pid = GetPlayerId(p)
             local real x = GetRectCenterX(TELEPORT_RECTS[1])
             local real y = GetRectCenterY(TELEPORT_RECTS[1])
-            local timer t = NewTimer()
+            local timer t1
+			local timer t2
             local TeleportData data = TeleportData.create()
             
             set data.target = u
@@ -97,11 +104,14 @@ scope ForsakenTeleportSystem initializer init
 			set data.pid = pid
 
 			if (Game.isBot[pid]) then
-				call SpellHelper.pauseUnit(data.target)
+				set t1 = NewTimer()
+				call SetTimerData(t1, data)
+				call TimerStart(t1, 0.25, false, function thistype.onStop)
 			endif
 			
-			call SetTimerData(t, data)
-            call TimerStart(t, TELEPORT_DELAY, true, function thistype.onReturnToBaseDelay)
+			set t2 = NewTimer()
+			call SetTimerData(t2, data)
+            call TimerStart(t2, TELEPORT_DELAY, true, function thistype.onReturnToBaseDelay)
             
             set u = null
         endmethod

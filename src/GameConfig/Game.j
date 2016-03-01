@@ -325,7 +325,7 @@ scope Game
 			endif
         endmethod
         
-        private static method initRegionalFog takes nothing returns nothing
+        static method initRegionalFog takes nothing returns nothing
             local fogData fd1
             local fogData fd2
             local fogData fd3
@@ -551,8 +551,6 @@ scope Game
             call SetUserControlForceOn(GetPlayersAll())
 			
 			set .started = true
-			
-			call initRegionalFog()
 			
 			//Show Tutorials Dialog
 			call ShowTutorialsDialog.initialize()
