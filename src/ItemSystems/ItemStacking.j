@@ -39,6 +39,7 @@ library ItemStack initializer Init uses RegisterPlayerUnitEvent
 		local integer c = 0
 		local integer goldCost = GetItemGoldCost(x)
 		local player p = GetOwningPlayer(u)
+		local boolean isBuyAble = false
 		
 		call ClearTextMessages()
 		call RemoveItem(x)
@@ -50,31 +51,29 @@ library ItemStack initializer Init uses RegisterPlayerUnitEvent
 			//call BJDebugMsg("i: " + I2S(i))
 			loop
 				exitwhen (k >= MAX_TOMES_X_ITEMS)
-				//call BJDebugMsg("c: " + I2S(c))
-				//call BJDebugMsg("il: " + I2S(il))
+				call BJDebugMsg("c: " + I2S(c))
+				call BJDebugMsg("il: " + I2S(il))
 				if 	(y == POWERUP_X_ITEM[k][0] and /*
-				*/	(t == null or GetItemTypeId(t) == POWERUP_X_ITEM[k][1])) then
-					if (c == il or c < il) then
-						set ii = CreateItem(POWERUP_X_ITEM[k][1], GetUnitX(u), GetUnitY(u))
-						call SetItemCharges(ii, c + 1)
-						call RemoveItem(t)
-						call UnitAddItem(u, ii)
-						
-						set i = bj_MAX_INVENTORY
-						set k = MAX_TOMES_X_ITEMS
-					else
-						call Game.playerAddGold(pid, goldCost)
-					endif
+			 	*/	(t == null or /*
+			    */  (GetItemTypeId(t) == POWERUP_X_ITEM[k][1] and c < il))) then
+					set ii = CreateItem(POWERUP_X_ITEM[k][1], GetUnitX(u), GetUnitY(u))
+					call SetItemCharges(ii, c + 1)
+					call RemoveItem(t)
+					call UnitAddItem(u, ii)
 					
-					if (i == bj_MAX_INVENTORY and UnitInventoryFull(u) and c > il) then
-						call SimError(p, "Inventory is full.")
-					endif
+					set i = bj_MAX_INVENTORY
+					set k = MAX_TOMES_X_ITEMS
+					set isBuyAble = true
 				endif
 				set k = k + 1
 			endloop	
 			set i = i + 1
 			set k = 0
 		endloop
+		if (isBuyAble == false) then
+			call Game.playerAddGold(pid, goldCost)
+			call SimError(p, "Inventory is full.")
+		endif
 
 		set u = null
 		set x = null
