@@ -1,4 +1,7 @@
 library ItemStack initializer Init uses RegisterPlayerUnitEvent
+	/*
+	 *	Note: All stackable Items need an Item Level which represents the stack level
+	 */
 
 	globals
 		private constant integer MAX_TOMES_X_ITEMS = 2
@@ -6,6 +9,7 @@ library ItemStack initializer Init uses RegisterPlayerUnitEvent
 		private integer array POWERUP_X_ITEM[MAX_TOMES_X_ITEMS][2]
 	endglobals
 	
+	// add here the tome + real stackable item type
 	private function MainSetup takes nothing returns nothing
 		set POWERUP_X_ITEM[0][0] = 'I00O' // Tome for Heal Potion
 		set POWERUP_X_ITEM[0][1] = 'I000' // Real Heal Potion
@@ -13,19 +17,6 @@ library ItemStack initializer Init uses RegisterPlayerUnitEvent
 		set POWERUP_X_ITEM[1][1] = 'I001' // Real Mana Potion	
 	endfunction
 	
-	private function UnitInventoryFull takes unit u returns boolean
-        local integer is = UnitInventorySize( u )
-        local integer s = 0
-        loop
-            exitwhen s >= is
-            if UnitItemInSlot(u, s) == null then
-                return false
-            endif
-            set s = s + 1
-        endloop
-        return true
-    endfunction
-
     private function OnStackItemAction takes nothing returns nothing
         local unit u = GetTriggerUnit()
 		local integer pid = GetPlayerId(GetOwningPlayer(u))
@@ -41,18 +32,14 @@ library ItemStack initializer Init uses RegisterPlayerUnitEvent
 		local player p = GetOwningPlayer(u)
 		local boolean isBuyAble = false
 		
-		call ClearTextMessages()
 		call RemoveItem(x)
 		loop
 			set t = UnitItemInSlot(u, i)
 			set c = GetItemCharges(t)
 			set il = GetItemLevel(t)
 			exitwhen (i >= bj_MAX_INVENTORY)
-			//call BJDebugMsg("i: " + I2S(i))
 			loop
 				exitwhen (k >= MAX_TOMES_X_ITEMS)
-				call BJDebugMsg("c: " + I2S(c))
-				call BJDebugMsg("il: " + I2S(il))
 				if 	(y == POWERUP_X_ITEM[k][0] and /*
 			 	*/	(t == null or /*
 			    */  (GetItemTypeId(t) == POWERUP_X_ITEM[k][1] and c < il))) then
@@ -70,7 +57,8 @@ library ItemStack initializer Init uses RegisterPlayerUnitEvent
 			set i = i + 1
 			set k = 0
 		endloop
-		if (isBuyAble == false) then
+		
+		if (not isBuyAble) then
 			call Game.playerAddGold(pid, goldCost)
 			call SimError(p, "Inventory is full.")
 		endif
@@ -82,7 +70,7 @@ library ItemStack initializer Init uses RegisterPlayerUnitEvent
     endfunction
 	
 	private function OnStackItemCondition takes nothing returns boolean
-		return GetItemType(GetManipulatedItem()) == ITEM_TYPE_POWERUP
+		return (GetItemType(GetManipulatedItem()) == ITEM_TYPE_POWERUP and GetItemLevel(GetManipulatedItem()) > 0)
 	endfunction
 
     private function Init takes nothing returns nothing

@@ -469,7 +469,7 @@ scope HeroAI
 				set shopTypeId = .itemBuild.shop(.itemsetIndex)
 				set tempHeroOwner = .owner
 				set .shopUnit = GetClosestUnit(.hx, .hy, Filter(function shopTypeIdCheck))
-				
+
 				exitwhen (.itemsetIndex == .itemBuild.size)
 				if (.canBuyItem(it) and (stack < maxStack)) then
 					if (IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE)) then
