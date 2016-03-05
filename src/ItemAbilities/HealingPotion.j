@@ -1,7 +1,10 @@
 scope ItemHealingPotion	initializer Init
 
 	globals
+		// Real Heal Potion
 		private constant integer ITEM_ID = 'I000'
+		// Tome Heal Potion
+		private constant integer ITEM_TOME_ID = 'I00O'
 		private constant real HP_VALUE = 100
 	endglobals
 
@@ -12,7 +15,7 @@ scope ItemHealingPotion	initializer Init
 		if (GetUnitLifePercent(caster) < 100) then
 			call SetUnitState(caster, UNIT_STATE_LIFE, GetUnitState(caster, UNIT_STATE_LIFE) + HP_VALUE)
 		else
-			set it = CreateItem(ITEM_ID, GetUnitX(caster), GetUnitY(caster))
+			set it = CreateItem(ITEM_TOME_ID, GetUnitX(caster), GetUnitY(caster))
 			call UnitAddItem(caster, it)
 			call SimError(GetOwningPlayer(caster), "Already at full health.")
 		endif

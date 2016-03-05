@@ -125,7 +125,7 @@ scope HeroPickMods
                     exitwhen i >= bj_MAX_PLAYERS
                     if not BaseMode.hasPicked[i] and Game.isPlayerInGame(i) then
                         if (DEBUG_MODE) then
-								set randomIndex = 3//GetRandomInt(1,6)
+								set randomIndex = GetRandomInt(1,6)
 							else
 								set randomIndex = BaseMode.getRandomHero()
 							endif
@@ -134,7 +134,7 @@ scope HeroPickMods
                             if (DEBUG_MODE) then
 								set randomIndex = GetRandomInt(1,6)
 							else
-								set randomIndex = 3//BaseMode.getRandomHero()
+								set randomIndex = BaseMode.getRandomHero()
 							endif
                         endloop
 						call createRandomHero( Player(i), GET_HERO_PICK_UNIT(i), randomIndex )

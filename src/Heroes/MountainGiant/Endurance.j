@@ -107,7 +107,7 @@ scope Endurance initializer init
             call SetHeroAgi(.temp.target, GetHeroAgi(.temp.target, false) - AGI_BONUS[.temp.lvl], false )
             
             if .temp.attackSpeed > 0 then
-                call SetUnitBonus(.temp.target, BONUS_ATTACK_SPEED, GetUnitBonus(.temp.target, BONUS_ATTACK_SPEED) - ATTACK_SPEED_BONUS[.temp.lvl])
+                call RemoveUnitBonus(.temp.target, BONUS_ATTACK_SPEED)
                 set .temp.attackSpeed = .temp.attackSpeed - ATTACK_SPEED_BONUS[.temp.lvl]
             endif
             

@@ -62,11 +62,11 @@ scope IceShard initializer Init
 			//Slow Unit
 			if ms > 0 then
 				if level == 1 then
-					call SetUnitBonus(target, BONUS_MOVEMENT_SPEED, R2I(-1.*ms*SLOW_MULTIPLIER_LEVEL1))
+					call AddUnitBonus(target, BONUS_MOVEMENT_SPEED, R2I(-1.*ms*SLOW_MULTIPLIER_LEVEL1))
 				elseif level == 2 then
-					call SetUnitBonus(target, BONUS_MOVEMENT_SPEED, R2I(-1.*ms*SLOW_MULTIPLIER_LEVEL2))
+					call AddUnitBonus(target, BONUS_MOVEMENT_SPEED, R2I(-1.*ms*SLOW_MULTIPLIER_LEVEL2))
 				elseif level == 3 then
-					call SetUnitBonus(target, BONUS_MOVEMENT_SPEED, R2I(-1.*ms*SLOW_MULTIPLIER_LEVEL3))
+					call AddUnitBonus(target, BONUS_MOVEMENT_SPEED, R2I(-1.*ms*SLOW_MULTIPLIER_LEVEL3))
 				else
 					debug call BJDebugMsg("Unrecognized Shard level!")
 				endif

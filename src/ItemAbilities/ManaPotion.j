@@ -1,7 +1,10 @@
 scope ItemManaPotion	initializer Init
 
 	globals
+		// Real Mana Potion
 		private constant integer ITEM_ID = 'I001'
+		// Tome Mana Potion
+		private constant integer ITEM_TOME_ID = 'I00Q'
 		private constant real MANA_VALUE = 75
 	endglobals
 
@@ -12,7 +15,7 @@ scope ItemManaPotion	initializer Init
 		if (GetUnitManaPercent(caster) < 100) then
 			call SetUnitState(caster, UNIT_STATE_MANA, GetUnitState(caster, UNIT_STATE_MANA) + MANA_VALUE)
 		else
-			set it = CreateItem(ITEM_ID, GetUnitX(caster), GetUnitY(caster))
+			set it = CreateItem(ITEM_TOME_ID, GetUnitX(caster), GetUnitY(caster))
 			call UnitAddItem(caster, it)
 			call SimError(GetOwningPlayer(caster), "Already at full mana.")
 		endif

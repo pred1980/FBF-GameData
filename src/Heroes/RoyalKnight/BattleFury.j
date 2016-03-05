@@ -75,7 +75,7 @@ scope BattleFury initializer init
             if .counter == MAX_DAMAGE[.level] then
                 call SetUnitAnimation( .source, "spell" )
                 set .b = true
-                call SetUnitBonus(.source, BONUS_DAMAGE, MAX_DAMAGE[.level])
+                call AddUnitBonus(.source, BONUS_DAMAGE, MAX_DAMAGE[.level])
                 //Kill duration timer and Remove Battle Fury Buff
                 call UnitRemoveAbility(.source, BUFF_ID)
                 call ReleaseTimer(.t)
@@ -87,7 +87,7 @@ scope BattleFury initializer init
         endmethod
         
         method decreaseDamage takes nothing returns nothing
-            call SetUnitBonus(.source, BONUS_DAMAGE, GetUnitBonus(.source, BONUS_DAMAGE) - 1)
+            call RemoveUnitBonus(.source, BONUS_DAMAGE)
             set .counter = .counter - 1
         endmethod
         

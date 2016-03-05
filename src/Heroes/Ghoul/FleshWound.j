@@ -54,7 +54,13 @@ scope FleshWound initializer init
 		endmethod
 		
 		private static method onUnitDeath takes nothing returns nothing
-			call .tempthis.destroy()
+			local unit killedUnit = GetTriggerUnit()
+			
+			if (getForUnit(killedUnit) != 0) then
+				call getForUnit(killedUnit).destroy()
+			endif
+			
+			set killedUnit = null
 		endmethod
 		
 		static method getForUnit takes unit u returns thistype
@@ -67,7 +73,7 @@ scope FleshWound initializer init
 			set data.time = data.time - 1.0
 			if (data.time <= 0) then
 				call ReleaseTimer(GetExpiredTimer())
-				call SetUnitBonus(data.target, BONUS_ARMOR, 0)
+				call RemoveUnitBonus(data.target, BONUS_ARMOR)
 			endif
 		endmethod
 		
@@ -127,7 +133,7 @@ scope FleshWound initializer init
 					endif
 					
 					if (GetUnitBonus(data.target, BONUS_ARMOR) != ARMOR_REDUCE[data.stackCounter]) then
-						call SetUnitBonus(data.target, BONUS_ARMOR, ARMOR_REDUCE[data.stackCounter])
+						call AddUnitBonus(data.target, BONUS_ARMOR, ARMOR_REDUCE[data.stackCounter])
 						call TimedEffect.createOnUnit(EFFECT, data.target, "origin", EFFECT_DURATION)
 					endif
 					

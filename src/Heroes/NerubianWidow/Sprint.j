@@ -28,7 +28,7 @@ scope Sprint initializer init
         
 		method onDestroy takes nothing returns nothing
 			call ReleaseTimer( this.ti )
-			call SetUnitBonus(.caster, BONUS_MOVEMENT_SPEED, 0)
+			call RemoveUnitBonus(.caster, BONUS_MOVEMENT_SPEED)
 			set spellForUnit[GetUnitId(.caster)] = 0
             set .caster = null
         endmethod
@@ -49,7 +49,7 @@ scope Sprint initializer init
             
             set .caster = caster
 			set spellForUnit[GetUnitId(.caster)] = this
-			call SetUnitBonus(.caster, BONUS_MOVEMENT_SPEED, GetUnitBonus(.caster, BONUS_MOVEMENT_SPEED ) + (GetUnitAbilityLevel(.caster, SPELL_ID) * SPEED_ACCELERATE ))
+			call AddUnitBonus(.caster, BONUS_MOVEMENT_SPEED, GetUnitBonus(.caster, BONUS_MOVEMENT_SPEED ) + (GetUnitAbilityLevel(.caster, SPELL_ID) * SPEED_ACCELERATE ))
 			
 			set .ti = NewTimer()
 			call SetTimerData( .ti, this )
