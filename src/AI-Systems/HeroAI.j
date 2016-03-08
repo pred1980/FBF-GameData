@@ -121,7 +121,7 @@ scope HeroAI
 	
 	module HeroAI
 		unit hero
-    	private player owner
+    	player owner
 		private integer pid
         private integer hId
 		integer aiLevel

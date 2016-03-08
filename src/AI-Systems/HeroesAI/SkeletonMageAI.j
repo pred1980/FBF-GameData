@@ -69,8 +69,6 @@ scope SkeletonMageAI
 						set randomEnemiesIndex = randomEnemiesIndex + 1
 						
 						if (randomEnemiesIndex >= COTD_Min_Enemies_Sum[.aiLevel]) then
-							call BJDebugMsg("randomCorpseIndex: " + I2S(randomCorpseIndex))
-							call BJDebugMsg("randomEnemiesIndex: " + I2S(randomEnemiesIndex))
 							set abilityCasted = IssuePointOrder(.hero, COTD_ORDER, GetUnitX(nearbyCorpse), GetUnitY(nearbyCorpse))
 						endif
 						

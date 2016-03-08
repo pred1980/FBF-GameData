@@ -68,6 +68,11 @@ scope HeroRespawnSystem
 					call SelectUnit(this.hero, true)
 				endif
 				
+				// Unpause it if its killed while teleporting back to base
+				if (Game.isBot[GetPlayerId(this.p)]) then
+					call SpellHelper.unpauseUnit(this.hero)
+				endif
+				
 				//Update Multiboard (Status)
 				call FBFMultiboard.onUpdateStatus(GetPlayerId(this.p), this.hero)
 				
