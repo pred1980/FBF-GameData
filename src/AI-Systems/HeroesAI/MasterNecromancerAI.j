@@ -16,10 +16,12 @@ scope MasterNecromancerAI
 		private integer array N_Max_Corpse
 		private integer array N_Max_Random_Loc
 
-		/* XXX */
-		private constant string XX_ORDER = "xxx"
+		/* Malicious Curse */
+		private constant string MC_ORDER = "ambush"
+		private constant string MC_SWITCH_ORDER_1 = "immolation"
+		private constant string MC_SWITCH_ORDER_2 = "unimmolation"
 		// Chance to cast ability
-		private integer array XX_Chance		
+		private integer array MC_Chance		
 		
 		/* XXX */
 		private constant string XY_ORDER = "xxx"
@@ -53,26 +55,29 @@ scope MasterNecromancerAI
 		private method doNecromancy takes nothing returns boolean
 			local boolean abilityCasted = false
 			local integer i = 0
+			local integer amount = 0
 			local real x
 			local real y
 			local location l
 			
-			loop
-				exitwhen i >= N_Max_Random_Loc[.aiLevel]
-				call ClearTextMessages()
-				set l = RandomPointCircle(GetUnitX(.hero), GetUnitY(.hero), N_AOE) 
-				set x = GetLocationX(l)
-				set y = GetLocationY(l)
-				call GroupEnumUnitsInRange(enumGroup, x, y, N_RADIUS, Filter(function thistype.corpseFilter))
-				
-				if (CountUnitsInGroup(enumGroup) <= N_Max_Corpse[.aiLevel]) then
+			if (CountUnitsInGroup(.deads) > 0) then
+				loop
+					exitwhen i >= N_Max_Random_Loc[.aiLevel]
+					set l = RandomPointCircle(GetUnitX(.hero), GetUnitY(.hero), N_AOE) 
+					set x = GetLocationX(l)
+					set y = GetLocationY(l)
+					call GroupEnumUnitsInRange(enumGroup, x, y, N_RADIUS, Filter(function thistype.corpseFilter))
 					
-					set abilityCasted = IssuePointOrder(.hero, N_ORDER, x, y)
-					set i = N_Max_Random_Loc[.aiLevel]
-				endif
-				call GroupClear(enumGroup)
-				set i = i + 1
-			endloop
+					set amount = CountUnitsInGroup(enumGroup)
+					if 	((amount <= N_Max_Corpse[.aiLevel]) and /*
+					*/	(amount > 0)) then
+						set abilityCasted = IssuePointOrder(.hero, N_ORDER, x, y)
+						set i = N_Max_Random_Loc[.aiLevel]
+					endif
+					call GroupClear(enumGroup)
+					set i = i + 1
+				endloop
+			endif
 			
 			call RemoveLocation(l)
 			set l = null
@@ -83,15 +88,26 @@ scope MasterNecromancerAI
 			
 			return abilityCasted
 		endmethod
+		
+		private method doMaliciousCurse takes nothing returns boolean
+			local boolean abilityCasted = false
+			
+			return abilityCasted
+		endmethod
         
         method assaultEnemy takes nothing returns nothing  
             local boolean abilityCasted = false
 			
 			/* Necromancy */
-			call BJDebugMsg("timer: " + R2S(TimerGetRemaining(N_Timer)))
 			if 	((GetRandomInt(0,100) <= N_Chance[.aiLevel]) and /*
 			*/	(TimerGetRemaining(N_Timer) == 0.0)) then
 				set abilityCasted = doNecromancy()
+			endif
+			
+			/* Malicious Curse */
+			if ((GetRandomInt(0,100) <= MC_Chance[.aiLevel]) and /*
+			*/ (not abilityCasted)) then
+				set abilityCasted = doMaliciousCurse()
 			endif
 
 			if (not abilityCasted) then
@@ -169,28 +185,29 @@ scope MasterNecromancerAI
 			set N_Cooldown[3] = 25.0
 			set N_Cooldown[4] = 25.0
 			
-			set N_Max_Corpse[0] = 6
-			set N_Max_Corpse[1] = 4
-			set N_Max_Corpse[2] = 2
+			// Necromancy.j -> MAX_SKELETON = 3
+			set N_Max_Corpse[0] = 3
+			set N_Max_Corpse[1] = 2
+			set N_Max_Corpse[2] = 1
 			
 			set N_Max_Random_Loc[0] = 2
 			set N_Max_Random_Loc[1] = 4
 			set N_Max_Random_Loc[2] = 6
 			
-			// XXX
-			set XX_Chance[0] = 10
-			set XX_Chance[1] = 20
-			set XX_Chance[2] = 20
+			// Malicious Curse
+			set MC_Chance[0] = 10
+			set MC_Chance[1] = 20
+			set MC_Chance[2] = 20
 			
 			// XXX
-			set XX_Chance[0] = 10
-			set XX_Chance[1] = 20
-			set XX_Chance[2] = 20
+			set XY_Chance[0] = 10
+			set XY_Chance[1] = 20
+			set XY_Chance[2] = 20
 			
 			// XXX
-			set XX_Chance[0] = 10
-			set XX_Chance[1] = 20
-			set XX_Chance[2] = 20
+			set XZ_Chance[0] = 10
+			set XZ_Chance[1] = 20
+			set XZ_Chance[2] = 20
         endmethod
         
         implement HeroAI     

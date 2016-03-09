@@ -183,7 +183,7 @@ scope MaliciousCurse initializer init
     endfunction
 	
 	private function LearnConditions takes nothing returns boolean
-		return GetLearnedSkill() == SPELL_ID and GetUnitAbilityLevel(GetTriggerUnit(),SWITCH_ID) < 1
+		return GetLearnedSkill() == SPELL_ID and GetUnitAbilityLevel(GetTriggerUnit(), SWITCH_ID) < 1
     endfunction
     
     private function init takes nothing returns nothing
