@@ -12,7 +12,7 @@ scope MaliciousCurse initializer init
      *
      */
     globals
-        private constant integer SPELL_ID = 'A064'
+        private constant integer SPELL_ID = 'A09N'
         private constant integer BUFF_ID = 'B00O' //The buff with which to differentiate between states
         private constant integer SWITCH_ID = 'A065' //The ability with which to switch between Life and Mana
         private constant integer LBUFF_ABI = 'A066'

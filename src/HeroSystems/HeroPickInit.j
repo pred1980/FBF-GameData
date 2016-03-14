@@ -286,7 +286,7 @@ scope HeroPickInit
         set HERO_REPICK_RECT[7][0] = GetRectCenterX(gg_rct_HeroRevive8)
         set HERO_REPICK_RECT[7][1] = GetRectCenterY(gg_rct_HeroRevive8)
         set HERO_ABILITIES[7][0] = 'A05D' //Necromancy
-        set HERO_ABILITIES[7][1] = 'A064' //Malicious Curse
+        set HERO_ABILITIES[7][1] = 'A09N' //Malicious Curse
         set HERO_ABILITIES[7][2] = 'A068' //Despair
         set HERO_ABILITIES[7][3] = 'A08Z' //Dead Souls
         

@@ -17,23 +17,39 @@ scope MasterNecromancerAI
 		private integer array N_Max_Random_Loc
 
 		/* Malicious Curse */
+		private constant integer MC_SPELL_ID = 'A09N'
 		private constant string MC_ORDER = "ambush"
 		private constant string MC_SWITCH_ORDER_1 = "immolation"
 		private constant string MC_SWITCH_ORDER_2 = "unimmolation"
+		private constant real MC_RADIUS = 350
 		// Chance to cast ability
-		private integer array MC_Chance		
+		private integer array MC_Chance
+		private integer array MC_Random_Enemies
+		private boolean MC_isHP = true
+		private real array MC_Cooldown
+		private timer MC_Timer
 		
-		/* XXX */
-		private constant string XY_ORDER = "xxx"
+		/* Despair */
+		private constant integer D_SPELL_ID = 'A068'
+		private constant string D_ORDER = "spiritlink"
+		private constant real D_RADIUS = 350
 		// Chance to cast ability
-		private integer array XY_Chance		
-
-		/* XXX */
-		private constant string XZ_ORDER = "xxx"
+		private integer array D_Chance
+		private integer array D_Min_Targets
+		private integer array D_Max_Random_Units
+		private real array D_Cooldown
+		private timer D_Timer
+		
+		/* Dead Souls */
+		private constant integer DS_SPELL_ID = 'A08Z'
+		private constant string DS_ORDER = "acidbomb"
+		private constant real DS_RADIUS = 750
 		// Chance to cast ability
-		private integer array XZ_Chance	
+		private integer array DS_Chance
+		private integer array DS_Min_Targets
+		private real array DS_Cooldown
+		private timer DS_Timer
     endglobals
-	
 	
 	private function RandomPointCircle takes real x, real y, real d returns location
 		local real cx = GetRandomReal(-d, d)
@@ -89,8 +105,116 @@ scope MasterNecromancerAI
 			return abilityCasted
 		endmethod
 		
+		private static method MN_Filter takes nothing returns boolean
+			return SpellHelper.isValidEnemy(GetFilterUnit(), tempthis.hero)
+		endmethod
+		
 		private method doMaliciousCurse takes nothing returns boolean
 			local boolean abilityCasted = false
+			local integer amountOfEnemiesWithMana = 0
+			local integer amountOfEnemiesWithoutMana = 0
+			local unit enemy
+			local unit target
+			
+			call GroupClear(enumGroup)
+			call GroupClear(ENUM_GROUP)
+			call GroupAddGroup(.enemies, ENUM_GROUP)
+			
+			loop
+				set enemy = FirstOfGroup(ENUM_GROUP)
+				exitwhen ((enemy == null) or ((amountOfEnemiesWithMana + amountOfEnemiesWithoutMana) >= MC_Random_Enemies[.aiLevel]))
+				set amountOfEnemiesWithMana = 0
+				set amountOfEnemiesWithoutMana = 0
+				
+				call GroupEnumUnitsInRange(enumGroup, GetUnitX(enemy), GetUnitY(enemy), MC_RADIUS, Filter(function thistype.MN_Filter))
+				loop
+					set target = FirstOfGroup(enumGroup)
+					exitwhen (target == null)
+					if (GetUnitManaPercent(target) > 0.00) then
+						set amountOfEnemiesWithMana = amountOfEnemiesWithMana + 1
+					else
+						set amountOfEnemiesWithoutMana = amountOfEnemiesWithoutMana + 1
+					endif
+
+					if ((amountOfEnemiesWithMana + amountOfEnemiesWithoutMana) >= MC_Random_Enemies[.aiLevel]) then
+						call GroupClear(ENUM_GROUP)
+						call GroupClear(enumGroup)
+						
+						// check how many units with and without mana are currently around the hero
+						if (amountOfEnemiesWithMana > amountOfEnemiesWithoutMana) then
+							// switch to Mana							
+							if (MC_isHP) then
+								set MC_isHP = false
+								call IssueImmediateOrder( .hero, MC_SWITCH_ORDER_1 )
+							endif
+						else
+							// switch to HP
+							if (not MC_isHP) then
+								set MC_isHP = true
+								call IssueImmediateOrder( .hero, MC_SWITCH_ORDER_2 )
+							endif
+						endif
+						set abilityCasted = IssueTargetOrder(.hero, MC_ORDER, target)
+					endif
+					call GroupRemoveUnit(enumGroup, target)
+				endloop
+				call GroupRemoveUnit(ENUM_GROUP, enemy)
+			endloop
+			
+			call GroupClear(ENUM_GROUP)
+			set enemy = null
+			set target = null
+			
+			if (abilityCasted) then
+				call TimerStart(MC_Timer, MC_Cooldown[GetUnitAbilityLevel(.hero, MC_SPELL_ID)], false, null)
+			endif
+			
+			return abilityCasted
+		endmethod
+		
+		private method doDespair takes nothing returns boolean
+			local boolean abilityCasted = false
+			local integer i = 0
+			local unit enemy
+			
+			call GroupClear(enumGroup)
+			call GroupClear(ENUM_GROUP)
+			call GroupAddGroup(.enemies, ENUM_GROUP)
+			
+			loop
+				set enemy = GetRandomUnitFromGroup(ENUM_GROUP)
+				exitwhen ((enemy == null) or (i >= D_Max_Random_Units[.aiLevel]))
+				call GroupEnumUnitsInRange(enumGroup, GetUnitX(enemy), GetUnitY(enemy), D_RADIUS, Filter(function thistype.MN_Filter))
+				
+				if (CountUnitsInGroup(enumGroup) >= D_Min_Targets[.aiLevel]) then
+					set abilityCasted = IssueTargetOrder(.hero, D_ORDER, enemy)
+					call GroupClear(ENUM_GROUP)
+				endif
+				
+				call GroupClear(enumGroup)
+				call GroupRemoveUnit(ENUM_GROUP, enemy)
+				set i = i + 1
+			endloop
+
+			set enemy = null
+			
+			if (abilityCasted) then
+				call TimerStart(D_Timer, D_Cooldown[GetUnitAbilityLevel(.hero, D_SPELL_ID)], false, null)
+			endif
+			
+			return abilityCasted
+		endmethod
+		
+		private method doDeadSouls takes nothing returns boolean
+			local boolean abilityCasted = false
+			
+			if (CountUnitsInGroup(.enemies) >= DS_Min_Targets[.aiLevel]) then
+				set abilityCasted = IssueImmediateOrder(.hero, DS_ORDER)
+			endif
+			
+			if (abilityCasted) then
+				call TimerStart(DS_Timer, DS_Cooldown[GetUnitAbilityLevel(.hero, DS_SPELL_ID)], false, null)
+			endif
 			
 			return abilityCasted
 		endmethod
@@ -106,8 +230,24 @@ scope MasterNecromancerAI
 			
 			/* Malicious Curse */
 			if ((GetRandomInt(0,100) <= MC_Chance[.aiLevel]) and /*
-			*/ (not abilityCasted)) then
+			*/ (not abilityCasted) and /*
+			*/ (TimerGetRemaining(MC_Timer) == 0.0)) then
 				set abilityCasted = doMaliciousCurse()
+			endif
+			
+			/* Despair */
+			if ((GetRandomInt(0,100) <= D_Chance[.aiLevel]) and /*
+			*/ (not abilityCasted) and /*
+			*/ (TimerGetRemaining(D_Timer) == 0.0)) then
+				set abilityCasted = doDespair()
+			endif
+			
+			/* Dead Souls */
+			if ((.heroLevel >= 6) and /*
+			*/	(GetRandomInt(0,100) <= DS_Chance[.aiLevel]) and /*
+			*/  (TimerGetRemaining(DS_Timer) == 0.0) and /*
+			*/	(not abilityCasted)) then
+				set abilityCasted = doDeadSouls()					
 			endif
 
 			if (not abilityCasted) then
@@ -125,11 +265,11 @@ scope MasterNecromancerAI
 			call RegisterHeroAISkill(HERO_ID, 13, 'A05D') 
 			call RegisterHeroAISkill(HERO_ID, 16, 'A05D') 
 			// Malicious Curse
-			call RegisterHeroAISkill(HERO_ID, 2, 'A064') 
-			call RegisterHeroAISkill(HERO_ID, 7, 'A064') 
-			call RegisterHeroAISkill(HERO_ID, 10, 'A064') 
-			call RegisterHeroAISkill(HERO_ID, 14, 'A064') 
-			call RegisterHeroAISkill(HERO_ID, 17, 'A064') 
+			call RegisterHeroAISkill(HERO_ID, 2, 'A09N') 
+			call RegisterHeroAISkill(HERO_ID, 7, 'A09N') 
+			call RegisterHeroAISkill(HERO_ID, 10, 'A09N') 
+			call RegisterHeroAISkill(HERO_ID, 14, 'A09N') 
+			call RegisterHeroAISkill(HERO_ID, 17, 'A09N') 
 			// Despair
 			call RegisterHeroAISkill(HERO_ID, 3, 'A068') 
 			call RegisterHeroAISkill(HERO_ID, 8, 'A068') 
@@ -195,19 +335,60 @@ scope MasterNecromancerAI
 			set N_Max_Random_Loc[2] = 6
 			
 			// Malicious Curse
-			set MC_Chance[0] = 10
+			set MC_Chance[0] = 20
 			set MC_Chance[1] = 20
 			set MC_Chance[2] = 20
 			
-			// XXX
-			set XY_Chance[0] = 10
-			set XY_Chance[1] = 20
-			set XY_Chance[2] = 20
+			// check up to ...
+			set MC_Random_Enemies[0] = 3
+			set MC_Random_Enemies[1] = 6
+			set MC_Random_Enemies[2] = 9
 			
-			// XXX
-			set XZ_Chance[0] = 10
-			set XZ_Chance[1] = 20
-			set XZ_Chance[2] = 20
+			set MC_Timer = NewTimer()
+			set MC_Cooldown[0] = 18.0
+			set MC_Cooldown[1] = 18.0
+			set MC_Cooldown[2] = 18.0
+			set MC_Cooldown[3] = 18.0
+			set MC_Cooldown[4] = 18.0
+			
+			// Despair
+			set D_Chance[0] = 5
+			set D_Chance[1] = 15
+			set D_Chance[2] = 80
+			
+			// check max random units...
+			set D_Max_Random_Units[0] = 2
+			set D_Max_Random_Units[1] = 4
+			set D_Max_Random_Units[2] = 6
+			
+			// cast only if reached min targets
+			set D_Min_Targets[0] = 3
+			set D_Min_Targets[1] = 5
+			set D_Min_Targets[2] = 7
+			
+			set D_Timer = NewTimer()
+			set D_Cooldown[0] = 15.0
+			set D_Cooldown[1] = 15.0
+			set D_Cooldown[2] = 15.0
+			set D_Cooldown[3] = 15.0
+			set D_Cooldown[4] = 15.0
+			
+			// Dead Souls
+			set DS_Chance[0] = 10
+			set DS_Chance[1] = 20
+			set DS_Chance[2] = 20
+			
+			// cast only if reached min targets
+			set DS_Min_Targets[0] = 5
+			set DS_Min_Targets[1] = 8
+			set DS_Min_Targets[2] = 11
+			
+			set DS_Timer = NewTimer()
+			set DS_Cooldown[0] = 150.0
+			set DS_Cooldown[1] = 150.0
+			set DS_Cooldown[2] = 150.0
+			set DS_Cooldown[3] = 150.0
+			set DS_Cooldown[4] = 150.0
         endmethod
         
         implement HeroAI     
