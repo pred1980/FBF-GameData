@@ -51,13 +51,6 @@ scope MasterNecromancerAI
 		private timer DS_Timer
     endglobals
 	
-	private function RandomPointCircle takes real x, real y, real d returns location
-		local real cx = GetRandomReal(-d, d)
-		local real ty = SquareRoot(d * d - cx * cx)
-		
-		return Location(x + cx, y + GetRandomReal(-ty, ty))
-	endfunction
-    
     private struct AI extends array
 	
 		private static method onCooldownEnd takes nothing returns nothing
@@ -72,9 +65,12 @@ scope MasterNecromancerAI
 			local boolean abilityCasted = false
 			local integer i = 0
 			local integer amount = 0
+			local integer level = GetUnitAbilityLevel(.hero, N_SPELL_ID) - 1
 			local real x
 			local real y
 			local location l
+			
+			call GroupClear(enumGroup)
 			
 			if (CountUnitsInGroup(.deads) > 0) then
 				loop
@@ -99,7 +95,7 @@ scope MasterNecromancerAI
 			set l = null
 			
 			if (abilityCasted) then
-				call TimerStart(N_Timer, N_Cooldown[GetUnitAbilityLevel(.hero, N_SPELL_ID)], false, null)
+				call TimerStart(N_Timer, N_Cooldown[level], false, null)
 			endif
 			
 			return abilityCasted
@@ -113,6 +109,7 @@ scope MasterNecromancerAI
 			local boolean abilityCasted = false
 			local integer amountOfEnemiesWithMana = 0
 			local integer amountOfEnemiesWithoutMana = 0
+			local integer level = GetUnitAbilityLevel(.hero, MC_SPELL_ID) - 1
 			local unit enemy
 			local unit target
 			
@@ -166,7 +163,7 @@ scope MasterNecromancerAI
 			set target = null
 			
 			if (abilityCasted) then
-				call TimerStart(MC_Timer, MC_Cooldown[GetUnitAbilityLevel(.hero, MC_SPELL_ID)], false, null)
+				call TimerStart(MC_Timer, MC_Cooldown[level], false, null)
 			endif
 			
 			return abilityCasted
@@ -175,6 +172,7 @@ scope MasterNecromancerAI
 		private method doDespair takes nothing returns boolean
 			local boolean abilityCasted = false
 			local integer i = 0
+			local integer level = GetUnitAbilityLevel(.hero, D_SPELL_ID) - 1
 			local unit enemy
 			
 			call GroupClear(enumGroup)
@@ -199,7 +197,7 @@ scope MasterNecromancerAI
 			set enemy = null
 			
 			if (abilityCasted) then
-				call TimerStart(D_Timer, D_Cooldown[GetUnitAbilityLevel(.hero, D_SPELL_ID)], false, null)
+				call TimerStart(D_Timer, D_Cooldown[level], false, null)
 			endif
 			
 			return abilityCasted
@@ -207,13 +205,14 @@ scope MasterNecromancerAI
 		
 		private method doDeadSouls takes nothing returns boolean
 			local boolean abilityCasted = false
+			local integer level = GetUnitAbilityLevel(.hero, DS_SPELL_ID) - 1
 			
 			if (CountUnitsInGroup(.enemies) >= DS_Min_Targets[.aiLevel]) then
 				set abilityCasted = IssueImmediateOrder(.hero, DS_ORDER)
 			endif
 			
 			if (abilityCasted) then
-				call TimerStart(DS_Timer, DS_Cooldown[GetUnitAbilityLevel(.hero, DS_SPELL_ID)], false, null)
+				call TimerStart(DS_Timer, DS_Cooldown[level], false, null)
 			endif
 			
 			return abilityCasted
@@ -353,8 +352,8 @@ scope MasterNecromancerAI
 			
 			// Despair
 			set D_Chance[0] = 5
-			set D_Chance[1] = 15
-			set D_Chance[2] = 80
+			set D_Chance[1] = 10
+			set D_Chance[2] = 15
 			
 			// check max random units...
 			set D_Max_Random_Units[0] = 2
@@ -374,9 +373,9 @@ scope MasterNecromancerAI
 			set D_Cooldown[4] = 15.0
 			
 			// Dead Souls
-			set DS_Chance[0] = 10
+			set DS_Chance[0] = 15
 			set DS_Chance[1] = 20
-			set DS_Chance[2] = 20
+			set DS_Chance[2] = 25
 			
 			// cast only if reached min targets
 			set DS_Min_Targets[0] = 5

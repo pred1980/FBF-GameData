@@ -70,7 +70,6 @@ scope HeroRespawnSystem
 				
 				// Need, if hero is killed while teleporting back to base
 				if (Game.isBot[GetPlayerId(this.p)]) then
-					call SpellHelper.pauseUnit(this.hero)
 					call SpellHelper.unpauseUnit(this.hero)
 				endif
 				

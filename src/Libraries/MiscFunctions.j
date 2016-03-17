@@ -663,5 +663,13 @@ library MiscFunctions requires GroupUtils
 
 		return randomUnits[GetRandomInt(0, i)]
 	endfunction
+	
+	// Return a location on a point in a special radius
+	function RandomPointCircle takes real x, real y, real d returns location
+		local real cx = GetRandomReal(-d, d)
+		local real ty = SquareRoot(d * d - cx * cx)
+		
+		return Location(x + cx, y + GetRandomReal(-ty, ty))
+	endfunction
 
 endlibrary

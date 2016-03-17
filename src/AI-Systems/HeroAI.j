@@ -538,7 +538,9 @@ scope HeroAI
 						call .idleActions()
 					else
 						// just for development...
-						// REMOVE later from AI: Ghoul, ...
+						// REMOVE later from AI: 
+						//		Ghoul 
+						//		Crypt Lord (Metamorphosis)
 						set .moveX = -6535.1
 						set .moveY = 2039.7
 						call .move()

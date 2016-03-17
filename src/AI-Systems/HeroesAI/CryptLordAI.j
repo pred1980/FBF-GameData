@@ -4,43 +4,168 @@ scope CryptLordAI
 		
 		private HeroAI_Itemset array Itemsets	
         private group enumGroup = CreateGroup()
+		
+		/* Burrow Strike */
+		private constant integer BS_SPELL_ID = 'A06A'
+		private constant string BS_ORDER = "ambush"
+		private integer array BS_Max_Random_Loc
+		private integer array BS_Min_Enemies
+		private integer array BS_Chance
+		private real array BS_RADIUS
+		private real array BS_AOE
+		private real array BS_Cooldown
+		private timer BS_Timer
+		
+		/* Burrow Move */
+		private constant integer BM_SPELL_ID = 'A06A'
+		private constant string BM_ORDER = "summonfactory"
+		private integer array BM_Chance
+		private integer array BM_Min_Enemies
+		private real array BM_Cooldown
+		private real array BM_AOE
+		private timer BM_Timer		
+		
+		/* Metamorphosis */
+		private constant string M_ORDER = "deathpact"
+		private integer array M_Chance
     endglobals
     
     private struct AI extends array
-        // The following two methods will print out debug messages only when the events
-        // are enabled
-        method onAttacked takes unit attacker returns nothing
-            //debug call BJDebugMsg("Abomination attacked by " + GetUnitName(attacker))
-        endmethod
-        
-        method onAcquire takes unit target returns nothing
-            //debug call BJDebugMsg("Abomination acquires " + GetUnitName(target))
-        endmethod
-        
-        method assaultEnemy takes nothing returns nothing  
-			call .defaultAssaultEnemy()
-        endmethod
-        
-        // Cast wind walk if there's an enemy nearby
-        method loopActions takes nothing returns nothing
-            call .defaultLoopActions()
-        endmethod
-        
-        // A custom periodic method is defined for this hero as the AI constantly
-        // searches for units that have their backs to her in order to use Backstab.
-        static method onLoop takes nothing returns nothing
-        
+	
+		private static method CL_Filter takes nothing returns boolean
+			return SpellHelper.isValidEnemy(GetFilterUnit(), tempthis.hero)
 		endmethod
+		
+		private method doBurrowStrike takes nothing returns boolean
+			local boolean abilityCasted = false
+			local integer i = 0
+			local integer amount = 0
+			local integer level = GetUnitAbilityLevel(.hero, BS_SPELL_ID) - 1
+			local real x
+			local real y
+			local location l
+			
+			call GroupClear(enumGroup)
+			
+			loop
+				exitwhen i >= BS_Max_Random_Loc[.aiLevel]
+				set l = RandomPointCircle(GetUnitX(.hero), GetUnitY(.hero), BS_RADIUS[level]) 
+				set x = GetLocationX(l)
+				set y = GetLocationY(l)
+				call GroupEnumUnitsInRange(enumGroup, x, y, BS_AOE[level], Filter(function thistype.CL_Filter))
+				
+				if 	(CountUnitsInGroup(enumGroup) >= BS_Min_Enemies[.aiLevel]) then
+					set abilityCasted = IssuePointOrder(.hero, BS_ORDER, x, y)
+					set i = BS_Max_Random_Loc[.aiLevel]
+				endif
+				call GroupClear(enumGroup)
+				set i = i + 1
+			endloop
+			
+			call RemoveLocation(l)
+			set l = null
+			
+			if (abilityCasted) then
+				call TimerStart(BS_Timer, BS_Cooldown[level], false, null)
+			endif
+			
+			return abilityCasted
+		endmethod
+		
+		private method doBurrowMove takes nothing returns boolean
+			local boolean abilityCasted = false
+			local integer level = GetUnitAbilityLevel(.hero, BM_SPELL_ID) - 1
+			local real x = GetUnitX(.hero)
+			local real y = GetUnitY(.hero)
+			
+			call GroupClear(enumGroup)
+			call GroupEnumUnitsInRange(enumGroup, x, y, BM_AOE[level], Filter(function thistype.CL_Filter))
+
+			if (CountUnitsInGroup(enumGroup) >= BM_Min_Enemies[.aiLevel]) then
+				set abilityCasted = IssuePointOrder(.hero, BM_ORDER, x, y)
+			endif
+						
+			if (abilityCasted) then
+				call TimerStart(BS_Timer, BS_Cooldown[level], false, null)
+			endif
+			
+			return abilityCasted
+		endmethod
+		
+		private static method M_Filter takes nothing returns boolean
+			local unit u = GetFilterUnit()
+			local boolean b = false
+			
+			if ((GetUnitTypeId(GetTriggerUnit()) == 'h013') or /*
+			*/  (GetUnitTypeId(GetTriggerUnit()) == 'h007')	or /*
+			*/  (GetUnitTypeId(GetTriggerUnit()) == 'h00A') or /*
+			*/  (GetUnitTypeId(GetTriggerUnit()) == 'h00B') or /*
+			*/  (GetUnitTypeId(GetTriggerUnit()) == 'h00D')) then
+				set b = true
+			endif
+
+			set u = null
+			
+			return b
+		endmethod
+		
+		private method doMetamorphosis takes nothing returns boolean
+			local boolean abilityCasted = false
+			
+			call GroupClear(enumGroup)
+			//call GroupEnumUnitsInRange(enumGroup, x, y, BM_AOE[level], Filter(function thistype.ML_Filter))
+			
+			if (CountUnitsInGroup(enumGroup) > 0) then
+			
+			endif
+			
+			return abilityCasted
+		endmethod
+		
+		method idleActions takes nothing returns nothing 
+			local boolean abilityCasted = false
+			
+			/* Metamorphosis */
+			if ((.heroLevel >= 6) and /*
+			*/	(GetRandomInt(0,100) <= M_Chance[.aiLevel])) then
+				set abilityCasted = doMetamorphosis()					
+			endif	
+
+			if (not abilityCasted) then
+				// just for development...
+				set .moveX = -6535.1
+				set .moveY = 2039.7
+				call .move()
+			endif
+			
+		endmethod
+
+        method assaultEnemy takes nothing returns nothing  
+            local boolean abilityCasted = false
+			
+			/* Burrow Strike */
+			if 	((GetRandomInt(0,100) <= BS_Chance[.aiLevel]) and /*
+			*/	(TimerGetRemaining(BS_Timer) == 0.0)) then
+				set abilityCasted = doBurrowStrike()
+			endif
+			
+			/* Burrow Move */
+			if 	((GetRandomInt(0,100) <= BM_Chance[.aiLevel]) and /*
+			*/	(TimerGetRemaining(BM_Timer) == 0.0)) then
+				set abilityCasted = doBurrowMove()
+			endif
+
+				
+
+			if (not abilityCasted) then
+				call .defaultAssaultEnemy()
+			endif
+        endmethod
 		
 		method onCreate takes nothing returns nothing
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
-			// Carrion Swarm
-			call RegisterHeroAISkill(HERO_ID, 1, 'A06F')
-			call RegisterHeroAISkill(HERO_ID, 5, 'A06F') 
-			call RegisterHeroAISkill(HERO_ID, 9, 'A06F') 
-			call RegisterHeroAISkill(HERO_ID, 13, 'A06F') 
-			call RegisterHeroAISkill(HERO_ID, 16, 'A06F') 
+			
 			// Burrow Strike
 			call RegisterHeroAISkill(HERO_ID, 2, 'A06A') 
 			call RegisterHeroAISkill(HERO_ID, 7, 'A06A') 
@@ -52,7 +177,13 @@ scope CryptLordAI
 			call RegisterHeroAISkill(HERO_ID, 8, 'A06E') 
 			call RegisterHeroAISkill(HERO_ID, 11, 'A06E') 
 			call RegisterHeroAISkill(HERO_ID, 15, 'A06E') 
-			call RegisterHeroAISkill(HERO_ID, 19, 'A06E') 
+			call RegisterHeroAISkill(HERO_ID, 19, 'A06E')
+			// Carrion Swarm
+			call RegisterHeroAISkill(HERO_ID, 1, 'A06F')
+			call RegisterHeroAISkill(HERO_ID, 5, 'A06F') 
+			call RegisterHeroAISkill(HERO_ID, 9, 'A06F') 
+			call RegisterHeroAISkill(HERO_ID, 13, 'A06F') 
+			call RegisterHeroAISkill(HERO_ID, 16, 'A06F') 
 			// Metamorphosis
 			call RegisterHeroAISkill(HERO_ID, 6, 'A06H')
 			call RegisterHeroAISkill(HERO_ID, 12, 'A06H')
@@ -86,7 +217,69 @@ scope CryptLordAI
 			endif
 			
 			set .itemBuild = Itemsets[.aiLevel]
-			call BJDebugMsg("Registered Itemset[" + I2S(aiLevel) + "] for Crypt Lord.")
+			
+			/* Ability Setup */
+			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
+			// Burrow Strike
+			set BS_Chance[0] = 20
+			set BS_Chance[1] = 30
+			set BS_Chance[2] = 40
+			
+			// OE: Burrow Strike -> AoE (Level)
+			set BS_AOE[0] = 150
+			set BS_AOE[1] = 175
+			set BS_AOE[2] = 200
+			set BS_AOE[3] = 225
+			set BS_AOE[4] = 250
+			
+			// OE: Burrow Strike -> Range (Level)
+			set BS_RADIUS[0] = 700
+			set BS_RADIUS[1] = 750
+			set BS_RADIUS[2] = 800
+			set BS_RADIUS[3] = 850
+			set BS_RADIUS[4] = 900
+			
+			set BS_Min_Enemies[0] = 3
+			set BS_Min_Enemies[1] = 5
+			set BS_Min_Enemies[2] = 7
+			
+			set BS_Max_Random_Loc[0] = 2
+			set BS_Max_Random_Loc[1] = 4
+			set BS_Max_Random_Loc[2] = 6
+			
+			set BS_Timer = NewTimer()
+			set BS_Cooldown[0] = 11.0
+			set BS_Cooldown[1] = 11.0
+			set BS_Cooldown[2] = 11.0
+			set BS_Cooldown[3] = 11.0
+			set BS_Cooldown[4] = 11.0
+			
+			// Burrow Move
+			set BM_Chance[0] = 10
+			set BM_Chance[1] = 15
+			set BM_Chance[2] = 20
+			
+			set BM_Min_Enemies[0] = 5
+			set BM_Min_Enemies[1] = 4
+			set BM_Min_Enemies[2] = 3
+			
+			set BM_AOE[0] = 300
+			set BM_AOE[1] = 250
+			set BM_AOE[2] = 275
+			set BM_AOE[3] = 300
+			set BM_AOE[4] = 325
+			
+			set BM_Timer = NewTimer()
+			set BM_Cooldown[0] = 35.0
+			set BM_Cooldown[1] = 30.0
+			set BM_Cooldown[2] = 25.0
+			set BM_Cooldown[3] = 20.0
+			set BM_Cooldown[4] = 15.0
+			
+			// Metamorphosis
+			set M_Chance[0] = 10
+			set M_Chance[1] = 20
+			set M_Chance[2] = 20
         endmethod
         
         implement HeroAI     

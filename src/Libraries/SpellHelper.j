@@ -1,11 +1,27 @@
 library SpellHelper uses SimError, MiscFunctions, RestoreMana
 	
+	private keyword PauseData
+	
 	globals
 		private constant string ERROR_MSG = "This unit is immune to magic."
+		private PauseData array pauseDataForUnit
     endglobals
+	
+	private struct PauseData
+		unit target
+		real pause
+		
+		method onDestroy takes nothing returns nothing
+			set pauseDataForUnit[GetUnitId(.target)] = 0
+			set .target = null
+		endmethod
+		
+		static method getForUnit takes unit u returns thistype
+			return pauseDataForUnit[GetUnitId(u)]
+		endmethod
+	endstruct
 
 	struct SpellHelper
-		private static real pause = 0.0
 	
 		static method isValidEnemy takes unit target, unit caster returns boolean
 			return IsUnitEnemy(target, GetOwningPlayer(caster)) and not /*
@@ -83,12 +99,22 @@ library SpellHelper uses SimError, MiscFunctions, RestoreMana
 		endmethod
 		
 		static method unpauseUnit takes unit target returns nothing
-			call SetUnitPropWindow(target, .pause)
+			local PauseData pd = PauseData.getForUnit(target)
+				
+			if (pd != 0) then
+				call SetUnitPropWindow(pd.target, pd.pause)
+				call pd.destroy()
+			endif
 		endmethod
 		
 		static method pauseUnit takes unit target returns nothing
-			set .pause = GetUnitPropWindow(target)
-			call SetUnitPropWindow(target, 0) 
+			local PauseData pd = PauseData.create()
+			
+			set pd.target = target
+			set pd.pause = GetUnitPropWindow(pd.target)
+			set pauseDataForUnit[GetUnitId(pd.target)] = pd
+			
+			call SetUnitPropWindow(pd.target, 0) 
 		endmethod
 	endstruct
 endlibrary

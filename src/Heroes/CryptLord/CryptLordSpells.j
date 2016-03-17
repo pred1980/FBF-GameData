@@ -21,6 +21,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
 	 *     	29.03.2015: Integrated RegisterPlayerUnitEvent
 						Integrated SpellHelper filtering
 	 *		23.11.2015: Decreased max. swarms from 3/4/5/6/7 to max. 4 per level
+	 *		16.03.2016: Added Escort System for AI
      *
      */
      
@@ -196,6 +197,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         local unit u
         local real x = GetSpellTargetX()
         local real y = GetSpellTargetY()
+		local real duration = BURROW_BASE_DURATION - BURROW_LEVEL_REDUCTION * I2R(GetUnitAbilityLevel(lord, BURROW_ID))
         
         set tempX = GetUnitX(lord)
         set tempY = GetUnitY(lord)
@@ -204,7 +206,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         call GroupAddUnit(morphing,lord)
         call ForGroup(morphing,function startMorph)
         //Duration (6,5,4,3,2 seconds)
-        call Wait(BURROW_BASE_DURATION - BURROW_LEVEL_REDUCTION * I2R(GetUnitAbilityLevel(lord,BURROW_ID)))
+		call Wait(duration)
         call GroupEnumUnitsInRange(gr,x,y,BURROW_AOE,BOOLEXPR_TRUE)
         loop
             set u = GroupPickRandomUnit(gr)
@@ -224,7 +226,6 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         call GroupClear(morphing)
         
         call ReleaseGroup(gr)
-        set gr = null
         set u = null
     endfunction
     
@@ -260,6 +261,12 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
             if morphLearned then
                 call UnitAddAbility(grub,MORPH_ID_GRUB)
             endif
+			
+			// add to Escort System (only for Bots)
+			if (Game.isBot[GetPlayerId(lordOwner)]) then
+				call Escort.addUnit(lord, grub)
+			endif
+			
             call GroupAddUnit(grubs,grub)
 			set grub = null
         endif
