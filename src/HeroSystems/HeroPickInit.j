@@ -1,7 +1,7 @@
 scope HeroPickInit
     
     globals
-        private constant integer MAX_HEROES = 28
+        private constant integer MAX_HEROES = 27
         private constant integer ACOLYTE_ID = 'u002'
         private constant integer PEON_ID = 'o00G'
         private constant integer PEASANT_ID = 'h00C'
@@ -144,7 +144,6 @@ scope HeroPickInit
         set HEROES[10] = 'H009' //Destroyer
         set HEROES[11] = 'U01X' //Dread Lord
         set HEROES[23] = 'N00J' //Dark Ranger
-		set HEROES[27] = 'H019' //Dark Archmage (ONLY DEBUG MODE!!!)
         
         //Infidel Heroes
         set HEROES[12] = 'H00Y' //Archmage
@@ -179,7 +178,6 @@ scope HeroPickInit
         set HERO_PICK_FACING[10] = 90.00 //Destroyer
         set HERO_PICK_FACING[11] = 90.00 //Dread Lord
         set HERO_PICK_FACING[23] = 90.00 //Dark Ranger
-		set HERO_PICK_FACING[27] = 90.00 //Dark Archmage (ONLY DEBUG MODE!!!)
         
         //Infidel Heroes
         set HERO_PICK_FACING[12] = 275.00
@@ -461,15 +459,6 @@ scope HeroPickInit
         set HERO_ABILITIES[26][2] = 'A086' //Scaled Shell
         set HERO_ABILITIES[26][3] = 'A087' //Aqua Shield
 		
-		//Dark Archmage ( ONLY DEBUG MODE!!! )
-        set HERO_PICK_RECT[27]  = gg_rct_HeroPick28
-        set HERO_REPICK_RECT[27][0] = GetRectCenterX(gg_rct_HeroRevive28)
-        set HERO_REPICK_RECT[27][1] = GetRectCenterY(gg_rct_HeroRevive28)
-        set HERO_ABILITIES[27][0] = 'AHbz' //Blizzard
-        set HERO_ABILITIES[27][1] = 'AHwe' //Water Elemental
-        set HERO_ABILITIES[27][2] = 'AHab' //Brilliance Aura
-        set HERO_ABILITIES[27][3] = 'AHmt' //Mass Teleport
-        
         /*
          * Start Positions for Acolyts, Peons & Co.
          */

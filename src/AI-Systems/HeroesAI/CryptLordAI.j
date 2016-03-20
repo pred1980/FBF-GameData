@@ -21,12 +21,13 @@ scope CryptLordAI
 		private constant string BM_ORDER = "summonfactory"
 		private integer array BM_Chance
 		private integer array BM_Min_Enemies
+		private integer array BM_Max_Enemies
 		private real array BM_Cooldown
-		private real array BM_AOE
+		private real array BM_AOE[5][2]
 		private timer BM_Timer		
 		
 		/* Metamorphosis */
-		private constant string M_ORDER = "deathpact"
+		private constant string M_ORDER = "roar"
 		private integer array M_Chance
     endglobals
     
@@ -77,11 +78,19 @@ scope CryptLordAI
 			local integer level = GetUnitAbilityLevel(.hero, BM_SPELL_ID) - 1
 			local real x = GetUnitX(.hero)
 			local real y = GetUnitY(.hero)
+			local integer min = 0
+			local integer max = 0
 			
 			call GroupClear(enumGroup)
-			call GroupEnumUnitsInRange(enumGroup, x, y, BM_AOE[level], Filter(function thistype.CL_Filter))
-
-			if (CountUnitsInGroup(enumGroup) >= BM_Min_Enemies[.aiLevel]) then
+			call GroupEnumUnitsInRange(enumGroup, x, y, BM_AOE[level][0], Filter(function thistype.CL_Filter))
+			set min = CountUnitsInGroup(enumGroup)
+			
+			call GroupClear(enumGroup)
+			call GroupEnumUnitsInRange(enumGroup, x, y, BM_AOE[level][1], Filter(function thistype.CL_Filter))
+			set max = CountUnitsInGroup(enumGroup) - min
+			
+			if ((min >= BM_Min_Enemies[.aiLevel]) and /*
+			*/  (max >= BM_Max_Enemies[.aiLevel]))then
 				set abilityCasted = IssuePointOrder(.hero, BM_ORDER, x, y)
 			endif
 						
@@ -96,11 +105,11 @@ scope CryptLordAI
 			local unit u = GetFilterUnit()
 			local boolean b = false
 			
-			if ((GetUnitTypeId(GetTriggerUnit()) == 'h013') or /*
-			*/  (GetUnitTypeId(GetTriggerUnit()) == 'h007')	or /*
-			*/  (GetUnitTypeId(GetTriggerUnit()) == 'h00A') or /*
-			*/  (GetUnitTypeId(GetTriggerUnit()) == 'h00B') or /*
-			*/  (GetUnitTypeId(GetTriggerUnit()) == 'h00D')) then
+			if ((GetUnitTypeId(u) == 'h013') or /*
+			*/  (GetUnitTypeId(u) == 'h007') or /*
+			*/  (GetUnitTypeId(u) == 'h00A') or /*
+			*/  (GetUnitTypeId(u) == 'h00B') or /*
+			*/  (GetUnitTypeId(u) == 'h00D')) then
 				set b = true
 			endif
 
@@ -111,12 +120,20 @@ scope CryptLordAI
 		
 		private method doMetamorphosis takes nothing returns boolean
 			local boolean abilityCasted = false
+			local unit u
 			
 			call GroupClear(enumGroup)
-			//call GroupEnumUnitsInRange(enumGroup, x, y, BM_AOE[level], Filter(function thistype.ML_Filter))
+			call GroupEnumUnitsInRect(enumGroup, bj_mapInitialPlayableArea, Filter(function thistype.M_Filter))
 			
 			if (CountUnitsInGroup(enumGroup) > 0) then
-			
+				loop
+					set u = FirstOfGroup(enumGroup)
+					exitwhen (u == null)
+					call IssueImmediateOrder(u, M_ORDER)
+					call GroupRemoveUnit(enumGroup, u)
+				endloop
+				
+				set abilityCasted = true
 			endif
 			
 			return abilityCasted
@@ -154,8 +171,6 @@ scope CryptLordAI
 			*/	(TimerGetRemaining(BM_Timer) == 0.0)) then
 				set abilityCasted = doBurrowMove()
 			endif
-
-				
 
 			if (not abilityCasted) then
 				call .defaultAssaultEnemy()
@@ -240,8 +255,8 @@ scope CryptLordAI
 			set BS_RADIUS[4] = 900
 			
 			set BS_Min_Enemies[0] = 3
-			set BS_Min_Enemies[1] = 5
-			set BS_Min_Enemies[2] = 7
+			set BS_Min_Enemies[1] = 4
+			set BS_Min_Enemies[2] = 5
 			
 			set BS_Max_Random_Loc[0] = 2
 			set BS_Max_Random_Loc[1] = 4
@@ -263,11 +278,22 @@ scope CryptLordAI
 			set BM_Min_Enemies[1] = 4
 			set BM_Min_Enemies[2] = 3
 			
-			set BM_AOE[0] = 300
-			set BM_AOE[1] = 250
-			set BM_AOE[2] = 275
-			set BM_AOE[3] = 300
-			set BM_AOE[4] = 325
+			set BM_Max_Enemies[0] = 6
+			set BM_Max_Enemies[1] = 8
+			set BM_Max_Enemies[2] = 10
+			
+			// [0][0] == Min
+			// [0][1] == Max
+			set BM_AOE[0][0] = 225
+			set BM_AOE[0][1] = 425
+			set BM_AOE[1][0] = 250
+			set BM_AOE[1][1] = 450
+			set BM_AOE[2][0] = 275
+			set BM_AOE[2][1] = 475
+			set BM_AOE[3][0] = 300
+			set BM_AOE[3][1] = 500
+			set BM_AOE[4][0] = 325
+			set BM_AOE[4][1] = 525
 			
 			set BM_Timer = NewTimer()
 			set BM_Cooldown[0] = 35.0
@@ -277,9 +303,9 @@ scope CryptLordAI
 			set BM_Cooldown[4] = 15.0
 			
 			// Metamorphosis
-			set M_Chance[0] = 10
-			set M_Chance[1] = 20
-			set M_Chance[2] = 20
+			set M_Chance[0] = 30
+			set M_Chance[1] = 35
+			set M_Chance[2] = 40
         endmethod
         
         implement HeroAI     

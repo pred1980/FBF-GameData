@@ -35,6 +35,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
 	 *     	29.03.2015: Integrated RegisterPlayerUnitEvent
 	 *		18.08.2015: Bugfix (wrong beetle to a grub)
 						Bugfix (wrong position for cocoons after a round end teleport)
+	 *		18.03.2016: Added beetles and grubs to the escort system (only for AI)
      *
      */
     globals
@@ -132,10 +133,20 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
     endstruct
     
     private function eMorph takes unit cocoon, real x, real y returns nothing
-        call GroupRemoveUnit(cocoons,cocoon)
+        local unit b
+		
+		call GroupRemoveUnit(cocoons,cocoon)
         call RemoveUnit(cocoon)
 		call DestroyEffect(AddSpecialEffect(FINISH_MORPH_EFFECT, x, y))
-        call GroupAddUnit(beetles, CreateUnit(lordOwner,BEETLE_ID[GetUnitAbilityLevel(lord,SWARM_ID)], x, y, GetRandomReal(0,360)))
+        set b = CreateUnit(lordOwner, BEETLE_ID[GetUnitAbilityLevel(lord,SWARM_ID)], x, y, GetRandomReal(0,360))
+		call GroupAddUnit(beetles, b)
+		
+		// add to Escort System (only for Bots)
+		if (Game.isBot[GetPlayerId(lordOwner)]) then
+			call Escort.addUnit(lord, b)
+		endif
+		
+		set b = null
     endfunction
     
     private function morph_callback takes nothing returns nothing
