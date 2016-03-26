@@ -61,7 +61,7 @@ scope HeroAI
 	// The function that determines if it's a base teleporter (from or to the base)
 	private function isBaseTeleporter takes unit u returns boolean
     	//To-Do: Make two different Unit-IDs to get the correct  base teleporter for each race
-		return GetUnitTypeId(u) == 'n00M'
+		return GetUnitTypeId(u) == 'n00M' or GetUnitTypeId(u) == 'n00T'
 	endfunction
 	
 	// The function that determines if it's a shop
@@ -113,7 +113,7 @@ scope HeroAI
 	// Returns Coalition Base Teleporter
 	// To-Do.: Create own Teleporter unit with a unique ID
 	private function coalitionBaseTeleporter takes nothing returns boolean
-    	return (GetUnitTypeId(GetFilterUnit()) == 'xxxx')
+    	return (GetUnitTypeId(GetFilterUnit()) == 'n00T')
     endfunction
 	
 	//! runtextmacro HeroAILearnset()

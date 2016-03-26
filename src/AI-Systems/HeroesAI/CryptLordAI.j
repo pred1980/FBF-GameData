@@ -45,6 +45,7 @@ scope CryptLordAI
 			local real x
 			local real y
 			local location l
+			local unit u
 			
 			call GroupClear(enumGroup)
 			
@@ -54,8 +55,11 @@ scope CryptLordAI
 				set x = GetLocationX(l)
 				set y = GetLocationY(l)
 				call GroupEnumUnitsInRange(enumGroup, x, y, BS_AOE[level], Filter(function thistype.CL_Filter))
-				
+
 				if 	(CountUnitsInGroup(enumGroup) >= BS_Min_Enemies[.aiLevel]) then
+					set u = GetRandomUnitFromGroup(enumGroup)
+					set x = GetUnitX(u)
+					set y = GetUnitY(u)
 					set abilityCasted = IssuePointOrder(.hero, BS_ORDER, x, y)
 					set i = BS_Max_Random_Loc[.aiLevel]
 				endif
@@ -65,6 +69,7 @@ scope CryptLordAI
 			
 			call RemoveLocation(l)
 			set l = null
+			set u = null
 			
 			if (abilityCasted) then
 				call TimerStart(BS_Timer, BS_Cooldown[level], false, null)
@@ -254,13 +259,13 @@ scope CryptLordAI
 			set BS_RADIUS[3] = 850
 			set BS_RADIUS[4] = 900
 			
-			set BS_Min_Enemies[0] = 3
-			set BS_Min_Enemies[1] = 4
-			set BS_Min_Enemies[2] = 5
+			set BS_Min_Enemies[0] = 1
+			set BS_Min_Enemies[1] = 2
+			set BS_Min_Enemies[2] = 3
 			
-			set BS_Max_Random_Loc[0] = 2
-			set BS_Max_Random_Loc[1] = 4
-			set BS_Max_Random_Loc[2] = 6
+			set BS_Max_Random_Loc[0] = 5
+			set BS_Max_Random_Loc[1] = 7
+			set BS_Max_Random_Loc[2] = 9
 			
 			set BS_Timer = NewTimer()
 			set BS_Cooldown[0] = 11.0

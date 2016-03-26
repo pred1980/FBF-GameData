@@ -7,16 +7,23 @@ scope Cleave initializer init
 	 *     	22.03.2015: ATTACK_TYPE, DAMAGE_TYPE and WEAPON_TYPE specification
 	 *		06.05.2015: Integrated SpellHelper for filtering
 						Set struct members to private
+	 *		24.03.2016: Recoded, optimized and adapted for AI System
      *
      */
+	 
+	private keyword Cleave
+	
     globals
-        private constant integer SPELL_ID = 'A06M'
+        private constant integer SPELL_ID = 'A064'
+		private constant integer BUFF_PLACER_ID = 'A06K'
         private constant integer BUFF_ID = 'B00W'
-        //Radius = Schaden x RADIUS_MULTIPLIER
-        private constant real RADIUS_MULTIPLIER = 3.5
+        private constant real RADIUS = 175
         //Einheiten deren HP unter dem WEAKNESS_FACTOR sind haben ne CHANCE gestunt
         //weggestoßen zu werden
-        private constant integer WEAKNESS_FACTOR = 50
+        private constant real WEAKNESS_FACTOR = 50.0
+		
+		// Duration
+		private constant real DURATION = 10.0
         
         //Chance für STUN oder KNOCK BACK
         private constant integer array CHANCE
@@ -37,6 +44,8 @@ scope Cleave initializer init
         private constant attacktype ATTACK_TYPE = ATTACK_TYPE_NORMAL
         private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
         private constant weapontype WEAPON_TYPE = WEAPON_TYPE_METAL_HEAVY_CHOP
+		
+		private Cleave array cleaveCaster
     endglobals
     
     private function MainSetup takes nothing returns nothing
@@ -56,10 +65,13 @@ scope Cleave initializer init
     private struct Cleave
         private unit caster
         private integer level = 0
-        private real damage
-        private real radius
-        private group targets
         private static thistype tempthis = 0
+		private static integer buffType = 0
+		private dbuff buff = 0
+		
+		static method getForUnit takes unit u returns thistype
+			return cleaveCaster[GetUnitId(u)]
+		endmethod
         
         private  static method group_filter_callback takes nothing returns boolean
 			local unit u = GetFilterUnit()
@@ -74,77 +86,113 @@ scope Cleave initializer init
 			
             return b
         endmethod
-        
-        private static method onDamageTarget takes nothing returns nothing
-            local unit u = GetEnumUnit()
-            local real x
+		
+		method onAttack takes unit damageSource, unit damagedUnit, real damage returns nothing
+			local unit target
+			local real x
             local real y
             local real ang
-            local real dmg = (.tempthis.damage * DAMAGE[.tempthis.level]) / 100 
+            local real propDmg = (damage * DAMAGE[.level]) / 100 
+			
+			call GroupClear(ENUM_GROUP)
+			call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(.caster), GetUnitY(.caster), RADIUS, function thistype.group_filter_callback)
             
-            //Damage
-            if GetUnitState(u, UNIT_STATE_LIFE) > dmg then
-                set DamageType = PHYSICAL
-				call SpellHelper.damageTarget(.tempthis.caster, u, dmg, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
-            else
-                call SetUnitExploded(u, true)
-                call KillUnit(u) 
-            endif
-            //Ist es eine schwache Einheit?
-            if GetUnitLifePercent(u) <= WEAKNESS_FACTOR and not IsUnitDead(u) then
-                if GetRandomInt(1, 100) <= CHANCE[.tempthis.level] then
-                    if GetRandomInt(0, 1) == 0 then
-                        //Stun
-                        call Stun_UnitEx(u, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
-                    else
-                        //Knockback
-                        set x = GetUnitX(.tempthis.caster) - GetUnitX(u)
-                        set y = GetUnitY(.tempthis.caster) - GetUnitY(u)
-                        set ang = Atan2(y, x) - bj_PI
-                        call Knockback.create(.tempthis.caster, u, DISTANCE, KB_TIME, ang, 0, "", "")
-                    endif
-                endif
-            endif
-            
-            call GroupRemoveUnit(.tempthis.targets, u)
-            if CountUnitsInGroup(.tempthis.targets) == 0 then
-                call .tempthis.destroy()
-            endif
-            
-            set u = null
-        endmethod
+			loop
+				set target = FirstOfGroup(ENUM_GROUP)
+				exitwhen (target == null)
+				
+				// Damage
+				if (GetUnitState(target, UNIT_STATE_LIFE) > propDmg) then
+					set DamageType = SPELL
+					call SpellHelper.damageTarget(.caster, target, propDmg, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+				else
+					call SetUnitExploded(target, true)
+					call KillUnit(target) 
+				endif
+				
+				//Weak Unit?
+				if (GetUnitLifePercent(target) <= WEAKNESS_FACTOR and not SpellHelper.isUnitDead(target)) then
+					if (GetRandomInt(1, 100) <= CHANCE[.level]) then
+						if (GetRandomInt(0, 1) == 0) then
+							//Stun
+							call Stun_UnitEx(target, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
+						else
+							//Knockback
+							set x = GetUnitX(.caster) - GetUnitX(target)
+							set y = GetUnitY(.caster) - GetUnitY(target)
+							set ang = Atan2(y, x) - bj_PI
+							call Knockback.create(.caster, target, DISTANCE, KB_TIME, ang, 0, "", "")
+						endif
+					endif
+				endif
+				
+				call GroupRemoveUnit(ENUM_GROUP, target)
+			endloop
+			
+			set target = null
+		endmethod
 		
-		static method create takes unit attacker, real damage returns thistype
+		static method create takes unit attacker returns thistype
             local thistype this = thistype.allocate()
             
             set .caster = attacker
             set .level = GetUnitAbilityLevel(.caster, SPELL_ID)
-            set .damage = damage
-            set .radius = .damage * RADIUS_MULTIPLIER
-            set .targets = NewGroup()
             set .tempthis = this
-            
-            call GroupEnumUnitsInRange( .targets, GetUnitX(.caster), GetUnitY(.caster), .radius, function thistype.group_filter_callback )
-            call ForGroup( .targets, function thistype.onDamageTarget )
+			set cleaveCaster[GetUnitId(.caster)] = this
+			
+			call UnitAddBuff(.caster, .caster, .buffType, DURATION, .level)
             
             return this
         endmethod
-        
-        private method onDestroy takes nothing returns nothing
-            call ReleaseGroup( .targets )
-            set .targets = null
-            set .caster = null
+		
+		private static method onBuffEnd takes nothing returns nothing
+			local dbuff b = GetEventBuff()
+			local thistype this = thistype(b.data)
+			
+			if b.isExpired then
+                call thistype(b.data).destroy()
+            endif
         endmethod
+		
+		private static method onBuffAdd takes nothing returns nothing
+			local dbuff b = GetEventBuff()
+            local thistype this = allocate()
+			
+			set b.data = integer(this)
+			set buff = b
+		endmethod
+		
+		static method onInit takes nothing returns nothing
+			set .buffType = DefineBuffType(BUFF_PLACER_ID, BUFF_ID, 0, false, true, thistype.onBuffAdd, 0, thistype.onBuffEnd)
+		endmethod
+
     endstruct
     
-    private function Actions takes unit damagedUnit, unit damageSource, real damage returns nothing
-        if ( GetUnitAbilityLevel(damageSource, BUFF_ID) > 0 and IsUnitEnemy(damagedUnit, GetOwningPlayer(damageSource)) and DamageType == 0 ) then
-            call Cleave.create(damageSource, damage)
+	// damageSource == Abomination
+	// damagedUnit  == Target
+    private function onDamageActions takes unit damagedUnit, unit damageSource, real damage returns nothing
+        local Cleave c = Cleave.getForUnit(damageSource)
+        
+		if ((GetUnitAbilityLevel(damageSource, BUFF_ID) > 0)	  and /*
+		*/	(SpellHelper.isValidEnemy(damagedUnit, damageSource)) and /*
+		*/	(DamageType == PHYSICAL)) then
+			if (c != 0) then
+				call c.onAttack(damageSource, damagedUnit, damage)
+			endif
         endif
+    endfunction
+	
+	private function Actions takes nothing returns nothing
+        call Cleave.create(GetTriggerUnit())
+    endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
     endfunction
 
     private function init takes nothing returns nothing
-        call RegisterDamageResponse( Actions )
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+        call RegisterDamageResponse( onDamageActions )
         call MainSetup()
         call Preload(STUN_EFFECT)
     endfunction

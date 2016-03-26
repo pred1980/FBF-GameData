@@ -47,6 +47,38 @@ scope ForsakenTeleportSystem initializer init
             set u = null
             return b
         endmethod
+		
+		private static method filterCondition takes nothing returns boolean
+			local unit u = GetFilterUnit()
+			local boolean b = false
+			
+			if (not SpellHelper.isUnitDead(u) and not /*
+				*/ IsUnitType(u, UNIT_TYPE_STRUCTURE) and not /*
+				*/ IsUnitType(u, UNIT_TYPE_PEON) and not /*
+				*/ IsUnitType(u, UNIT_TYPE_MECHANICAL) and /*
+				*/ (Devour.getDevouredUnit() != u)) then
+				set b = true
+			endif
+			
+			set u = null
+			
+			return b	
+		endmethod
+		
+		private static method teleportPlayerUnits takes integer pid, real x, real y returns nothing
+			local unit u
+			
+			call GroupClear(ENUM_GROUP)
+			call GroupEnumUnitsOfPlayer(ENUM_GROUP, Player(pid), Condition(function thistype.filterCondition))
+			loop
+				set u = FirstOfGroup(ENUM_GROUP)
+				exitwhen (u == null)
+				call SetUnitPosition(u, x, y)
+				call GroupRemoveUnit(ENUM_GROUP, u)
+			endloop
+			
+			set u = null
+		endmethod
         
         /* Nach kurzem Delay zur Basis zurueck teleportieren */
         private static method onReturnToBaseDelay takes nothing returns nothing
@@ -66,6 +98,10 @@ scope ForsakenTeleportSystem initializer init
 					endif
 					call IssueImmediateOrder(data.target, "holdposition")
 					
+					if (IsUnitType(data.target, UNIT_TYPE_HERO)) then
+						call teleportPlayerUnits(data.pid, data.x, data.y)
+					endif
+										
                     return
                 endif
                 call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(data.target), GetUnitY(data.target)))
@@ -120,6 +156,7 @@ scope ForsakenTeleportSystem initializer init
         static method onLeaveBase takes nothing returns nothing
             local unit u = GetTriggerUnit()
             local player p = GetOwningPlayer(u)
+			local integer pid = GetPlayerId(p)
             local real x = GetRectCenterX(TELEPORT_RECTS[PLACE_BY_ROUND[0][1]])
             local real y = GetRectCenterY(TELEPORT_RECTS[PLACE_BY_ROUND[0][1]])
             
@@ -129,7 +166,11 @@ scope ForsakenTeleportSystem initializer init
                 call PanCameraToTimed(x, y, 0.00)
             endif
             call Sound.runSoundForPlayer(GLOBAL_SOUND_3, p)
-            
+			
+			if (IsUnitType(u, UNIT_TYPE_HERO)) then
+				call teleportPlayerUnits(pid, x, y)
+			endif
+			
             set u = null
         endmethod
 		

@@ -301,8 +301,8 @@ scope HeroPickInit
         set HERO_PICK_RECT[9]  = gg_rct_HeroPick10
         set HERO_REPICK_RECT[9][0] = GetRectCenterX(gg_rct_HeroRevive10)
         set HERO_REPICK_RECT[9][1] = GetRectCenterY(gg_rct_HeroRevive10)
-        set HERO_ABILITIES[9][0] = 'A06M' //Cleave
-        set HERO_ABILITIES[9][1] = 'A06K' //Consume himself
+        set HERO_ABILITIES[9][0] = 'A064' //Cleave
+        set HERO_ABILITIES[9][1] = 'A06M' //Consume himself
         set HERO_ABILITIES[9][2] = 'A06G' //Plague Cloud
         set HERO_ABILITIES[9][3] = 'A06L' //Snack
         

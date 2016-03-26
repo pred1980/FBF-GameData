@@ -58,7 +58,6 @@ scope BurrowStrike initializer init
         set BURROW_SPEED[3] = 650.00
         set BURROW_SPEED[4] = 650.00
         
-        
         set IMPALE_HEIGHT[0] = 200.00
         set IMPALE_HEIGHT[1] = 225.00
         set IMPALE_HEIGHT[2] = 250.00

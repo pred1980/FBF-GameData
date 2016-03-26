@@ -6,7 +6,7 @@ scope ConsumeHimself initializer init
      *
      */
     globals
-        private constant integer SPELL_ID = 'A06K'
+        private constant integer SPELL_ID = 'A06M'
         private constant integer BUFF_ID = 'B00V'
         private constant real CONSUME_COUNT = 3.00 //3 Wiederholungen a 1.67s ~ 5s. Heilung
         private constant real INTERVAL = 1.67

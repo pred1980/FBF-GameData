@@ -1,7 +1,7 @@
 scope CoalitionTeleportSystem initializer init
 
     globals
-        private constant integer ID = 'n00M'
+        private constant integer ID = 'n00T'
 		private constant rect array BASE_TELEPORTS_RECTS
 		private constant rect array AOS_TELEPORT_RECTS
         private constant integer MAX_TELEPORTER_PLACES = 1
@@ -30,6 +30,38 @@ scope CoalitionTeleportSystem initializer init
 		static fogmodifier visibibleArea
 		static unit teleporter
 		
+		private static method filterCondition takes nothing returns boolean
+			local unit u = GetFilterUnit()
+			local boolean b = false
+			
+			if (not SpellHelper.isUnitDead(u) and not /*
+				*/ IsUnitType(u, UNIT_TYPE_STRUCTURE) and not /*
+				*/ IsUnitType(u, UNIT_TYPE_PEON) and not /*
+				*/ IsUnitType(u, UNIT_TYPE_MECHANICAL) and /*
+				*/ (Devour.getDevouredUnit() != u)) then
+				set b = true
+			endif
+			
+			set u = null
+			
+			return b	
+		endmethod
+		
+		private static method teleportPlayerUnits takes integer pid, real x, real y returns nothing
+			local unit u
+			
+			call GroupClear(ENUM_GROUP)
+			call GroupEnumUnitsOfPlayer(ENUM_GROUP, Player(pid), Condition(function thistype.filterCondition))
+			loop
+				set u = FirstOfGroup(ENUM_GROUP)
+				exitwhen (u == null)
+				call SetUnitPosition(u, x, y)
+				call GroupRemoveUnit(ENUM_GROUP, u)
+			endloop
+			
+			set u = null
+		endmethod
+		
 		/* Nach kurzem Delay zur Basis zurueck teleportieren */
         private static method onReturnToBaseDelay takes nothing returns nothing
             local TeleportData data = GetTimerData(GetExpiredTimer())
@@ -47,6 +79,10 @@ scope CoalitionTeleportSystem initializer init
 						call SpellHelper.unpauseUnit(data.target)
 					endif
 					call IssueImmediateOrder(data.target, "holdposition")
+					
+					if (IsUnitType(data.target, UNIT_TYPE_HERO)) then
+						call teleportPlayerUnits(data.pid, data.x, data.y)
+					endif
 					
 					return
                 endif
@@ -152,6 +188,7 @@ scope CoalitionTeleportSystem initializer init
         static method onLeaveBase takes nothing returns nothing
             local unit u = GetTriggerUnit()
             local player p = GetOwningPlayer(u)
+			local integer pid = GetPlayerId(p)
             local real x = GetRectCenterX(AOS_TELEPORT_RECTS[PLACE_BY_ROUND[0][1]])
             local real y = GetRectCenterY(AOS_TELEPORT_RECTS[PLACE_BY_ROUND[0][1]])
             
@@ -167,6 +204,10 @@ scope CoalitionTeleportSystem initializer init
 			*/  CoalitionUnitShopTutorial.showTutorial[GetPlayerId(p)] and /*
 			*/  ShowTutorialsDialog.ForPlayer(GetPlayerId(p))) then
 				call CoalitionUnitShopTutorial.create(p, u)
+			endif
+			
+			if (IsUnitType(u, UNIT_TYPE_HERO)) then
+				call teleportPlayerUnits(pid, x, y)
 			endif
 					
             set u = null
