@@ -131,9 +131,9 @@ scope RoundEndSystem
                 if Game.isPlayerInGame(i) and GetPlayerRace(Player(i)) == RACE_UNDEAD then
                     call Game.playerAddLumber(i, Evaluation.getLumber(RoundSystem.actualRound))
                     call DisplayTimedTextToPlayer(Player(i),0.0 ,0.0 ,TEXT_DURATION , "You received " + "|cffffcc00" + I2S(Evaluation.getLumber(RoundSystem.actualRound)) +"|r Lumber.")
-					
+
 					set TowerAIEventListener.getTowerBuildAI(i).canBuild = true
-					call TowerAIEventListener.getTowerBuildAI(i).buildNext()
+					call TowerAIEventListener.addBuildEvent(TowerAIEventListener.getTowerBuildAI(i).getBuilder())
 				endif
                 set i = i + 1
             endloop
@@ -163,10 +163,10 @@ scope RoundEndSystem
 		
 		static method initialize takes nothing returns nothing
 			call .teleportBack()
+			call .changeTowerBuilder()
 			call .addLumber()
 			call .createWardens()
 			call .removeForsakenDefense()
-			call .changeTowerBuilder()
 		endmethod
 		
 	endstruct

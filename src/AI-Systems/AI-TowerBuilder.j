@@ -2,33 +2,120 @@ scope TowerBuildAI
 
     globals
         /**
-         * the tower size width
+         * The tower size width.
          */
         private constant integer TOWER_SIZE_WIDTH = 0
+
         /**
-         * the tower size height
+         * The tower size height.
          */
         private constant integer TOWER_SIZE_HEIGHT = 1
+
         /**
-         * the event to upgrade after finish build
+         * The event to upgrade after finish build.
          */
         private constant integer TOWER_AI_EVENT_UPGRADE = 1
 
         /**
-         * the event to build next tower after begin build
+         * The event to build next tower after begin build.
          */
         private constant integer TOWER_AI_EVENT_BUILD = 2
 
         /**
-         * the max players
+         * The max players.
          */
         private constant integer TOWER_AI_MAX_PLAYER = 12
 
         /**
-         * the max events
+         * The max events.
          */
         private constant integer TOWER_AI_MAX_EVENTS = 100
+
+        /**
+         * The max upgrade queue.
+         */
+        private constant integer MAX_UPGRADE_QUEUE = 10
     endglobals
+
+    /**
+     * The tower upgrade struct.
+     */
+    struct TowerUpgrade
+        /**
+         * The last upgrade tower id.
+         * @var integer
+         */
+        private integer towerId = 0
+
+        /**
+         * The tower key.
+         * @var integer
+         */
+        private integer key = -1
+
+        /**
+         * Is active
+         * @var boolean
+         */
+        private boolean active = false
+
+        /**
+         * Sets the tower id.
+         * @param integer towerId
+         */
+        public method setTowerId takes integer towerId returns nothing
+            set .towerId = towerId
+        endmethod
+        /**
+         * Sets the tower id.
+         * @param integer towerId
+         */
+        public method getTowerId takes nothing returns integer
+            return .towerId
+        endmethod
+
+        /**
+         * Sets the tower key.
+         * @param integer key
+         */
+        public method setKey takes integer key returns nothing
+            set .key = key
+        endmethod
+
+        /**
+         * Returns the tower key.
+         * @return integer
+         */
+        public method getKey takes nothing returns integer
+            return .key
+        endmethod
+
+        /**
+         * Sets is active.
+         * @param boolean active
+         */
+        public method setActive takes boolean active returns nothing
+            set .active = active
+        endmethod
+
+        /**
+         * Gets is active.
+         * @return boolean
+         */
+        public method isActive takes nothing returns boolean
+            return .active
+        endmethod
+
+        /**
+         * Reset the upgrade tower object.
+         */
+        public method reset takes nothing returns nothing
+                set .active = false
+                set .towerId = 0
+                set .key = -1
+        endmethod
+
+    endstruct
 
     /**
      * the config for the tower build
@@ -172,7 +259,7 @@ scope TowerBuildAI
                     set tower = tower + 1
                 endloop
             endif
-            if (isParent == false) then
+            if (not isParent) then
                 set tower = -1
             endif
             return tower
@@ -316,9 +403,9 @@ scope TowerBuildAI
 
         /**
          * the upgrade queue
-         * @var integer[]|array
+         * @var TowerUpgrade[]|array
          */
-        public integer array upgradeQueue[5]
+        public TowerUpgrade array upgradeQueue[MAX_UPGRADE_QUEUE]
 
         /**
          * the player id
@@ -374,6 +461,18 @@ scope TowerBuildAI
         private boolean topToBottom = false
 
         /**
+         * initialize the tower build ai
+         */
+        public method initialize takes nothing returns nothing
+            local integer counter = 0
+            loop
+                set .upgradeQueue[counter] = TowerUpgrade.create()
+                set counter = counter + 1
+                exitwhen counter >= MAX_UPGRADE_QUEUE
+            endloop
+        endmethod
+
+        /**
          * Sets the builder build an tower.
          * @param boolean builded
          */
@@ -425,12 +524,43 @@ scope TowerBuildAI
         endmethod
 
         /**
+         * Returns the builder.
+         * @return unit
+         */
+        public method getBuilder takes nothing returns unit
+            return .builder
+        endmethod
+
+        /**
          * add tower to array
          * @param unit tower
          */
         public method addTower takes unit tower returns nothing
             set .tower[.towerCount] = tower
+            call .addTowerToUpgradeQueue(.towerCount)
             set .towerCount = .towerCount + 1
+        endmethod
+
+        /**
+         * Add tower to upgrade queue entry.
+         * @param integer towerKey
+         */
+        public method addTowerToUpgradeQueue takes integer towerKey returns nothing
+            local integer currentPosition = 0
+            local integer unitId = GetUnitTypeId(.tower[.towerCount])
+            local integer upgradeTowerKey
+            loop
+                set upgradeTowerKey = .towers.getTowerKeyFirstLevelByUnitId(.upgradeQueue[currentPosition].getTowerId())
+                if (not .upgradeQueue[currentPosition].isActive() /*
+                */ and .towers.getColumnValue(upgradeTowerKey, .towers.columnUnitId) == unitId /*
+                */) then
+                    call .upgradeQueue[currentPosition].setKey(towerKey)
+                    call .upgradeQueue[currentPosition].setActive(true)
+                    set currentPosition = MAX_UPGRADE_QUEUE
+                endif
+                set currentPosition = currentPosition + 1
+                exitwhen currentPosition >= MAX_UPGRADE_QUEUE
+            endloop
         endmethod
 
 		/**
@@ -449,8 +579,8 @@ scope TowerBuildAI
             local integer key = 0
             local integer currentTowerCount = .towerCount
             if (towerKey < .towerCount and .sellTowerTrain != 0) then
-            	call IssueImmediateOrderById(.tower[towerKey], .sellTowerTrain)
-            	set .towerCount = 0
+                call IssueImmediateOrderById(.tower[towerKey], .sellTowerTrain)
+                set .towerCount = 0
             	loop
                     exitwhen key == currentTowerCount
             		if (key != towerKey) then
@@ -458,7 +588,7 @@ scope TowerBuildAI
                     endif
                     set key = key + 1
             	endloop
-            endif 
+            endif
         endmethod
 
         /**
@@ -530,54 +660,69 @@ scope TowerBuildAI
         endmethod
 
         /**
-         * upgrade towers from the queue
+         * Upgrade first towers from the queue.
          * @return boolean
          */
         public method upgradeFirstFromQueue takes nothing returns boolean
-            local integer currentPosition = 10
-            local integer towerUnitId = 0
-            local integer lastTowerUnitId = 0
-            local integer buildTowerId = 0
-            local integer towerBuildKey
             local boolean result = false
-            local integer lastTowerBuildKey
+            if (.upgradeQueue[0].isActive()) then
+                set result = .upgradeTower(0)
+            endif
+            return result
+        endmethod
+
+        /**
+         * Upgrade all towers from the queue.
+         * @return boolean
+         */
+        public method upgradeAllFromQueue takes nothing returns nothing
+            local integer position = 0
             loop
-                exitwhen currentPosition < 0
-                set towerUnitId = .upgradeQueue[currentPosition]
-                if (towerUnitId != 0) then
-                    set buildTowerId = towerUnitId
+                if (.upgradeQueue[position].isActive()) then
+                    call .upgradeTower(position)
                 endif
-                set .upgradeQueue[currentPosition] = lastTowerUnitId
-                set lastTowerUnitId = towerUnitId
-                set currentPosition = currentPosition - 1
+                set position = position + 1
+                exitwhen position >= MAX_UPGRADE_QUEUE
             endloop
-            set towerUnitId = buildTowerId
-            if towerUnitId != 0 then
-                set towerBuildKey = .towers.getTowerKeyFirstLevelByUnitId(towerUnitId)
-                set lastTowerBuildKey = towerBuildKey
-                loop
-                    if (.getTowerUnitKeyById(.towers.getColumnValue(towerBuildKey, .towers.columnUnitId)) < .towerCount) then
-                        set lastTowerBuildKey = towerBuildKey
-                    endif
-                    exitwhen (.towers.getColumnValue(towerBuildKey, .towers.columnChildTower) == towerUnitId or /*
-                    */		 (.towers.getColumnValue(towerBuildKey, .towers.columnUnitId) == 0 and .towers.getColumnValue(towerBuildKey, .towers.columnChildTower) == 0))
+        endmethod
 
-                    set towerBuildKey = .towers.getTowerKeyByUnitId(.towers.getColumnValue(towerBuildKey, .towers.columnChildTower))
+        /**
+         * Upgrade one tower.
+         * @param integer towerUnitId
+         * @returns boolean
+         */
+        private method upgradeTower takes integer upgradeTowerKey returns boolean
+            local integer buildTowerId = .upgradeQueue[upgradeTowerKey].getTowerId()
+            local integer towerBuildKey = -1
+            local boolean result = false
+            local integer lastTowerBuildKey = -1
+            local TowerUpgrade moveUpgradeTower
+            local integer upgradeQueueKey = upgradeTowerKey
+            local integer towerKey = .upgradeQueue[upgradeTowerKey].getKey()
 
-                endloop
-                set result = .upgrade(.towers.getTowerKeyByUnitId(.towers.getColumnValue(lastTowerBuildKey, .towers.columnUnitId)))
-                if result then
-                    set .lumberCost = .lumberCost - .towers.getColumnValue(towerBuildKey, .towers.columnWoodCost)
-                    if .lumberCost < 0 then
-                        set .lumberCost = 0
-                    endif
-                endif
-                if result == false or .towers.getColumnValue(lastTowerBuildKey, .towers.columnChildTower) != buildTowerId then
-                    call .addToUpgradeQueue(towerUnitId)
-                endif
-                if .countUpgradeQueue() == 0 then
+            set towerBuildKey = .towers.getTowerKeyByUnitId(GetUnitTypeId(.tower[towerKey]))
+
+            set result = IssueImmediateOrderById(.tower[towerKey], .towers.getColumnValue(towerBuildKey, .towers.columnChildTower))
+
+            if (result) then
+                set lastTowerBuildKey = .towers.getTowerKeyByUnitId(.towers.getColumnValue(towerBuildKey, .towers.columnChildTower))
+                set .lumberCost = .lumberCost - .towers.getColumnValue(lastTowerBuildKey, .towers.columnWoodCost)
+                if (.lumberCost < 0) then
                     set .lumberCost = 0
                 endif
+            endif
+            if (result and .towers.getColumnValue(towerBuildKey, .towers.columnChildTower) == buildTowerId) then
+                set moveUpgradeTower = .upgradeQueue[upgradeTowerKey]
+                call moveUpgradeTower.reset()
+                loop
+                    exitwhen upgradeQueueKey < MAX_UPGRADE_QUEUE - 1
+                    set .upgradeQueue[upgradeQueueKey] = .upgradeQueue[upgradeQueueKey + 1]
+                    set upgradeQueueKey = upgradeQueueKey + 1
+                endloop
+                set .upgradeQueue[upgradeQueueKey] = moveUpgradeTower
+            endif
+            if .countUpgradeQueue() == 0 then
+                set .lumberCost = 0
             endif
             return result
         endmethod
@@ -587,25 +732,14 @@ scope TowerBuildAI
          * @param integer towerUnitId
          */
         private method addToUpgradeQueue takes integer towerUnitId returns nothing
-            local integer currentPosition = 10
+            local integer currentPosition = 0
             loop
-                exitwhen currentPosition == 0 or .upgradeQueue[currentPosition - 1] != 0
-                set currentPosition = currentPosition - 1
+                exitwhen (.upgradeQueue[currentPosition].getTowerId() == 0 or currentPosition >= MAX_UPGRADE_QUEUE)
+                set currentPosition = currentPosition + 1
             endloop
-            if currentPosition < 10 then
-                set .upgradeQueue[currentPosition] = towerUnitId
+            if currentPosition < MAX_UPGRADE_QUEUE then
+                call .upgradeQueue[currentPosition].setTowerId(towerUnitId)
             endif
-        endmethod
-
-        /**
-         * upgrade unit
-         * @param integer towerKey
-         * @return boolean
-         */
-        public method upgrade takes integer towerKey returns boolean
-             local integer key
-             set key = .getTowerUnitKeyById(.towers.getColumnValue(towerKey, .towers.columnUnitId))
-            return key < .towerCount and IssueImmediateOrderById(.tower[key], .towers.getColumnValue(towerKey, .towers.columnChildTower))
         endmethod
 
         /**
@@ -626,7 +760,7 @@ scope TowerBuildAI
             if .topToBottom == true then
                 set height = height * -1
             endif
-            if .leftToRight == false then
+            if (not .leftToRight) then
                 set width = width * -1
             endif
 
@@ -679,20 +813,6 @@ scope TowerBuildAI
         endmethod
 
         /**
-         * get an tower by id
-         * @param integer towerUnitId
-         * @return integer
-         */
-        private method getTowerUnitKeyById takes integer towerUnitId returns integer
-            local integer currentTowerPosition = 0
-            loop
-                exitwhen GetUnitTypeId(.tower[currentTowerPosition]) == towerUnitId or currentTowerPosition >= .towerCount
-                set currentTowerPosition = currentTowerPosition + 1
-            endloop
-            return currentTowerPosition
-        endmethod
-
-        /**
          * build next tower
          */
         public method buildNext takes nothing returns nothing
@@ -711,8 +831,8 @@ scope TowerBuildAI
             if (upgradeQueueCount == 0) then
                 set .lumberCost = 0
             endif
-            if (.isEnabled() and .builded == false) then
-                if (.canBuild and playerLumber > .lumberCost and upgradeQueueCount <= 10) then
+            if (.isEnabled() and not .builded) then
+                if (.canBuild and playerLumber > .lumberCost and upgradeQueueCount < MAX_UPGRADE_QUEUE) then
                     set towerUnitId = .config.getRandomBuilding()
                     set towerKey = .towers.getTowerKeyByUnitId(towerUnitId)
                     loop
@@ -722,12 +842,12 @@ scope TowerBuildAI
                         set towerUpgradeLumber = towerUpgradeLumber + lumber
                         set towerKey = parentTowerKey
                     endloop
-                    if (playerLumber >= lumber + .lumberCost and .builded == false) then
+                    if (playerLumber >= lumber + .lumberCost and not .builded) then
                     	set builded = .build(.towers.getColumnValue(towerKey, .towers.columnUnitId))
-                        if (builded and .builded == false) then
+                        if (builded and not .builded) then
                             set .builded = builded
                             set .lumberCost = .lumberCost + towerUpgradeLumber
-		                    if towerUpgradeLumber > 0 then
+		                    if (towerUpgradeLumber > 0) then
 		                        call .addToUpgradeQueue(towerUnitId)
 		                    endif
                         endif
@@ -741,7 +861,7 @@ scope TowerBuildAI
 	                loop
 	                	set .upgradeQueue[upgradeQueueCount] = 0
 	                	set upgradeQueueCount = upgradeQueueCount + 1
-	                	exitwhen upgradeQueueCount == 10
+	                	exitwhen upgradeQueueCount == MAX_UPGRADE_QUEUE
 	                endloop
                 else
 	                call .upgradeFirstFromQueue()
@@ -757,8 +877,8 @@ scope TowerBuildAI
             local integer currentPosition = 0
             local integer queueCount = 0
             loop
-                exitwhen currentPosition >= 10
-                if (.upgradeQueue[currentPosition] != 0) then
+                exitwhen currentPosition >= MAX_UPGRADE_QUEUE
+                if (.upgradeQueue[currentPosition].getTowerId() != 0) then
                     set queueCount = queueCount + 1
                 endif
                 set currentPosition = currentPosition + 1
@@ -842,6 +962,7 @@ scope TowerBuildAI
             if (playerId < TOWER_AI_MAX_PLAYER) then
                 set thistype.towerBuilder[playerId] = towerBuild
                 set thistype.towerBuilder[playerId].playerId = playerId
+                call thistype.towerBuilder[playerId].initialize()
             endif
         endmethod
 
@@ -859,7 +980,7 @@ scope TowerBuildAI
          */
         public static method initialize takes nothing returns nothing
             local integer counter = 0
-            if (thistype.initialized == false) then
+            if (not thistype.initialized) then
                 set thistype.initialized = true
                 loop
                     set .towerEvents[counter] = TowerEvent.create()
@@ -887,14 +1008,12 @@ scope TowerBuildAI
 					set eventId = thistype.towerEvents[counter].eventTypeId
 	                set thistype.towerEvents[counter].initialized = false
 	                if (eventId == TOWER_AI_EVENT_UPGRADE) then
-						set playerId = 0
 						loop
 		                    call thistype.towerBuilder[playerId].upgradeFirstFromQueue()
 		                    set playerId = playerId + 1
 		                    exitwhen playerId >= TOWER_AI_MAX_PLAYER
 	                    endloop
-	                elseif (eventId == TOWER_AI_EVENT_BUILD and thistype.towerBuilder[playerId].getBuilded() == false) then
-						set playerId = 0
+	                elseif (eventId == TOWER_AI_EVENT_BUILD and not thistype.towerBuilder[playerId].getBuilded()) then
 						loop
 	                    	call thistype.towerBuilder[playerId].buildNext()
 		                    set playerId = playerId + 1
@@ -914,7 +1033,7 @@ scope TowerBuildAI
                 set playerId = 0
                 loop
 					if (thistype.towerBuilder[playerId].isEnabled()) then
-                    	call thistype.towerBuilder[playerId].upgradeFirstFromQueue()
+                    	call thistype.towerBuilder[playerId].upgradeAllFromQueue()
 	                    call thistype.towerBuilder[playerId].buildNext()
                     endif
                     set playerId = playerId + 1
@@ -957,7 +1076,7 @@ scope TowerBuildAI
             endif
             if (counter < TOWER_AI_MAX_EVENTS) then
                 call thistype.towerEvents[counter].startEvent(GetPlayerId(GetOwningPlayer(triggerUnit)), eventType)
-	            if (thistype.isActive == false) then
+	            if (not thistype.isActive) then
 					set thistype.isActive = true
 	                call TimerStart(tAI, 3.0, false, function thistype.doAfterSleep)
 	            endif

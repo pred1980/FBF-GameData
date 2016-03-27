@@ -186,6 +186,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 49)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u00S')
 		set row = row + 1
 		
 		//Index: 1
@@ -194,6 +195,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 75)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u00T')
 		set row = row + 1
         
         //Index: 2
@@ -202,6 +204,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 111)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
 		set row = row + 1
         
         //----------------------------------------------------------//
@@ -215,6 +218,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 47)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AK')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u00V')
 		set row = row + 1
         
         //Index: 4
@@ -223,6 +227,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 54)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AK')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u00W')
 		set row = row + 1
         
         //Index: 5
@@ -231,6 +236,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 63)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AK')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
 		set row = row + 1
         
         //******************
@@ -242,6 +248,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 173)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u00Z')
 		set row = row + 1
         
         //Index: 7
@@ -250,6 +257,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 222)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u010')
 		set row = row + 1
         
         //Index: 8
@@ -258,6 +266,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 276)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
 		set row = row + 1
         
         //Index: 9
@@ -266,6 +275,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 216)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A09W')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u011')
 		set row = row + 1
         
         //Index: 10
@@ -274,6 +284,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 252)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A09W')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u012')
 		set row = row + 1
         
         //Index: 11
@@ -282,6 +293,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 294)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A09W')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
 		set row = row + 1
 		
 		/*
@@ -294,6 +306,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 277)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u014')
 		set row = row + 1
         
         //Index: 13
@@ -302,6 +315,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 346)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u015')
 		set row = row + 1
 
         //Index: 14
@@ -310,6 +324,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 433)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, -1)  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
 		set row = row + 1
         
         //Index: 15
@@ -318,6 +333,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 147)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A072')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u017')
 		set row = row + 1
         
         //Index: 16
@@ -326,6 +342,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 157)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A072')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u018')
 		set row = row + 1
         
         //Index: 17
@@ -334,6 +351,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 166)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A072')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
 		set row = row + 1
         
         //Index: 18
@@ -342,6 +360,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 1070)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A074')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u01B')
 		set row = row + 1
         
         //Index: 19
@@ -350,6 +369,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 1174)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A074')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u01C')
 		set row = row + 1
         
         //Index: 20
@@ -358,6 +378,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 1278)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A074')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
 		set row = row + 1
         
         //Index: 21
@@ -366,6 +387,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 1505)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AL')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u01E')
 		set row = row + 1
         
         //Index: 22
@@ -374,6 +396,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 1084)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AL')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u01F')
 		set row = row + 1
         
         //Index: 24
@@ -382,6 +405,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 550)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AL')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
 		set row = row + 1
 		
 		/*
@@ -394,6 +418,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 562)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A2')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u01H')
 		set row = row + 1
         
         //Index: 26
@@ -402,6 +427,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 702)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A2')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u01I')
 		set row = row + 1
         
         //Index: 27
@@ -410,6 +436,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 878)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A2')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
 		set row = row + 1
         
         //Index: 28
@@ -418,6 +445,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 403)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A0')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u01K')
 		set row = row + 1
         
         //Index: 29
@@ -426,6 +454,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 403)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A0')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u01L')
 		set row = row + 1
         
         //Index: 30
@@ -434,6 +463,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 378)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0A0')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
 		set row = row + 1
         
         //Index: 31
@@ -442,6 +472,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 401)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AN')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 1)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u01R')
 		set row = row + 1
         
         //Index: 32
@@ -450,6 +481,7 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 501)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AN')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 2)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, 'u01T')
 		set row = row + 1
         
         //Index: 33
@@ -458,20 +490,14 @@ scope TowerSystem
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_DAMAGE, row, 626)  //Tower Damage
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_ABILITY, row, 'A0AN')  //Tower Ability
 		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row, 3)  //Tower Ability Level or Tower Level
+		call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
         
         
         set row = 0
-        set lastRow = 0
         //at the end: all towers set wood and "child"-towers
         loop
             exitwhen row >= MAX_TOWERS
             call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_WOOD_COST, row, GetUnitWoodCost(LoadInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row)))
-            if (LoadInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, row) > LoadInteger(TOWER_DATA, TOWER_DATA_COLUMN_LEVEL, lastRow)) then
-                call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, lastRow, LoadInteger(TOWER_DATA, TOWER_DATA_COLUMN_ID, row))
-            else
-                call SaveInteger(TOWER_DATA, TOWER_DATA_COLUMN_CHILD_TOWER, row, -1)
-            endif
-            set lastRow = row
             set row = row + 1
         endloop
         
@@ -488,6 +514,8 @@ scope TowerSystem
 				call TowerAIEventListener.getTowerBuildAI(id).setBuilder(ACOLYTS[id])
 				
 				set TowerAIEventListener.getTowerBuildAI(id).canBuild = true
+				call TowerAIEventListener.getTowerBuildAI(id).setBuilded(false)
+
             	call TowerAIEventListener.getTowerBuildAI(id).buildNext()
 				
 				if (ShowTutorialsDialog.ForPlayer(GetPlayerId(Player(id)))) then
@@ -510,8 +538,11 @@ scope TowerSystem
                     else
                         set ACOLYTS[i] = CreateUnit(Player(i), ACOLYTE_III_ID, START_POS_X[i], START_POS_Y[i], bj_UNIT_FACING)
                     endif
-					if not (Game.isRealPlayer(i)) then
-	                    call TowerAIEventListener.getTowerBuildAI(i).setBuilder(ACOLYTS[i])
+                    if not (Game.isRealPlayer(i)) then
+                        call TowerAIEventListener.getTowerBuildAI(i).setBuilder(ACOLYTS[i])
+				        call TowerAIEventListener.getTowerBuildAI(id).setBuilded(false)
+                        set TowerAIEventListener.getTowerBuildAI(i).canBuild = true
+                        call TowerAIEventListener.getTowerBuildAI(i).buildNext()
                     endif
                     call Usability.getTextMessage(0, 8, true, Player(i), true, 3.5)
                 endif
