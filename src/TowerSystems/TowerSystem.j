@@ -540,7 +540,7 @@ scope TowerSystem
                     endif
                     if not (Game.isRealPlayer(i)) then
                         call TowerAIEventListener.getTowerBuildAI(i).setBuilder(ACOLYTS[i])
-				        call TowerAIEventListener.getTowerBuildAI(id).setBuilded(false)
+				        call TowerAIEventListener.getTowerBuildAI(i).setBuilded(false)
                         set TowerAIEventListener.getTowerBuildAI(i).canBuild = true
                         call TowerAIEventListener.getTowerBuildAI(i).buildNext()
                     endif
