@@ -8,39 +8,38 @@ scope AbominationAI
 		/* Cleave */
 		private constant integer C_SPELL_ID = 'A064'
 		private constant string C_ORDER = "roar"
-		// Chance to cast ability
 		private integer array C_Chance
 		private real array C_Cooldown
 		private timer C_Timer
 
 		/* Consume Himself */
 		private constant integer CH_SPELL_ID = 'A06M'
+		private constant integer CH_BUFF_ID = 'B00V'
 		private constant string CH_ORDER = "taunt"
-		// Chance to cast ability
 		private integer array CH_Chance
 		private real array CH_Cooldown
 		private timer CH_Timer
-		private real CH_Radius = 750
-		private integer array CH_HeroHP
+		private real CH_Radius = 600
+		private boolean CH_isActive
 		
-		/* XY */
-		private constant integer XY_SPELL_ID = 'XYXY'
-		private constant string XY_ORDER = "xxx"
-		// Chance to cast ability
-		private integer array XY_Chance
-		private real array XY_Cooldown
-		private timer XY_Timer		
-
-		/* XZ */
-		private constant integer XZ_SPELL_ID = 'XZXZ'
-		private constant string XZ_ORDER = "xxx"
-		// Chance to cast ability
-		private integer array XZ_Chance
-		private real array XZ_Cooldown
-		private timer XZ_Timer
+		/* Snack */
+		private constant integer S_SPELL_ID = 'A06L'
+		private constant integer S_BUFF_ID = 'B00D'
+		private constant string S_ORDER = "ambush"
+		private constant real S_RADIUS = 200
+		private integer array S_Max_Enemies
+		private integer array S_Chance
+		private real array S_Cooldown
+		private real S_time = 0.00
+		private timer S_Timer
+		private boolean S_isActive
     endglobals
     
     private struct AI extends array
+	
+		private static method Abo_Filter takes nothing returns boolean
+			return SpellHelper.isValidEnemy(GetFilterUnit(), tempthis.hero)
+		endmethod
 	
         private method doCleave takes nothing returns boolean
 			local boolean abilityCasted = IssueImmediateOrder(.hero, C_ORDER)
@@ -52,21 +51,15 @@ scope AbominationAI
 			
 			return abilityCasted
 		endmethod
-		
-		private static method CH_Filter takes nothing returns boolean
-			return SpellHelper.isValidEnemy(GetFilterUnit(), tempthis.hero)
-		endmethod
-		
+
 		private method doConsumeHimself takes nothing returns boolean
 			local boolean abilityCasted = false
 			local integer level = GetUnitAbilityLevel(.hero, CH_SPELL_ID) - 1
 				
 			call GroupClear(enumGroup)
-			call GroupEnumUnitsInRange(enumGroup, GetUnitX(.hero), GetUnitY(.hero), CH_Radius, Filter(function thistype.CH_Filter))
+			call GroupEnumUnitsInRange(enumGroup, GetUnitX(.hero), GetUnitY(.hero), CH_Radius, Filter(function thistype.Abo_Filter))
 			
-			call BJDebugMsg("Anzahl: " + I2S(CountUnitsInGroup(enumGroup)))
-			if ((CountUnitsInGroup(enumGroup) == 0) and /*
-			*/	(GetUnitLifePercent(.hero) <= CH_HeroHP[.aiLevel])) then
+			if (CountUnitsInGroup(enumGroup) == 0) then
 				set abilityCasted = IssueImmediateOrder(.hero, CH_ORDER)
 			endif
 			
@@ -77,30 +70,49 @@ scope AbominationAI
 			return abilityCasted
 		endmethod
 		
-		private method doXY takes nothing returns boolean
-			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XY_SPELL_ID) - 1
+		private static method onCheckSnackIsAvtive takes nothing returns nothing
+			local timer t = GetExpiredTimer()
+			local integer level = GetUnitAbilityLevel(tempthis.hero, S_SPELL_ID) - 1
 			
-			if (abilityCasted) then
-				call TimerStart(XY_Timer, XY_Cooldown[level], false, null)
+			call ClearTextMessages()
+			call BJDebugMsg("time: " + R2S(S_time) + "/" + R2S(DEFAULT_PERIOD))
+			// Check if "Snack" is active
+			set S_isActive = GetUnitAbilityLevel(tempthis.hero, S_BUFF_ID) > 0
+			set S_time = S_time + .1
+			if (S_time <= DEFAULT_PERIOD) then
+				if (S_isActive) then
+					call BJDebugMsg("Snack for " + GetUnitName(tempthis.hero) + " is active!!!")
+					call TimerStart(S_Timer, S_Cooldown[level], false, null)
+					set S_time = .0
+					call ReleaseTimer(t)
+				endif
+			else
+				call BJDebugMsg("Snack for " + GetUnitName(tempthis.hero) + " is not active!!!")
+				call ReleaseTimer(t)
 			endif
-			
-			return abilityCasted
 		endmethod
 		
-		private method doXZ takes nothing returns boolean
+		private method doSnack takes nothing returns boolean
 			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XZ_SPELL_ID) - 1
+			local timer t
 			
-			if (abilityCasted) then
-				call TimerStart(XZ_Timer, XZ_Cooldown[level], false, null)
+			if (Distance(.hx, .hy, GetUnitX(.closestEnemyHero), GetUnitY(.closestEnemyHero)) <= S_RADIUS) then
+				if (CountUnitsInGroup(enumGroup) <= S_Max_Enemies[.aiLevel]) then
+					set abilityCasted = IssueTargetOrder(.hero, S_ORDER, .closestEnemyHero)
+					set t = NewTimer()
+					call TimerStart(t, .1, true, function thistype.onCheckSnackIsAvtive)
+					set abilityCasted = true
+				endif
 			endif
-			
+
 			return abilityCasted
 		endmethod
 		
 		method runActions takes nothing returns nothing
 			local boolean abilityCasted = false
+			
+			// Check if "Consume Himself" is active
+			set CH_isActive = GetUnitAbilityLevel(.hero, CH_BUFF_ID) > 0
 			
 			/* Consume Himself */
 			if ((GetRandomInt(0,100) <= CH_Chance[.aiLevel]) and /*
@@ -108,13 +120,15 @@ scope AbominationAI
 				set abilityCasted = doConsumeHimself()
 			endif
 			
-			if (not abilityCasted) then
+			if ((not abilityCasted) and /*
+			*/	(not CH_isActive))	then
 				call .run()
 			endif
 		endmethod
         
 		method assaultEnemy takes nothing returns nothing  
             local boolean abilityCasted = false
+			local string order = OrderId2String(.orderId)
 			
 			/* Cleave */
 			if 	((GetRandomInt(0,100) <= C_Chance[.aiLevel]) and /*
@@ -122,22 +136,20 @@ scope AbominationAI
 				set abilityCasted = doCleave()
 			endif
 			
-			/* XY */
-			if ((GetRandomInt(0,100) <= XY_Chance[.aiLevel]) and /*
-			*/ (not abilityCasted) and /*
-			*/ (TimerGetRemaining(XY_Timer) == 0.0)) then
-				set abilityCasted = doXY()
-			endif
-			
-			/* XZ */
+			/* Snack */
+			// Check if "Consume Himself" is active
+			set S_isActive = GetUnitAbilityLevel(.hero, S_BUFF_ID) > 0
 			if ((.heroLevel >= 6) and /*
-			*/	(GetRandomInt(0,100) <= XZ_Chance[.aiLevel]) and /*
-			*/  (TimerGetRemaining(XZ_Timer) == 0.0) and /*
-			*/	(not abilityCasted)) then
-				set abilityCasted = doXZ()					
+			*/	(GetRandomInt(0,100) <= S_Chance[.aiLevel]) and /*
+			*/  (TimerGetRemaining(S_Timer) == 0.0) and /*
+			*/  (.goodCondition) and /*
+			*/	(not abilityCasted) and /*
+			*/	(not S_isActive)) then
+				set abilityCasted = doSnack()					
 			endif
 
-			if (not abilityCasted) then
+			if ((not abilityCasted) and /*
+			*/	(not S_isActive))then
 				call .defaultAssaultEnemy()
 			endif
         endmethod
@@ -200,9 +212,9 @@ scope AbominationAI
 			/* Ability Setup */
 			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
 			// Cleave
-			set C_Chance[0] = 10
-			set C_Chance[1] = 20
-			set C_Chance[2] = 30
+			set C_Chance[0] = 20
+			set C_Chance[1] = 30
+			set C_Chance[2] = 40
 			
 			set C_Timer = NewTimer()
 			set C_Cooldown[0] = 15.0
@@ -212,13 +224,9 @@ scope AbominationAI
 			set C_Cooldown[4] = 15.0
 			
 			// Consume Himself
-			set CH_Chance[0] = 10
-			set CH_Chance[1] = 20
-			set CH_Chance[2] = 30
-			
-			set CH_HeroHP[0] = 30
-			set CH_HeroHP[1] = 35
-			set CH_HeroHP[2] = 40
+			set CH_Chance[0] = 20
+			set CH_Chance[1] = 30
+			set CH_Chance[2] = 40
 			
 			set CH_Timer = NewTimer()
 			set CH_Cooldown[0] = 150.0
@@ -227,29 +235,19 @@ scope AbominationAI
 			set CH_Cooldown[3] = 150.0
 			set CH_Cooldown[4] = 150.0
 			
-			// XY
-			set XY_Chance[0] = 10
-			set XY_Chance[1] = 20
-			set XY_Chance[2] = 20
+			// Snack
+			set S_Chance[0] = 60
+			set S_Chance[1] = 20
+			set S_Chance[2] = 20
 			
-			set XY_Timer = NewTimer()
-			set XY_Cooldown[0] = 150.0
-			set XY_Cooldown[1] = 150.0
-			set XY_Cooldown[2] = 150.0
-			set XY_Cooldown[3] = 150.0
-			set XY_Cooldown[4] = 150.0
+			set S_Max_Enemies[0] = 6
+			set S_Max_Enemies[1] = 5
+			set S_Max_Enemies[2] = 4
 			
-			// XZ
-			set XZ_Chance[0] = 10
-			set XZ_Chance[1] = 20
-			set XZ_Chance[2] = 20
-			
-			set XZ_Timer = NewTimer()
-			set XZ_Cooldown[0] = 150.0
-			set XZ_Cooldown[1] = 150.0
-			set XZ_Cooldown[2] = 150.0
-			set XZ_Cooldown[3] = 150.0
-			set XZ_Cooldown[4] = 150.0
+			set S_Timer = NewTimer()
+			set S_Cooldown[0] = 60.0
+			set S_Cooldown[1] = 60.0
+			set S_Cooldown[2] = 60.0
         endmethod
         
         implement HeroAI     

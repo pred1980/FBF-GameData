@@ -386,8 +386,6 @@ scope MasterNecromancerAI
 			set DS_Cooldown[0] = 150.0
 			set DS_Cooldown[1] = 150.0
 			set DS_Cooldown[2] = 150.0
-			set DS_Cooldown[3] = 150.0
-			set DS_Cooldown[4] = 150.0
         endmethod
         
         implement HeroAI     

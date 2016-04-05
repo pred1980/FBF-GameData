@@ -64,18 +64,12 @@ scope MasterBansheeAI
 			if (.enemyNum > 0) then
 				/* Dark Obedience */
 				if (GetRandomInt(0,100) <= DO_Chance[.aiLevel]) then
-					call GroupClear(ENUM_GROUP)
-					call GroupAddGroup(.enemies, ENUM_GROUP)
-					call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
-					set abilityCasted = IssueTargetOrder(.hero, DO_ORDER, FirstOfGroup(ENUM_GROUP))
+					set abilityCasted = IssueTargetOrder(.hero, DO_ORDER, FirstOfGroup(.enemies))
 				endif
 				
 				/* Spirit Burn */
 				if ((GetRandomInt(0,100) <= SB_Chance[.aiLevel]) and (not abilityCasted)) then
-					call GroupClear(ENUM_GROUP)
-					call GroupAddGroup(.enemies, ENUM_GROUP)
-					call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
-					set abilityCasted = IssueTargetOrder(.hero, SB_ORDER, FirstOfGroup(ENUM_GROUP))
+					set abilityCasted = IssueTargetOrder(.hero, SB_ORDER, FirstOfGroup(.enemies))
 				endif
 				
 				/* Cursed Soul */
@@ -86,10 +80,7 @@ scope MasterBansheeAI
 				/* Barrage */
 				if ((.heroLevel >= 6) and /*
 				*/	(GetRandomInt(0,100) <= B_Chance[.aiLevel]) and (not abilityCasted)) then
-					call GroupClear(ENUM_GROUP)
-					call GroupAddGroup(.enemies, ENUM_GROUP)
-					call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
-					set abilityCasted = IssueTargetOrder(.hero, B_ORDER, FirstOfGroup(ENUM_GROUP))
+					set abilityCasted = IssueTargetOrder(.hero, B_ORDER, FirstOfGroup(.enemies))
 				endif
 			endif
 			

@@ -69,6 +69,11 @@ scope Cleave initializer init
 		private static integer buffType = 0
 		private dbuff buff = 0
 		
+		method onDestroy takes nothing returns nothing
+			set .caster = null
+			set cleaveCaster[GetUnitId(.caster)] = 0
+		endmethod
+		
 		static method getForUnit takes unit u returns thistype
 			return cleaveCaster[GetUnitId(u)]
 		endmethod
@@ -140,30 +145,17 @@ scope Cleave initializer init
             set .tempthis = this
 			set cleaveCaster[GetUnitId(.caster)] = this
 			
-			call UnitAddBuff(.caster, .caster, .buffType, DURATION, .level)
+			set UnitAddBuff(.caster, .caster, .buffType, DURATION, .level).data = this
             
             return this
         endmethod
 		
-		private static method onBuffEnd takes nothing returns nothing
-			local dbuff b = GetEventBuff()
-			local thistype this = thistype(b.data)
-			
-			if b.isExpired then
-                call thistype(b.data).destroy()
-            endif
+		static method onBuffEnd takes nothing returns nothing
+			call thistype(GetEventBuff().data).destroy()
         endmethod
 		
-		private static method onBuffAdd takes nothing returns nothing
-			local dbuff b = GetEventBuff()
-            local thistype this = allocate()
-			
-			set b.data = integer(this)
-			set buff = b
-		endmethod
-		
 		static method onInit takes nothing returns nothing
-			set .buffType = DefineBuffType(BUFF_PLACER_ID, BUFF_ID, 0, false, true, thistype.onBuffAdd, 0, thistype.onBuffEnd)
+			set .buffType = DefineBuffType(BUFF_PLACER_ID, BUFF_ID, 0, false, true, 0, 0, thistype.onBuffEnd)
 		endmethod
 
     endstruct

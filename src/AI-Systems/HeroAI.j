@@ -5,7 +5,7 @@ scope HeroAI
 //==========================================================================================
 	globals
 		// The period in which the hero AI will do actions. A very low period can cause strain.
-		public constant real DEFAULT_PERIOD = 1.7
+		constant real DEFAULT_PERIOD = 1.7
 		// Determines how the hero looks for items and units.
 		public constant real SIGHT_RANGE = 1500.
 		// The random amount of distance the hero will move
@@ -262,13 +262,14 @@ scope HeroAI
 		
 		// Action methods
 		method move takes nothing returns nothing
+			//call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " is moving.")
 			call IssuePointOrderById(.hero, MOVE, .moveX, .moveY)
         endmethod 
         
 		//Note: http://www.wc3c.net/showthread.php?t=107999
 		// IssuePointOrder does not work!!!
         method run takes nothing returns nothing
-			//call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " to run to the next Teleporter.")
+			//call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " is running.")
 			call IssuePointOrderById(.hero, MOVE, .runX, .runY)
         endmethod
 		
