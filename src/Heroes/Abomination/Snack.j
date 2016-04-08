@@ -54,23 +54,19 @@ scope Snack initializer init
         
         method onDestroy takes nothing returns nothing
 			call SetUnitAnimation(.caster, "stand")
-			call UnitEnableAttack(.caster)
+			call PauseTimer(.t)
+			call DestroyTimer(.t)
+			set .t = null
             set .caster = null
             set .target = null
         endmethod
 		
 		private static method onSnack takes nothing returns nothing
-			local timer t = GetExpiredTimer()
-			local thistype this = GetTimerData(t)
+			local thistype this = GetTimerData(GetExpiredTimer())
 
 			if ((this.count == 0) or /*
 			*/	((SpellHelper.isUnitDead(this.caster)) or /*
-			*/	(SpellHelper.isUnitDead(this.target))) or /*
-			*/	((GetUnitX(this.caster) != this.x) and /*
-			*/  (GetUnitY(this.caster) != this.y))) then
-				call PauseTimer(t)
-				call DestroyTimer(t)
-				set t = null
+			*/	(SpellHelper.isUnitDead(this.target)))) then
 				call thistype(GetEventBuff().data).destroy()
 			else
 				set this.count = this.count - 1
@@ -78,6 +74,7 @@ scope Snack initializer init
 				call SpellHelper.damageTarget(this.caster, this.target,this.damage, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
 				//Pause Unit / Used Stun System
 				call Stun_UnitEx(this.target, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
+				call Stun_UnitEx(this.caster, INTERVAL, false, STUN_EFFECT, STUN_ATT_POINT)
 				call SetUnitAnimation(this.caster, "stand channel" )
 				call SetUnitState(this.caster, UNIT_STATE_LIFE, GetUnitState(this.caster, UNIT_STATE_LIFE) + this.damage)
 				
@@ -97,12 +94,10 @@ scope Snack initializer init
             set .target = target
             set .count = ITERATION
 			set .level = GetUnitAbilityLevel(.caster, SPELL_ID)
-			set .x = GetUnitX(.caster)
-			set .y = GetUnitY(.caster)
-            set .damage = baseDamage + ((baseDamage * damageModifier) * .level)
+			set .damage = baseDamage + ((baseDamage * damageModifier) * .level)
 			
 			call Stun_UnitEx(.target, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
-			call UnitDisableAttack(.caster)
+			call Stun_UnitEx(.caster, INTERVAL, false, STUN_EFFECT, STUN_ATT_POINT)
 			call SetUnitAnimation(.caster, "stand channel" )
 			call SetTimerData(.t, this)
 			call TimerStart(.t, INTERVAL, true, function thistype.onSnack)

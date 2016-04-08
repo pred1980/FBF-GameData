@@ -32,19 +32,19 @@ scope ConsumeHimself initializer init
 		private dbuff buff = 0
 		
 		method onDestroy takes nothing returns nothing
+			call ReleaseTimer(.t)
+			call UnitEnableAttack(.caster)
+			call ResetUnitAnimation(.caster)
 			set .caster = null
 		endmethod
         
         static method onPeriodic takes nothing returns nothing
-			local timer t = GetExpiredTimer()
-            local thistype this = GetTimerData(t)
+            local thistype this = GetTimerData(GetExpiredTimer())
             
 			if ((this.duration <= 0.00) or /*
 			*/	(SpellHelper.isUnitDead(this.caster)) or /*
 			*/	(GetUnitLifePercent(this.caster) == 100.00)) then
-                call ReleaseTimer(t)
-				call UnitEnableAttack(this.caster)
-				call ResetUnitAnimation(this.caster)
+				call thistype(GetEventBuff().data).destroy()
             else
                 call SetUnitAnimation(this.caster, "stand channel")
                 call SetUnitState(this.caster, UNIT_STATE_LIFE,(0.01 * (this.level + FACTOR) * GetUnitState(this.caster,UNIT_STATE_MAX_LIFE)) + GetUnitState(this.caster, UNIT_STATE_LIFE))

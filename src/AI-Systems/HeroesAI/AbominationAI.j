@@ -74,20 +74,16 @@ scope AbominationAI
 			local timer t = GetExpiredTimer()
 			local integer level = GetUnitAbilityLevel(tempthis.hero, S_SPELL_ID) - 1
 			
-			call ClearTextMessages()
-			call BJDebugMsg("time: " + R2S(S_time) + "/" + R2S(DEFAULT_PERIOD))
 			// Check if "Snack" is active
 			set S_isActive = GetUnitAbilityLevel(tempthis.hero, S_BUFF_ID) > 0
 			set S_time = S_time + .1
 			if (S_time <= DEFAULT_PERIOD) then
 				if (S_isActive) then
-					call BJDebugMsg("Snack for " + GetUnitName(tempthis.hero) + " is active!!!")
 					call TimerStart(S_Timer, S_Cooldown[level], false, null)
 					set S_time = .0
 					call ReleaseTimer(t)
 				endif
 			else
-				call BJDebugMsg("Snack for " + GetUnitName(tempthis.hero) + " is not active!!!")
 				call ReleaseTimer(t)
 			endif
 		endmethod
@@ -130,24 +126,27 @@ scope AbominationAI
             local boolean abilityCasted = false
 			local string order = OrderId2String(.orderId)
 			
-			/* Cleave */
-			if 	((GetRandomInt(0,100) <= C_Chance[.aiLevel]) and /*
-			*/	(TimerGetRemaining(C_Timer) == 0.0)) then
-				set abilityCasted = doCleave()
+			// Check if "Snack" is active
+			set S_isActive = GetUnitAbilityLevel(.hero, S_BUFF_ID) > 0
+				
+			if (.enemyNum > 0) then
+				/* Cleave */
+				if 	((GetRandomInt(0,100) <= C_Chance[.aiLevel]) and /*
+				*/	(TimerGetRemaining(C_Timer) == 0.0)) then
+					set abilityCasted = doCleave()
+				endif
+				
+				/* Snack */
+				if ((.heroLevel >= 6) and /*
+				*/	(GetRandomInt(0,100) <= S_Chance[.aiLevel]) and /*
+				*/  (TimerGetRemaining(S_Timer) == 0.0) and /*
+				*/  (.goodCondition) and /*
+				*/	(not abilityCasted) and /*
+				*/	(not S_isActive)) then
+					set abilityCasted = doSnack()					
+				endif
 			endif
 			
-			/* Snack */
-			// Check if "Consume Himself" is active
-			set S_isActive = GetUnitAbilityLevel(.hero, S_BUFF_ID) > 0
-			if ((.heroLevel >= 6) and /*
-			*/	(GetRandomInt(0,100) <= S_Chance[.aiLevel]) and /*
-			*/  (TimerGetRemaining(S_Timer) == 0.0) and /*
-			*/  (.goodCondition) and /*
-			*/	(not abilityCasted) and /*
-			*/	(not S_isActive)) then
-				set abilityCasted = doSnack()					
-			endif
-
 			if ((not abilityCasted) and /*
 			*/	(not S_isActive))then
 				call .defaultAssaultEnemy()
@@ -236,7 +235,7 @@ scope AbominationAI
 			set CH_Cooldown[4] = 150.0
 			
 			// Snack
-			set S_Chance[0] = 60
+			set S_Chance[0] = 20
 			set S_Chance[1] = 20
 			set S_Chance[2] = 20
 			
