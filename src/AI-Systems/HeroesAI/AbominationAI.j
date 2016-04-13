@@ -228,11 +228,11 @@ scope AbominationAI
 			set CH_Chance[2] = 40
 			
 			set CH_Timer = NewTimer()
-			set CH_Cooldown[0] = 150.0
-			set CH_Cooldown[1] = 150.0
-			set CH_Cooldown[2] = 150.0
-			set CH_Cooldown[3] = 150.0
-			set CH_Cooldown[4] = 150.0
+			set CH_Cooldown[0] = 11.0
+			set CH_Cooldown[1] = 11.0
+			set CH_Cooldown[2] = 11.0
+			set CH_Cooldown[3] = 11.0
+			set CH_Cooldown[4] = 11.0
 			
 			// Snack
 			set S_Chance[0] = 20

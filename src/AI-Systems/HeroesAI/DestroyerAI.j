@@ -2,36 +2,161 @@ scope DestroyerAI
     globals
         private constant integer HERO_ID = 'H009'
 		
-		private HeroAI_Itemset array Itemsets	
-        private group enumGroup = CreateGroup()
+		private HeroAI_Itemset array Itemsets
+		private group enumGroup = CreateGroup()
+
+		/* Arcane Swap */
+		private constant integer AS_SPELL_ID = 'A06N'
+		private constant string AS_ORDER = "ambush"
+		private integer array AS_Chance
+		private real array AS_Cooldown
+		private timer AS_Timer
+		private integer array AS_Mana_Priority
+		private real AS_Radius = 600
+
+		/* Mind Burst */
+		private constant integer MB_SPELL_ID = 'A06O'
+		private constant string MB_ORDER = "rejuvination"
+		private integer array MB_Chance
+		private real array MB_Cooldown
+		private timer MB_Timer
+		private integer array MB_Mana_Priority
+		private real MB_Radius = 700		
+
+		/* Release Mana */
+		private constant integer RM_SPELL_ID = 'A06Q'
+		private constant string RM_ORDER = "roar"
+		private integer array RM_Chance
+		private integer array RM_Min_Enemies
+		private real array RM_Min_Mana
+		private timer RM_Timer
     endglobals
     
     private struct AI extends array
-        // The following two methods will print out debug messages only when the events
-        // are enabled
-        method onAttacked takes unit attacker returns nothing
-            //debug call BJDebugMsg("Abomination attacked by " + GetUnitName(attacker))
-        endmethod
-        
-        method onAcquire takes unit target returns nothing
-            //debug call BJDebugMsg("Abomination acquires " + GetUnitName(target))
-        endmethod
-        
-        method assaultEnemy takes nothing returns nothing  
-            //debug call BJDebugMsg("Abomination assault Enemy.")
-			call .defaultAssaultEnemy()
-        endmethod
-        
-        // Cast wind walk if there's an enemy nearby
-        method loopActions takes nothing returns nothing
-            call .defaultLoopActions()
-        endmethod
-        
-        // A custom periodic method is defined for this hero as the AI constantly
-        // searches for units that have their backs to her in order to use Backstab.
-        static method onLoop takes nothing returns nothing
-        
+	
+		private static method Destroyer_Filter takes nothing returns boolean
+			return SpellHelper.isValidEnemy(GetFilterUnit(), tempthis.hero)
 		endmethod
+	
+        private method doArcaneSwap takes nothing returns boolean
+			local boolean abilityCasted = false
+			local integer level = GetUnitAbilityLevel(.hero, AS_SPELL_ID) - 1
+			local integer rnd = 0
+			local unit u
+			
+			call GroupClear(enumGroup)
+			call GroupEnumUnitsInRange(enumGroup, GetUnitX(.hero), GetUnitY(.hero), AS_Radius, Filter(function thistype.Destroyer_Filter))
+			
+			loop
+				set u = FirstOfGroup(enumGroup)
+				exitwhen (u == null)
+				set rnd = GetRandomInt(0,100)
+				
+				if ((rnd <= AS_Mana_Priority[.aiLevel]) and /*
+				*/	(GetUnitStateSwap(UNIT_STATE_MAX_MANA, u) > 0.00)) then
+					set abilityCasted = IssueTargetOrder(.hero, AS_ORDER, u)
+				else
+					if (rnd <= (100 - AS_Mana_Priority[.aiLevel])) then
+						set abilityCasted = IssueTargetOrder(.hero, AS_ORDER, u)
+					endif
+				endif
+				call GroupRemoveUnit(enumGroup, u)
+			endloop
+			
+			set u = null
+
+			if (abilityCasted) then
+				call TimerStart(AS_Timer, AS_Cooldown[level], false, null)
+			endif
+
+			return abilityCasted
+		endmethod
+		
+		private method doMindBurst takes nothing returns boolean
+			local boolean abilityCasted = false
+			local integer level = GetUnitAbilityLevel(.hero, MB_SPELL_ID) - 1
+			local integer rnd = 0
+			local unit u
+			
+			call GroupClear(enumGroup)
+			call GroupEnumUnitsInRange(enumGroup, GetUnitX(.hero), GetUnitY(.hero), MB_Radius, Filter(function thistype.Destroyer_Filter))
+			
+			loop
+				set u = FirstOfGroup(enumGroup)
+				exitwhen (u == null)
+				set rnd = GetRandomInt(0,100)
+				
+				if ((rnd <= MB_Mana_Priority[.aiLevel]) and /*
+				*/	(GetUnitStateSwap(UNIT_STATE_MAX_MANA, u) > 0.00)) then
+					set abilityCasted = IssueTargetOrder(.hero, MB_ORDER, u)
+				else
+					if (rnd <= (100 - MB_Mana_Priority[.aiLevel])) then
+						set abilityCasted = IssueTargetOrder(.hero, MB_ORDER, u)
+					endif
+				endif
+				call GroupRemoveUnit(enumGroup, u)
+			endloop
+			
+			set u = null
+			
+			if (abilityCasted) then
+				call TimerStart(MB_Timer, MB_Cooldown[level], false, null)
+			endif
+			
+			return abilityCasted
+		endmethod
+		
+		private method doReleaseMana takes nothing returns boolean
+			local boolean abilityCasted = false
+			local integer level = GetUnitAbilityLevel(.hero, RM_SPELL_ID) - 1
+			local real radius = GetUnitState(.hero, UNIT_STATE_MANA)
+			local unit u
+			
+			call GroupClear(enumGroup)
+			call GroupEnumUnitsInRange(enumGroup, GetUnitX(.hero), GetUnitY(.hero), radius, Filter(function thistype.Destroyer_Filter))
+			
+			// check for amount of enemies
+			if (CountUnitsInGroup(enumGroup) >= RM_Min_Enemies[.aiLevel]) then
+				// check for mana value
+				if (GetUnitLifePercent(.hero) < RM_Min_Mana[.aiLevel]) then
+					// Try use a mana potion to reach the min mana value
+					call .useManaPotion()
+				endif
+				set abilityCasted = IssueImmediateOrder(.hero, RM_ORDER)
+			endif
+			
+			return abilityCasted
+		endmethod
+        
+		method assaultEnemy takes nothing returns nothing  
+            local boolean abilityCasted = false
+			
+			if (.enemyNum > 0) then
+				/* Arcane Swap */
+				if 	((GetRandomInt(0,100) <= AS_Chance[.aiLevel]) and /*
+				*/	(TimerGetRemaining(AS_Timer) == 0.0)) then
+					set abilityCasted = doArcaneSwap()
+				endif
+				
+				/* Mind Burst */
+				if ((GetRandomInt(0,100) <= MB_Chance[.aiLevel]) and /*
+				*/ (not abilityCasted) and /*
+				*/ (TimerGetRemaining(MB_Timer) == 0.0)) then
+					set abilityCasted = doMindBurst()
+				endif
+				
+				/* Release Mana */
+				if ((.heroLevel >= 6) and /*
+				*/	(GetRandomInt(0,100) <= RM_Chance[.aiLevel]) and /*
+				*/	(not abilityCasted)) then
+					set abilityCasted = doReleaseMana()					
+				endif
+			endif
+
+			if (not abilityCasted) then
+				call .defaultAssaultEnemy()
+			endif
+        endmethod
         
         method onCreate takes nothing returns nothing
 			// Learnset Syntax:
@@ -87,7 +212,56 @@ scope DestroyerAI
 			endif
 
 			set .itemBuild = Itemsets[.aiLevel]
-			call BJDebugMsg("Registered Itemset[" + I2S(.aiLevel) + "] for Destroyer.")
+			
+			/* Ability Setup */
+			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
+			// AS
+			set AS_Chance[0] = 20
+			set AS_Chance[1] = 30
+			set AS_Chance[2] = 40
+			
+			// priority to cast spell on a unit with mana!
+			set AS_Mana_Priority[0] = 50
+			set AS_Mana_Priority[1] = 60
+			set AS_Mana_Priority[2] = 70
+			
+			set AS_Timer = NewTimer()
+			set AS_Cooldown[0] = 21.0
+			set AS_Cooldown[1] = 18.0
+			set AS_Cooldown[2] = 15.0
+			set AS_Cooldown[3] = 12.0
+			set AS_Cooldown[4] = 9.0
+			
+			// Mind Burst
+			set MB_Chance[0] = 20
+			set MB_Chance[1] = 20
+			set MB_Chance[2] = 30
+			
+			// priority to cast spell on a unit with mana!
+			set MB_Mana_Priority[0] = 50
+			set MB_Mana_Priority[1] = 60
+			set MB_Mana_Priority[2] = 70
+			
+			set MB_Timer = NewTimer()
+			set MB_Cooldown[0] = 9.0
+			set MB_Cooldown[1] = 9.0
+			set MB_Cooldown[2] = 9.0
+			set MB_Cooldown[3] = 9.0
+			set MB_Cooldown[4] = 9.0
+			
+			// XZ
+			set RM_Chance[0] = 20
+			set RM_Chance[1] = 30
+			set RM_Chance[2] = 30
+			
+			// min. X perecent to cast ability
+			set RM_Min_Mana[0] = 60.
+			set RM_Min_Mana[1] = 70.
+			set RM_Min_Mana[2] = 80.
+			
+			set RM_Min_Enemies[0] = 5
+			set RM_Min_Enemies[1] = 6
+			set RM_Min_Enemies[2] = 7
         endmethod
         
         implement HeroAI     

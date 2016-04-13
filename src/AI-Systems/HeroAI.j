@@ -423,7 +423,7 @@ scope HeroAI
 			endloop
 		endmethod
 		
-		private method useManaPotion takes nothing returns nothing
+		public method useManaPotion takes nothing returns nothing
 			local Item it
 			set .itemsetIndex = 0
 			

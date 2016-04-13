@@ -141,6 +141,8 @@ scope CryptLordAI
 				set abilityCasted = true
 			endif
 			
+			set u = null
+			
 			return abilityCasted
 		endmethod
 		

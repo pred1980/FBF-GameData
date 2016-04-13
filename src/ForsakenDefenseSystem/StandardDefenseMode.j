@@ -80,6 +80,7 @@ scope StandardDefenseMode
 			local boolean b = false
 			local real x = 0.00
 			local real y = 0.00
+			local Wander wander
 			
 				//Wenn nur Spieler auf der Forsaken Seite sind...
 			if (Game.isOneSidedGame()) then
@@ -105,6 +106,11 @@ scope StandardDefenseMode
 			set unitLife = S2I(getDataFromString(LoadStr(UNIT_DATA, RoundSystem.actualRound, index), 0))
 			set damage = S2I(getDataFromString(LoadStr(UNIT_DATA, RoundSystem.actualRound, index), 1))
 			call DestroyEffect(AddSpecialEffect(SPAWN_EFFECT, GetUnitX(u), GetUnitY(u)))
+			
+			// Add Unit to the Wander System
+			set wander = Wander.create(u, 500, GetRandomReal(1., 5.))
+			set wander.random = GetRandomReal(1., 5.)
+			set wander.order = "attack"
 			
 			static if REMOVE_CREEPS then
 				call ForsakenUnits.add(u)

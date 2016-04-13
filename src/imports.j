@@ -304,6 +304,9 @@
 //! import "src\DialogSystem\DialogSystem.j"
 //! import "src\DialogSystem\Dialog.j"
 
+/* Wander System */
+//! import "src\WanderSystem\WanderSystem.j"
+
 /* ------------------------------- */
 
 /* 

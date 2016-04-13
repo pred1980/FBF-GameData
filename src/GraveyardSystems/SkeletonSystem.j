@@ -9,6 +9,7 @@ scope SkeletonSystem
      *  	16.09.2015: Increased the amount of skeletons from 12 to 15
 	 *					Increased attack-graveyard-chance from 14% to 20%
 	 *		28.09.2015:	Increased the base hp of all skeletons by 100
+	 *		09.04.2016: Added Wander System for each spawned skeleton
      */
 
     globals
@@ -83,6 +84,7 @@ scope SkeletonSystem
         local unit skeleton = null
         local destructable gravestone = null
         local integer rnd = GetRandomInt(0,5) //20%
+		local Wander wander
 		
         loop
             exitwhen IsTerrainWalkable(x,y)
@@ -101,6 +103,11 @@ scope SkeletonSystem
         call TDS.addDamage(skeleton, dmg + (RoundSystem.actualRound * incDmg))
         call DestroyEffect(AddSpecialEffect(SPAWN_EFFECT, GetUnitX(skeleton), GetUnitY(skeleton)))
         call UnitApplyTimedLife(skeleton, 'BTLF', LIFE_TIME)
+		
+		// Add Unit to the Wander System
+		set wander = Wander.create(skeleton, 500, GetRandomReal(1., 5.))
+        set wander.random = GetRandomReal(1., 5.)
+        set wander.order = "attack"
         
         //Attack next closest graveyard / 20% chance
         if rnd == 0 then

@@ -24,7 +24,8 @@ scope ArcaneSwap initializer init
     endglobals
     
     private function MainSetup takes nothing returns nothing
-        set damage[1] = 60
+        // Note: This is the half of the used mana to cast spell (check OE!!!)
+		set damage[1] = 60
         set damage[2] = 75
         set damage[3] = 90
         set damage[4] = 105
@@ -38,15 +39,12 @@ scope ArcaneSwap initializer init
 		local real amount = 0.00
 		
 		set level = GetUnitAbilityLevel(caster, SPELL_ID)
-		set amount = RMinBJ(I2R(level) * 100, GetUnitState(target, UNIT_STATE_MAX_MANA) - GetUnitState(target, UNIT_STATE_MANA))
-		call SetUnitState(target, UNIT_STATE_MANA, GetUnitState(target,UNIT_STATE_MANA) + amount)
-		
 		set DamageType = SPELL
-		//Hat das Target überhaupt Mana oder ist es z.b. ein Soldat der sowieso kein Mana hat?
-		//Ja hat es...
-		if GetUnitStateSwap(UNIT_STATE_MAX_MANA, target) > 0.00 then
+		if (GetUnitStateSwap(UNIT_STATE_MAX_MANA, target) > 0.00) then
+			set amount = RMinBJ(I2R(level) * 100, GetUnitState(target, UNIT_STATE_MAX_MANA) - GetUnitState(target, UNIT_STATE_MANA))
+			call SetUnitState(target, UNIT_STATE_MANA, GetUnitState(target,UNIT_STATE_MANA) + amount)
 			call SpellHelper.damageTarget(caster, target, amount, false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
-		else //Nein hat es nicht...
+		else
 			call SpellHelper.damageTarget(caster, target, damage[level], false, true, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
 		endif
 		call DestroyEffect(AddSpecialEffectTarget(EFFECT_1, target, ATT_POINT))
