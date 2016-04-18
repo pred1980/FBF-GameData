@@ -9,7 +9,7 @@ scope Purify initializer init
 	                   Integrated SpellHelper for filtering and damaging
      */
     globals
-        private constant integer SPELL_ID = 'A06T'
+        private constant integer SPELL_ID = 'A0B2'
         private constant integer DUMMY_SPELL_ID = 'A06U'
         private constant integer DUMMY_ID = 'e00X'
         private constant string ALLY_EFFECT = "Abilities\\Spells\\Undead\\DeathPact\\DeathPactTarget.mdl" //Effect displayed on Allies when cast

@@ -320,7 +320,7 @@ scope HeroPickInit
         set HERO_REPICK_RECT[11][0] = GetRectCenterX(gg_rct_HeroRevive12)
         set HERO_REPICK_RECT[11][1] = GetRectCenterY(gg_rct_HeroRevive12)
         set HERO_ABILITIES[11][0] = 'A06V' //Vampire Blood
-        set HERO_ABILITIES[11][1] = 'A06T' //Purify
+        set HERO_ABILITIES[11][1] = 'A0B2' //Purify
         set HERO_ABILITIES[11][2] = 'A06X' //Sleepy Dust
         set HERO_ABILITIES[11][3] = 'A06Z' //Night Dome
         
