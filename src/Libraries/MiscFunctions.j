@@ -666,10 +666,15 @@ library MiscFunctions requires GroupUtils
 	
 	// Return a location on a point in a special radius
 	function RandomPointCircle takes real x, real y, real d returns location
-		local real cx = GetRandomReal(-d, d)
-		local real ty = SquareRoot(d * d - cx * cx)
-		
-		return Location(x + cx, y + GetRandomReal(-ty, ty))
-	endfunction
-
+        local real theta = GetRandomReal(0., 1.) * 2 * bj_PI
+        local real random = GetRandomReal(0., 1.) + GetRandomReal(0., 1.)
+        
+		if (random > 1.) then
+            set random = (2 - random) * d
+        else
+            set random = random*d
+        endif
+        
+		return Location(x + random * Cos(theta), y + random * Sin(theta))
+    endfunction
 endlibrary

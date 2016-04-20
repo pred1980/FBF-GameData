@@ -21,14 +21,20 @@ scope DreadLordAI
 		private constant string P_ORDER = "ambush"
 		private integer array P_Chance
 		private real array P_Cooldown
-		private timer P_Timer		
+		private timer P_Timer
+		private real P_AOE = 800
+		private real array P_Ally_Heal
+		private real array P_Enemy_Dmg
+		private integer P_Ally_Chance = 80
+		private integer P_Enemy_Chance = 20
 		
-		/* XY */
-		private constant integer XY_SPELL_ID = 'XYXY'
-		private constant string XY_ORDER = "xxx"
-		private integer array XY_Chance
-		private real array XY_Cooldown
-		private timer XY_Timer		
+		/* Sleepy Dust */
+		private constant integer SD_SPELL_ID = 'A06T'
+		private constant string SD_ORDER = "ward"
+		private integer array SD_Chance
+		private real array SD_Cooldown
+		private timer SD_Timer
+		private real SD_RANGE = 500		
 
 		/* XZ */
 		private constant integer XZ_SPELL_ID = 'XZXZ'
@@ -48,7 +54,6 @@ scope DreadLordAI
 			local boolean abilityCasted = false
 			local integer level = GetUnitAbilityLevel(.hero, VB_SPELL_ID) - 1
 			local integer i = 0
-			local unit u
 			local real x
 			local real y
 			local location l
@@ -80,26 +85,75 @@ scope DreadLordAI
 			return abilityCasted
 		endmethod
 		
+		private static method Purify_Filter takes nothing returns boolean
+			local unit u = GetFilterUnit()
+			local boolean b = false
+			
+			if (SpellHelper.isValidEnemy(u, tempthis.hero) or /*
+			*/	SpellHelper.isValidAlly(u, tempthis.hero)) then
+				set b = true
+			endif
+			
+			set u = null
+			
+			return b
+		endmethod
+		
 		private method doPurify takes nothing returns boolean
 			local boolean abilityCasted = false
 			local integer level = GetUnitAbilityLevel(.hero, P_SPELL_ID) - 1
+			local unit u
+			local real maxLife
+			local real life
+			local real diff
 			
+			call GroupClear(enumGroup)
+			call GroupEnumUnitsInRange(enumGroup, GetUnitX(.hero), GetUnitY(.hero), P_AOE, Filter(function thistype.Purify_Filter))
 			
+			loop
+				set u = GetRandomUnitFromGroup(enumGroup)
+				exitwhen (u == null)
+				set maxLife = GetUnitState(u, UNIT_STATE_MAX_LIFE)
+				set life = GetUnitState(u, UNIT_STATE_LIFE)
+				set diff = maxLife - life
+				
+				// is ally?
+				if (IsUnitAlly(u, tempthis.owner)) then
+					if ((GetRandomInt(0,100) <= P_Ally_Chance) and /*
+					*/	(IsUnitType(u, UNIT_TYPE_HERO)) and /*
+					*/	(diff >= P_Ally_Heal[level])) then
+						set abilityCasted = IssueTargetOrder(.hero, P_ORDER, u)
+					endif
+				else
+					if ((GetRandomInt(0,100) <= P_Enemy_Chance) and /*
+					*/	(IsUnitType(u, UNIT_TYPE_HERO)) and /*
+					*/	(life < P_Enemy_Dmg[level])) then
+						set abilityCasted = IssueTargetOrder(.hero, P_ORDER, u)
+					endif
+				endif
+				
+				// clear group if purify casted
+				if (abilityCasted) then
+					call GroupClear(enumGroup)
+					call TimerStart(P_Timer, P_Cooldown[level], false, null)
+				else
+					call GroupRemoveUnit(enumGroup, u)
+				endif
+			endloop
 			
-			
-			if (abilityCasted) then
-				call TimerStart(P_Timer, P_Cooldown[level], false, null)
-			endif
+			set u = null
 			
 			return abilityCasted
 		endmethod
 		
-		private method doXY takes nothing returns boolean
+		private method doSleepyDust takes nothing returns boolean
 			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XY_SPELL_ID) - 1
-			
-			if (abilityCasted) then
-				call TimerStart(XY_Timer, XY_Cooldown[level], false, null)
+			local integer level = GetUnitAbilityLevel(.hero, SD_SPELL_ID) - 1
+
+			if ((.closestEnemyHero != null) and /*
+			*/	(Distance(.hx, .hy, GetUnitX(.closestEnemyHero), GetUnitY(.closestEnemyHero)) <= SD_RANGE)) then
+				set abilityCasted = IssuePointOrder(.hero, SD_ORDER, GetUnitX(.closestEnemyHero), GetUnitY(.closestEnemyHero))
+				call TimerStart(SD_Timer, SD_Cooldown[level], false, null)
 			endif
 			
 			return abilityCasted
@@ -133,11 +187,11 @@ scope DreadLordAI
 					set abilityCasted = doPurify()
 				endif
 				
-				/* XY */
-				if ((GetRandomInt(0,100) <= XY_Chance[.aiLevel]) and /*
+				/* Sleepy Dust */
+				if ((GetRandomInt(0,100) <= SD_Chance[.aiLevel]) and /*
 				*/ (not abilityCasted) and /*
-				*/ (TimerGetRemaining(XY_Timer) == 0.0)) then
-					set abilityCasted = doXY()
+				*/ (TimerGetRemaining(SD_Timer) == 0.0)) then
+					set abilityCasted = doSleepyDust()
 				endif
 				
 				/* XZ */
@@ -158,7 +212,7 @@ scope DreadLordAI
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
 			// Vampire Blood
-			call RegisterHeroAISkill(HERO_ID, 1, 'A06V')
+			call RegisterHeroAISkill(HERO_ID, 3, 'A06V')
 			call RegisterHeroAISkill(HERO_ID, 5, 'A06V') 
 			call RegisterHeroAISkill(HERO_ID, 9, 'A06V') 
 			call RegisterHeroAISkill(HERO_ID, 13, 'A06V') 
@@ -170,11 +224,11 @@ scope DreadLordAI
 			call RegisterHeroAISkill(HERO_ID, 14, 'A0B2') 
 			call RegisterHeroAISkill(HERO_ID, 17, 'A0B2') 
 			// Sleepy Dust
-			call RegisterHeroAISkill(HERO_ID, 3, 'A06X') 
-			call RegisterHeroAISkill(HERO_ID, 8, 'A06X') 
-			call RegisterHeroAISkill(HERO_ID, 11, 'A06X') 
-			call RegisterHeroAISkill(HERO_ID, 15, 'A06X') 
-			call RegisterHeroAISkill(HERO_ID, 19, 'A06X') 
+			call RegisterHeroAISkill(HERO_ID, 1, 'A06T') 
+			call RegisterHeroAISkill(HERO_ID, 8, 'A06T') 
+			call RegisterHeroAISkill(HERO_ID, 11, 'A06T') 
+			call RegisterHeroAISkill(HERO_ID, 15, 'A06T') 
+			call RegisterHeroAISkill(HERO_ID, 19, 'A06T') 
 			// Night Dome
 			call RegisterHeroAISkill(HERO_ID, 6, 'A06Z')
 			call RegisterHeroAISkill(HERO_ID, 12, 'A06Z')
@@ -212,9 +266,9 @@ scope DreadLordAI
 			/* Ability Setup */
 			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
 			// Vampire Blood
-			set VB_Chance[0] = 25
-			set VB_Chance[1] = 35
-			set VB_Chance[2] = 45
+			set VB_Chance[0] = 20
+			set VB_Chance[1] = 25
+			set VB_Chance[2] = 30
 			
 			set VB_Max_Random_Loc[0] = 5
 			set VB_Max_Random_Loc[1] = 7
@@ -236,27 +290,41 @@ scope DreadLordAI
 			
 			// Purify
 			set P_Chance[0] = 10
-			set P_Chance[1] = 20
-			set P_Chance[2] = 20
+			set P_Chance[1] = 25
+			set P_Chance[2] = 40
+			
+			// Check Purify.j
+			set P_Ally_Heal[0] = 140
+			set P_Ally_Heal[1] = 280
+			set P_Ally_Heal[2] = 420
+			set P_Ally_Heal[3] = 560
+			set P_Ally_Heal[4] = 700
+			
+			// Check Purify.j
+			set P_Enemy_Dmg[0] = 50
+			set P_Enemy_Dmg[1] = 100
+			set P_Enemy_Dmg[2] = 150
+			set P_Enemy_Dmg[3] = 200
+			set P_Enemy_Dmg[4] = 250
 			
 			set P_Timer = NewTimer()
-			set P_Cooldown[0] = 150.0
-			set P_Cooldown[1] = 150.0
-			set P_Cooldown[2] = 150.0
-			set P_Cooldown[3] = 150.0
-			set P_Cooldown[4] = 150.0
+			set P_Cooldown[0] = 5.0
+			set P_Cooldown[1] = 5.0
+			set P_Cooldown[2] = 5.0
+			set P_Cooldown[3] = 5.0
+			set P_Cooldown[4] = 5.0
 			
-			// XY
-			set XY_Chance[0] = 10
-			set XY_Chance[1] = 20
-			set XY_Chance[2] = 20
+			// Sleepy Dust
+			set SD_Chance[0] = 90
+			set SD_Chance[1] = 10
+			set SD_Chance[2] = 10
 			
-			set XY_Timer = NewTimer()
-			set XY_Cooldown[0] = 150.0
-			set XY_Cooldown[1] = 150.0
-			set XY_Cooldown[2] = 150.0
-			set XY_Cooldown[3] = 150.0
-			set XY_Cooldown[4] = 150.0
+			set SD_Timer = NewTimer()
+			set SD_Cooldown[0] = 7.0
+			set SD_Cooldown[1] = 7.0
+			set SD_Cooldown[2] = 7.0
+			set SD_Cooldown[3] = 7.0
+			set SD_Cooldown[4] = 7.0
 			
 			// XZ
 			set XZ_Chance[0] = 10

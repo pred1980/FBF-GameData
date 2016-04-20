@@ -39,7 +39,7 @@ scope TrappySwap initializer init
         private hashtable DATA = InitHashtable()
         private constant string MESSAGE = "You cannot swap the "
         
-        //Brood Mother + Childs
+        //Brood Mother + Childs and others
         private constant integer SPIDER_ID = 'n00G'
         private constant integer MALE_ID = 'n00I'
         private constant integer FEMALE_ID = 'n00H'

@@ -3,12 +3,14 @@ scope SleepyDust initializer init
      * Description: The Snake Tongue summons an invisible Dust Bag on the floor that releases Sleep Powder 
                     when an enemy steps on it, effectively putting the unit to sleep.
      * Changelog: 
-     *     18.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
-	 *     04.04.2015: Integrated RegisterPlayerUnitEvent
-	                   Integrated SpellHelper for filtering
+     *     	18.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     	19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     	04.04.2015: Integrated RegisterPlayerUnitEvent
+	                    Integrated SpellHelper for filtering
+	 *		20.04.2016: Adapted for AI System
      */
     globals
+		private constant integer SPELL_ID = 'A06T'
         private constant integer DUMMY_ID = 'e00Y'
         private constant integer DUMMY_SPELL_ID = 'A06Y'
         private constant string EFFECT = "Abilities\\Spells\\Orc\\MirrorImage\\MirrorImageDeathCaster.mdl"
@@ -23,8 +25,16 @@ scope SleepyDust initializer init
         set BAG_IDS[3] = 'h00P'
         set BAG_IDS[4] = 'h00Q'
     endfunction
+	
+	private function Actions takes nothing returns nothing
+		local unit caster = GetTriggerUnit()
+		local integer level = GetUnitAbilityLevel(caster, SPELL_ID)
+		call CreateUnit(GetOwningPlayer(caster), BAG_IDS[level], GetSpellTargetX(), GetSpellTargetY(), GetUnitFacing(caster))
+		
+		set caster = null
+	endfunction	
     
-    private function Actions takes nothing returns nothing
+    private function BagActions takes nothing returns nothing
         local integer index = 0
         local unit u = GetAttacker()
         local integer a = GetUnitTypeId(u)
@@ -46,7 +56,7 @@ scope SleepyDust initializer init
         set d = null
     endfunction
 	
-	private function Conditions takes nothing returns boolean
+	private function BagConditions takes nothing returns boolean
 		local unit a = GetAttacker()
 		local unit u = GetTriggerUnit()
         local integer attId = GetUnitTypeId(a)
@@ -65,9 +75,14 @@ scope SleepyDust initializer init
 		
 		return b
     endfunction
+	
+	private function Conditions takes nothing returns boolean
+		return GetSpellAbilityId() == SPELL_ID
+    endfunction
     
     private function init takes nothing returns nothing
-        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_ATTACKED, function Conditions, function Actions)
+		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
+        call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_ATTACKED, function BagConditions, function BagActions)
         
         call MainSetup()
         call XE_PreloadAbility(DUMMY_SPELL_ID)
