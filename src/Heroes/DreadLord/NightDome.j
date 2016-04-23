@@ -4,18 +4,18 @@ scope NightDome initializer init
 	                creating a great Dome around them. 
                     It absorbs mana everytime a unit inside it casts a spell, increasing its own output.
      * Changelog: 
-     *     18.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
-	 *     05.04.2015: Integrated RegisterPlayerUnitEvent
-					   Code-Refactoring
+     *     	18.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     	19.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
+	 *     	05.04.2015: Integrated RegisterPlayerUnitEvent
+						Code-Refactoring
+	 *		21.04.2016: Code-Refactoring
      */
     globals
         private constant integer SPELL_ID = 'A06Z'
         private constant integer AURA_ID = 'A070'
         private constant integer AURA_MAXLVL = 10
         private integer array AURA_START
-        private constant real MANA_DRAIN = 100
-        private constant real RADIUS = 600
+        private constant real RADIUS = 780
         private real array DURATION
         private constant string DRAIN_EFFECT = "Abilities\\Spells\\NightElf\\MoonWell\\MoonWellCasterArt.mdl"
         private constant real LVL_DUR = 7.0 //Time in seconds the dome output is increased after a cast
@@ -37,15 +37,15 @@ scope NightDome initializer init
     endfunction
 
     private struct NightDome
-        unit dome
-        real x
-        real y
-        trigger castTrigger
-        integer charges = 0
-        integer level = 0
-        timer array chargetimers[AURA_MAXLVL]
-        timer aniTimer
-        timer durTimer
+        private unit dome
+        private real x
+        private real y
+        private trigger castTrigger
+        private integer charges = 0
+        private integer level = 0
+        private timer array chargetimers[AURA_MAXLVL]
+        private timer aniTimer
+        private timer durTimer
 		
 		method onDestroy takes nothing returns nothing
             loop
@@ -54,9 +54,7 @@ scope NightDome initializer init
                 exitwhen .charges == 0
             endloop
             call ReleaseTimer(.aniTimer)
-            set .aniTimer = null
             call ReleaseTimer(.durTimer)
-            set .durTimer = null
             call DisableTrigger(.castTrigger)
             call TriggerClearConditions(.castTrigger)
             call DestroyTrigger(.castTrigger)
@@ -67,14 +65,16 @@ scope NightDome initializer init
             local thistype this = GetTimerData(GetExpiredTimer())
             local integer t = 0
             
-            loop //Find the correct Timer to release
+			//Find the correct Timer to release
+            loop 
                 exitwhen t == this.charges or this.chargetimers[t] == GetExpiredTimer()
                 set t = t + 1
             endloop
             
             call ReleaseTimer(GetExpiredTimer())
             
-            loop //Put timer array back together
+			//Put timer array back together
+            loop 
                 exitwhen t == this.charges
                 set this.chargetimers[t] = this.chargetimers[t + 1]
                 set t = t + 1
@@ -89,21 +89,24 @@ scope NightDome initializer init
             local unit u = GetTriggerUnit()
             local real x = GetUnitX(u)
             local real y = GetUnitY(u)
-            local thistype this = LoadIntegerBJ(6,GetHandleId(GetTriggeringTrigger()), unitSpellData)
+            local thistype this = LoadIntegerBJ(6, GetHandleId(GetTriggeringTrigger()), unitSpellData)
             
-            if (x-this.x)*(x-this.x)+(y-this.y)*(y-this.y) <= RADIUS*RADIUS then //Inside the dome
-                call DestroyEffect(AddSpecialEffectTarget(DRAIN_EFFECT,u,"origin"))
+			//Inside the dome
+            if (x-this.x)*(x-this.x)+(y-this.y)*(y-this.y) <= RADIUS*RADIUS then 
+                call DestroyEffect(AddSpecialEffectTarget(DRAIN_EFFECT, u, "origin"))
                 if this.level < AURA_MAXLVL then
                     set this.level = this.level + 1
-                    call SetUnitAbilityLevel(this.dome,AURA_ID,this.level)
-                    set this.chargetimers[this.charges]=NewTimer()
-                    call SetTimerData(this.chargetimers[this.charges],this)
-                    call TimerStart(this.chargetimers[this.charges],LVL_DUR,false,function thistype.DomeDown)
+                    call SetUnitAbilityLevel(this.dome, AURA_ID, this.level)
+                    set this.chargetimers[this.charges] = NewTimer()
+                    call SetTimerData(this.chargetimers[this.charges], this)
+                    call TimerStart(this.chargetimers[this.charges], LVL_DUR, false, function thistype.DomeDown)
                     set this.charges = this.charges + 1
                 endif
             endif
+			
             set u = null
-            return false
+            
+			return false
         endmethod
 		
 		static method TimeOut takes nothing returns nothing
@@ -117,14 +120,14 @@ scope NightDome initializer init
 		static method AniStop takes nothing returns nothing
             local thistype this = GetTimerData(GetExpiredTimer())
             
-            call SetUnitTimeScale(this.dome,0.0)
+            call SetUnitTimeScale(this.dome, 0.0)
         endmethod
         
         static method create takes unit c, real tx, real ty returns thistype
             local thistype this = thistype.allocate()
             local integer level = GetUnitAbilityLevel(c,SPELL_ID)-1            
             
-            set .dome = CreateUnit(GetOwningPlayer(c),EFFECT_ID,tx,ty,270)
+            set .dome = CreateUnit(GetOwningPlayer(c), EFFECT_ID, tx, ty, 270)
             set .x = tx
             set .y = ty
             set .level = AURA_START[level]

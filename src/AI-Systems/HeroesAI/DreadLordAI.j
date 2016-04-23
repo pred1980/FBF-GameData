@@ -36,12 +36,15 @@ scope DreadLordAI
 		private timer SD_Timer
 		private real SD_RANGE = 500		
 
-		/* XZ */
-		private constant integer XZ_SPELL_ID = 'XZXZ'
-		private constant string XZ_ORDER = "xxx"
-		private integer array XZ_Chance
-		private real array XZ_Cooldown
-		private timer XZ_Timer
+		/* Night Dome */
+		private constant integer ND_SPELL_ID = 'A06Z'
+		private constant string ND_ORDER = "deathanddecay"
+		private constant real ND_RADIUS = 780
+		private integer array ND_Chance
+		private real array ND_Cooldown
+		private timer ND_Timer
+		private real array ND_Min_Percent_Mana
+		private integer array ND_Min_Allies
     endglobals
     
     private struct AI extends array
@@ -67,7 +70,7 @@ scope DreadLordAI
 				set y = GetLocationY(l)
 				call GroupEnumUnitsInRange(enumGroup, x, y, VB_AOE, Filter(function thistype.VB_Filter))
 			
-				if 	(CountUnitsInGroup(enumGroup) >= VB_Min_Enemies[level]) then
+				if (CountUnitsInGroup(enumGroup) >= VB_Min_Enemies[level]) then
 					set abilityCasted = IssuePointOrder(.hero, VB_ORDER, x, y)
 					set i = VB_Max_Random_Loc[.aiLevel]
 				endif
@@ -159,12 +162,31 @@ scope DreadLordAI
 			return abilityCasted
 		endmethod
 		
-		private method doXZ takes nothing returns boolean
-			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XZ_SPELL_ID) - 1
+		private static method ND_Filter takes nothing returns boolean
+			local unit u = GetFilterUnit()
+			local integer level = GetUnitAbilityLevel(tempthis.hero, ND_SPELL_ID) - 1
+			local boolean b = false
 			
-			if (abilityCasted) then
-				call TimerStart(XZ_Timer, XZ_Cooldown[level], false, null)
+			if ((SpellHelper.isValidAlly(u, tempthis.hero)) and /*
+			*/	(GetUnitManaPercent(u) <= ND_Min_Percent_Mana[level])) then
+				set b = true
+			endif
+			
+			set u = null
+			
+			return b
+		endmethod
+		
+		private method doNightDome takes nothing returns boolean
+			local boolean abilityCasted = false
+			local integer level = GetUnitAbilityLevel(.hero, ND_SPELL_ID) - 1
+			
+			call GroupClear(enumGroup)
+			call GroupEnumUnitsInRange(enumGroup, .hx, .hy, ND_RADIUS, Filter(function thistype.ND_Filter))
+			
+			if (CountUnitsInGroup(enumGroup) >= ND_Min_Allies[.aiLevel]) then
+				set abilityCasted = IssuePointOrder(.hero, ND_ORDER, .hx, .hy)
+				call TimerStart(ND_Timer, ND_Cooldown[level], false, null)
 			endif
 			
 			return abilityCasted
@@ -194,12 +216,12 @@ scope DreadLordAI
 					set abilityCasted = doSleepyDust()
 				endif
 				
-				/* XZ */
+				/* Night Dome */
 				if ((.heroLevel >= 6) and /*
-				*/	(GetRandomInt(0,100) <= XZ_Chance[.aiLevel]) and /*
-				*/  (TimerGetRemaining(XZ_Timer) == 0.0) and /*
+				*/	(GetRandomInt(0,100) <= ND_Chance[.aiLevel]) and /*
+				*/  (TimerGetRemaining(ND_Timer) == 0.0) and /*
 				*/	(not abilityCasted)) then
-					set abilityCasted = doXZ()					
+					set abilityCasted = doNightDome()					
 				endif
 			endif
 
@@ -315,7 +337,7 @@ scope DreadLordAI
 			set P_Cooldown[4] = 5.0
 			
 			// Sleepy Dust
-			set SD_Chance[0] = 90
+			set SD_Chance[0] = 10
 			set SD_Chance[1] = 10
 			set SD_Chance[2] = 10
 			
@@ -326,18 +348,23 @@ scope DreadLordAI
 			set SD_Cooldown[3] = 7.0
 			set SD_Cooldown[4] = 7.0
 			
-			// XZ
-			set XZ_Chance[0] = 10
-			set XZ_Chance[1] = 20
-			set XZ_Chance[2] = 20
+			// Night Dome
+			set ND_Chance[0] = 20
+			set ND_Chance[1] = 20
+			set ND_Chance[2] = 20
 			
-			set XZ_Timer = NewTimer()
-			set XZ_Cooldown[0] = 150.0
-			set XZ_Cooldown[1] = 150.0
-			set XZ_Cooldown[2] = 150.0
-			set XZ_Cooldown[3] = 150.0
-			set XZ_Cooldown[4] = 150.0
-
+			set ND_Min_Percent_Mana[0] = 50.0
+			set ND_Min_Percent_Mana[1] = 60.0
+			set ND_Min_Percent_Mana[2] = 70.0
+			
+			set ND_Min_Allies[0] = 4 
+			set ND_Min_Allies[1] = 6
+			set ND_Min_Allies[2] = 8
+			
+			set ND_Timer = NewTimer()
+			set ND_Cooldown[0] = 120.0
+			set ND_Cooldown[1] = 110.0
+			set ND_Cooldown[2] = 100.0
         endmethod
         
         implement HeroAI     

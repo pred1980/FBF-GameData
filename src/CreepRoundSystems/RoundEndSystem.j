@@ -23,11 +23,14 @@ scope RoundEndSystem
 			local unit u = GetFilterUnit()
 			local boolean b = false
 			
+			//u007 == Night Dome Dummy (Dread Lord)
+			
 			if (not SpellHelper.isUnitDead(u) and not /*
-					*/ IsUnitType(u, UNIT_TYPE_STRUCTURE) and not /*
-					*/ IsUnitType(u, UNIT_TYPE_PEON) and not /*
-					*/ IsUnitType(u, UNIT_TYPE_MECHANICAL) and /*
-					*/ (Devour.getDevouredUnit() != u)) then
+				*/  IsUnitType(u, UNIT_TYPE_STRUCTURE) and not /*
+				*/  IsUnitType(u, UNIT_TYPE_PEON) and not /*
+				*/  IsUnitType(u, UNIT_TYPE_MECHANICAL) and /*
+				*/  (Devour.getDevouredUnit() != u) and /*
+				*/	((GetUnitTypeId(u) != 'u007'))) then
 					set b = true
 			endif
 			
