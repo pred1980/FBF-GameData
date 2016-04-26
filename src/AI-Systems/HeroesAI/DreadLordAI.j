@@ -111,7 +111,7 @@ scope DreadLordAI
 			local real diff
 			
 			call GroupClear(enumGroup)
-			call GroupEnumUnitsInRange(enumGroup, GetUnitX(.hero), GetUnitY(.hero), P_AOE, Filter(function thistype.Purify_Filter))
+			call GroupEnumUnitsInRange(enumGroup, .hx, .hy, P_AOE, Filter(function thistype.Purify_Filter))
 			
 			loop
 				set u = GetRandomUnitFromGroup(enumGroup)

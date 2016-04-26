@@ -125,14 +125,14 @@ scope HeroPickMods
                     exitwhen i >= bj_MAX_PLAYERS
                     if not BaseMode.hasPicked[i] and Game.isPlayerInGame(i) then
                         if (DEBUG_MODE) then
-								set randomIndex = GetRandomInt(6,11)
+								set randomIndex = 23//GetRandomInt(6,11)
 							else
 								set randomIndex = BaseMode.getRandomHero()
 							endif
 						loop
                             exitwhen BaseMode.onEnterFilter(GET_HERO_PICK_UNIT(i), randomIndex)
                             if (DEBUG_MODE) then
-								set randomIndex = GetRandomInt(6,11)
+								set randomIndex = 23//GetRandomInt(6,11)
 							else
 								set randomIndex = BaseMode.getRandomHero()
 							endif

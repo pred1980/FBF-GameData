@@ -3,10 +3,11 @@ scope CripplingArrow initializer Init
      * Description: Gabrielle shoots a poisoned arrow that slows down the targeted unit. 
                     It deals bonus damage if the target is already affected by an arrow.
      * Changelog: 
-     *     24.11.2013: Abgleich mit OE und der Exceltabelle
-	 *	   28.03.2014: Missile Speed um 15% erhoeht
-	 *     29.03.2015: Integrated RegisterPlayerUnitEvent
-	                   Integrated SpellHelper for damaging
+     *     	24.11.2013: Abgleich mit OE und der Exceltabelle
+	 *	   	28.03.2014: Missile Speed um 15% erhoeht
+	 *     	29.03.2015: Integrated RegisterPlayerUnitEvent
+						Integrated SpellHelper for damaging
+	 *		26.04.2016: clean up code (set variable to null)
      */
     globals
         private constant integer SPELL_ID = 'A0AJ'
@@ -88,12 +89,14 @@ scope CripplingArrow initializer Init
                 
                 call this.terminate()
             endif
+			
+			set u = null
         endmethod
 
         method loopControl takes nothing returns nothing
             set this.dist = this.dist + this.speed * XE_ANIMATION_PERIOD
-            if (this.dist >= this.maxDist) or not IsTerrainWalkable(this.x, this.y) then
-                call this.terminate()
+			if (this.dist >= this.maxDist) or not IsTerrainWalkable(this.x, this.y) then
+            	call this.terminate()
             endif
         endmethod
         
