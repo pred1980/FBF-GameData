@@ -16,7 +16,7 @@ scope CoupDeGrace initializer Init
 	 *		12.10.2015:	Added a note for the killed ally by Coup de Grace					
      */
     globals
-        private constant integer SPELL_ID = 'A076'
+        private constant integer SPELL_ID = 'A0B4'
         private constant integer REVIVE_ID = 'A077'
         private constant string MISSILE_MODEL = "Abilities\\Spells\\Other\\BlackArrow\\BlackArrowMissile.mdl"
         private constant string EFFECT = "DarkLightningNova.mdx"

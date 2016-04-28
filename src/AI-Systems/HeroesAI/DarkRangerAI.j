@@ -16,19 +16,20 @@ scope DarkRangerAI
 		private integer CA_Hero_Chance = 85
 		private integer CA_Normal_Chance = 15
 		
-		/* XY */
-		private constant integer XY_SPELL_ID = 'XYXY'
-		private constant string XY_ORDER = "xxx"
-		private integer array XY_Chance
-		private real array XY_Cooldown
-		private timer XY_Timer		
+		/* Snipe */
+		private constant integer S_SPELL_ID = 'A06X'
+		private constant integer S_BUFF_ID = 'B00N'
+		private constant string S_ORDER = "ambush"
+		private integer array S_Chance
+		private real array S_Cooldown
+		private timer S_Timer		
 
-		/* XZ */
-		private constant integer XZ_SPELL_ID = 'XZXZ'
-		private constant string XZ_ORDER = "xxx"
-		private integer array XZ_Chance
-		private real array XZ_Cooldown
-		private timer XZ_Timer
+		/* Coup de Grace */
+		private constant integer CDG_SPELL_ID = 'A0B4'
+		private constant string CDG_ORDER = "acidbomb"
+		private integer array CDG_Chance
+		private real array CDG_Cooldown
+		private timer CDG_Timer
     endglobals
     
     private struct AI extends array
@@ -75,23 +76,31 @@ scope DarkRangerAI
 			return abilityCasted
 		endmethod
 		
-		private method doXY takes nothing returns boolean
+		private method doSnipe takes nothing returns boolean
 			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XY_SPELL_ID) - 1
+			local integer level = GetUnitAbilityLevel(.hero, S_SPELL_ID) - 1
+			
+			if (.closestEnemyHero != null) then
+				call AIDummyMissile.create(.hero, .closestEnemyHero)
+				
+				if (GetUnitAbilityLevel(.closestEnemyHero, S_BUFF_ID) > 0) then
+					set abilityCasted = IssueTargetOrder(.hero, S_ORDER, .closestEnemyHero)
+				endif
+			endif
 			
 			if (abilityCasted) then
-				call TimerStart(XY_Timer, XY_Cooldown[level], false, null)
+				call TimerStart(S_Timer, S_Cooldown[level], false, null)
 			endif
 			
 			return abilityCasted
 		endmethod
 		
-		private method doXZ takes nothing returns boolean
+		private method doCoupDeGrace takes nothing returns boolean
 			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XZ_SPELL_ID) - 1
+			local integer level = GetUnitAbilityLevel(.hero, CDG_SPELL_ID) - 1
 			
 			if (abilityCasted) then
-				call TimerStart(XZ_Timer, XZ_Cooldown[level], false, null)
+				call TimerStart(CDG_Timer, CDG_Cooldown[level], false, null)
 			endif
 			
 			return abilityCasted
@@ -107,19 +116,19 @@ scope DarkRangerAI
 					set abilityCasted = doCripplingArrow()
 				endif
 				
-				/* XY */
-				if ((GetRandomInt(0,100) <= XY_Chance[.aiLevel]) and /*
+				/* Snipe */
+				if ((GetRandomInt(0,100) <= S_Chance[.aiLevel]) and /*
 				*/ (not abilityCasted) and /*
-				*/ (TimerGetRemaining(XY_Timer) == 0.0)) then
-					set abilityCasted = doXY()
+				*/ (TimerGetRemaining(S_Timer) == 0.0)) then
+					set abilityCasted = doSnipe()
 				endif
 				
-				/* XZ */
+				/* Coup de Grace */
 				if ((.heroLevel >= 6) and /*
-				*/	(GetRandomInt(0,100) <= XZ_Chance[.aiLevel]) and /*
-				*/  (TimerGetRemaining(XZ_Timer) == 0.0) and /*
+				*/	(GetRandomInt(0,100) <= CDG_Chance[.aiLevel]) and /*
+				*/  (TimerGetRemaining(CDG_Timer) == 0.0) and /*
 				*/	(not abilityCasted)) then
-					set abilityCasted = doXZ()					
+					set abilityCasted = doCoupDeGrace()					
 				endif
 			endif
 
@@ -144,15 +153,15 @@ scope DarkRangerAI
 			call RegisterHeroAISkill(HERO_ID, 14, 'A0AJ') 
 			call RegisterHeroAISkill(HERO_ID, 17, 'A0AJ') 
 			// Snipe
-			call RegisterHeroAISkill(HERO_ID, 3, 'A075') 
-			call RegisterHeroAISkill(HERO_ID, 8, 'A075') 
-			call RegisterHeroAISkill(HERO_ID, 11, 'A075') 
-			call RegisterHeroAISkill(HERO_ID, 15, 'A075') 
-			call RegisterHeroAISkill(HERO_ID, 19, 'A075') 
+			call RegisterHeroAISkill(HERO_ID, 3, 'A06X') 
+			call RegisterHeroAISkill(HERO_ID, 8, 'A06X') 
+			call RegisterHeroAISkill(HERO_ID, 11, 'A06X') 
+			call RegisterHeroAISkill(HERO_ID, 15, 'A06X') 
+			call RegisterHeroAISkill(HERO_ID, 19, 'A06X') 
 			// Coup de Grace
-			call RegisterHeroAISkill(HERO_ID, 6, 'A076')
-			call RegisterHeroAISkill(HERO_ID, 12, 'A076')
-			call RegisterHeroAISkill(HERO_ID, 18, 'A076')
+			call RegisterHeroAISkill(HERO_ID, 6, 'A0B4')
+			call RegisterHeroAISkill(HERO_ID, 12, 'A0B4')
+			call RegisterHeroAISkill(HERO_ID, 18, 'A0B4')
 			//Heroes Will
 			call RegisterHeroAISkill(HERO_ID, 4, 'A021')
 			
@@ -186,9 +195,9 @@ scope DarkRangerAI
 			/* Ability Setup */
 			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
 			// Crippling Arrow
-			set CA_Chance[0] = 20
-			set CA_Chance[1] = 30
-			set CA_Chance[2] = 40
+			set CA_Chance[0] = 25
+			set CA_Chance[1] = 35
+			set CA_Chance[2] = 45
 			
 			set CA_Timer = NewTimer()
 			set CA_Cooldown[0] = 8.0
@@ -197,27 +206,27 @@ scope DarkRangerAI
 			set CA_Cooldown[3] = 8.0
 			set CA_Cooldown[4] = 8.0
 			
-			// XY
-			set XY_Chance[0] = 10
-			set XY_Chance[1] = 20
-			set XY_Chance[2] = 20
+			// Snipe
+			set S_Chance[0] = 25
+			set S_Chance[1] = 35
+			set S_Chance[2] = 45
 			
-			set XY_Timer = NewTimer()
-			set XY_Cooldown[0] = 150.0
-			set XY_Cooldown[1] = 150.0
-			set XY_Cooldown[2] = 150.0
-			set XY_Cooldown[3] = 150.0
-			set XY_Cooldown[4] = 150.0
+			set S_Timer = NewTimer()
+			set S_Cooldown[0] = 5.0
+			set S_Cooldown[1] = 5.0
+			set S_Cooldown[2] = 5.0
+			set S_Cooldown[3] = 5.0
+			set S_Cooldown[4] = 5.0
 			
-			// XZ
-			set XZ_Chance[0] = 10
-			set XZ_Chance[1] = 20
-			set XZ_Chance[2] = 20
+			// Coup de Grace
+			set CDG_Chance[0] = 10
+			set CDG_Chance[1] = 10
+			set CDG_Chance[2] = 10
 			
-			set XZ_Timer = NewTimer()
-			set XZ_Cooldown[0] = 150.0
-			set XZ_Cooldown[1] = 150.0
-			set XZ_Cooldown[2] = 150.0
+			set CDG_Timer = NewTimer()
+			set CDG_Cooldown[0] = 180.0
+			set CDG_Cooldown[1] = 150.0
+			set CDG_Cooldown[2] = 120.0
         endmethod
         
         implement HeroAI     

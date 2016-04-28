@@ -15,7 +15,7 @@ scope Snipe initializer Init
     private keyword Snipe
     
     globals
-        private constant integer SPELL_ID = 'A075' 
+        private constant integer SPELL_ID = 'A06X' 
         private constant string MISSILE_MODEL = "Abilities\\Weapons\\MoonPriestessMissile\\MoonPriestessMissile.mdl"
         private constant string CROSS_MODEL = "Models\\Snipe.mdx"
         private constant real MISSILE_SCALE = 1.3
@@ -99,8 +99,6 @@ scope Snipe initializer Init
 		static method create takes unit caster, unit target, integer level returns thistype
             local thistype this = thistype.allocate(GetWidgetX(caster), GetWidgetY(caster), Z_START, target, Z_END)
             local timer t = NewTimer()
-            
-			call ClearTextMessages()
 			
             set this.fxpath = MISSILE_MODEL
             set this.scale = MISSILE_SCALE

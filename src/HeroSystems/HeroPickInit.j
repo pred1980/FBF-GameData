@@ -429,8 +429,8 @@ scope HeroPickInit
         set HERO_REPICK_RECT[23][1] = GetRectCenterY(gg_rct_HeroRevive13)
         set HERO_ABILITIES[23][0] = 'A071' //Ghost Form
         set HERO_ABILITIES[23][1] = 'A072' //Crippling Arrow
-        set HERO_ABILITIES[23][2] = 'A075' //Snipe
-        set HERO_ABILITIES[23][3] = 'A076' //Coup de Grace
+        set HERO_ABILITIES[23][2] = 'A06X' //Snipe
+        set HERO_ABILITIES[23][3] = 'A0B4' //Coup de Grace
         
         //Blood Mage
         set HERO_PICK_RECT[24]  = gg_rct_HeroPick25
