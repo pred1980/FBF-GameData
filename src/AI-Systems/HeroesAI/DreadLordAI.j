@@ -156,6 +156,9 @@ scope DreadLordAI
 			if ((.closestEnemyHero != null) and /*
 			*/	(Distance(.hx, .hy, GetUnitX(.closestEnemyHero), GetUnitY(.closestEnemyHero)) <= SD_RANGE)) then
 				set abilityCasted = IssuePointOrder(.hero, SD_ORDER, GetUnitX(.closestEnemyHero), GetUnitY(.closestEnemyHero))
+			endif
+			
+			if (abilityCasted) then
 				call TimerStart(SD_Timer, SD_Cooldown[level], false, null)
 			endif
 			
@@ -186,6 +189,9 @@ scope DreadLordAI
 			
 			if (CountUnitsInGroup(enumGroup) >= ND_Min_Allies[.aiLevel]) then
 				set abilityCasted = IssuePointOrder(.hero, ND_ORDER, .hx, .hy)
+			endif
+			
+			if (abilityCasted) then
 				call TimerStart(ND_Timer, ND_Cooldown[level], false, null)
 			endif
 			

@@ -27,8 +27,14 @@ scope DarkRangerAI
 		/* Coup de Grace */
 		private constant integer CDG_SPELL_ID = 'A0B4'
 		private constant string CDG_ORDER = "acidbomb"
+		// Spell Radius
+		private constant real CDG_RADIUS_1 = 600
+		// Radius for enemies to damage (Check CoupDeGrace.j)
+		private constant real CDG_RADIUS_2 = 400
 		private integer array CDG_Chance
 		private real array CDG_Cooldown
+		private real array CDG_Min_Percent_HP
+		private integer array CDG_Min_Enemies
 		private timer CDG_Timer
     endglobals
     
@@ -95,9 +101,44 @@ scope DarkRangerAI
 			return abilityCasted
 		endmethod
 		
+		private static method CDG_Filter_2 takes nothing returns boolean
+			return SpellHelper.isValidEnemy(GetFilterUnit(), tempthis.hero)
+		endmethod
+		
+		private static method CDG_Filter_1 takes nothing returns boolean
+			local unit u = GetFilterUnit()
+			local boolean b = false
+			local integer level = GetUnitAbilityLevel(tempthis.hero, CDG_SPELL_ID) - 1
+			
+			if ((SpellHelper.isValidAlly(u, tempthis.hero)) and /*
+			*/	(IsUnitType(u, UNIT_TYPE_HERO)) and /*
+			*/	(GetUnitLifePercent(u) <= CDG_Min_Percent_HP[level]) and not /*
+			*/	(UnitHasItemOfTypeBJ(u, 'I00O'))) then
+				
+				// Now check if enough enemies are around
+				call GroupClear(ENUM_GROUP)
+				call GroupEnumUnitsInRange(ENUM_GROUP, tempthis.hx, tempthis.hy, CDG_RADIUS_2, Filter(function thistype.CDG_Filter_2))
+				
+				if (CountUnitsInGroup(ENUM_GROUP) >= CDG_Min_Enemies[level]) then
+					set b = true
+				endif
+			endif
+			
+			set u = null
+			
+			return b
+		endmethod
+		
 		private method doCoupDeGrace takes nothing returns boolean
 			local boolean abilityCasted = false
 			local integer level = GetUnitAbilityLevel(.hero, CDG_SPELL_ID) - 1
+			
+			call GroupClear(enumGroup)
+			call GroupEnumUnitsInRange(enumGroup, .hx, .hy, CDG_RADIUS_1, Filter(function thistype.CDG_Filter_1))
+			
+			if (CountUnitsInGroup(enumGroup) > 0) then
+				set abilityCasted = IssueTargetOrder(.hero, CDG_ORDER, GetRandomUnitFromGroup(enumGroup))
+			endif
 			
 			if (abilityCasted) then
 				call TimerStart(CDG_Timer, CDG_Cooldown[level], false, null)
@@ -141,29 +182,27 @@ scope DarkRangerAI
 			// Learnset Syntax:
 			// set RegisterHeroAISkill([UNIT-TYPE ID], [LEVEL OF HERO], SKILL ID)
 			// Ghost Form
-			call RegisterHeroAISkill(HERO_ID, 1, 'A071')
-			call RegisterHeroAISkill(HERO_ID, 5, 'A071') 
-			call RegisterHeroAISkill(HERO_ID, 9, 'A071') 
-			call RegisterHeroAISkill(HERO_ID, 13, 'A071') 
-			call RegisterHeroAISkill(HERO_ID, 16, 'A071') 
+			call RegisterHeroAISkill(HERO_ID, 3, 'A071')
+			call RegisterHeroAISkill(HERO_ID, 7, 'A071') 
+			call RegisterHeroAISkill(HERO_ID, 10, 'A071') 
+			call RegisterHeroAISkill(HERO_ID, 14, 'A071') 
+			call RegisterHeroAISkill(HERO_ID, 17, 'A071') 
 			// Crippling Arrow
-			call RegisterHeroAISkill(HERO_ID, 2, 'A0AJ') 
-			call RegisterHeroAISkill(HERO_ID, 7, 'A0AJ') 
-			call RegisterHeroAISkill(HERO_ID, 10, 'A0AJ') 
-			call RegisterHeroAISkill(HERO_ID, 14, 'A0AJ') 
-			call RegisterHeroAISkill(HERO_ID, 17, 'A0AJ') 
+			call RegisterHeroAISkill(HERO_ID, 1, 'A0AJ') 
+			call RegisterHeroAISkill(HERO_ID, 4, 'A0AJ') 
+			call RegisterHeroAISkill(HERO_ID, 8, 'A0AJ') 
+			call RegisterHeroAISkill(HERO_ID, 11, 'A0AJ') 
+			call RegisterHeroAISkill(HERO_ID, 15, 'A0AJ') 
 			// Snipe
-			call RegisterHeroAISkill(HERO_ID, 3, 'A06X') 
-			call RegisterHeroAISkill(HERO_ID, 8, 'A06X') 
-			call RegisterHeroAISkill(HERO_ID, 11, 'A06X') 
-			call RegisterHeroAISkill(HERO_ID, 15, 'A06X') 
-			call RegisterHeroAISkill(HERO_ID, 19, 'A06X') 
+			call RegisterHeroAISkill(HERO_ID, 2, 'A06X') 
+			call RegisterHeroAISkill(HERO_ID, 5, 'A06X') 
+			call RegisterHeroAISkill(HERO_ID, 9, 'A06X') 
+			call RegisterHeroAISkill(HERO_ID, 13, 'A06X') 
+			call RegisterHeroAISkill(HERO_ID, 16, 'A06X') 
 			// Coup de Grace
 			call RegisterHeroAISkill(HERO_ID, 6, 'A0B4')
 			call RegisterHeroAISkill(HERO_ID, 12, 'A0B4')
 			call RegisterHeroAISkill(HERO_ID, 18, 'A0B4')
-			//Heroes Will
-			call RegisterHeroAISkill(HERO_ID, 4, 'A021')
 			
             // This is where you would define a custom item build
 			set Itemsets[.aiLevel] = HeroAI_Itemset.create()
@@ -221,7 +260,15 @@ scope DarkRangerAI
 			// Coup de Grace
 			set CDG_Chance[0] = 10
 			set CDG_Chance[1] = 10
-			set CDG_Chance[2] = 10
+			set CDG_Chance[2] = 100
+			
+			set CDG_Min_Percent_HP[0] = 20.0
+			set CDG_Min_Percent_HP[1] = 15.0
+			set CDG_Min_Percent_HP[2] = 10.0
+			
+			set CDG_Min_Enemies[0] = 3
+			set CDG_Min_Enemies[1] = 4
+			set CDG_Min_Enemies[2] = 5
 			
 			set CDG_Timer = NewTimer()
 			set CDG_Cooldown[0] = 180.0
