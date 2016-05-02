@@ -328,7 +328,7 @@ scope HeroPickInit
         set HERO_PICK_RECT[12]  = gg_rct_HeroPick14
         set HERO_REPICK_RECT[12][0] = GetRectCenterX(gg_rct_HeroRevive14)
         set HERO_REPICK_RECT[12][1] = GetRectCenterY(gg_rct_HeroRevive14)
-        set HERO_ABILITIES[12][0] = 'A08M' //Holy Chain
+        set HERO_ABILITIES[12][0] = 'A076' //Holy Chain
         set HERO_ABILITIES[12][1] = 'A07N' //Trappy Swap
         set HERO_ABILITIES[12][2] = 'A07M' //Refreshing Aura
         set HERO_ABILITIES[12][3] = 'A07K' //Fireworks

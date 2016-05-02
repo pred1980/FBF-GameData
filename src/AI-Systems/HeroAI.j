@@ -105,6 +105,11 @@ scope HeroAI
     	return (GetUnitTypeId(GetFilterUnit()) == 'n006')
     endfunction
 	
+	// Returns Forsaken Safe Unit (Fountain)
+	private function coalitionSafeUnit takes nothing returns boolean
+    	return (GetUnitTypeId(GetFilterUnit()) == 'n008')
+    endfunction
+	
 	// Returns Forsaken Base Teleporter
 	private function forsakenBaseTeleporter takes nothing returns boolean
     	return (GetUnitTypeId(GetFilterUnit()) == 'n00M')
@@ -373,33 +378,31 @@ scope HeroAI
 			// Distance between fountain and hero
 			local real fDist
 			// race of the owner
-			local race r = GetUnitRace(.hero)
+			local race r = GetPlayerRace(GetOwningPlayer(.hero))
 			
         	set tempHeroOwner = .owner
 			
 			if (r == RACE_UNDEAD) then
 				set t = GetClosestUnit(.hx, .hy, Filter(function forsakenBaseTeleporter))
 				set f = GetClosestUnit(.hx, .hy, Filter(function forsakenSafeUnit))
-				//Calculate which is closer to the hero, fountain or teleporter?!?
-				set tDist = Distance(.hx, .hy, GetUnitX(t), GetUnitY(t))
-				set fDist = Distance(.hx, .hy, GetUnitX(f), GetUnitY(f))
-				
-				// Is the hero close to the fountain or the path is shorter?? 
-				// --> Always walk directly to the fountain!
-				if (.safeUnit != null or tDist > fDist ) then
-					set .runX = GetUnitX(f)
-					set .runY = GetUnitY(f)
-				else
-					set .runX = GetUnitX(t)
-					set .runY = GetUnitY(t)
-				endif
 			else
 				set t = GetClosestUnit(.hx, .hy, Filter(function coalitionBaseTeleporter))
+				set f = GetClosestUnit(.hx, .hy, Filter(function coalitionSafeUnit))
+			endif
+			
+			//Calculate which is closer to the hero, fountain or teleporter?!?
+			set tDist = Distance(.hx, .hy, GetUnitX(t), GetUnitY(t))
+			set fDist = Distance(.hx, .hy, GetUnitX(f), GetUnitY(f))
+			
+			// Is the hero close to the fountain or the path is shorter?? 
+			// --> Always walk directly to the fountain!
+			if (.safeUnit != null or tDist > fDist ) then
+				set .runX = GetUnitX(f)
+				set .runY = GetUnitY(f)
+			else
 				set .runX = GetUnitX(t)
 				set .runY = GetUnitY(t)
 			endif
-
-			call PingMinimap(.runX, .runY, 1.5)
  
 			set f = null
 			set t = null

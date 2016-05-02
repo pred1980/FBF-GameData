@@ -18,7 +18,7 @@ scope HolyChains initializer init
 	private keyword throw
 	 
 	globals
-        private constant integer SPELL_ID = 'A08M'
+        private constant integer SPELL_ID = 'A076'
         private constant integer CAST_ABILITY_ID ='A08N'
         private constant string  MODEL_PATH_MISSILE = "Abilities\\Spells\\Other\\Incinerate\\IncinerateBuff.mdl"
         private constant string  MODEL_PATH_FLASH = "Abilities\\Weapons\\FaerieDragonMissile\\FaerieDragonMissile.mdl"
