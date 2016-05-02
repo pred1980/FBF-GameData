@@ -731,6 +731,7 @@ scope TowerSystem
 			set BEING_UPGRADE_UNITS = NewGroup()
 			
 			call TimerStart(t, TIME_OUT, true, function RefreshGroup)
+			call TowerConfig.setBuildConfigLowTowers()
 			
             //Register Tower Events for Player 1-6
             loop

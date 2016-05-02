@@ -122,10 +122,16 @@ scope TowerBuildAI
      */
     struct TowerBuildConfig
         /**
-         * the buildings that can build. more unique tower is the chance higher that build at next
+         * the buildings that can build.
          * @var integer[]|array
          */
         private integer array buildings[100]
+        /**
+         * the building percents that can build.
+         * @var integer[]|array
+         */
+        private integer array buildingPercents[100]
+
         /**
          * the building position
          * @var integer
@@ -135,10 +141,12 @@ scope TowerBuildAI
         /**
          * add an building to the "can build"
          * @param integer building
+         * @param integer percent
          */
-        public method addBuilding takes integer building returns nothing
-            if .buildingPosition < 100 then
+        public method addBuilding takes integer building, integer percent returns nothing
+            if (.buildingPosition < 100) then
                 set .buildings[.buildingPosition] = building
+                set .buildingPercents[.buildingPosition] = percent
                 set .buildingPosition = .buildingPosition + 1
             endif
         endmethod
@@ -148,7 +156,19 @@ scope TowerBuildAI
          * @return integer
          */
         public method getRandomBuilding takes nothing returns integer
-            return .buildings[GetRandomInt(0, .buildingPosition - 1)]
+            local integer percentBuilding = GetRandomInt(0, 100)
+            local integer buildingPosition = 0
+            local integer building = -1
+            loop
+                if (percentBuilding <= .buildingPercents[buildingPosition]) then
+                    set building = .buildings[buildingPosition]
+                    set buildingPosition = .buildingPosition
+                endif
+                set buildingPosition = buildingPosition + 1
+                exitwhen buildingPosition >= .buildingPosition
+                set percentBuilding = percentBuilding - .buildingPercents[buildingPosition - 1]
+            endloop
+            return building
         endmethod
 
         /**
@@ -158,6 +178,7 @@ scope TowerBuildAI
             local integer building = 0
             loop
                 set .buildings[building] = 0
+                set .buildingPercents[building] = 0
                 set building = building + 1
                 exitwhen building >= .buildingPosition
             endloop
@@ -834,22 +855,24 @@ scope TowerBuildAI
             if (.isEnabled() and not .builded) then
                 if (.canBuild and playerLumber > .lumberCost and upgradeQueueCount < MAX_UPGRADE_QUEUE) then
                     set towerUnitId = .config.getRandomBuilding()
-                    set towerKey = .towers.getTowerKeyByUnitId(towerUnitId)
-                    loop
-                        set parentTowerKey = .towers.getParentTowerKey(towerKey)
-                        set lumber = .towers.getColumnValue(towerKey, .towers.columnWoodCost)
-                        exitwhen parentTowerKey < 0
-                        set towerUpgradeLumber = towerUpgradeLumber + lumber
-                        set towerKey = parentTowerKey
-                    endloop
-                    if (playerLumber >= lumber + .lumberCost and not .builded) then
-                    	set builded = .build(.towers.getColumnValue(towerKey, .towers.columnUnitId))
-                        if (builded and not .builded) then
-                            set .builded = builded
-                            set .lumberCost = .lumberCost + towerUpgradeLumber
-		                    if (towerUpgradeLumber > 0) then
-		                        call .addToUpgradeQueue(towerUnitId)
-		                    endif
+                    if (towerUnitId != -1) then
+                        set towerKey = .towers.getTowerKeyByUnitId(towerUnitId)
+                        loop
+                            set parentTowerKey = .towers.getParentTowerKey(towerKey)
+                            set lumber = .towers.getColumnValue(towerKey, .towers.columnWoodCost)
+                            exitwhen parentTowerKey < 0
+                            set towerUpgradeLumber = towerUpgradeLumber + lumber
+                            set towerKey = parentTowerKey
+                        endloop
+                        if (playerLumber >= lumber + .lumberCost and not .builded) then
+                            set builded = .build(.towers.getColumnValue(towerKey, .towers.columnUnitId))
+                            if (builded and not .builded) then
+                                set .builded = builded
+                                set .lumberCost = .lumberCost + towerUpgradeLumber
+                                if (towerUpgradeLumber > 0) then
+                                    call .addToUpgradeQueue(towerUnitId)
+                                endif
+                            endif
                         endif
                     endif
                 endif
