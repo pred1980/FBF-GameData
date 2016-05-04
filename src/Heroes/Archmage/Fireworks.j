@@ -2,22 +2,22 @@ scope Fireworks initializer init
     /*
      * Description: The Last Archmage casts his ultimate spell, a massive explosion of colourful sparks that damage 
                     and blind his enemies.
-     * Last Update: 04.12.2013
      * Changelog: 
-     *     04.12.2013: Abgleich mit OE und der Exceltabelle
-	 *     25.03.2015: Changed ATTACK_TYPE from Spells to Magic | Code refactoring
-	 *     26.03.2015: Integrated RegisterPlayerUnitEvent
+     *     	04.12.2013: Abgleich mit OE und der Exceltabelle
+	 *     	25.03.2015: Changed ATTACK_TYPE from Spells to Magic | Code refactoring
+	 *     	26.03.2015: Integrated RegisterPlayerUnitEvent
+	 *		03.05.2016: Changed ORDER_ID for AI System
      */
     globals
-        private constant integer SPELL_ID = 'A07K' //fireworks ability rawcode
-        private constant integer DUMMY_SPELL = 'A07L' //fireworks dummy ability rawcode
-        private constant string ORDER_ID = "dispel" //fireworks order string
+        private constant integer SPELL_ID = 'A07K'
+        private constant integer DUMMY_SPELL = 'A07L'
+        private constant string ORDER_ID = "roar"
         private constant string DUMMY_ORDER = "drunkenhaze"
-        private constant string FX = "Abilities\\Spells\\Human\\Flare\\FlareTarget.mdl" //spell effect
-        private constant real AOE = 175. //aoe for missiles
-        private constant real RAIN_AOE = 700. //rain radius
-        private constant real INTERVAL = 0.3 //how often new missiles are created
-        private constant real SCALE = 1.0 //missile scale
+        private constant string FX = "Abilities\\Spells\\Human\\Flare\\FlareTarget.mdl"
+        private constant real AOE = 175.
+        private constant real RAIN_AOE = 700.
+        private constant real INTERVAL = 0.3
+        private constant real SCALE = 1.0
 		
 		// Dealt damage configuration
         private constant attacktype ATTACK_TYPE = ATTACK_TYPE_MAGIC
@@ -110,7 +110,8 @@ scope Fireworks initializer init
         local real x = GetUnitX (f.caster) + dis * Cos ( rad )
         local real y = GetUnitY (f.caster) + dis * Sin ( rad )
         
-        if GetUnitCurrentOrder(f.caster) == OrderId(ORDER_ID) then //check the caster still casting or not
+		//check the caster still casting or not
+        if GetUnitCurrentOrder(f.caster) == OrderId(ORDER_ID) then 
             call f.createSparks(x,y)
         else
             call f.destroy()

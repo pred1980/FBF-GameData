@@ -1,3 +1,13 @@
+/* XE Libraries */
+//! import "src\Libraries\XE\xepreload.j"
+//! import "src\Libraries\XE\xebasic.j"
+//! import "src\Libraries\XE\xecast.j"
+//! import "src\Libraries\XE\xefx.j"
+//! import "src\Libraries\XE\xedamage.j"
+//! import "src\Libraries\XE\xecollider.j"
+//! import "src\Libraries\XE\xemissile.j"
+//! import "src\Libraries\XE\xedummy.j"
+
 /* Libraries */
 //! import "src\Libraries\InvulnerabilityDetector.j"
 //! import "src\Libraries\LocalEffects.j"
@@ -64,16 +74,6 @@
 //! import "src\Libraries\FieldOfView.j"
 //! import "src\Libraries\Escort.j"
 //! import "src\Libraries\WorldBounds.j"
-
-/* XE Libraries */
-//! import "src\Libraries\XE\xepreload.j"
-//! import "src\Libraries\XE\xebasic.j"
-//! import "src\Libraries\XE\xecast.j"
-//! import "src\Libraries\XE\xefx.j"
-//! import "src\Libraries\XE\xedamage.j"
-//! import "src\Libraries\XE\xecollider.j"
-//! import "src\Libraries\XE\xemissile.j"
-//! import "src\Libraries\XE\xedummy.j"
 
 /* Game Config */
 //! import "src\GameConfig\GameConfig.j"

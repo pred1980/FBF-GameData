@@ -3,12 +3,14 @@ scope TrappySwap initializer init
      * Description: Belenus uses his powerful magic to trick and enemys mind into attacking his peers, 
 	                the Archmages foes.
      * Changelog: 
-     *     29.11.2013: Abgleich mit OE und der Exceltabelle
-	 *     02.12.2013: Exceptionsfunktionalitaet eingebaut
-     *     04.12.2013: ManaCost-Event verbaut
-	 *     28.03.2014: Skorpione auf dem Friedhof können nicht mehr verwendet werden
-	 *     26.03.2015: Integrated RegisterPlayerUnitEvent
-     */
+     *     	29.11.2013: Abgleich mit OE und der Exceltabelle
+	 *     	02.12.2013: Exceptionsfunktionalitaet eingebaut
+     *     	04.12.2013: ManaCost-Event verbaut
+	 *     	28.03.2014: Skorpione auf dem Friedhof können nicht mehr verwendet werden
+	 *     	26.03.2015: Integrated RegisterPlayerUnitEvent
+     *		03.05.2016: Added Escort System for the new swaped unit
+						Added SpellHelper
+	 */
     globals
         private constant integer SPELL_ID = 'A07N'
         private constant integer DUMMY_SPELL_ID_1 = 'Avul' //Unverwundbar
@@ -112,7 +114,7 @@ scope TrappySwap initializer init
             local thistype this = GetTimerData(GetExpiredTimer())
             
             set this.time = this.time - INTERVAL
-            if IsUnitDead(this.caster) then
+            if (SpellHelper.isUnitDead(this.caster)) then
 				set this.hp = GetUnitState(this.dummy, UNIT_STATE_LIFE)
                 set this.mana = GetUnitState(this.dummy, UNIT_STATE_MANA)
                 call SetUnitState(this.target, UNIT_STATE_LIFE, this.hp)
@@ -126,7 +128,7 @@ scope TrappySwap initializer init
 				return
             endif
             
-            if IsUnitDead(this.dummy) then
+            if (SpellHelper.isUnitDead(this.dummy)) then
                 //call SetUnitPosition(this.target, this.x, this.y)
 				call SetUnitPosition(this.target, GetUnitX(this.dummy), GetUnitY(this.dummy))
                 call Stun_UnitEx(this.target, DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
@@ -144,6 +146,8 @@ scope TrappySwap initializer init
         
         static method onCreateCopiedUnit takes nothing returns nothing
             local thistype this = GetTimerData(GetExpiredTimer())
+			local player p = GetOwningPlayer(this.caster)
+			local integer pid = GetPlayerId(p)
             
 			// Copied Unit
             set this.dummy = CreateUnit(GetOwningPlayer(this.caster), GetUnitTypeId(this.target) , this.x2, this.y2, GetUnitFacing(this.caster))
@@ -157,6 +161,11 @@ scope TrappySwap initializer init
             call SetUnitState(this.dummy, UNIT_STATE_LIFE, GetUnitState(this.dummy, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
             call TDS.addDamage(this.dummy, START_DAMAGE + ( RoundSystem.actualRound * INCREASED_DAMAGE_PER_ROUND))
             
+			// add to Escort System (only for Bots)
+			if (Game.isBot[pid]) then
+				call Escort.addUnit(this.caster, this.dummy)
+			endif
+			
 			call ReleaseTimer(this.t)
 			set this.t = NewTimer()
             call SetTimerData(this.t , this )

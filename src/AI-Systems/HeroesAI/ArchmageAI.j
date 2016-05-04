@@ -16,31 +16,28 @@ scope ArchmageAI
 		private real HC_RADIUS = 900
 		private real HC_AOE = 250
 
-		/* XX */
-		private constant integer XX_SPELL_ID = 'XXXX'
-		private constant string XX_ORDER = "xxx"
-		private integer array XX_Chance
-		private real array XX_Cooldown
-		private timer XX_Timer		
+		/* Trappy Swap */
+		private constant integer TS_SPELL_ID = 'A07N'
+		private constant string TS_ORDER = "ambush"
+		private integer array TS_Chance
+		private real array TS_Cooldown
+		private timer TS_Timer
+		private real array TS_Min_HP		
 		
-		/* XY */
-		private constant integer XY_SPELL_ID = 'XYXY'
-		private constant string XY_ORDER = "xxx"
-		private integer array XY_Chance
-		private real array XY_Cooldown
-		private timer XY_Timer		
-
-		/* XZ */
-		private constant integer XZ_SPELL_ID = 'XZXZ'
-		private constant string XZ_ORDER = "xxx"
-		private integer array XZ_Chance
-		private real array XZ_Cooldown
-		private timer XZ_Timer
+		/* Fireworks */
+		private constant integer F_SPELL_ID = 'A07K'
+		private constant string F_ORDER = "roar"
+		// Check Fireworks.j -> RAIN_AOE
+		private constant real F_RADIUS = 700 
+		private integer array F_Chance
+		private real array F_Cooldown
+		private timer F_Timer
+		private integer array F_Min_Enemies
     endglobals
     
     private struct AI extends array
 	
-		private static method HC_Filter takes nothing returns boolean
+		private static method Archmage_Filter takes nothing returns boolean
 			return SpellHelper.isValidEnemy(GetFilterUnit(), tempthis.hero)
 		endmethod
         
@@ -59,7 +56,7 @@ scope ArchmageAI
 				set l = RandomPointCircle(GetUnitX(.hero), GetUnitY(.hero), HC_RADIUS) 
 				set x = GetLocationX(l)
 				set y = GetLocationY(l)
-				call GroupEnumUnitsInRange(enumGroup, x, y, HC_AOE, Filter(function thistype.HC_Filter))
+				call GroupEnumUnitsInRange(enumGroup, x, y, HC_AOE, Filter(function thistype.Archmage_Filter))
 			
 				if (CountUnitsInGroup(enumGroup) >= HC_Min_Enemies[.aiLevel]) then
 					set abilityCasted = IssuePointOrder(.hero, HC_ORDER, x, y)
@@ -79,34 +76,35 @@ scope ArchmageAI
 			return abilityCasted
 		endmethod
 		
-		private method doXX takes nothing returns boolean
+		private method doTrappySwap takes nothing returns boolean
 			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XX_SPELL_ID) - 1
+			local integer level = GetUnitAbilityLevel(.hero, TS_SPELL_ID) - 1
+			
+			if ((.closestEnemy != null) and /*
+			*/	(GetUnitLifePercent(.closestEnemy) >= TS_Min_HP[.aiLevel])) then
+				set abilityCasted = IssueTargetOrder(.hero, TS_ORDER, closestEnemy)
+			endif
 			
 			if (abilityCasted) then
-				call TimerStart(XX_Timer, XX_Cooldown[level], false, null)
+				call TimerStart(TS_Timer, TS_Cooldown[level], false, null)
 			endif
 			
 			return abilityCasted
 		endmethod
 		
-		private method doXY takes nothing returns boolean
+		private method doFireworks takes nothing returns boolean
 			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XY_SPELL_ID) - 1
+			local integer level = GetUnitAbilityLevel(.hero, F_SPELL_ID) - 1
 			
-			if (abilityCasted) then
-				call TimerStart(XY_Timer, XY_Cooldown[level], false, null)
+			call GroupClear(enumGroup)
+			call GroupEnumUnitsInRange(enumGroup, .hx, .hy, F_RADIUS, Filter(function thistype.Archmage_Filter))
+			
+			if (CountUnitsInGroup(enumGroup) >= F_Min_Enemies[.aiLevel]) then
+				set abilityCasted = IssueImmediateOrder(.hero, F_ORDER)
 			endif
 			
-			return abilityCasted
-		endmethod
-		
-		private method doXZ takes nothing returns boolean
-			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XZ_SPELL_ID) - 1
-			
 			if (abilityCasted) then
-				call TimerStart(XZ_Timer, XZ_Cooldown[level], false, null)
+				call TimerStart(F_Timer, F_Cooldown[level], false, null)
 			endif
 			
 			return abilityCasted
@@ -122,26 +120,19 @@ scope ArchmageAI
 					set abilityCasted = doHolyChains()
 				endif
 				
-				/* XX */
-				if ((GetRandomInt(0,100) <= XX_Chance[.aiLevel]) and /*
+				/* Trappy Swap */
+				if ((GetRandomInt(0,100) <= TS_Chance[.aiLevel]) and /*
 				*/ (not abilityCasted) and /*
-				*/ (TimerGetRemaining(XX_Timer) == 0.0)) then
-					set abilityCasted = doXX()
+				*/ (TimerGetRemaining(TS_Timer) == 0.0)) then
+					set abilityCasted = doTrappySwap()
 				endif
 				
-				/* XY */
-				if ((GetRandomInt(0,100) <= XY_Chance[.aiLevel]) and /*
-				*/ (not abilityCasted) and /*
-				*/ (TimerGetRemaining(XY_Timer) == 0.0)) then
-					set abilityCasted = doXY()
-				endif
-				
-				/* XZ */
+				/* Fireworks */
 				if ((.heroLevel >= 6) and /*
-				*/	(GetRandomInt(0,100) <= XZ_Chance[.aiLevel]) and /*
-				*/  (TimerGetRemaining(XZ_Timer) == 0.0) and /*
+				*/	(GetRandomInt(0,100) <= F_Chance[.aiLevel]) and /*
+				*/  (TimerGetRemaining(F_Timer) == 0.0) and /*
 				*/	(not abilityCasted)) then
-					set abilityCasted = doXZ()					
+					set abilityCasted = doFireworks()					
 				endif
 			endif
 
@@ -221,45 +212,42 @@ scope ArchmageAI
 			set HC_Min_Enemies[2] = 4
 			
 			set HC_Timer = NewTimer()
-			set HC_Cooldown[0] = 150.0
-			set HC_Cooldown[1] = 150.0
-			set HC_Cooldown[2] = 150.0
-			set HC_Cooldown[3] = 150.0
-			set HC_Cooldown[4] = 150.0
+			set HC_Cooldown[0] = 10.0
+			set HC_Cooldown[1] = 10.0
+			set HC_Cooldown[2] = 10.0
+			set HC_Cooldown[3] = 10.0
+			set HC_Cooldown[4] = 10.0
 			
-			// XX
-			set XX_Chance[0] = 10
-			set XX_Chance[1] = 20
-			set XX_Chance[2] = 20
+			// Trappy Swap
+			set TS_Chance[0] = 20
+			set TS_Chance[1] = 25
+			set TS_Chance[2] = 30
 			
-			set XX_Timer = NewTimer()
-			set XX_Cooldown[0] = 150.0
-			set XX_Cooldown[1] = 150.0
-			set XX_Cooldown[2] = 150.0
-			set XX_Cooldown[3] = 150.0
-			set XX_Cooldown[4] = 150.0
+			// Percent Value
+			set TS_Min_HP[0] = 80.
+			set TS_Min_HP[1] = 90.
+			set TS_Min_HP[2] = 100.
 			
-			// XY
-			set XY_Chance[0] = 10
-			set XY_Chance[1] = 20
-			set XY_Chance[2] = 20
+			set TS_Timer = NewTimer()
+			set TS_Cooldown[0] = 15.0
+			set TS_Cooldown[1] = 15.0
+			set TS_Cooldown[2] = 15.0
+			set TS_Cooldown[3] = 15.0
+			set TS_Cooldown[4] = 15.0
 			
-			set XY_Timer = NewTimer()
-			set XY_Cooldown[0] = 150.0
-			set XY_Cooldown[1] = 150.0
-			set XY_Cooldown[2] = 150.0
-			set XY_Cooldown[3] = 150.0
-			set XY_Cooldown[4] = 150.0
+			// Fireworks
+			set F_Chance[0] = 20
+			set F_Chance[1] = 25
+			set F_Chance[2] = 30
 			
-			// XZ
-			set XZ_Chance[0] = 10
-			set XZ_Chance[1] = 20
-			set XZ_Chance[2] = 20
+			set F_Min_Enemies[0] = 5
+			set F_Min_Enemies[1] = 7
+			set F_Min_Enemies[2] = 9
 			
-			set XZ_Timer = NewTimer()
-			set XZ_Cooldown[0] = 150.0
-			set XZ_Cooldown[1] = 150.0
-			set XZ_Cooldown[2] = 150.0
+			set F_Timer = NewTimer()
+			set F_Cooldown[0] = 105.0
+			set F_Cooldown[1] = 105.0
+			set F_Cooldown[2] = 105.0
         endmethod
         
         implement HeroAI     

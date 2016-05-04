@@ -5,7 +5,7 @@ scope HeroAI
 //==========================================================================================
 	globals
 		// The period in which the hero AI will do actions. A very low period can cause strain.
-		constant real DEFAULT_PERIOD = 1.7
+		constant real DEFAULT_PERIOD = 1.75
 		// Determines how the hero looks for items and units.
 		public constant real SIGHT_RANGE = 1500.
 		// The random amount of distance the hero will move
@@ -363,8 +363,6 @@ scope HeroAI
 			set .moveX = GetUnitX(t)
 			set .moveY = GetUnitY(t)
 			
-			call PingMinimap(.moveX, .moveY, 1.5)
-			
 			set t = null
 		endmethod
 		
@@ -545,8 +543,14 @@ scope HeroAI
 						// REMOVE later from AI: 
 						//		Ghoul 
 						//		Crypt Lord (Metamorphosis)
-						set .moveX = -6535.1
-						set .moveY = 2039.7
+						
+						if (GetUnitRace(.hero) == RACE_UNDEAD) then
+							set .moveX = -6535.1
+							set .moveY = 2039.7
+						else
+							set .moveX = -5204.3
+							set .moveY = 1387.0
+						endif
 						call .move()
 					endif
 				endif

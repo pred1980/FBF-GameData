@@ -42,6 +42,12 @@ scope RoundEndSystem
 		private static method onDummyAbilityEnd takes nothing returns nothing
 			local timer t = GetExpiredTimer()
 			local Data data = GetTimerData(t)
+			local player p = GetOwningPlayer(data.u)
+			local integer pid = GetPlayerId(p)
+			
+			if (Game.isBot[pid]) then
+				call SpellHelper.unpauseUnit(data.u)
+			endif
 			
 			call GroupRemoveUnit(.teleportGroup, data.u)
 			call ReleaseTimer(t)
