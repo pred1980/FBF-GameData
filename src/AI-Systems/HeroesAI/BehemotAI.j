@@ -29,7 +29,6 @@ scope BehemotAI
 		
 		/* Adrenalin Rush */
 		private constant string AR_ORDER = "avatar"
-		// Let's use a value that represents natural human field of view: ~135°  (2*67.5)
 		private constant real VISION_FIELD = 10  
 		// This Radius is just for the AI
 		private constant integer AR_RADIUS = 750

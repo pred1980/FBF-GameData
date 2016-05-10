@@ -339,7 +339,7 @@ scope HeroPickInit
         set HERO_REPICK_RECT[13][1] = GetRectCenterY(gg_rct_HeroRevive15)
         set HERO_ABILITIES[13][0] = 'A078' //Fire Totem
         set HERO_ABILITIES[13][1] = 'A079' //Stomp Blaster
-        set HERO_ABILITIES[13][2] = 'A07A' //Fervor
+        set HERO_ABILITIES[13][2] = 'A08M' //Fervor
         set HERO_ABILITIES[13][3] = 'A07C' //Shockwave
         
         //Priestess of the Moon
