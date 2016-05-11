@@ -346,7 +346,7 @@ scope HeroPickInit
         set HERO_PICK_RECT[14]  = gg_rct_HeroPick16
         set HERO_REPICK_RECT[14][0] = GetRectCenterX(gg_rct_HeroRevive16)
         set HERO_REPICK_RECT[14][1] = GetRectCenterY(gg_rct_HeroRevive16)
-        set HERO_ABILITIES[14][0] = 'A07E' //Life Vortex
+        set HERO_ABILITIES[14][0] = 'A0B5' //Life Vortex
         set HERO_ABILITIES[14][1] = 'A07F' //Moon Light
         set HERO_ABILITIES[14][2] = 'A07G' //Night Aura
         set HERO_ABILITIES[14][3] = 'A07H' //Revenge Owl

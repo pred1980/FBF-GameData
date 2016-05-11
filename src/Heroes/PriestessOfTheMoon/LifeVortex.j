@@ -12,7 +12,7 @@ scope LifeVortex initializer init
      *
      */
     globals
-        private constant integer SPELL_ID = 'A07E'
+        private constant integer SPELL_ID = 'A0B5'
         private constant integer RADIUS = 300
         private constant string EFFECT_LOC = "Abilities\\Spells\\Items\\AItb\\AItbTarget.mdl"
         
