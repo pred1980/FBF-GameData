@@ -9,7 +9,7 @@ scope Moonlight initializer init
      *
      */
     globals
-        private constant integer SPELL_ID = 'A07F'
+        private constant integer SPELL_ID = 'A07E'
         private constant integer DUMMY_ID = 'h017'
         private constant integer DUMMY_SPELL_ID = 'S000'
         

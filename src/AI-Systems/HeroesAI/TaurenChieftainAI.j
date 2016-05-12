@@ -33,7 +33,7 @@ scope TaurenChieftainAI
 		private integer array F_Min_Allies
 
 		/* Shockwave */
-		private constant integer S_SPELL_ID = 'XZXZ'
+		private constant integer S_SPELL_ID = 'A07C'
 		private constant string S_ORDER = "blizzard"
 		private constant real S_VISION_FIELD = 12
 		private constant real S_DISTANCE = 800		

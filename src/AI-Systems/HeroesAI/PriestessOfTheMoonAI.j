@@ -16,12 +16,15 @@ scope PriestessOfTheMoonAI
 		private real LV_RADIUS = 700
 		private real LV_AOE = 300
 
-		/* XX */
-		private constant integer XX_SPELL_ID = 'XXXX'
-		private constant string XX_ORDER = "xxx"
-		private integer array XX_Chance
-		private real array XX_Cooldown
-		private timer XX_Timer		
+		/* Moonlight */
+		private constant integer M_SPELL_ID = 'A07E'
+		private constant string M_ORDER = "blizzard"
+		private integer array M_Chance
+		private real array M_Cooldown
+		private timer M_Timer		
+		private real M_RADIUS = 600
+		private integer array M_Min_Allies
+		private integer array M_Min_Enemies
 		
 		/* XY */
 		private constant integer XY_SPELL_ID = 'XYXY'
@@ -42,6 +45,10 @@ scope PriestessOfTheMoonAI
 	
 		private static method PotM_Filter takes nothing returns boolean
 			return SpellHelper.isValidEnemy(GetFilterUnit(), tempthis.hero)
+		endmethod
+		
+		private static method Moonlight_Filter takes nothing returns boolean
+			return SpellHelper.isValidAlly(GetFilterUnit(), tempthis.hero)
 		endmethod
         
 		private method doLifeVortex takes nothing returns boolean
@@ -79,12 +86,24 @@ scope PriestessOfTheMoonAI
 			return abilityCasted
 		endmethod
 		
-		private method doXX takes nothing returns boolean
+		private method doMoonlight takes nothing returns boolean
 			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XX_SPELL_ID) - 1
+			local integer level = GetUnitAbilityLevel(.hero, M_SPELL_ID) - 1
+			
+			// Allies
+			call GroupClear(enumGroup)
+			call GroupEnumUnitsInRange(enumGroup, .hx, .hy, M_RADIUS, Filter(function thistype.Moonlight_Filter))
+			// Enemies
+			call GroupClear(ENUM_GROUP)
+			call GroupEnumUnitsInRange(ENUM_GROUP, .hx, .hy, M_RADIUS, Filter(function thistype.PotM_Filter))
+			
+			if ((CountUnitsInGroup(enumGroup) >= M_Min_Allies[.aiLevel]) and /*
+			*/	(CountUnitsInGroup(ENUM_GROUP) >= M_Min_Enemies[.aiLevel])) then
+				set abilityCasted = IssuePointOrder(.hero, M_ORDER, .hx, .hy)
+			endif
 			
 			if (abilityCasted) then
-				call TimerStart(XX_Timer, XX_Cooldown[level], false, null)
+				call TimerStart(M_Timer, M_Cooldown[level], false, null)
 			endif
 			
 			return abilityCasted
@@ -122,11 +141,11 @@ scope PriestessOfTheMoonAI
 					set abilityCasted = doLifeVortex()
 				endif
 				
-				/* XX */
-				if ((GetRandomInt(0,100) <= XX_Chance[.aiLevel]) and /*
+				/* Moonlight */
+				if ((GetRandomInt(0,100) <= M_Chance[.aiLevel]) and /*
 				*/ (not abilityCasted) and /*
-				*/ (TimerGetRemaining(XX_Timer) == 0.0)) then
-					set abilityCasted = doXX()
+				*/ (TimerGetRemaining(M_Timer) == 0.0)) then
+					set abilityCasted = doMoonlight()
 				endif
 				
 				/* XY */
@@ -160,11 +179,11 @@ scope PriestessOfTheMoonAI
 			call RegisterHeroAISkill(HERO_ID, 13, 'A0B5') 
 			call RegisterHeroAISkill(HERO_ID, 16, 'A0B5') 
 			// Moon Light
-			call RegisterHeroAISkill(HERO_ID, 2, 'A07F') 
-			call RegisterHeroAISkill(HERO_ID, 7, 'A07F') 
-			call RegisterHeroAISkill(HERO_ID, 10, 'A07F') 
-			call RegisterHeroAISkill(HERO_ID, 14, 'A07F') 
-			call RegisterHeroAISkill(HERO_ID, 17, 'A07F') 
+			call RegisterHeroAISkill(HERO_ID, 2, 'A07E') 
+			call RegisterHeroAISkill(HERO_ID, 7, 'A07E') 
+			call RegisterHeroAISkill(HERO_ID, 10, 'A07E') 
+			call RegisterHeroAISkill(HERO_ID, 14, 'A07E') 
+			call RegisterHeroAISkill(HERO_ID, 17, 'A07E') 
 			// Night Aura
 			call RegisterHeroAISkill(HERO_ID, 3, 'A07G') 
 			call RegisterHeroAISkill(HERO_ID, 8, 'A07G') 
@@ -207,7 +226,7 @@ scope PriestessOfTheMoonAI
 			
 			/* Ability Setup */
 			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
-			// XW
+			// Life Vortex
 			set LV_Chance[0] = 10
 			set LV_Chance[1] = 20
 			set LV_Chance[2] = 30
@@ -227,17 +246,25 @@ scope PriestessOfTheMoonAI
 			set LV_Cooldown[3] = 12.0
 			set LV_Cooldown[4] = 12.0
 			
-			// XX
-			set XX_Chance[0] = 10
-			set XX_Chance[1] = 20
-			set XX_Chance[2] = 20
+			// Moonlight
+			set M_Chance[0] = 10
+			set M_Chance[1] = 20
+			set M_Chance[2] = 30
 			
-			set XX_Timer = NewTimer()
-			set XX_Cooldown[0] = 150.0
-			set XX_Cooldown[1] = 150.0
-			set XX_Cooldown[2] = 150.0
-			set XX_Cooldown[3] = 150.0
-			set XX_Cooldown[4] = 150.0
+			set M_Min_Allies[0] = 5
+			set M_Min_Allies[1] = 7
+			set M_Min_Allies[2] = 9
+			
+			set M_Min_Enemies[0] = 4
+			set M_Min_Enemies[1] = 6
+			set M_Min_Enemies[2] = 8
+			
+			set M_Timer = NewTimer()
+			set M_Cooldown[0] = 30.0
+			set M_Cooldown[1] = 30.0
+			set M_Cooldown[2] = 30.0
+			set M_Cooldown[3] = 30.0
+			set M_Cooldown[4] = 30.0
 			
 			// XY
 			set XY_Chance[0] = 10
