@@ -9,7 +9,7 @@ scope RevengeOwl initializer Init
      */    
      globals 
         //Settings for the Owl
-        private constant integer SPELL_ID = 'A07H'
+        private constant integer SPELL_ID = 'A07F'
         private constant integer OWL_ID = 'h00T' //rawcode of the owl
         private constant real FADE_TIME = 0.3  //the amount of time the owl will take to fade in
         private constant real DIVE_TIME = 0.7   //the time the owl will take into diving in and out

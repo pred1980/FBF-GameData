@@ -25,20 +25,16 @@ scope PriestessOfTheMoonAI
 		private real M_RADIUS = 600
 		private integer array M_Min_Allies
 		private integer array M_Min_Enemies
-		
-		/* XY */
-		private constant integer XY_SPELL_ID = 'XYXY'
-		private constant string XY_ORDER = "xxx"
-		private integer array XY_Chance
-		private real array XY_Cooldown
-		private timer XY_Timer		
 
-		/* XZ */
-		private constant integer XZ_SPELL_ID = 'XZXZ'
-		private constant string XZ_ORDER = "xxx"
-		private integer array XZ_Chance
-		private real array XZ_Cooldown
-		private timer XZ_Timer
+		/* Revenge Owl */
+		private constant integer RO_SPELL_ID = 'A07F'
+		private constant string RO_ORDER = "dispel"
+		private constant real RO_VISION_FIELD = 15
+		private constant real RO_DISTANCE = 700
+		private integer array RO_Chance
+		private real array RO_Cooldown
+		private timer RO_Timer
+		private integer array RO_Min_Enemies
     endglobals
     
     private struct AI extends array
@@ -109,24 +105,42 @@ scope PriestessOfTheMoonAI
 			return abilityCasted
 		endmethod
 		
-		private method doXY takes nothing returns boolean
+		private method doRevengeOwl takes nothing returns boolean
 			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XY_SPELL_ID) - 1
+			local integer level = GetUnitAbilityLevel(.hero, RO_SPELL_ID) - 1
+			local integer enemiesInSight = 0
+			local unit u
 			
+			call GroupClear(enumGroup)
+			call GroupAddGroup(.enemies, enumGroup)
+			set .furthestEnemy = null
+			loop
+				set u = FirstOfGroup(enumGroup) 
+				exitwhen u == null 
+				if ((Distance(.hx, .hy, GetUnitX(u), GetUnitY(u)) <= RO_DISTANCE) and /*
+				*/	(IsUnitInSightOfUnit(.hero, u, RO_VISION_FIELD))) then
+					set enemiesInSight = enemiesInSight + 1
+					
+					if (.furthestEnemy == null) then
+						set .furthestEnemy = u
+					endif
+					
+					if (Distance(.hx, .hy, GetUnitX(u), GetUnitY(u)) > Distance(.hx, .hy, GetUnitX(.furthestEnemy), GetUnitY(.furthestEnemy))) then
+						set .furthestEnemy = u
+					endif
+				endif
+				call GroupRemoveUnit(enumGroup, u)
+			endloop
+
+			if (enemiesInSight >= RO_Min_Enemies[.aiLevel]) then
+				set abilityCasted = IssuePointOrder(.hero, RO_ORDER, GetUnitX(.furthestEnemy), GetUnitY(.furthestEnemy))
+			endif
+
 			if (abilityCasted) then
-				call TimerStart(XY_Timer, XY_Cooldown[level], false, null)
+				call TimerStart(RO_Timer, RO_Cooldown[level], false, null)
 			endif
 			
-			return abilityCasted
-		endmethod
-		
-		private method doXZ takes nothing returns boolean
-			local boolean abilityCasted = false
-			local integer level = GetUnitAbilityLevel(.hero, XZ_SPELL_ID) - 1
-			
-			if (abilityCasted) then
-				call TimerStart(XZ_Timer, XZ_Cooldown[level], false, null)
-			endif
+			set u = null
 			
 			return abilityCasted
 		endmethod
@@ -135,7 +149,7 @@ scope PriestessOfTheMoonAI
             local boolean abilityCasted = false
 			
 			if (.enemyNum > 0) then
-				/* XW */
+				/* Life Vortex */
 				if 	((GetRandomInt(0,100) <= LV_Chance[.aiLevel]) and /*
 				*/	(TimerGetRemaining(LV_Timer) == 0.0)) then
 					set abilityCasted = doLifeVortex()
@@ -148,19 +162,12 @@ scope PriestessOfTheMoonAI
 					set abilityCasted = doMoonlight()
 				endif
 				
-				/* XY */
-				if ((GetRandomInt(0,100) <= XY_Chance[.aiLevel]) and /*
-				*/ (not abilityCasted) and /*
-				*/ (TimerGetRemaining(XY_Timer) == 0.0)) then
-					set abilityCasted = doXY()
-				endif
-				
-				/* XZ */
+				/* Revenge Owl */
 				if ((.heroLevel >= 6) and /*
-				*/	(GetRandomInt(0,100) <= XZ_Chance[.aiLevel]) and /*
-				*/  (TimerGetRemaining(XZ_Timer) == 0.0) and /*
+				*/	(GetRandomInt(0,100) <= RO_Chance[.aiLevel]) and /*
+				*/  (TimerGetRemaining(RO_Timer) == 0.0) and /*
 				*/	(not abilityCasted)) then
-					set abilityCasted = doXZ()					
+					set abilityCasted = doRevengeOwl()					
 				endif
 			endif
 
@@ -191,9 +198,9 @@ scope PriestessOfTheMoonAI
 			call RegisterHeroAISkill(HERO_ID, 15, 'A07G') 
 			call RegisterHeroAISkill(HERO_ID, 19, 'A07G') 
 			// Revenge Owl
-			call RegisterHeroAISkill(HERO_ID, 6, 'A07H')
-			call RegisterHeroAISkill(HERO_ID, 12, 'A07H')
-			call RegisterHeroAISkill(HERO_ID, 18, 'A07H')
+			call RegisterHeroAISkill(HERO_ID, 6, 'A07F')
+			call RegisterHeroAISkill(HERO_ID, 12, 'A07F')
+			call RegisterHeroAISkill(HERO_ID, 18, 'A07F')
 			//Heroes Will
 			call RegisterHeroAISkill(HERO_ID, 4, 'A021')
 			
@@ -227,9 +234,9 @@ scope PriestessOfTheMoonAI
 			/* Ability Setup */
 			// Note: 0 == Computer easy (max. 60%) | 1 == Computer normal (max. 80%) | 2 == Computer insane (max. 100%)
 			// Life Vortex
-			set LV_Chance[0] = 10
+			set LV_Chance[0] = 15
 			set LV_Chance[1] = 20
-			set LV_Chance[2] = 30
+			set LV_Chance[2] = 25
 			
 			set LV_Max_Random_Loc[0] = 5
 			set LV_Max_Random_Loc[1] = 7
@@ -247,9 +254,9 @@ scope PriestessOfTheMoonAI
 			set LV_Cooldown[4] = 12.0
 			
 			// Moonlight
-			set M_Chance[0] = 10
-			set M_Chance[1] = 20
-			set M_Chance[2] = 30
+			set M_Chance[0] = 25
+			set M_Chance[1] = 30
+			set M_Chance[2] = 40
 			
 			set M_Min_Allies[0] = 5
 			set M_Min_Allies[1] = 7
@@ -266,27 +273,19 @@ scope PriestessOfTheMoonAI
 			set M_Cooldown[3] = 30.0
 			set M_Cooldown[4] = 30.0
 			
-			// XY
-			set XY_Chance[0] = 10
-			set XY_Chance[1] = 20
-			set XY_Chance[2] = 20
+			// Revenge Owl
+			set RO_Chance[0] = 20
+			set RO_Chance[1] = 30
+			set RO_Chance[2] = 35
 			
-			set XY_Timer = NewTimer()
-			set XY_Cooldown[0] = 150.0
-			set XY_Cooldown[1] = 150.0
-			set XY_Cooldown[2] = 150.0
-			set XY_Cooldown[3] = 150.0
-			set XY_Cooldown[4] = 150.0
+			set RO_Min_Enemies[0] = 3
+			set RO_Min_Enemies[1] = 5
+			set RO_Min_Enemies[2] = 7
 			
-			// XZ
-			set XZ_Chance[0] = 10
-			set XZ_Chance[1] = 20
-			set XZ_Chance[2] = 20
-			
-			set XZ_Timer = NewTimer()
-			set XZ_Cooldown[0] = 150.0
-			set XZ_Cooldown[1] = 150.0
-			set XZ_Cooldown[2] = 150.0
+			set RO_Timer = NewTimer()
+			set RO_Cooldown[0] = 135.0
+			set RO_Cooldown[1] = 145.0
+			set RO_Cooldown[2] = 155.0
         endmethod
         
         implement HeroAI     

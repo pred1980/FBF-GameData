@@ -335,7 +335,7 @@ scope HeroAI
 					call GroupAddUnit(tempthis.shops, u)
                     set tempthis.shopNum = tempthis.shopNum + 1
 				elseif (SpellHelper.isUnitDead(u)) then
-					//call BJDebugMsg(GetUnitName(u) + " is a Shop!")
+					//call BJDebugMsg(GetUnitName(u) + " is a dead unit!")
 					call GroupAddUnit(tempthis.deads, u)
 				else
 					//call BJDebugMsg(GetUnitName(u) + " is actualy not defined!")

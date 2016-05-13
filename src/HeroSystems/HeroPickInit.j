@@ -349,7 +349,7 @@ scope HeroPickInit
         set HERO_ABILITIES[14][0] = 'A0B5' //Life Vortex
         set HERO_ABILITIES[14][1] = 'A07E' //Moon Light
         set HERO_ABILITIES[14][2] = 'A07G' //Night Aura
-        set HERO_ABILITIES[14][3] = 'A07H' //Revenge Owl
+        set HERO_ABILITIES[14][3] = 'A07F' //Revenge Owl
         
         //Naga Matriarch
         set HERO_PICK_RECT[15]  = gg_rct_HeroPick17
