@@ -127,6 +127,7 @@ scope HeroAI
 	module HeroAI
 		unit hero
     	player owner
+		race playerRace
 		private integer pid
         private integer hId
 		integer aiLevel
@@ -450,7 +451,7 @@ scope HeroAI
 				set .gold = .gold - it.goldCost
             endif
             
-			call UnitAddItemById(.hero, it.id)		
+			call UnitAddItemById(.hero, it.id)
         endmethod
 		
 		private method canBuyItem takes Item it returns boolean
@@ -700,6 +701,7 @@ scope HeroAI
 			
 			set .hero = hero
             set .owner = GetOwningPlayer(.hero)
+			set .playerRace = GetPlayerRace(.owner)
 			set .pid = GetPlayerId(.owner)
             set .hId = GetHandleId(.hero)
 			set .aiLevel = Game.getAIDifficulty(.pid)

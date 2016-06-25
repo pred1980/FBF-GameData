@@ -355,7 +355,7 @@ scope HeroPickInit
         set HERO_PICK_RECT[15]  = gg_rct_HeroPick17
         set HERO_REPICK_RECT[15][0] = GetRectCenterX(gg_rct_HeroRevive17)
         set HERO_REPICK_RECT[15][1] = GetRectCenterY(gg_rct_HeroRevive17)
-        set HERO_ABILITIES[15][0] = 'A07O' //Tidal Shield
+        set HERO_ABILITIES[15][0] = 'A0B7' //Tidal Shield
         set HERO_ABILITIES[15][1] = 'A07P' //Impaling Spine
         set HERO_ABILITIES[15][2] = 'A07R' //Crushing Wave
         set HERO_ABILITIES[15][3] = 'A07S' //Maelstrom
