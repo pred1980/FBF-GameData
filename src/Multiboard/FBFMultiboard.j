@@ -120,7 +120,7 @@ scope FBFMultiboard
             set .board[0][6].text = "D" //Deaths
             set .board[0][7].text = "A" //Assists
             set .board[0][8].text = "Status" //Status (alive or dead)
-			set .board[0][9].text = "Iems" //Items
+			set .board[0][9].text = "Items" //Items
             
             loop
                 exitwhen k > 7

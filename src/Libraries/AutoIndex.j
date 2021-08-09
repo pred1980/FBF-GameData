@@ -266,7 +266,7 @@ library AutoIndex
 // Configuration:
 //================
 
-//! external ObjectMerger w3a Adef lvdt anam "Leave Detect" aart "" arac 0
+// ! external ObjectMerger w3a Adef lvdt anam "Leave Detect" aart "" arac 0
 //Save your map with this Object Merger call enabled, then close and reopen your
 //map. Disable it by removing the exclamation to remove the delay while saving.
 

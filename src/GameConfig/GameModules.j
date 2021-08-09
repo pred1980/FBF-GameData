@@ -89,6 +89,12 @@ scope GameModules
 			
 			// Regional Fog (Graveyard)
 			//Game.initRegionalFog()
+			
+			//Item System
+			call UnitInventory.initialize()
+			call ItemShops.initialize()
+			call Item.initialize()
+			call Items.initialize()
 		endmethod
 	
 	endstruct

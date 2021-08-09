@@ -275,7 +275,7 @@ endglobals
     
     // The following is a lua script for the ObjectMerger, used to generate abilities
     //*
-    //! externalblock extension=lua ObjectMerger $FILENAME$
+    // ! externalblock extension=lua ObjectMerger $FILENAME$
     //! i if "$SHOULD_GENERATE_ABILITIES$" == "true" then
     //! i function FormatName(name)
     //! i     name = string.lower(name)
@@ -357,7 +357,7 @@ endglobals
 //! textmacro BonusMod_EndBonuses
     //*
     //! i end
-    //! endexternalblock
+    // ! endexternalblock
     // */
     
     endfunction

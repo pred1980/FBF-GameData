@@ -143,7 +143,7 @@ library DamageModifiers initializer Init requires Table, optional AbilityPreload
     // should be there, after that you can disable the objectmerget call to speed up
     // the map saving process in the future.
     // (To disable the call, delete the "!" so it turns from a command into a comment.)
-    //! external ObjectMerger w3a AIl1 DMsa anam "LifeBonus" ansf "(DamageModifiers)" Ilif 1 100000 aite 0
+    // ! external ObjectMerger w3a AIl1 DMsa anam "LifeBonus" ansf "(DamageModifiers)" Ilif 1 100000 aite 0
 
     // This interface is included in the calibration section
     // for user reference only and should not be changed in any way.

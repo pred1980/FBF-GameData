@@ -118,7 +118,7 @@ library UnitMaxState initializer Initialize requires optional AbilityPreload, op
 
 //! textmacro UnitMaxState_Configuration takes LOAD_ABILITIES, ABILITY_COUNT, LIFE_PREFIX, MANA_PREFIX
     //*
-    //! externalblock extension=lua ObjectMerger $FILENAME$
+    // ! externalblock extension=lua ObjectMerger $FILENAME$
     //! i function CreateAbilities(baseAbility, rawcodePrefix, field, name, icon)
     //! i     k = 0
     //! i     for sign = -1, 1, 2 do
@@ -150,7 +150,7 @@ library UnitMaxState initializer Initialize requires optional AbilityPreload, op
     //! i     CreateAbilities("AIlf", "$LIFE_PREFIX$", "Ilif", "Life", "BTNHealthStone.blp")
     //! i     CreateAbilities("AImz", "$MANA_PREFIX$", "Iman", "Mana", "BTNManaStone.blp")
     //! i end
-    //! endexternalblock
+    // ! endexternalblock
     // */
     
     globals
