@@ -19,7 +19,7 @@ scope BroodMotherSystem initializer init
         //Brood Mother
         private constant integer HP = 20000
         private constant integer DAMAGE = 550
-        private constant real LAYING_TIME = 360.0 //Wann legt die Brood Mother ein neues Ei?
+        private constant real LAYING_TIME = 300.0 //Wann legt die Brood Mother ein neues Ei?
         private constant real TARGET_TOLERANCE = 192.
 		
         //Egg

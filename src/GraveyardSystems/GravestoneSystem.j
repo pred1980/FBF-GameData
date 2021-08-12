@@ -32,8 +32,8 @@ scope GravestoneSystem
         private integer array ZOMBIE_START_DAMAGE
         
         //Diese Faktoren beschreibt die Erhöhung der HP/Damage Werte je nach Spieleranzahl
-        private constant real HP_FACTOR = 0.5
-        private constant real DAMAGE_FACTOR = 0.75
+        private constant real HP_FACTOR = 0.15
+        private constant real DAMAGE_FACTOR = 0.20
         
 		private integer counter = 0
 	endglobals
