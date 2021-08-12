@@ -112,55 +112,57 @@ scope FBFMultiboard
             local integer i = 0
             local integer k = 2
             
-            //columns
-            set .board[0][2].text = "L" //Level
-            set .board[0][3].text = "HK" //Hero Kills
-            set .board[0][4].text = "CK" //Creep Kills
+            //columns descriptions
+			set .board[0][2].text = "L" //Level
+			set .board[0][3].text = "HK" //Hero Kills
+			set .board[0][4].text = "CK" //Creep Kills
 			set .board[0][5].text = "TK" //Tower Kills
-            set .board[0][6].text = "D" //Deaths
-            set .board[0][7].text = "A" //Assists
-            set .board[0][8].text = "Status" //Status (alive or dead)
+			set .board[0][6].text = "D" //Deaths
+			set .board[0][7].text = "A" //Assists
+			set .board[0][8].text = "Status" //Status (alive or dead)
 			set .board[0][9].text = "Items" //Items
-            
-            loop
-                exitwhen k > 7
-                loop
-                    exitwhen i >= bj_MAX_PLAYERS
-                    if Game.isPlayerInGame(i) then
-                        set .board[PLAYER_IDS_2_ROW[i]][k].text = I2S(0)
-                    endif
-                    set i = i + 1
-                endloop
-                set k = k + 1
-                set i = 0
-            endloop
-            
-            //columns widths
-            set .board.column[0].width = .015 // Hero Icon
-            set .board.column[1].width = .07 // Hero Name
-            set .board.column[2].width = .02  // Level
-            set .board.column[3].width = .02  // Hero Kills
-            set .board.column[4].width = .02  // Unit Kills
-			set .board.column[5].width = .02  // Tower Kills
-            set .board.column[6].width = .02  // Deaths
-            set .board.column[7].width = .02  // Assists
-            set .board.column[8].width = .04  // Status
 			
-			set .board.column[9].width = .015  // Item 1
-			set .board.column[10].width = .015 // Item 2
-			set .board.column[11].width = .015 // Item 3
-			set .board.column[12].width = .015 // Item 4
-			set .board.column[13].width = .015 // Item 5
-			set .board.column[14].width = .015 // Item 6
+			//columns widths
+			set .board.column[0].width = 0.015 // Hero Icon
+			set .board.column[1].width = 0.10 // Hero Name
+			set .board.column[2].width = 0.03  // Level
+			set .board.column[3].width = 0.03  // Hero Kills
+			set .board.column[4].width = 0.03  // Unit Kills
+			set .board.column[5].width = 0.03  // Tower Kills
+			set .board.column[6].width = 0.03  // Deaths
+			set .board.column[7].width = 0.03  // Assists
+			set .board.column[8].width = 0.04  // Status
+
+			set .board.column[9].width = 0.015  // Item 1
+			set .board.column[10].width = 0.015 // Item 2
+			set .board.column[11].width = 0.015 // Item 3
+			set .board.column[12].width = 0.015 // Item 4
+			set .board.column[13].width = 0.015 // Item 5
+			set .board.column[14].width = 0.015 // Item 6
 			
-            //special widths
-            set .board[0][1].width = .07
-            set .board[1][0].width = .07
-            set .board[9][0].width = .04
-            set .board[17][0].width = .07
-            set .board[18][0].width = .07
-            set .board[19][0].width = .07
-			set .board[20][0].width = .07   
+			loop
+				exitwhen k > 7
+				loop
+					exitwhen i >= bj_MAX_PLAYERS
+					if Game.isPlayerInGame(i) then
+						set .board[PLAYER_IDS_2_ROW[i]][k].text = I2S(0)
+						set .board[PLAYER_IDS_2_ROW[i]][k].width = 0.03
+					endif
+					set i = i + 1
+				endloop
+				set k = k + 1
+				set i = 0
+			endloop
+			
+			//special widths
+			set .board[0][1].width = 0.10
+			set .board[1][0].width = 0.07
+			set .board[9][0].width = 0.07
+			set .board[17][0].width = 0.07
+			set .board[18][0].width = 0.07
+			set .board[19][0].width = 0.07
+			set .board[20][0].width = 0.10
+			
         endmethod
         
         private static method initMisc takes nothing returns nothing
@@ -271,34 +273,34 @@ scope FBFMultiboard
         endmethod
         
         static method onUpdateHeroLevel takes integer pid, unit hero returns nothing
-			set .board[PLAYER_IDS_2_ROW[pid]][2].text = "  " + I2S(GetHeroLevel(hero))
+			set .board[PLAYER_IDS_2_ROW[pid]][2].text = I2S(GetHeroLevel(hero))
         endmethod
         
         static method onUpdateHeroKills takes integer pid returns nothing
             local integer phyKills = KillCounter.getPlayerHeroKills(Player(pid), PHYSICAL, ALL_ROUNDS)
             local integer spellKills = KillCounter.getPlayerHeroKills(Player(pid), SPELL, ALL_ROUNDS)
-            set .board[PLAYER_IDS_2_ROW[pid]][3].text = "    " + I2S(phyKills + spellKills)
+            set .board[PLAYER_IDS_2_ROW[pid]][3].text = I2S(phyKills + spellKills)
         endmethod
         
         static method onUpdateUnitKills takes integer pid returns nothing
 			local integer phyKills = KillCounter.getPlayerUnitKills(Player(pid), PHYSICAL, ALL_ROUNDS)
             local integer spellKills = KillCounter.getPlayerUnitKills(Player(pid), SPELL, ALL_ROUNDS)
 			local integer towerKills = KillCounter.getPlayerTowerKills(Player(pid), PHYSICAL, ALL_ROUNDS)
-			set .board[PLAYER_IDS_2_ROW[pid]][4].text = "   " + I2S((phyKills + spellKills) - towerKills)
+			set .board[PLAYER_IDS_2_ROW[pid]][4].text = I2S((phyKills + spellKills) - towerKills)
         endmethod
 		
 		static method onUpdateTowerKills takes integer pid returns nothing
 			local integer towerKills = KillCounter.getPlayerTowerKills(Player(pid), PHYSICAL, ALL_ROUNDS)
-			set .board[PLAYER_IDS_2_ROW[pid]][5].text = "   " + I2S(towerKills)
+			set .board[PLAYER_IDS_2_ROW[pid]][5].text = I2S(towerKills)
         endmethod
         
         static method onUpdateDeaths takes integer pid returns nothing
             local integer deaths = PlayerStats.getPlayerAllDeaths(Player(pid))
-            set .board[PLAYER_IDS_2_ROW[pid]][6].text = "  " + I2S(deaths)
+            set .board[PLAYER_IDS_2_ROW[pid]][6].text = I2S(deaths)
         endmethod
         
         static method onUpdateAssits takes integer pid returns nothing
-            set .board[PLAYER_IDS_2_ROW[pid]][7].text = "  " + I2S(AssistSystem.getAssistCount(Player(pid)))
+            set .board[PLAYER_IDS_2_ROW[pid]][7].text = I2S(AssistSystem.getAssistCount(Player(pid)))
         endmethod
         
         static method onUpdateStatus takes integer pid, unit hero returns nothing

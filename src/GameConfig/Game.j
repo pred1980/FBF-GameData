@@ -238,7 +238,7 @@ scope Game
 		// 1 == normal
 		// 2 == insane
 		static method getAIDifficulty takes integer pid returns integer
-			if (not .isRealPlayer(pid)) then
+			if (not isRealPlayer(pid)) then
 				if GetAIDifficulty(Player(pid)) == AI_DIFFICULTY_NEWBIE then
 					return 0
 				elseif GetAIDifficulty(Player(pid)) == AI_DIFFICULTY_NORMAL then
@@ -412,8 +412,11 @@ scope Game
 				if IsUnitEnemy(killedUnit, killingPlayer) then
 					if GetOwningPlayer(killedUnit) != Player(PLAYER_NEUTRAL_PASSIVE) then // Helden bei der Auswahl
 						call BonusGoldOnDeath.showDeathMessageAndUpdateGold(killedUnit, killingUnit)
-						call FBFMultiboard.onUpdateUnitKills(pidKilling)
-						call FBFMultiboard.onUpdateTowerKills(pidKilling)
+						
+						if (isRealPlayer(pidKilling)) then
+							call FBFMultiboard.onUpdateUnitKills(pidKilling)
+							call FBFMultiboard.onUpdateTowerKills(pidKilling)
+						endif
 					endif
 				endif
 				

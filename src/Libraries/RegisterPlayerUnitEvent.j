@@ -36,7 +36,7 @@ library RegisterPlayerUnitEvent // Special Thanks to Bribe and azlier
     function RegisterPlayerUnitEvent takes playerunitevent p, code cond, code act returns nothing
         local trigger t
 		local integer i = GetHandleId(p)
-        local integer k = 15
+        local integer k = bj_MAX_PLAYER_SLOTS
 		
 		if act != null then
 			set t = CreateTrigger()

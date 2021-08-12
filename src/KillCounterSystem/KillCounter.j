@@ -88,7 +88,7 @@ library KillCounter /* v 1.2.0.0
         local integer unitId = GetHandleId(damageSource)
         local integer n = KillCounter.getN()
         local integer offset = 0
-
+		
         if GetWidgetLife(damagedUnit) - damage < UNIT_MIN_LIFE then
             if IsUnitType(damagedUnit, UNIT_TYPE_HERO) then
                 set offset = 2

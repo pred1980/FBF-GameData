@@ -19,7 +19,7 @@ scope GravestoneSystem
         
         private constant string ZOMBIE_SPAWN_EFFECT = "Abilities\\Spells\\Undead\\AnimateDead\\AnimateDeadTarget.mdl"
         
-        private constant integer INCREASED_GRAVESTONE_HP_PER_ROUND = 200
+        private constant integer INCREASED_GRAVESTONE_HP_PER_ROUND = 100
         private constant integer INCREASED_ZOMBIE_HP_PER_ROUND = 150
         private constant integer INCREASED_ZOMBIE_DAMAGE_PER_ROUND = 15
         
@@ -31,9 +31,9 @@ scope GravestoneSystem
         private integer array ZOMBIE_START_HP
         private integer array ZOMBIE_START_DAMAGE
         
-        //Diese Faktoren beschreibt die Erh?hung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
-        private constant real HP_FACTOR = 0.10 //0.05
-        private constant real DAMAGE_FACTOR = 0.12 //0.09
+        //Diese Faktoren beschreibt die Erhöhung der HP/Damage Werte je nach Spieleranzahl
+        private constant real HP_FACTOR = 0.5
+        private constant real DAMAGE_FACTOR = 0.75
         
 		private integer counter = 0
 	endglobals
@@ -51,9 +51,9 @@ scope GravestoneSystem
         set GRAVESTONE_X_ZOMBIES[1] = ZOMBIE_MEDIUM
         set GRAVESTONE_X_ZOMBIES[2] = ZOMBIE_LARGE
         
-        set GRAVESTONE_START_HP[0] = 360
-        set GRAVESTONE_START_HP[1] = 575
-        set GRAVESTONE_START_HP[2] = 1100
+        set GRAVESTONE_START_HP[0] = 180
+        set GRAVESTONE_START_HP[1] = 360
+        set GRAVESTONE_START_HP[2] = 540
         
         set ZOMBIE_START_HP[0] = 400
         set ZOMBIE_START_DAMAGE[0] = 11
@@ -124,13 +124,13 @@ scope GravestoneSystem
                     endif
                     set i = i + 1
                 endloop
-                
+				
                 //get new hp+dmg
                 set hp = GetDynamicRatioValue(ZOMBIE_START_HP[index], HP_FACTOR)
                 set dmg = GetDynamicRatioValue(ZOMBIE_START_DAMAGE[index], DAMAGE_FACTOR)
                 set incHp = GetDynamicRatioValue(INCREASED_ZOMBIE_HP_PER_ROUND, HP_FACTOR)
                 set incDmg = GetDynamicRatioValue(INCREASED_ZOMBIE_DAMAGE_PER_ROUND, DAMAGE_FACTOR)
-                
+
                 call SetUnitMaxState(zombie, UNIT_STATE_MAX_LIFE, hp + ( RoundSystem.actualRound * incHp))
                 call TDS.addDamage(zombie, dmg + ( RoundSystem.actualRound * incDmg))
                 call DestroyEffect(AddSpecialEffect(ZOMBIE_SPAWN_EFFECT, x, y))
