@@ -8,7 +8,7 @@ scope GameStart
 		//MAP SETTINGS
         public constant string NAME = "Forsaken Bastion's Fall"
         public constant string VERSION = "0.4.6"
-        public constant string RELEASE_DATE = "09.08.2021"
+        public constant string RELEASE_DATE = "08-18-2021"
 		
 		private string SOUND_1 = "Sound\\Interface\\Rescue.wav"
         private string SOUND_2 = "Sound\\Interface\\ItemReceived.wav"
@@ -25,7 +25,7 @@ scope GameStart
             
             call ClearTextMessages()
             call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, RESULT_TEXT_DURATION, "The game will be started with the following Options:")
-            call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, RESULT_TEXT_DURATION, "\n|cffffcc00Game Mode:|r " + GameMode.name[GameMode.current])
+            call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, RESULT_TEXT_DURATION, "|cffffcc00Game Mode:|r " + GameMode.name[GameMode.current])
             call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, RESULT_TEXT_DURATION, "    " + GameMode.desc[GameMode.current])
             call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, RESULT_TEXT_DURATION, "    " + "Repick: " + GameMode.repick[GameMode.current])
             call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, RESULT_TEXT_DURATION, "|cffffcc00Game Type:|r " + GameType.name[GameType.current])
@@ -41,9 +41,8 @@ scope GameStart
         endmethod
 		
 		private static method onStart takes nothing returns nothing
-			call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, PRESENTATION_TEXT_DURATION, "The FBF Team proudly present...")
-            call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, PRESENTATION_TEXT_DURATION, "\n|cffffcc00" + NAME + "|r")
-            call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, PRESENTATION_TEXT_DURATION, "|cffffcc00Release Date: |r" + RELEASE_DATE)
+            call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, PRESENTATION_TEXT_DURATION, "|cffffcc00" + NAME + "|r")
+            call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, PRESENTATION_TEXT_DURATION, "\n|cffffcc00Release Date: |r" + RELEASE_DATE)
             call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, PRESENTATION_TEXT_DURATION, "|cffffcc00Version: |r" + VERSION)
             call TimerStart(NewTimer(), PRESENTATION_TEXT_DURATION + 3.0, false, function thistype.onEnd)
 		endmethod

@@ -209,6 +209,7 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         local real x = GetSpellTargetX()
         local real y = GetSpellTargetY()
 		local real duration = BURROW_BASE_DURATION - BURROW_LEVEL_REDUCTION * I2R(GetUnitAbilityLevel(lord, BURROW_ID))
+		local timer t
         
         set tempX = GetUnitX(lord)
         set tempY = GetUnitY(lord)
@@ -216,9 +217,15 @@ library CryptLordSpells initializer init requires AutoIndex, MiscFunctions, Time
         call GroupAddGroup(beetles,morphing)
         call GroupAddUnit(morphing,lord)
         call ForGroup(morphing,function startMorph)
-        //Duration (6,5,4,3,2 seconds)
+
+		// Pause Unit (Lord) to prevent movement while the lord is hidden
+		call SpellHelper.pauseUnit(lord)
+        // Duration (6,5,4,3,2 seconds)
 		call Wait(duration)
-        call GroupEnumUnitsInRange(gr,x,y,BURROW_AOE,BOOLEXPR_TRUE)
+		// Unpause the lord
+		call SpellHelper.unpauseUnit(lord)
+        
+		call GroupEnumUnitsInRange(gr,x,y,BURROW_AOE,BOOLEXPR_TRUE)
         loop
             set u = GroupPickRandomUnit(gr)
             exitwhen u == null or not(IsCarrion(u) or lord == u or IsUnitDead(u))

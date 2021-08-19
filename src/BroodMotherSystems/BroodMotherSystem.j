@@ -8,18 +8,19 @@ scope BroodMotherSystem initializer init
         private constant integer MALE_ID = 'n00I'
         private constant integer FEMALE_ID = 'n00H'
         private constant integer EGG_ID = 'o00C'
-        private constant integer EGG_COUNT = 6
+        private constant integer MAX_EGG_COUNT = 4 // max count eggs
+		private constant integer MAX_OFFSPRING = 6 // max count male/female spider offspring
         private constant real FACING = 180.0
         private constant real X = -5590.8
         private constant real Y = 5027.6
-        private constant real LIFE_FACTOR = 240.0 //every Xmin an egg splashs and a child comes out
+        private constant real LIFE_FACTOR = 60.0 //every X seconds an egg splashs and a child comes out
         private constant integer CHANCE = 40 //40% to get a male child
         private constant string ORDER_ATTACKMOVE = "attack"
         
         //Brood Mother
         private constant integer HP = 20000
         private constant integer DAMAGE = 550
-        private constant real LAYING_TIME = 300.0 //Wann legt die Brood Mother ein neues Ei?
+        private constant real LAYING_TIME = 120.0 //Wann legt die Brood Mother ein neues Ei (seconds) ?
         private constant real TARGET_TOLERANCE = 192.
 		
         //Egg
@@ -141,6 +142,14 @@ scope BroodMotherSystem initializer init
 			set broodMother = null
         endmethod
 		
+		private static method maxCountEggFilter takes nothing returns boolean
+			return GetUnitTypeId(GetFilterUnit()) == EGG_ID
+		endmethod
+		
+		private static method maxOffspringFilter takes nothing returns boolean
+			return GetUnitTypeId(GetFilterUnit()) == MALE_ID or GetUnitTypeId(GetFilterUnit()) == FEMALE_ID
+		endmethod
+		
 		//Auf zur Brutstaette
         static method onMoveToHatchery takes nothing returns nothing
             local thistype this = GetTimerData(GetExpiredTimer())
@@ -149,35 +158,44 @@ scope BroodMotherSystem initializer init
             local string order = OrderId2String(GetUnitCurrentOrder(this.broodMother))
             local trigger onReach
             local rect r
+			local group offspringGroup = NewGroup()
+			local group eggGroup = NewGroup()
 			
-			loop
-                exitwhen IsTerrainWalkable(x,y)
-                set x = GetRandomReal(GetRectMinX(broodPlace), GetRectMaxX(broodPlace))
-                set y = GetRandomReal(GetRectMinY(broodPlace), GetRectMaxY(broodPlace))
-            endloop
-            
-            if order == null then
-				//Speichere die notwendigen Daten in einem sep. struct
-				//und prufe ob die BroodMother das Ziel erreicht hat
-                set .data = MoveData.create()
-				set .data.broodMother = this.broodMother
-				set .data.targetX = x
-				set .data.targetY = y
-				set .data.x = GetUnitX(this.broodMother)
-				set .data.y = GetUnitY(this.broodMother)
-				set .data.t = NewTimer()
-				call SetTimerData(.data.t, .data)
-				call TimerStart(.data.t, 1.5, true, function MoveData.onMove)
+			call GroupEnumUnitsInRange(eggGroup, x, y, 400, Filter(function thistype.maxCountEggFilter))
+			call GroupEnumUnitsInRect(offspringGroup, GetPlayableMapRect(), function thistype.maxOffspringFilter)
 			
-                set onReach = CreateTrigger()
+			if ((CountUnitsInGroup(eggGroup) < MAX_EGG_COUNT) and (CountUnitsInGroup(offspringGroup) < MAX_OFFSPRING)) then
+				loop
+					exitwhen IsTerrainWalkable(x,y)
+					set x = GetRandomReal(GetRectMinX(broodPlace), GetRectMaxX(broodPlace))
+					set y = GetRandomReal(GetRectMinY(broodPlace), GetRectMaxY(broodPlace))
+				endloop
 				
-				set r = Rect(x, y, x + TARGET_TOLERANCE, y + TARGET_TOLERANCE)
-                call TriggerRegisterEnterRectSimple(onReach, r)
-                call TriggerAddCondition(onReach, Condition(function thistype.onCheckEvent))
-                call TriggerAddAction(onReach, function thistype.onLayingEgg)
-				set onReach = null
+				if order == null then
+					//Speichere die notwendigen Daten in einem sep. struct
+					//und prufe ob die BroodMother das Ziel erreicht hat
+					set .data = MoveData.create()
+					set .data.broodMother = this.broodMother
+					set .data.targetX = x
+					set .data.targetY = y
+					set .data.x = GetUnitX(this.broodMother)
+					set .data.y = GetUnitY(this.broodMother)
+					set .data.t = NewTimer()
+					call SetTimerData(.data.t, .data)
+					call TimerStart(.data.t, 1.5, true, function MoveData.onMove)
+				
+					set onReach = CreateTrigger()
+					
+					set r = Rect(x, y, x + TARGET_TOLERANCE, y + TARGET_TOLERANCE)
+					call TriggerRegisterEnterRectSimple(onReach, r)
+					call TriggerAddCondition(onReach, Condition(function thistype.onCheckEvent))
+					call TriggerAddAction(onReach, function thistype.onLayingEgg)
+					set onReach = null
+				endif
 			endif
-                    
+
+			call ReleaseGroup(offspringGroup)
+			call ReleaseGroup(eggGroup)                    
         endmethod
 		
 		static method create takes nothing returns thistype
@@ -210,7 +228,7 @@ scope BroodMotherSystem initializer init
             set broodPlace = gg_rct_BroodPlace
             
             loop
-                exitwhen i >= EGG_COUNT
+                exitwhen i >= MAX_EGG_COUNT
 				set eggLifeTime[i] = I2R(i+1) * LIFE_FACTOR
                 set i = i + 1
             endloop
@@ -228,7 +246,7 @@ scope BroodMotherSystem initializer init
             local real y = 0.0
             
             loop
-                exitwhen i >= EGG_COUNT
+                exitwhen i >= MAX_EGG_COUNT
                 set x = GetRandomReal(GetRectMinX(broodPlace), GetRectMaxX(broodPlace))
                 set y = GetRandomReal(GetRectMinY(broodPlace), GetRectMaxY(broodPlace))
                 loop
@@ -385,7 +403,7 @@ scope BroodMotherSystem initializer init
             call TimerStart(t, eggLifeTime[counter], false, function thistype.onHatch)
             
             set counter = counter + 1
-            if counter >= EGG_COUNT then
+            if counter >= MAX_EGG_COUNT then
                 call ResetCounter()
             endif
             

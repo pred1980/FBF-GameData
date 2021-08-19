@@ -2,7 +2,7 @@ scope Game
 
     globals
         private constant integer DEFAUlT_FOOD_CAP = 20
-		private constant integer DAY_TIME = 3
+		private constant integer DAY_TIME = 12
         
         //GAME MODES
         constant integer NORMAL = 0
@@ -558,7 +558,5 @@ scope Game
 			//Show Tutorials Dialog
 			call ShowTutorialsDialog.initialize()
 		endmethod
-        
     endstruct
-	
 endscope

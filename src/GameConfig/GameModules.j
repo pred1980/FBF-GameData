@@ -94,7 +94,10 @@ scope GameModules
 			call CustomCreepSystem.initialize()
 			
 			// Regional Fog (Graveyard)
-			//Game.initRegionalFog()
+			//call Game.initRegionalFog()
+			
+			// Camera System (only zoom)v
+			call CameraSystem.initialize()
 		endmethod
 	
 	endstruct
