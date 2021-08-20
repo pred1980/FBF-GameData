@@ -68,28 +68,9 @@ scope BroodMotherSystem initializer init
 		static method onMove takes nothing returns nothing
 			local thistype this = GetTimerData(GetExpiredTimer())
 			local string order = OrderId2String(GetUnitCurrentOrder(this.broodMother))
-			local integer i = 0
-			local integer max = 5
-			local boolean b = false
-			
-			if this.x == GetUnitX(this.broodMother) or this.y == GetUnitY(this.broodMother) and order == null then
-				set .stucked = true
-			endif
-			
-			set this.x = GetUnitX(this.broodMother)
-			set this.y = GetUnitY(this.broodMother)
-			
-			loop
-				exitwhen (IsTerrainWalkable(this.targetX, this.targetY) and i < max) and not .stucked
-				set this.targetX = GetRandomReal(GetRectMinX(broodPlace), GetRectMaxX(broodPlace))
-				set this.targetY = GetRandomReal(GetRectMinY(broodPlace), GetRectMaxY(broodPlace))
-				set i = i + 1
-				set .stucked = false
-			endloop
 			
 			if not this.reached or /*
-			*/ order == null and /*
-			*/ i != max and not /*
+			*/ order == null and not /*
 			*/ IsUnitDead(this.broodMother) then
 				call IssuePointOrder(this.broodMother, ORDER_ATTACKMOVE, this.targetX, this.targetY)
 			else
