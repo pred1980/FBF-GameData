@@ -10,6 +10,7 @@ scope IceTornado initializer init
 						Integrated SpellHelper for damaging and filtering
 	 *		08.05.2015:	Bugfix: onDestroy()
 	 *		04.09.2015: Increased damage per level by 7%
+	 *		23.08.2021: reduced damage per level from 74/102/141/179/203 to 75/100/125/150/175
      */
     globals
         private constant integer SPELL_ID = 'A04J'
@@ -42,11 +43,11 @@ scope IceTornado initializer init
         set DURATION[3] = 8
         set DURATION[4] = 8
         
-        set DAMAGE[0] = 74
-        set DAMAGE[1] = 102
-        set DAMAGE[2] = 141
-        set DAMAGE[3] = 179
-        set DAMAGE[4] = 203
+        set DAMAGE[0] = 75
+        set DAMAGE[1] = 100
+        set DAMAGE[2] = 125
+        set DAMAGE[3] = 150
+        set DAMAGE[4] = 175
         
         // end of user configuration        
         set theta = TwoPI/CRCL_PERIOD*TMR_INTERVAL //Angle the Tornado revolves around each interval

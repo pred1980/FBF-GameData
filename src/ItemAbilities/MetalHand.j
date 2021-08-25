@@ -1,11 +1,15 @@
 scope MetalHand initializer init
 	/*
-	 * Item: Metal Hand
+	 *	Item: Metal Hand
+	 *
+	 *	Changelog:
+	 *		23-08-2021: decreased "CHANCE" from 3% to 1.5%
+	 *					increased "HEAL_DURATION" from 12s to 60s
 	 */ 
     globals
         private constant integer ITEM_ID = 'I010'
-        private constant integer CHANCE = 3
-        private constant real HEAL_DURATION = 12.0
+        private constant real CHANCE = 1.5
+        private constant real HEAL_DURATION = 60.0
         private constant string EFFECT = "Abilities\\Spells\\Human\\Heal\\HealTarget.mdl"
         private constant string ATT_POINT = "origin"
     endglobals
@@ -15,7 +19,7 @@ scope MetalHand initializer init
         
         static method create takes unit damagedUnit returns Spell
             local Spell this = Spell.allocate()
-            
+
             set .attacker = damagedUnit
             call HOT.start( .attacker, GetUnitState(.attacker, UNIT_STATE_MAX_LIFE), HEAL_DURATION, EFFECT, ATT_POINT )
             call this.destroy()
@@ -32,7 +36,7 @@ scope MetalHand initializer init
     private function Actions takes unit damagedUnit, unit damageSource, real damage returns nothing
         local Spell s = 0
         
-        if ( UnitHasItemOfTypeBJ(damagedUnit, ITEM_ID) and GetRandomInt(1, 100) <= CHANCE and DamageType == 0 ) then
+        if ( UnitHasItemOfTypeBJ(damagedUnit, ITEM_ID) and GetRandomReal(1, 100) <= CHANCE and DamageType == 0 ) then
             set s = Spell.create( damagedUnit )
         endif
     endfunction

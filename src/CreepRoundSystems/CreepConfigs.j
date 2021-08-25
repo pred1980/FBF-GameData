@@ -65,9 +65,9 @@ scope CreepConfigs
             //Wie viele Creeps werden pro Intervall gespawnt?
             set thistype.count = 1
             //Wie lang ist die Rundenpause bevor die nächste Runde startet?
-            set thistype.pause = 20.
+            set thistype.pause = 15.
             //Wie lang ist der Rundentimer, der oben rechts angezeigt wird, bevor die n. Runde gestartet wird?
-            set thistype.roundTimer = 30.
+            set thistype.roundTimer = 25.
             //Wann endet eine Runde? Wie viele Creeps müssen noch am Leben sein, damit eine Runde beendet wird?
             //Kurz: Abbruchbedingung für das Ende einer Runde! :)
             set thistype.startNextRound = 0
@@ -541,13 +541,13 @@ scope CreepConfigs
             //Wie viele Runden?
             set thistype.rounds = 20
             //Nach welchem Rythmus werden die Einheiten pro Lane gespawnt?
-            set thistype.interval = 1.0
+            set thistype.interval = 0.8
             //Wie viele Creeps werden pro Intervall gespawnt?
             set thistype.count = 1
             //Wie lang ist die Rundenpause bevor die nächste Runde startet?
-            set thistype.pause = 20.
+            set thistype.pause = 15.
             //Wie lang ist der Rundentimer, der oben rechts angezeigt wird, bevor die n. Runde gestartet wird?
-            set thistype.roundTimer = 30.
+            set thistype.roundTimer = 25.
             //Wann endet eine Runde? Wie viele Creeps müssen noch am Leben sein, damit eine Runde beendet wird?
             //Kurz: Abbruchbedingung für das Ende einer Runde! :)
             set thistype.startNextRound = 0
@@ -701,13 +701,13 @@ scope CreepConfigs
             //Wie viele Runden?
             set thistype.rounds = 20
             //Nach welchem Rythmus werden die Einheiten pro Lane gespawnt?
-            set thistype.interval = 1.0
+            set thistype.interval = 0.8
             //Wie viele Creeps werden pro Intervall gespawnt?
             set thistype.count = 1
             //Wie lang ist die Rundenpause bevor die nächste Runde startet?
-            set thistype.pause = 20.
+            set thistype.pause = 15.
             //Wie lang ist der Rundentimer, der oben rechts angezeigt wird, bevor die n. Runde gestartet wird?
-            set thistype.roundTimer = 30.
+            set thistype.roundTimer = 25.
             //Wann endet eine Runde? Wie viele Creeps müssen noch am Leben sein, damit eine Runde beendet wird?
             //Kurz: Abbruchbedingung für das Ende einer Runde! :)
             set thistype.startNextRound = 0
@@ -859,14 +859,14 @@ scope CreepConfigs
 		/* Base Information for this Mod */
 		//Wie viele Runden?
 		set thistype.rounds = 20
-		//Nach welchem Rythmus werden die Einheiten pro Lane gespawnt?
-		set thistype.interval = 1.0
+		//Nach welchem Rythmus (seconds) werden die Einheiten pro Lane gespawnt?
+		set thistype.interval = 0.8
 		//Wie viele Creeps werden pro Intervall gespawnt?
 		set thistype.count = 1
 		//Wie lang ist die Rundenpause bevor die nächste Runde startet?
-		set thistype.pause = 20.
+		set thistype.pause = 15.
 		//Wie lang ist der Rundentimer, der oben rechts angezeigt wird, bevor die n. Runde gestartet wird?
-		set thistype.roundTimer = 30.
+		set thistype.roundTimer = 25.
 		//Wann endet eine Runde? Wie viele Creeps müssen noch am Leben sein, damit eine Runde beendet wird?
 		//Kurz: Abbruchbedingung für das Ende einer Runde! :)
 		set thistype.startNextRound = 0

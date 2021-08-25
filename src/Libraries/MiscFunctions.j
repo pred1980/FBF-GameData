@@ -677,4 +677,28 @@ library MiscFunctions requires GroupUtils
         
 		return Location(x + random * Cos(theta), y + random * Sin(theta))
     endfunction
+	
+	function mutePlayer takes player p returns nothing
+		if GetLocalPlayer() == p then
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_AMBIENTSOUNDS, 0.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_SPELLS, 0.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_COMBAT, 0.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_FIRE, 0.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_MUSIC, 0.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_UNITMOVEMENT, 0.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_UNITSOUNDS, 0.00 )
+		endif
+	endfunction
+	
+	function unMutePlayer takes player p returns nothing
+		if GetLocalPlayer() == p then
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_AMBIENTSOUNDS, 100.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_SPELLS, 100.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_COMBAT, 100.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_FIRE, 100.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_MUSIC, 100.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_UNITMOVEMENT, 100.00 )
+			call VolumeGroupSetVolumeBJ( SOUND_VOLUMEGROUP_UNITSOUNDS, 100.00 )
+		endif
+	endfunction
 endlibrary

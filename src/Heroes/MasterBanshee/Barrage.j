@@ -104,8 +104,9 @@ scope Barrage initializer Init
         local Data D = GetTimerData(t)
         local Missile m
         local real finalDmg = damage + damageInc*(I2R(GetUnitAbilityLevel(D.caster, SPELL_ID) - 1))
-        if D.intg < maxM then
-            set m = Missile.create(GetUnitX(D.caster), GetUnitY(D.caster), D.intg*(2*bj_PI)/maxM)
+        
+		if D.intg < maxM then
+            set m = Missile.create(GetUnitX(D.target), GetUnitY(D.target), D.intg*(2*bj_PI)/maxM)
             set m.fxpath = missile
             set m.speed = 500.0
             set m.acceleration = 1000.0
@@ -121,6 +122,7 @@ scope Barrage initializer Init
             call D.destroy()
             call ReleaseTimer(t)
         endif
+		
         set t = null    
     endfunction
     

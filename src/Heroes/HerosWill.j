@@ -3,14 +3,12 @@ scope HerosWill initializer Init
      * The hero is able to move through all units for 5 seconds.
      * Changelog: 
      *     	xx.xx.2015: Initial Upload
-     *
+     *		23.08.2021: Used Windwalk Ability
      */
 	globals
         private constant integer SPELL_ID = 'A05E'
-		private constant integer GHOST_VISIBLE_ID = 'Aloc'
+		private constant integer GHOST_VISIBLE_ID = 'A0B8'
 		private constant real DURATION = 5.0
-		
-		
 	endglobals
 	
 	private struct HerosWill
@@ -18,8 +16,16 @@ scope HerosWill initializer Init
 		private timer t
 		
 		method onDestroy takes nothing returns nothing
-            
+			set .caster = null
         endmethod
+		
+		static method onHerosWillEnd takes nothing returns nothing
+			local thistype this = GetTimerData(GetExpiredTimer())
+			
+			call UnitRemoveAbility(this.caster, GHOST_VISIBLE_ID)
+			call ReleaseTimer(this.t)
+			call this.destroy()
+		endmethod
 	
 		static method create takes unit caster returns thistype
             local thistype this = thistype.allocate()
@@ -27,9 +33,8 @@ scope HerosWill initializer Init
             set .caster = caster
             set .t = NewTimer()
             call SetTimerData(.t, this)
-			call BJDebugMsg("Blub")
 			call UnitAddAbility(.caster, GHOST_VISIBLE_ID)
-            //call TimerStart(.t, DURATION, false, function thistype.onDestroy)
+            call TimerStart(.t, DURATION, false, function thistype.onHerosWillEnd)
             
             return this
         endmethod

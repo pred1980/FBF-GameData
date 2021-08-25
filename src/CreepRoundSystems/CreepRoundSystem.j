@@ -59,13 +59,13 @@ library CreepRoundSystem /* v 1.1.0.0
         *************************************************************************/
         
         // How long to wait before a new round starts?
-        private constant real START_TIME_BEFORE_ROUND = 5
+        private constant real START_TIME_BEFORE_ROUND = 1
         
         // Do you want to automatically start a new round after some time?
         private constant boolean AUTO_START_NEW_ROUND_TIMED = false
         
         // If you auto start a new round after some time, how long is the round?
-        private constant real NEW_ROUND_TIMEOUT = 5
+        private constant real NEW_ROUND_TIMEOUT = 3
         
         /*************************************************************************
         *   End of customizable globals
