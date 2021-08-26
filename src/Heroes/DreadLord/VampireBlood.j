@@ -100,7 +100,7 @@ scope VampireBlood initializer Init
         static method create takes unit caster, unit target, real x, real y returns thistype
             local thistype this = thistype.allocate(GetUnitX(caster), GetUnitY(caster), 0.0, x, y, 0.0)
             
-            set this.fxpath = MISSILE_MODEL
+			set this.fxpath = MISSILE_MODEL
             set this.scale = MISSILE_SCALE
 			set this.caster = caster
             set this.target = target

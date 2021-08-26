@@ -48,8 +48,6 @@ scope SkeletonSystem
         set START_DAMAGE[3] = 47
         set START_HP[4] = 210
         set START_DAMAGE[4] = 40
-        set START_HP[5] = 240
-        set START_DAMAGE[5] = 43
         
         set GRAVESTONE_SPAWN_RECTS[0] = gg_rct_GravestoneRect0
         set GRAVESTONE_SPAWN_RECTS[1] = gg_rct_GravestoneRect1
@@ -74,7 +72,7 @@ scope SkeletonSystem
     
     private function Action takes nothing returns nothing
         local integer rectIndex = GetRandomInt(0,2)
-        local integer skeletonIndex = GetRandomInt(0,5)
+        local integer skeletonIndex = GetRandomInt(0,4)
         local integer hp = 0
         local integer dmg = 0
         local integer incHp = 0
@@ -83,7 +81,7 @@ scope SkeletonSystem
         local real y = GetRandomReal(GetRectMinY(GRAVESTONE_SPAWN_RECTS[rectIndex]), GetRectMaxY(GRAVESTONE_SPAWN_RECTS[rectIndex]))
         local unit skeleton = null
         local destructable gravestone = null
-        local integer rnd = GetRandomInt(0,5) //20%
+        local integer rnd = GetRandomInt(0,4) //20%
 		local Wander wander
 		
         loop

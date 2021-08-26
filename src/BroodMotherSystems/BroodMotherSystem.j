@@ -8,8 +8,8 @@ scope BroodMotherSystem initializer init
         private constant integer MALE_ID = 'n00I'
         private constant integer FEMALE_ID = 'n00H'
         private constant integer EGG_ID = 'o00C'
-        private constant integer MAX_EGG_COUNT = 4 // max count eggs
-		private constant integer MAX_OFFSPRING = 6 // max count male/female spider offspring
+        private constant integer MAX_EGG_COUNT = 3 // max count eggs
+		private constant integer MAX_OFFSPRING = 4 // max count male/female spider offspring
         private constant real FACING = 180.0
         private constant real X = -5590.8
         private constant real Y = 5027.6
@@ -20,7 +20,7 @@ scope BroodMotherSystem initializer init
         //Brood Mother
         private constant integer HP = 20000
         private constant integer DAMAGE = 550
-        private constant real LAYING_TIME = 120.0 //Wann legt die Brood Mother ein neues Ei (seconds) ?
+        private constant real LAYING_TIME = 150.0 //Wann legt die Brood Mother ein neues Ei (seconds) ?
         private constant real TARGET_TOLERANCE = 192.
 		
         //Egg
