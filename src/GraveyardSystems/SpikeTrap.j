@@ -8,11 +8,11 @@ scope SpikeTrap
         private constant string ATTACK_EFFECT = "Abilities\\Spells\\Undead\\AnimateDead\\AnimateDeadTarget.mdl"
         private constant real RADIUS = 45.
         private constant real INTERVAL = .01
-        private constant integer MAX_ARCHNATHID = 6
+        private constant integer MAX_ARCHNATHID = 8
         
         private rect array GRAVESTONE_SPAWN_RECTS
-        private constant integer HP = 8000
-        private constant integer DAMAGE = 270
+        private constant integer HP = 10000
+        private constant integer DAMAGE = 350
         //Diese Faktoren beschreibt die Erh?hung der HP/Damage Werte je nach Spieleranzahl, im akt. Fall 5%
         private constant real HP_FACTOR = 0.10 //0.05
         private constant real DAMAGE_FACTOR = 0.12 //0.09
