@@ -64,26 +64,72 @@ scope GiantTurtleAI
 			// This is where you would define a custom item build
 			set Itemsets[.aiLevel] = HeroAI_Itemset.create()
 			
-            if (.aiLevel == 0) then
-				/* COMPUTER EASY */
-				call Itemsets[0].addItem('u000', HEALING_POTION, 2)
-				call Itemsets[0].addItem('u000', MANA_POTION, 1)
-				call Itemsets[0].addItem('u001', BELT_OF_GIANT_STRENGTH, 1) // REPLACE
-			elseif (.aiLevel == 1) then
-				/* COMPUTER NORMAL */
-				call Itemsets[1].addItem('u000', HEALING_POTION, 4)
-				call Itemsets[1].addItem('u000', MANA_POTION, 2)
-				call Itemsets[1].addItem('u001', BELT_OF_GIANT_STRENGTH, 1) // REPLACE
-				call Itemsets[1].addItem('u001', TWIN_AXE, 1) // REPLACE
-				call Itemsets[1].addItem('u003', BLOOD_PLATE_ARMOR, 1) // REPLACE
+            if (.playerRace == RACE_ORC) then
+				if (.aiLevel == 0) then
+					/* COMPUTER EASY */
+					call Itemsets[0].addItem('u00N', HEALING_POTION, 2)
+					call Itemsets[0].addItem('u00N', MANA_POTION, 1)
+					call Itemsets[0].addItem('u00O', PIPE, 1)
+				elseif (.aiLevel == 1) then
+					/* COMPUTER NORMAL */
+					call Itemsets[1].addItem('u00N', HEALING_POTION, 4)
+					call Itemsets[1].addItem('u00N', MANA_POTION, 2)
+					call Itemsets[1].addItem('u00O', PIPE, 1)
+					call Itemsets[1].addItem('u00O', TROLL_DAGGER, 1)
+					call Itemsets[1].addItem('u00P', KODO_BOOTS, 1)
+				else
+					/* COMPUTER INSANE */
+					call Itemsets[2].addItem('u00N', HEALING_POTION, 5)
+					call Itemsets[2].addItem('u00N', MANA_POTION, 3)
+					call Itemsets[2].addItem('u00O', PIPE, 1)
+					call Itemsets[2].addItem('u00O', TROLL_DAGGER, 1)
+					call Itemsets[2].addItem('u00P', ASSASSINS_DAGGER, 1)
+					call Itemsets[2].addItem('u00P', DEFENSIVE_CHARM, 1)
+				endif
+			elseif (.playerRace == RACE_HUMAN) then
+				if (.aiLevel == 0) then
+					/* COMPUTER EASY */
+					call Itemsets[0].addItem('u00K', HEALING_POTION, 2)
+					call Itemsets[0].addItem('u00K', MANA_POTION, 1)
+					call Itemsets[0].addItem('u00L', BOOTS_OF_QUEL_THALAS, 1)
+				elseif (.aiLevel == 1) then
+					/* COMPUTER NORMAL */
+					call Itemsets[1].addItem('u00K', HEALING_POTION, 4)
+					call Itemsets[1].addItem('u00K', MANA_POTION, 2)
+					call Itemsets[1].addItem('u00L', BOOTS_OF_QUEL_THALAS, 1)
+					call Itemsets[1].addItem('u00L', POINTY_HAT, 1)
+					call Itemsets[1].addItem('u00M', HOLY_SHIELD, 1)
+				else
+					/* COMPUTER INSANE */
+					call Itemsets[2].addItem('u00K', HEALING_POTION, 5)
+					call Itemsets[2].addItem('u00K', MANA_POTION, 3)
+					call Itemsets[2].addItem('u00L', BOOTS_OF_QUEL_THALAS, 1)
+					call Itemsets[2].addItem('u00L', ARCANE_CIRCLET, 1)
+					call Itemsets[2].addItem('u00M', RUNESTONE, 1)
+					call Itemsets[2].addItem('u00M', WAR_FLAIL, 1)
+				endif
 			else
-				/* COMPUTER INSANE */
-				call Itemsets[2].addItem('u000', HEALING_POTION, 5) 
-				call Itemsets[2].addItem('u000', MANA_POTION, 3)
-				call Itemsets[2].addItem('u001', BELT_OF_GIANT_STRENGTH, 1) // REPLACE
-				call Itemsets[2].addItem('u001', TWIN_AXE, 1) // REPLACE
-				call Itemsets[2].addItem('u003', BLOOD_PLATE_ARMOR, 1) // REPLACE
-				call Itemsets[2].addItem('u003', SPEAR_OF_VENGEANCE, 1) // REPLACE
+				if (.aiLevel == 0) then
+					/* COMPUTER EASY */
+					call Itemsets[0].addItem('u00H', HEALING_POTION, 2)
+					call Itemsets[0].addItem('u00H', MANA_POTION, 1)
+					call Itemsets[0].addItem('u00I', SURAMAR_BLADE, 1)
+				elseif (.aiLevel == 1) then
+					/* COMPUTER NORMAL */
+					call Itemsets[1].addItem('u00H', HEALING_POTION, 4)
+					call Itemsets[1].addItem('u00H', MANA_POTION, 2)
+					call Itemsets[1].addItem('u00I', SURAMAR_BLADE, 1)
+					call Itemsets[1].addItem('u00I', BOUND_WISP, 1)
+					call Itemsets[1].addItem('u00J', CHIMERA_BOOTS, 1)
+				else
+					/* COMPUTER INSANE */
+					call Itemsets[2].addItem('u00H', HEALING_POTION, 5)
+					call Itemsets[2].addItem('u00H', MANA_POTION, 3)
+					call Itemsets[2].addItem('u00I', SURAMAR_BLADE, 1)
+					call Itemsets[2].addItem('u00I', MOON_BLOSSOM, 1)
+					call Itemsets[2].addItem('u00J', DEMONSLAYER, 1)
+					call Itemsets[2].addItem('u00J', MOON_GUARD_ROBE, 1)
+				endif
 			endif
 
 			set .itemBuild = Itemsets[.aiLevel]

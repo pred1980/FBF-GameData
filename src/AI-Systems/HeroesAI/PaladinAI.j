@@ -66,24 +66,24 @@ scope PaladinAI
 			
             if (.aiLevel == 0) then
 				/* COMPUTER EASY */
-				call Itemsets[0].addItem('u000', HEALING_POTION, 2)
-				call Itemsets[0].addItem('u000', MANA_POTION, 1)
-				call Itemsets[0].addItem('u001', BELT_OF_GIANT_STRENGTH, 1) // REPLACE
+				call Itemsets[0].addItem('u00K', HEALING_POTION, 2)
+				call Itemsets[0].addItem('u00K', MANA_POTION, 1)
+				call Itemsets[0].addItem('u00L', BELT_OF_GIANT_STRENGTH, 1)
 			elseif (.aiLevel == 1) then
 				/* COMPUTER NORMAL */
-				call Itemsets[1].addItem('u000', HEALING_POTION, 4)
-				call Itemsets[1].addItem('u000', MANA_POTION, 2)
-				call Itemsets[1].addItem('u001', BELT_OF_GIANT_STRENGTH, 1) // REPLACE
-				call Itemsets[1].addItem('u001', TWIN_AXE, 1) // REPLACE
-				call Itemsets[1].addItem('u003', BLOOD_PLATE_ARMOR, 1) // REPLACE
+				call Itemsets[1].addItem('u00K', HEALING_POTION, 4)
+				call Itemsets[1].addItem('u00K', MANA_POTION, 2)
+				call Itemsets[1].addItem('u00L', BELT_OF_GIANT_STRENGTH, 1)
+				call Itemsets[1].addItem('u00L', TWIN_AXE, 1)
+				call Itemsets[1].addItem('u00M', BLOOD_PLATE_ARMOR, 1)
 			else
 				/* COMPUTER INSANE */
-				call Itemsets[2].addItem('u000', HEALING_POTION, 5) 
-				call Itemsets[2].addItem('u000', MANA_POTION, 3)
-				call Itemsets[2].addItem('u001', BELT_OF_GIANT_STRENGTH, 1) // REPLACE
-				call Itemsets[2].addItem('u001', TWIN_AXE, 1) // REPLACE
-				call Itemsets[2].addItem('u003', BLOOD_PLATE_ARMOR, 1) // REPLACE
-				call Itemsets[2].addItem('u003', SPEAR_OF_VENGEANCE, 1) // REPLACE
+				call Itemsets[2].addItem('u00K', HEALING_POTION, 5) 
+				call Itemsets[2].addItem('u00K', MANA_POTION, 3)
+				call Itemsets[2].addItem('u00L', BELT_OF_GIANT_STRENGTH, 1)
+				call Itemsets[2].addItem('u00L', TWIN_AXE, 1)
+				call Itemsets[2].addItem('u00M', BLOOD_PLATE_ARMOR, 1)
+				call Itemsets[2].addItem('u00M', SPEAR_OF_VENGEANCE, 1)
 			endif
 
 			set .itemBuild = Itemsets[.aiLevel]

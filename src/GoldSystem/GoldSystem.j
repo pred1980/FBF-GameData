@@ -63,7 +63,8 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
             local integer pidKilled = GetPlayerId(GetOwningPlayer(killed))
             local integer gold = 0
             local integer streak = 0
-            local string deathString = ""
+            local string deathMsg = ""
+			local string assistMsg = ""
             
             if not Unit.isExceptionUnit(killed) then
 			    //is a Hero of a Player or is a normal unit?
@@ -71,28 +72,26 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
                     set gold = getBonusForHero(killed, killer)
                     set streak = KillStreakSystem.getKillStreak(GetOwningPlayer(killed))
 
-					//Textausgabe zusammenbauen
-					if GetPlayerController(GetOwningPlayer(killer)) == MAP_CONTROL_USER then
-						set deathString = "The Player "
-					endif
-					set deathString = deathString + GetPlayerNameColored(Player(pidKiller), false) + " just killed " + GetPlayerNameColored(Player(pidKilled), false) + " for " + "|cffffcc00" + I2S(gold) + "|r gold!"
+					set deathMsg = GetPlayerNameColored(Player(pidKiller), true) + " killed " + GetPlayerNameColored(Player(pidKilled), true) + " for " + "|cffffcc00" + I2S(gold) + "|r gold!"
+					set assistMsg = BonusGoldOnAssist.showAssistMessage(killed, killer)
 					
 					//Gibt den akt. Streak des gekillten Spielers zurück
 					if KillStreakSystem.getStreakHasMessage(streak) then
-						set deathString = deathString + " Killed Streak Bonus: " + "(|cffffcc00+" + I2S(BonusGoldOnStreak.getStreakBonus(streak)) + ")|r"
+						set deathMsg = deathMsg + " Killed Streak Bonus: " + "(|cffffcc00+" + I2S(BonusGoldOnStreak.getStreakBonus(streak)) + ")|r"
 					endif
 				
 					//add Gold and Streak Gold for the Killer
 					call Game.playerAddGold(pidKiller, gold + streak)
+					
 					//Show Gold Bounty over the killed
 					call TextTagGoldBounty(killed, gold + streak, GetOwningPlayer(killer))
 					
-					//Display Death Message
-                    call DisplayTextToForce(bj_FORCE_ALL_PLAYERS, deathString)
-					//Display Assists
-					call BonusGoldOnAssist.showAssistMessage(killed, killer)
+					//Display Death and Assist Message
+					call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 1.0, deathMsg + assistMsg)
+ 
 					//Assists resetten
 					call AssistSystem.resetAllAssistsOfPlayer(GetOwningPlayer(killed))
+					
 					//Kill Streak?
 					call KillStreakSystem.increaseKillStreak(GetOwningPlayer(killer))
 					call KillStreakSystem.displayKillStreakMessage(GetOwningPlayer(killer))
@@ -136,7 +135,7 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
             return ASSIST_BONI / AssistSystem.getAssistCount(GetOwningPlayer(killed))
         endmethod
         
-        static method showAssistMessage takes unit killed, unit killer returns nothing
+        static method showAssistMessage takes unit killed, unit killer returns string
             local integer i = 0
             local string assistString = ""
             local boolean hit = false
@@ -146,10 +145,10 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
                 exitwhen i >= bj_MAX_PLAYERS
                 if Game.isPlayerInGame(i) and AssistSystem.isPlayerAssist(Player(i), GetOwningPlayer(killed)) and Player(i) != GetOwningPlayer(killer) then
                     if not hit then
-                        set assistString = "Assists: " + GetPlayerNameColored(Player(i), false) + "(|cffffcc00+" + I2S(gold) + "|r)"
+                        set assistString = "Assists: " + GetPlayerNameColored(Player(i), true)
                         set hit = true
                     else
-                        set assistString = assistString + ", " + GetPlayerNameColored(Player(i), false) + "(|cffffcc00+" + I2S(gold) + "|r)"
+                        set assistString = assistString + ", " + GetPlayerNameColored(Player(i), true)
                     endif
                     call Game.playerAddGold(i, gold)
                     //Update Multiboard
@@ -160,8 +159,10 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
             
             if hit then
                 //Display Assist Message
-                call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS, 5.0, assistString)
+                return assistString
             endif
+			
+			return ""
         endmethod
         
     endstruct

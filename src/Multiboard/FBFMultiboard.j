@@ -56,12 +56,12 @@ scope FBFMultiboard
             set .board[1][0].text = "The Forsaken Kingdom"
             
             //Player Names
-            set .board[2][1].text = GetPlayerNameColored(Player(0), false)
-            set .board[3][1].text = GetPlayerNameColored(Player(1), false)
-            set .board[4][1].text = GetPlayerNameColored(Player(2), false)
-            set .board[5][1].text = GetPlayerNameColored(Player(3), false)
-            set .board[6][1].text = GetPlayerNameColored(Player(4), false)
-            set .board[7][1].text = GetPlayerNameColored(Player(5), false)
+            set .board[2][1].text = GetPlayerNameColored(Player(0), true)
+            set .board[3][1].text = GetPlayerNameColored(Player(1), true)
+            set .board[4][1].text = GetPlayerNameColored(Player(2), true)
+            set .board[5][1].text = GetPlayerNameColored(Player(3), true)
+            set .board[6][1].text = GetPlayerNameColored(Player(4), true)
+            set .board[7][1].text = GetPlayerNameColored(Player(5), true)
             
             //Hero Icons
             call board[2][0].setStyle(false, true)
@@ -73,12 +73,12 @@ scope FBFMultiboard
             
             //Player Names
             set .board[9][0].text = "The Coalition"
-            set .board[10][1].text = GetPlayerNameColored(Player(6), false)
-            set .board[11][1].text = GetPlayerNameColored(Player(7), false)
-            set .board[12][1].text = GetPlayerNameColored(Player(8), false)
-            set .board[13][1].text = GetPlayerNameColored(Player(9), false)
-            set .board[14][1].text = GetPlayerNameColored(Player(10), false)
-            set .board[15][1].text = GetPlayerNameColored(Player(11), false)
+            set .board[10][1].text = GetPlayerNameColored(Player(6), true)
+            set .board[11][1].text = GetPlayerNameColored(Player(7), true)
+            set .board[12][1].text = GetPlayerNameColored(Player(8), true)
+            set .board[13][1].text = GetPlayerNameColored(Player(9), true)
+            set .board[14][1].text = GetPlayerNameColored(Player(10), true)
+            set .board[15][1].text = GetPlayerNameColored(Player(11), true)
             
             //Hero Icons
             call board[10][0].setStyle(false, true)

@@ -638,10 +638,12 @@ scope TowerSystem
 			
             call GroupRemoveUnit(BEING_UPGRADE_UNITS, t)
 			call TDS.addDamage(t, damage)
-            if abi != -1 then
+            
+			if abi != -1 then
                 call UnitAddAbility(t, abi)
                 call SetUnitAbilityLevel(t, abi, abiLvl)
             endif
+			
 			set t = null
         endmethod
 		

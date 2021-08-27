@@ -115,9 +115,9 @@ library KillStreakSystem uses GetPlayerNameColored
 			local integer id = GetPlayerId(p)
 			local string msg = ""
             if streaks[id] > 0 and streakHasMessage[streaks[id]] then
-				set msg = ReplaceStringInString(streakStrings[streaks[id]], "%s1", GetPlayerNameColored(p, false))
+				set msg = ReplaceStringInString(streakStrings[streaks[id]], "%s1", GetPlayerNameColored(p, true))
 				set msg = ReplaceStringInString(msg, "%s2", I2S(streaks[id]))
-                call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 5.0, msg)
+                call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 1.0, msg)
             endif
 		endmethod
 			

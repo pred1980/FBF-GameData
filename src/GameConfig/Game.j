@@ -364,7 +364,7 @@ scope Game
             local player p = GetTriggerPlayer()
             local integer id = GetPlayerId(p)
             
-			call DisplayTextToForce(GetPlayersAll(), GetPlayerNameColored(.players[id], false) + " has left the game.")
+			call DisplayTextToForce(GetPlayersAll(), GetPlayerNameColored(.players[id], true) + " has left the game.")
             
             //set new count of players
             if (GetPlayerRace(p) == RACE_UNDEAD) then

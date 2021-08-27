@@ -76,11 +76,7 @@
 		endmethod
 
 		private static method onInit takes nothing returns nothing
-			//Item System
-			call UnitInventory.initialize()
-			call ItemShops.initialize()
-			call Item.initialize()
-			call Items.initialize()
+			
 		endmethod				
 	endstruct
 	

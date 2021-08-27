@@ -65,7 +65,7 @@ scope HeroRepickSystem
                         set BaseMode.available[index] = true
                         set Game.playerCount = Game.playerCount + 1
                         set BaseMode.repickCount[id] = BaseMode.repickCount[id] + 1
-                        call DisplayTimedTextToPlayer(GetLocalPlayer(), 0., 0., 5., GetPlayerNameColored(p, false) + " is repicking...")
+                        call DisplayTimedTextToPlayer(GetLocalPlayer(), 0., 0., 5., GetPlayerNameColored(p, true) + " is repicking...")
                         
                         //Hat der Spieler Items gekauft?
                         if PlayerStats.getPlayerBuyedItems(p) > 0 then
