@@ -81,7 +81,7 @@ library TimerUtils initializer init
             
         elseif (USE_FLEXIBLE_OFFSET) then
             // orange
-            static if (DEBUG_MODE) then
+            static if (IS_DEBUG_MODE) then
                 if(GetHandleId(t)-VOFFSET<0) then
                     call BJDebugMsg("SetTimerData: Wrong handle id, only use SetTimerData on timers created by NewTimer")
                 endif
@@ -89,7 +89,7 @@ library TimerUtils initializer init
             set data[GetHandleId(t)-VOFFSET]=value
         else
             // new red
-            static if (DEBUG_MODE) then
+            static if (IS_DEBUG_MODE) then
                 if(GetHandleId(t)-OFFSET<0) then
                     call BJDebugMsg("SetTimerData: Wrong handle id, only use SetTimerData on timers created by NewTimer")
                 endif
@@ -105,7 +105,7 @@ library TimerUtils initializer init
             
         elseif (USE_FLEXIBLE_OFFSET) then
             // orange
-            static if (DEBUG_MODE) then
+            static if (IS_DEBUG_MODE) then
                 if(GetHandleId(t)-VOFFSET<0) then
                     call BJDebugMsg("SetTimerData: Wrong handle id, only use SetTimerData on timers created by NewTimer")
                 endif
@@ -113,7 +113,7 @@ library TimerUtils initializer init
             return data[GetHandleId(t)-VOFFSET]
         else
             // new red
-            static if (DEBUG_MODE) then
+            static if (IS_DEBUG_MODE) then
                 if(GetHandleId(t)-OFFSET<0) then
                     call BJDebugMsg("SetTimerData: Wrong handle id, only use SetTimerData on timers created by NewTimer")
                 endif
@@ -259,7 +259,7 @@ library TimerUtils initializer init
                     //handle id fragmentation that it was impossible to preload
                     //so many timers and the thread crashed! Therefore this
                     //debug message is useful.
-                elseif(DEBUG_MODE) then
+                elseif(IS_DEBUG_MODE) then
                     call BJDebugMsg("There were problems and the new timer limit is "+I2S(i))
                     call BJDebugMsg("This is a rare ocurrence, if the timer limit is too low:")
                     call BJDebugMsg("a) Change USE_FLEXIBLE_OFFSET to true (reduces performance a little)")

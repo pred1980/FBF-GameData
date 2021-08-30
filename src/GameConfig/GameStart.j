@@ -49,7 +49,7 @@ scope GameStart
         
         static method initialize takes nothing returns nothing
             // if debug mode, start game immediately!
-			if (DEBUG_MODE) then
+			if (IS_DEBUG_MODE) then
 				call Game.initialize()
 				return
 			endif

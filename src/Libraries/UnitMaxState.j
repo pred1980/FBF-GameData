@@ -260,7 +260,7 @@ private function Initialize takes nothing returns nothing
         set i = i + 1
     endloop
     
-    static if DEBUG_MODE and PRELOAD_ABILITIES and not LIBRARY_AbilityPreload and not LIBRARY_xepreload then
+    static if IS_DEBUG_MODE and PRELOAD_ABILITIES and not LIBRARY_AbilityPreload and not LIBRARY_xepreload then
         call ErrorMsg("Ability preloading was enabled, but neither of the supported preload libraries are present")
     elseif PRELOAD_ABILITIES then
         //! runtextmacro UnitMaxState_Preload("RAWCODE_LIFE")

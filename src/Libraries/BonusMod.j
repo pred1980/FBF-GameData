@@ -459,7 +459,7 @@ private struct AbilityBonus extends Bonus
         debug local boolean error = false
         
         // Error messages
-        static if DEBUG_MODE then
+        static if IS_DEBUG_MODE then
             if rawcode == 0 then
                 call ErrorMsg("AbilityBonus.create()", "Bonus constructed with a rawcode of 0?!")
                 call bonus.destroy()
@@ -546,7 +546,7 @@ endstruct
 function IsBonusValid takes unit u, Bonus abstractBonus, integer value returns boolean
     local AbilityBonus bonus = AbilityBonus(abstractBonus)
     
-    static if DEBUG_MODE then
+    static if IS_DEBUG_MODE then
         if not abstractBonus.isBonusObject then
             call ErrorMsg("IsBonusValid()", "Invalid bonus type given")
         endif
@@ -571,7 +571,7 @@ function RemoveUnitBonus takes unit u, Bonus abstractBonus returns nothing
     local integer i = 0
     local AbilityBonus bonus = AbilityBonus(abstractBonus)
 
-    static if DEBUG_MODE then
+    static if IS_DEBUG_MODE then
         if not abstractBonus.isBonusObject then
             call ErrorMsg("RemoveUnitBonus()", "Invalid bonus type given")
         endif
@@ -604,7 +604,7 @@ function SetUnitBonus takes unit u, Bonus abstractBonus, integer amount returns 
     local AbilityBonus bonus = AbilityBonus(abstractBonus)
     local boolean applyMinBonus = false
     
-    static if DEBUG_MODE then
+    static if IS_DEBUG_MODE then
         if not abstractBonus.isBonusObject then
             call ErrorMsg("SetUnitBonus()", "Invalid bonus type given")
         endif
@@ -647,7 +647,7 @@ function SetUnitBonus takes unit u, Bonus abstractBonus, integer amount returns 
             call UnitAddAbility(u, bonus.rawcode + i)
             call UnitMakeAbilityPermanent(u, true, bonus.rawcode + i)
             
-			static if DEBUG_MODE then
+			static if IS_DEBUG_MODE then
                 if GetUnitAbilityLevel(u, bonus.rawcode + i) <= 0 then
                     call ErrorMsg("SetUnitBonus()", "Failed to give the 2^" + I2S(i) + " ability to the unit!")
                 endif
@@ -658,7 +658,7 @@ function SetUnitBonus takes unit u, Bonus abstractBonus, integer amount returns 
         else
             
             call UnitRemoveAbility(u, bonus.rawcode + i)
-            static if DEBUG_MODE then
+            static if IS_DEBUG_MODE then
                 if GetUnitAbilityLevel(u, bonus.rawcode + i) > 0 then
                     call ErrorMsg("SetUnitBonus()", "Unit still has the 2^" + I2S(i) + " ability after it was removed!")
                 endif
@@ -683,7 +683,7 @@ function GetUnitBonus takes unit u, Bonus abstractBonus returns integer
     local integer amount = 0
     local AbilityBonus bonus = AbilityBonus(abstractBonus)
 
-    static if DEBUG_MODE then
+    static if IS_DEBUG_MODE then
         if not abstractBonus.isBonusObject then
             call ErrorMsg("GetUnitBonus()", "Invalid bonus type given")
         endif
@@ -730,7 +730,7 @@ private function OnInit takes nothing returns nothing
     set powersOf2[0] = 1
     set powersOf2Count = 1
     
-    static if DEBUG_MODE and PRELOAD_ABILITIES and not LIBRARY_xepreload and not LIBRARY_AbilityPreload then
+    static if IS_DEBUG_MODE and PRELOAD_ABILITIES and not LIBRARY_xepreload and not LIBRARY_AbilityPreload then
         call ErrorMsg("Initialization", "PRELOAD_ABILITIES is set to true, but neither usable preloading library is detected")
     endif
     

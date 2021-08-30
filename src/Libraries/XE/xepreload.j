@@ -19,7 +19,7 @@ library xepreload initializer init requires xebasic, optional TimerUtils
     //inline friendly (when debug mode is off..)
     function XE_PreloadAbility takes integer abilid returns nothing
         call UnitAddAbility(dum, abilid)
-        static if DEBUG_MODE then
+        static if IS_DEBUG_MODE then
             if(dum==null) then
                 call BJDebugMsg("XE_PreloadAbility: do not load abilities after map init or during structs' onInit")
             elseif GetUnitAbilityLevel(dum, abilid) == 0 then

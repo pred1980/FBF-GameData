@@ -42,14 +42,14 @@ library AbilityPreload
     endglobals
 
     function AbilityPreload takes integer abilityid returns nothing
-        static if DEBUG_MODE then
+        static if IS_DEBUG_MODE then
             if GetUnitTypeId(PreloadUnit) == 0 then
                 call BJDebugMsg("AbilityPreload error: Can't preload an ability after initialization")
                 return
             endif
         endif
         call UnitAddAbility(PreloadUnit, abilityid)
-        static if DEBUG_MODE then
+        static if IS_DEBUG_MODE then
             if GetUnitAbilityLevel(PreloadUnit, abilityid) == 0 then
                 call BJDebugMsg("AbilityPreload error: Attempted to preload a non-existent ability")
             endif
@@ -58,7 +58,7 @@ library AbilityPreload
 
     function AbilityRangePreload takes integer start, integer end returns nothing
         local integer i = 1
-            static if DEBUG_MODE then
+            static if IS_DEBUG_MODE then
                 if GetUnitTypeId(PreloadUnit) == 0 then
                     call BJDebugMsg("AbilityPreload error: Can't preload an ability after initialization")
                     return

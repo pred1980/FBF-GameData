@@ -345,7 +345,7 @@ struct TableArray extends array
     //Inline-friendly when not running in debug mode
     //
     method operator [] takes integer key returns Table
-        static if DEBUG_MODE then
+        static if IS_DEBUG_MODE then
             local integer i = this.size
             if i == 0 then
                 call BJDebugMsg("IndexError: Tried to get key from invalid TableArray instance: " + I2S(this))

@@ -190,7 +190,7 @@ library CreepRoundSystem /* v 1.1.0.0
             local timer t = CreateTimer()
             
             set .tiDialog = CreateTimerDialog(t)
-			if (DEBUG_MODE) then
+			if (IS_DEBUG_MODE) then
 				call TimerStart(t, 3.0, false, function RoundSystem.onRoundStartTimerEnd)
 			else
 				call TimerStart(t, RoundType.getRoundTimer(), false, function RoundSystem.onRoundStartTimerEnd)

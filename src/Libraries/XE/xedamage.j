@@ -218,7 +218,7 @@ library xedamage initializer init requires xebasic
             endif
             set isDummyDamage = true
 			call UnitDamageTarget(dmger,u, fc ,false,false,a,d,null)
-            static if DEBUG_MODE then
+            static if IS_DEBUG_MODE then
                 if IsUnitType(u, UNIT_TYPE_DEAD) and (hp>0.405) then
                     call BJDebugMsg("xedamage: For some reason, the unit being tested by getDamageTypeFactor has died. Verify MAX_DAMAGE_FACTOR is set to a correct value. ") 
                 endif
