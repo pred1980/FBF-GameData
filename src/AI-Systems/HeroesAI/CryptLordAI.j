@@ -146,6 +146,7 @@ scope CryptLordAI
 			return abilityCasted
 		endmethod
 		
+		//TO-DO: Implement Execution for the ability "doMetamorphosis"
 		method idleActions takes nothing returns nothing 
 			local boolean abilityCasted = false
 			
@@ -156,9 +157,6 @@ scope CryptLordAI
 			endif	
 
 			if (not abilityCasted) then
-				// just for development...
-				set .moveX = -6535.1
-				set .moveY = 2039.7
 				call .move()
 			endif
 			

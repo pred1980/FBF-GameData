@@ -1,7 +1,8 @@
-scope HeroAI
+library HeroAI requires GetClosestWidget, RegisterPlayerUnitEvent, Table, TimerUtils, /*
+					*/	optional FitnessFunc, optional GroupUtils, optional HeroAIPriority, 	/*
+					*/	optional HeroAIThreat, optional HeroAIEventResponse, optional IsUnitChanneling
 //==========================================================================================
-//  HeroAI v1.0.0
-//      by pred1980
+//  HeroAI by pred1980
 //==========================================================================================
 	globals
 		// The period in which the hero AI will do actions. A very low period can cause strain.
@@ -184,20 +185,24 @@ scope HeroAI
 		// Set whenever update is called
 		static thistype tempthis
 		// Holds the state of the AI
-		private integer state
+		private integer st
 		// Index of the itemset
 		private integer itemsetIndex
 		
+		implement optional HeroAIPriority
+        implement optional HeroAIThreat
+        implement optional HeroAIEventResponse
+		
 		private method showState takes nothing returns nothing
-			if (.state == STATE_GO_TELEPORT) then
+			if (.st == STATE_GO_TELEPORT) then
 				call BJDebugMsg(GetUnitName(.hero) + ": STATE_GO_TELEPORT")
-			elseif (.state == STATE_ENGAGED) then
+			elseif (.st == STATE_ENGAGED) then
 				call BJDebugMsg(GetUnitName(.hero) + ": STATE_ENGAGED")
-			elseif (.state == STATE_GO_SHOP) then
+			elseif (.st == STATE_GO_SHOP) then
 				call BJDebugMsg(GetUnitName(.hero) + ": STATE_GO_SHOP")
-			elseif (.state == STATE_IDLE) then
+			elseif (.st == STATE_IDLE) then
 				call BJDebugMsg(GetUnitName(.hero) + ": STATE_IDLE")
-			elseif (.state == STATE_RUN_AWAY) then
+			elseif (.st == STATE_RUN_AWAY) then
 				call BJDebugMsg(GetUnitName(.hero) + ": STATE_RUN_AWAY")
 			else
 				call BJDebugMsg(GetUnitName(.hero) + OrderId2StringBJ(GetUnitCurrentOrder(GetTriggerUnit())))
@@ -225,6 +230,10 @@ scope HeroAI
 		method operator isChanneling takes nothing returns boolean
             return IsUnitChanneling(.hero)
 		endmethod
+		
+		method operator state takes nothing returns integer
+            return .st
+        endmethod
 		
 		method updateLifeAndMana takes nothing returns nothing
 			set .life = GetWidgetLife(.hero)
@@ -269,25 +278,15 @@ scope HeroAI
 		// Action methods
 		method move takes nothing returns nothing
 			//call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " is moving.")
-			call IssuePointOrderById(.hero, MOVE, .moveX, .moveY)
+			call IssuePointOrderById(.hero, ATTACK, .moveX, .moveY)
         endmethod 
         
 		//Note: http://www.wc3c.net/showthread.php?t=107999
 		// IssuePointOrder does not work!!!
-        method run takes nothing returns nothing
+        method run takes nothing returns boolean
 			//call BJDebugMsg("[HeroAI] Order " + GetUnitName(.hero) + " is running.")
-			call IssuePointOrderById(.hero, MOVE, .runX, .runY)
+			return IssuePointOrderById(.hero, MOVE, .runX, .runY)
         endmethod
-		
-		method defaultAssaultEnemy takes nothing returns nothing
-			if (.orderId == 0) then
-				call GroupClear(ENUM_GROUP)
-				call GroupAddGroup(.enemies, ENUM_GROUP)
-				call SetFitnessPosition(GetUnitX(.hero), GetUnitY(.hero))
-				call PruneGroup(ENUM_GROUP, FitnessFunc_LowDistance, 1, NO_FITNESS_LIMIT)
-				call IssueTargetOrder(.hero, "attack", FirstOfGroup(ENUM_GROUP))
-			endif
-		endmethod
 		
 		private static method filtUnits takes nothing returns boolean
             local unit u = GetFilterUnit()
@@ -312,7 +311,7 @@ scope HeroAI
 					endif
 					call GroupAddUnit(tempthis.enemies, u)
 					set tempthis.enemyNum = tempthis.enemyNum + 1
-					//call BJDebugMsg("enemyNum: " + I2S(tempthis.enemyNum))
+					call BJDebugMsg("enemyNum: " + I2S(tempthis.enemyNum))
 				// Filter unit --> is fountain???
                 elseif (isSafeUnit(u)) then
 					//call BJDebugMsg(GetUnitName(u) + " is an Fountain!")
@@ -473,6 +472,11 @@ scope HeroAI
 				set tempHeroOwner = .owner
 				set .shopUnit = GetClosestUnit(.hx, .hy, Filter(function shopTypeIdCheck))
 
+				//call BJDebugMsg("itemBuild.size:" + I2S(.itemBuild.size))
+				//call BJDebugMsg("itemsetIndex:" + I2S(.itemsetIndex))
+				//call BJDebugMsg("stack:" + I2S(stack))
+				//call BJDebugMsg("maxStack:" + I2S(maxStack))
+				
 				exitwhen (.itemsetIndex == .itemBuild.size)
 				if (.canBuyItem(it) and (stack < maxStack)) then
 					if (IsUnitInRange(.hero, .shopUnit, SELL_ITEM_RANGE)) then
@@ -499,8 +503,31 @@ scope HeroAI
 			endloop
         endmethod
 		
+		method defaultAssaultEnemy takes nothing returns nothing
+			static if thistype.setPriorityEnemy.exists then
+                call .setPriorityEnemy(.enemies)
+                call IssueTargetOrder(.hero, "attack", .priorityEnemy)
+            else
+                static if LIBRARY_FitnessFunc then                
+                	static if LIBRARY_GroupUtils then
+						call GroupClear(ENUM_GROUP)
+						call GroupAddGroup(.enemies, ENUM_GROUP)
+						call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
+						call IssueTargetOrder(.hero, "attack", FirstOfGroup(ENUM_GROUP))  
+                    else
+						call GroupClear(bj_lastCreatedGroup)
+						call GroupAddGroup(.enemies, bj_lastCreatedGroup)
+						call PruneGroup(bj_lastCreatedGroup, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
+						call IssueTargetOrder(.hero, "attack", FirstOfGroup(bj_lastCreatedGroup))  
+                    endif
+                 else // A lazy way to make the hero attack a random unit if none of the special targetting libraries are there
+                    call IssueTargetOrder(.hero, "attack", GroupPickRandomUnit(.enemies)) 
+                endif
+            endif
+        endmethod
+		
 		method defaultLoopActions takes nothing returns nothing
-        	//call showState()
+        	call showState()
 			
 			// If the hero feel bad... use heal and mana potions
 			if (.badCondition) then
@@ -508,12 +535,12 @@ scope HeroAI
 				call useManaPotion()
 			endif
 
-			if (.state == STATE_GO_SHOP) then
+			if (.st == STATE_GO_SHOP) then
 				call .canShop()
-				
+					
 				//let the hero walk to the teleporter back to the battlefield
 				if (.itemsetIndex == .itemBuild.size) then
-					set .state = STATE_GO_TELEPORT
+					set .st = STATE_GO_TELEPORT
 					
 					// if hero is ok, leave base with the teleporter
 					if (.goodCondition) then
@@ -523,7 +550,7 @@ scope HeroAI
 				endif
 			endif
 			
-			if (.state == STATE_GO_TELEPORT) then
+			if (.st == STATE_GO_TELEPORT) then
 				if (.goodCondition) then
 					static if thistype.moveActions.exists then
 						if not .moveActions() then
@@ -535,33 +562,28 @@ scope HeroAI
 				endif
 			endif
 			
-			if (.state == STATE_IDLE) then
+			if (.st == STATE_IDLE) then
 				if (not .isChanneling) then
-					static if thistype.idleActions.exists then
-						call .idleActions()
-					else
-						// just for development...
-						// REMOVE later from AI: 
-						//		Ghoul 
-						//		Crypt Lord (Metamorphosis)
-						
-						if (GetUnitRace(.hero) == RACE_UNDEAD) then
-							set .moveX = -6535.1
-							set .moveY = 2039.7
+					if (GetUnitRace(.hero) == RACE_UNDEAD) then
+							call BJDebugMsg("1: " + GetUnitName(.closestAlly))
+							set .moveX = GetUnitX(.closestAlly)
+							set .moveY = GetUnitY(.closestAlly)
 						else
-							set .moveX = -5204.3
-							set .moveY = 1387.0
+							// Position of Forsaken Heart (see KingMithasMode.j)
+							set .moveX = 8640.0
+							set .moveY = 4672.0
 						endif
+						
 						call .move()
-					endif
 				endif
 			endif
 			
-			if (.state == STATE_RUN_AWAY) then
+			if (.st == STATE_RUN_AWAY) then
 				// if still need more hp/mana, run away!
 				if (.badCondition) then
 					// Locate the next teleporter back to base!
 					call .setWayBackToBase()
+					
 					static if thistype.runActions.exists then
 						if (.orderId != HOLD_POSITION) then
 							call .runActions()
@@ -569,10 +591,25 @@ scope HeroAI
 					else
 						call .run()
 					endif
+				else
+					if (not .isChanneling) then
+						if (GetUnitRace(.hero) == RACE_UNDEAD) then
+								// Wo soll der Undead hinrennen wenn es ihm noch gut geht?
+								// Erstmal ein Stück entfernen von den gegnerischen Einheiten
+								set .moveX = 0
+								set .moveY = 0
+							else
+								// Wo soll der Forsaken hinrennen wenn es ihm noch gut geht?
+								set .moveX = 0
+								set .moveY = 0
+							endif
+							
+							call .move()
+					endif
 				endif
 			endif
 			
-			if (.state == STATE_ENGAGED) then
+			if (.st == STATE_ENGAGED) then
 				if (not .isChanneling) then
 					static if thistype.assaultEnemy.exists then
 						call .assaultEnemy()
@@ -627,6 +664,7 @@ scope HeroAI
 			set .closestEnemyHero = GetClosestUnitInGroup(.hx, .hy, .enemyHeroes)
 			set .furthestEnemy = GetFurthestUnitInGroup(.hx, .hy, .enemies)
 			set .furthestEnemyHero = GetFurthestUnitInGroup(.hx, .hy, .enemyHeroes)
+			
 			// closest and furthest allies
 			set .closestAlly = GetClosestUnitInGroup(.hx, .hy, .allies)
 			set .closestAllyHero = GetClosestUnitInGroup(.hx, .hy, .allyHeroes)
@@ -634,24 +672,41 @@ scope HeroAI
 			set .furthestAllyHero = GetFurthestUnitInGroup(.hx, .hy, .allyHeroes)
 			
 			/*
+			 * STATE_RUN_AWAY
+			 */
+			// Checking to see if the AI should be thinking of runnning away
+			if (.st != STATE_RUN_AWAY) then
+				if .enemyNum > 0 then
+					call .calcThreat()
+					if (.threat > (.threatThreshold * .thresholdRunFactor)) then
+						set .st = STATE_RUN_AWAY
+					endif
+				elseif (.badCondition) then
+					set .st = STATE_RUN_AWAY
+				endif
+			elseif (.goodCondition) then
+				set .st = STATE_IDLE
+			endif
+			
+			/*
 			 * STATE_GO_SHOP
 			 */
-			 if (.state != STATE_GO_SHOP) then
-				if ((.goodCondition) 	and /*
+			if (.st != STATE_GO_SHOP) then
+				if ((.goodCondition) and /*
 				*/	(.safeUnit != null) and /*
-				*/	(.state != STATE_GO_TELEPORT)) then
-				set .state = STATE_GO_SHOP
+				*/	(.itemsetIndex < .itemBuild.size)) then
+					set .st = STATE_GO_SHOP
 				endif
 			 endif
 			 
 			/*
 			 * STATE_ENGAGED
 			 */
-			if (.state != STATE_ENGAGED) then
+			if (.st != STATE_ENGAGED) then
 				// Is everything ok and no nearby fountain? Search for enemies...
 				if (.goodCondition and .safeUnit == null) then
 					if (.enemyNum > 0) then
-						set .state = STATE_ENGAGED
+						set .st = STATE_ENGAGED
 					endif
 				endif
 			endif
@@ -659,24 +714,14 @@ scope HeroAI
 			/*
 			 * STATE_IDLE
 			 */
-			if (.state != STATE_IDLE) then
+			if (.st != STATE_IDLE) then
 				if ((.goodCondition) and /*
 				*/	(.safeUnit == null) and /*
-				*/	(.state != STATE_GO_SHOP) and /*
-				*/	(.state != STATE_RUN_AWAY) and /*
-				*/	(.state != STATE_ENGAGED) or /*
+				*/	(.st != STATE_GO_SHOP) and /*
+				*/	(.st != STATE_RUN_AWAY) and /*
+				*/	(.st != STATE_ENGAGED) or /*
 				*/	(.enemyNum == 0)) then
-					set .state = STATE_IDLE
-				endif
-			endif
-			
-			/*
-			 * STATE_RUN_AWAY
-			 */
-			if (.state != STATE_RUN_AWAY) then
-				// Hero has low HP? Search for the Teleporter back to the base
-				if (.badCondition) then
-					set .state = STATE_RUN_AWAY
+					set .st = STATE_IDLE
 				endif
 			endif
 		endmethod
@@ -692,6 +737,10 @@ scope HeroAI
 					call .defaultLoopActions()
 				endif
 			endif
+        endmethod
+		
+		static method getAIIndexFromHero takes unit hero returns thistype
+            return heroesAI[GetHandleId(hero)]
         endmethod
 		
 		static method create takes unit hero returns thistype
@@ -719,6 +768,11 @@ scope HeroAI
 			set .maxLife = GetUnitState(.hero, UNIT_STATE_MAX_LIFE)
 			set .mana = GetUnitState(.hero, UNIT_STATE_MANA)
 			set .maxMana = GetUnitState(.hero, UNIT_STATE_MAX_MANA)
+			
+			static if LIBRARY_HeroAIEventResponse then
+                // Currently not needed / causes a crash!
+				//call .registerEventResponses()
+            endif
 			
 			static if thistype.onCreate.exists then
 				call .onCreate()
@@ -805,4 +859,4 @@ scope HeroAI
     private struct A extends array
         implement I
     endstruct
-endscope
+endlibrary

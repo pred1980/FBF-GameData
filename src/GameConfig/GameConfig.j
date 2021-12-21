@@ -2,7 +2,7 @@ scope GameConfig
 	
 	// PUBLIC GLOBALS
 	globals
-		constant boolean IS_DEBUG_MODE = true
+		constant boolean IS_DEBUG_MODE = false
 	endglobals
 	
 	private module Init

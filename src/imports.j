@@ -87,6 +87,10 @@
 
 /* AI Systems */
 //! import "C:\Users\ppuls\Desktop\Forsaken Bastion's Fall\FBF-GameData\src\AI-Systems\AI-Creeps.j"
+//! import "C:\Users\ppuls\Desktop\Forsaken Bastion's Fall\FBF-GameData\src\AI-Systems\HeroAIPriority.j"
+//! import "C:\Users\ppuls\Desktop\Forsaken Bastion's Fall\FBF-GameData\src\AI-Systems\HeroAIThreat.j"
+//! import "C:\Users\ppuls\Desktop\Forsaken Bastion's Fall\FBF-GameData\src\AI-Systems\HeroAIEventResponse.j"
+//! import "C:\Users\ppuls\Desktop\Forsaken Bastion's Fall\FBF-GameData\src\AI-Systems\AIPlayerDifficultySettings.j"
 //! import "C:\Users\ppuls\Desktop\Forsaken Bastion's Fall\FBF-GameData\src\AI-Systems\HeroAI.j"
 //! import "C:\Users\ppuls\Desktop\Forsaken Bastion's Fall\FBF-GameData\src\AI-Systems\HeroAILearnset.j"
 //! import "C:\Users\ppuls\Desktop\Forsaken Bastion's Fall\FBF-GameData\src\AI-Systems\HeroAIItem.j"

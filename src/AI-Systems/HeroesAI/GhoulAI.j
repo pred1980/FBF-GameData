@@ -73,6 +73,7 @@ scope GhoulAI
 			return abilityCasted
 		endmethod
 	
+		//TO-DO: Implement Execution for the ability "doCannibalize"
 		method idleActions takes nothing returns  nothing
 			local boolean abilityCasted = false
 			
@@ -87,9 +88,6 @@ scope GhoulAI
 			set abilityCasted = doCannibalize()
 			
 			if ((not CA_casted) and (.orderId != C_ORDER_ID) and (not abilityCasted))then
-				// just for development...
-				set .moveX = -6535.1
-				set .moveY = 2039.7
 				call .move()
 			endif
 		endmethod
