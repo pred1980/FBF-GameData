@@ -320,8 +320,6 @@
  * HEROES
  */
 
-// import "C:\Users\patri\IdeaProjects\FBF\src\Heroes\HerosWill.vj"
- 
 /* Behemoth */
 //! import "C:\Users\patri\IdeaProjects\FBF\src\Heroes\Behemoth\ExplosiveTantrum.vj"
 //! import "C:\Users\patri\IdeaProjects\FBF\src\Heroes\Behemoth\BeastStomper.vj"
