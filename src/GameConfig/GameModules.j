@@ -81,12 +81,12 @@ scope GameModules
             if (Game.getCoalitionPlayers() > 0) then
 				call CoalitionTeleport.initialize()
 			endif
-			
-            //create first Forsaken Teleporter in the AOS
-			if (Game.getForsakenPlayers() > 0) then
-				call ForsakenTeleport.initialize()
-			endif
-			
+
+//            //create first Forsaken Teleporter in the AOS
+//			if (Game.getForsakenPlayers() > 0) then
+//				call ForsakenTeleport.initialize()
+//			endif
+
 			//init Defense Mode
 			call StandardDefenseInit.initialize()
 			
