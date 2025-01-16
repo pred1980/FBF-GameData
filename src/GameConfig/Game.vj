@@ -325,41 +325,6 @@ scope Game
 			endif
         endmethod
         
-        static method initRegionalFog takes nothing returns nothing
-            local fogData fd1
-            local fogData fd2
-            local fogData fd3
-            local fog f
-            
-            set fd1 = fogData.create()
-            set fd1.red = .10
-            set fd1.blue = .15
-            set fd1.green = .20
-            set fd1.zStart = 1700
-            set fd1.zEnd = 2700
-            set f = fog.createCircular(fd1, GetRectCenterX(gg_rct_GravestoneRect0), GetRectCenterY(gg_rct_GravestoneRect0), 1200)
-            set f.blendWidth = 600
-            
-            set fd2 = fogData.create()
-            set fd2.red = .10
-            set fd2.blue = .15
-            set fd2.green = .20
-            set fd2.zStart = 1700
-            set fd2.zEnd = 2700
-            set f = fog.createCircular(fd2, GetRectCenterX(gg_rct_GravestoneRect1), GetRectCenterY(gg_rct_GravestoneRect1), 1200)
-            set f.blendWidth = 600
-            
-            set fd3 = fogData.create()
-            set fd3.red = .10
-            set fd3.blue = .15
-            set fd3.green = .20
-            set fd3.zStart = 1700
-            set fd3.zEnd = 2700
-            set f = fog.createCircular(fd3, GetRectCenterX(gg_rct_GravestoneRect2), GetRectCenterY(gg_rct_GravestoneRect2), 1200)
-            set f.blendWidth = 600
-            
-        endmethod
-    
         static method onLeave takes nothing returns nothing
             local player p = GetTriggerPlayer()
             local integer id = GetPlayerId(p)

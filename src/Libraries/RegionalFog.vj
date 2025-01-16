@@ -72,7 +72,7 @@ library RegionalFog requires ListModule
     
     struct fogData
         // Calibration
-        static constant real SAMPLE_RATE         = 0.02 /* Determines the interval during
+        static constant real SAMPLE_RATE         = 0.04 /* Determines the interval during
                                                            which the camera position is
                                                            sampled and the global fog is
                                                            updated. Lower values may lower
@@ -84,7 +84,7 @@ library RegionalFog requires ListModule
                                                         will start to blend from night
                                                         to day settings at 3 am and will
                                                         finish at 9 am (= 6 ingame hours). */
-        real zStart = 2000
+        real zStart = 1500
         real zEnd   = 3000
         real red    = 0
         real green  = 0
@@ -165,6 +165,7 @@ library RegionalFog requires ListModule
         static method sample takes nothing returns nothing
             local fog f = .first
             local real time = GetFloatGameState(GAME_STATE_TIME_OF_DAY)
+            local real cameraDistance = GetCameraField(CAMERA_FIELD_TARGET_DISTANCE)
             local real x = GetCameraTargetPositionX()
             local real y = GetCameraTargetPositionY()
             local real dx
@@ -172,6 +173,14 @@ library RegionalFog requires ListModule
             local real dayratio
             local real d
             local real r = 0
+
+            // Sanftere Skalierung
+            set .defaultData.zStart = cameraDistance * 0.2
+            set .defaultData.zEnd   = cameraDistance * 1.2
+
+            // Übergänge glätten
+            set .currentData.zStart = .currentData.zStart * 0.9 + .defaultData.zStart * 0.1
+            set .currentData.zEnd   = .currentData.zEnd   * 0.9 + .defaultData.zEnd   * 0.1
             
             if (time >= .duskEnd and time < 24) or (time >= 0 and time < .dawnStart) then
                 set dayratio = 0

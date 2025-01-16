@@ -93,9 +93,6 @@ scope GameModules
 			//Test: Send Unit System
 			call CustomCreepSystem.initialize()
 			
-			// Regional Fog (Graveyard)
-			//call Game.initRegionalFog()
-			
 			// Camera System (only zoom)v
 			call CameraSystem.initialize()
 		endmethod
