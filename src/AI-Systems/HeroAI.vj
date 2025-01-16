@@ -46,38 +46,71 @@ library HeroAI requires GetClosestWidget, RegisterPlayerUnitEvent, Table, TimerU
 		private integer shopTypeId
 
 		// Used to refer to the AI hero for finding the closest safe unit
-		private player tempHeroOwner			
+		private player tempHeroOwner
+
+		// Forsaken Shops
+        private constant integer FORSAKEN_SHOP_0 = 'u000'
+        private constant integer FORSAKEN_SHOP_1 = 'u001'
+        private constant integer FORSAKEN_SHOP_2 = 'u003'
+        // Orc Shops
+        private constant integer ORC_SHOP_0 = 'u00N'
+        private constant integer ORC_SHOP_1 = 'u00O'
+        private constant integer ORC_SHOP_2 = 'u00P'
+        // Human Shops
+        private constant integer HUMAN_SHOP_0 = 'u00K'
+        private constant integer HUMAN_SHOP_1 = 'u00L'
+        private constant integer HUMAN_SHOP_2 = 'u00M'
+        // Nightelf Shops
+        private constant integer NIGHTELF_SHOP_0 = 'u00H'
+        private constant integer NIGHTELF_SHOP_1 = 'u00I'
+        private constant integer NIGHTELF_SHOP_2 = 'u00J'
+
+        // Forsaken Heart
+        private constant integer FORSAKEN_HEART = 'H014'
+
+        //Jump Teleporter
+        private constant integer JUMP_TELEPORTER = 'n007'
+
+        // Base Teleporters
+        private constant integer BASE_TELEPORTER_0 = 'n00M'
+        private constant integer BASE_TELEPORTER_1 = 'n00T'
+
+        // Fountain Undead
+        private constant integer FOUNTAIN_UNDEAD = 'n006'
+        // Fountain Coalition
+        private constant integer FOUNTAIN_COALITION = 'n008'
     endglobals
 	
 	// The function that determines if it's the Forsaken Heart
 	private function isForsakenHeart takes unit u returns boolean
-    	return GetUnitTypeId(u) == 'H014'
+    	return GetUnitTypeId(u) == FORSAKEN_HEART
 	endfunction
 	
 	// The function that determines if it's a jump teleporter
 	private function isJumpTeleporter takes unit u returns boolean
-    	return GetUnitTypeId(u) == 'n007'
+    	return GetUnitTypeId(u) == JUMP_TELEPORTER
 	endfunction
 	
 	// The function that determines if it's a base teleporter (from or to the base)
 	private function isBaseTeleporter takes unit u returns boolean
     	//To-Do: Make two different Unit-IDs to get the correct  base teleporter for each race
-		return GetUnitTypeId(u) == 'n00M' or GetUnitTypeId(u) == 'n00T'
+		return GetUnitTypeId(u) == BASE_TELEPORTER_0 or GetUnitTypeId(u) == BASE_TELEPORTER_1
 	endfunction
 	
 	// The function that determines if it's a shop
 	private function isShop takes unit u returns boolean
+
     	// Forsaken Shops
-		if (GetUnitTypeId(u) == 'u000' or GetUnitTypeId(u) == 'u001' or GetUnitTypeId(u) == 'u003') then
+		if (GetUnitTypeId(u) == FORSAKEN_SHOP_0  or GetUnitTypeId(u) == FORSAKEN_SHOP_1 or GetUnitTypeId(u) == FORSAKEN_SHOP_2) then
 			return true
 		// Orc Shop
-		elseif (GetUnitTypeId(u) == 'u00N' or GetUnitTypeId(u) == 'u00O' or GetUnitTypeId(u) == 'u00P') then
+		elseif (GetUnitTypeId(u) == ORC_SHOP_0 or GetUnitTypeId(u) == ORC_SHOP_1 or GetUnitTypeId(u) == ORC_SHOP_2) then
 			return true
 		// Human Shops
-		elseif (GetUnitTypeId(u) == 'u00K' or GetUnitTypeId(u) == 'u00L' or GetUnitTypeId(u) == 'u00M') then
+		elseif (GetUnitTypeId(u) == HUMAN_SHOP_0 or GetUnitTypeId(u) == HUMAN_SHOP_1 or GetUnitTypeId(u) == HUMAN_SHOP_2) then
 			return true
 		// Nightelf Shops
-		elseif (GetUnitTypeId(u) == 'u00H' or GetUnitTypeId(u) == 'u00I' or GetUnitTypeId(u) == 'u00J') then
+		elseif (GetUnitTypeId(u) == NIGHTELF_SHOP_0 or GetUnitTypeId(u) == NIGHTELF_SHOP_1 or GetUnitTypeId(u) == NIGHTELF_SHOP_2) then
 			return true
 		else
 			return false
@@ -86,7 +119,7 @@ library HeroAI requires GetClosestWidget, RegisterPlayerUnitEvent, Table, TimerU
 	
 	// The function that determines what is a safe unit, like a fountain, for the hero to run to.
 	private function isSafeUnit takes unit u returns boolean
-    	return (GetUnitTypeId(u) == 'n006' or GetUnitTypeId(u) == 'n008')
+    	return (GetUnitTypeId(u) == FOUNTAIN_UNDEAD or GetUnitTypeId(u) == FOUNTAIN_COALITION)
     endfunction
 	
 	private function shopConditions takes unit u, player heroOwner returns boolean
@@ -103,23 +136,23 @@ library HeroAI requires GetClosestWidget, RegisterPlayerUnitEvent, Table, TimerU
 	
 	// Returns Forsaken Safe Unit (Fountain)
 	private function forsakenSafeUnit takes nothing returns boolean
-    	return (GetUnitTypeId(GetFilterUnit()) == 'n006')
+    	return (GetUnitTypeId(GetFilterUnit()) == FOUNTAIN_UNDEAD)
     endfunction
 	
 	// Returns Forsaken Safe Unit (Fountain)
 	private function coalitionSafeUnit takes nothing returns boolean
-    	return (GetUnitTypeId(GetFilterUnit()) == 'n008')
+    	return (GetUnitTypeId(GetFilterUnit()) == FOUNTAIN_COALITION)
     endfunction
 	
 	// Returns Forsaken Base Teleporter
 	private function forsakenBaseTeleporter takes nothing returns boolean
-    	return (GetUnitTypeId(GetFilterUnit()) == 'n00M')
+    	return (GetUnitTypeId(GetFilterUnit()) == BASE_TELEPORTER_0)
     endfunction
 	
 	// Returns Coalition Base Teleporter
 	// To-Do.: Create own Teleporter unit with a unique ID
 	private function coalitionBaseTeleporter takes nothing returns boolean
-    	return (GetUnitTypeId(GetFilterUnit()) == 'n00T')
+    	return (GetUnitTypeId(GetFilterUnit()) == BASE_TELEPORTER_1)
     endfunction
 	
 	//! runtextmacro HeroAILearnset()
