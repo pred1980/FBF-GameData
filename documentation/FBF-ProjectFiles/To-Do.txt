@@ -1,0 +1,22 @@
+*** HEROES ***
+
+Ice Avatar:
+
+- The Ice Avatar is a bit buggy, if u Repick him and select him (not picking), he has 15 skill points left, but 3 out of 4 skills maxed, means he got 10 skillpoints too much. 
+  if u pick him again, you start normal with 1 skillpoint, still its a bug
+
+Nerubian Widow:
+
+- if you play All Pick Mode, and you click on Nerubian Widow, you can skill her Ulti, it isnt skilled like the rest of the heroes have everything skilled.
+
+*** TOWERS ***
+
+Tower Build Area:
+
+- first, i wanted to Post this in General Gameplay, but since i couldnt i Post it here, since it has to do something with Towers.
+  In the Map are many Places where you are "allowed" to build Towers, but you cant, i made an example as
+  its not a real bug, but till final version this should be fixed over the whole map
+
+Decayed Earth Tower:
+
+- The Decayed Earth Tower is either too strong or way too cheap, you can kill nearly everything 1hit in the first waves for 1 price of 225 wood

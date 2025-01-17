@@ -1,0 +1,31 @@
+Was ist zu tun?
+
+Allgemeines
+-----------
+- Items kaufen (erledigt)
+- Teleporter suchen und benutzen (erledigt)
+- Prioritäten System erstellen, was Einheiten priorisiert (siehe dazu mal in die HeroAIPriority.j) - anschauen und ob man das nehmen kann, 
+  oder ob es ggf. erweitert werden muss
+- Helden sollen auch schauen ob verbündete Hilfe brauchen
+- Helden sollen so kämpfen, dass sie immer die Verteidigungseinheiten an der Seite haben - Keine Alleingänge!!! Es gibt an sehr vielen
+  Stellen Verteidigungseinheiten!!!
+- Helden sollen die Teleporter verwenden um schneller von A nach B zu kommen.
+
+Forsaken Spieler
+----------------
+- Als Forsaken Spieler muss man ja grundsätzlich immer Stück für Stück weiter zurück gehen und dort mit den verbündeteten Creeps die Stellung halten - 
+  das muss man auch implementieren (grad auch mit der großen Spinne und deren Nachkommen), die Helden müssen dort versuchen die Stellung zu halten -
+  wenn die tot ist, müssen die Helden auf dem Friedhof versuchen die Stellung immer wieder zu halten, sie müssen also dort mit den Creeps kämpfen -
+  Wo die Creeps sind, müssen die Helden zusammen kämpfen.
+- Wenn der Friedhof durchbrochen ist, müssen sie weiter zurück fliehen bis zum Schlammmonster und dort mit dem zusammen kämpfen
+- Wenn das Schlammmonster tot ist müssen sie nun noch die letzte Bastion verteidigen
+- In der Base gibt es einen Item shop, wo sich die Helden ab und zu auch mal Einheiten kaufen, die dann automatisch mit dem Helden angreifen -
+  Info: Das automatische Kämpfen ist schon implementiert! Es muss also nur noch das "Kaufen" gebaut werden!
+- Die Helden dürfen nicht weiter als die Kuppel(Dome) laufen, da sie sonst extrem verlangsamt werden und dann leicht zum Opfer werden.
+
+Coalition Spieler
+-----------------
+- als Coalition Spieler muss man sich Stück für die Stück vorkämpfen, dabei ist es sehr wichtig, dass die Helden IMMER mit den Creeps zusammen attackieren - 
+- Es können in der Base können Einheiten gekauft werden, die automatisch auf der jeweiligen Lane loslaufen - Das kaufen muss an der Stelle gebaut werden.
+- Im Forsaken Bereich soll es möglich sein, dass die Helden sich Einheiten kaufen, die dann die dann automatisch mit dem Helden angreifen! -
+  Info: Das automatische Kämpfen ist schon implementiert! Es muss also nur noch das "Kaufen" gebaut werden!

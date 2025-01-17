@@ -1,0 +1,11 @@
+scope TeleporterStart initializer init
+
+	private function init takes nothing returns nothing
+		//create first Coalition Teleporter in the AOS
+		call CoalitionTeleport.initialize()
+	
+		//create first Forsaken Teleporter in the AOS
+		call ForsakenTeleport.initialize()
+	endfunction
+
+endscope

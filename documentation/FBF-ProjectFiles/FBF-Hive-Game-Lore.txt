@@ -1,0 +1,675 @@
+[CENTER]
+	[SIZE="4"][B]Forsaken Bastion's Fall[/B][/SIZE]
+	[SIZE="2"][I]Game Lore & Story Document[/I][/SIZE]
+	[SIZE="2"][I]Author: Dzerpic[/I][/SIZE]
+	[SIZE="1"]v.1.2[/SIZE]
+
+
+	[B]Table of Contents[/B]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]0. Changelog[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				V.1.0- Factions's descriptions and backstories created. 
+				V.1.1- Added names and corrections. Emailed. 
+				V.1.2- Changelog and Plot added. 
+				V.1.3- Added Heroes Section and Building Section (Towers, Shops)
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]1. The Plot[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				This is the official Forsaken Bastion's Fall prologue. It'll be used for the 
+				presentation on The Hive Workshop, Facebook and other possible sites. It 
+				roughly explains the setting and certain aspects of the game.
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]1.1 Forsaken Bastion's Fall (Unfinished)[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				More than a 100 years ago, there existed a kingdom; all the power 
+				concentrated in the one King. Although a totalitarian, despotic regime, the 
+				kingdom thrived thanks to its well organized economy and hard-working 
+				citizens. Under its control, were rich and unique resources and a particularly 
+				fertile land. In a short time after its foundation, the kingdom became almost 
+				independent; It generated most of what it needed on itself and the excessess 
+				were sold or traded.
+
+				For as perfect as the kingdom seemed to the outside world, life on the inside 
+				was unbearable for everyone; the King included. His Majesty had everything he 
+				wanted, yet he always wanted more. His thirst was insatiable. His castle was 
+				two times as big as the second biggest one; his wives were many; his daughter 
+				were his brides-to-be; his people acted as mindless peons, doing everything he 
+				ordered; his armies were vast, outmatched and, most importantly, loyal to the 
+				end. In spite of all this, he wanted more.
+
+				Before he even realized, he was old. Not long after, he found an answer in 
+				magic. “By chance”, a travelling Wizard met the King on the street and offered 
+				him the solution to his problem. Of course, looks are deceiving and the King 
+				was too blinded to see through the fraud, not even when his life force and was 
+				drained by his latest newborn. A side effect of the spell, the King was granted 
+				eternal youth but conditions were that, if he had a male child, his essence 
+				would be consumed and absorbed into his son's.
+
+				The people were astonished at the King's sudden demise; not knowing if to 
+				laugh or cry. Swiftly, the Wizard took the child and the throne. The greatest 
+				kingdom ever known now at his vile hands. For a reason unascertained, the 
+				Wizard killed all of the King's wives, daughters and sons with one powerful 
+				spell, with the exception of the youngest of them all. The tamed people 
+				accepted their fate disgustingly easily, even for the Wizard. And the loyal army 
+				was made to believe the Wizard was the King with a simple illusionary spell.
+				 
+				The Kingdom fell quickly into disgrace as the Wizard didn't care about politics 
+				and economy, only the consumption of souls. He had taken his first victim in 
+				the King and he had his future vessel ready, in the King's youngest son, Necro 
+				Necromansen [prototype name, of course].
+
+				The unlucky child had a golden heart, but his mind and soul were shaped at 
+				the Wizard's will. His sense of morals and ethics were distorted and, for his 
+				whole life he lived in a crafted world, twisted and corrupt. His appearance soon 
+				changed accordingly and he became a dull, pale, emotionless, almost lifeless child.
+				  
+				Years went on. With each one, hundreds of souls were absorbed by Necro's. He 
+				was like a sponge: all he touched, he consumed. The inanimate corpses filled 
+				the streets and buildings of the Kingdom until nothing remained. Finally, a 100 
+				years ago, the Wizard's and Necro's souls were fused into one.
+				 
+				Only too late, the Wizard realized the flaw of his plan, Necro's golden Heart. 
+				Unpierced by the conjurer's malice, it alone interrupted the spell and as the 
+				Wizard pushed harder into Necro's soul, the young agonizing prince's body 
+				imploded. His heart surrounded by all the souls consumed, are all that 
+				remained. The Wizard and the Prince forever trapped in the Golden Heart. The 
+				Wizard's will still prevailed, easily overpowering Necro's, thus taking control.
+				 
+				The Great Kingdom decayed rapidly and Necro's Heart, yet controlled by the 
+				Conjurer, became the center of his new Empire of Putrefaction. Soon after, 
+				thousands of citizens arose as Necro's undead minions. The excelently trained, 
+				battlehardened soldiers became easily distorted into his nefarious elite 
+				personal army.
+				 
+				Ever since, the World's kingdoms and nations have been trying to hold the 
+				Heart's Disease: Necro's unbeatable, conquering army. One small groups of 
+				rebels from a different kingdom rose to the challenge and managed to stop the 
+				Heart's advancement with unorthodox tactics. This gave the rest of the World a 
+				chance to take a breath and assess the situation. After many years of fighting, 
+				the biggest nations and kingdoms, races and factions, set their differences 
+				aside and formed a Great Alliance to beat back the Heart's Disease.
+				 
+				Finally, with much effort and after many sacrifices, they managed to beat 
+				Necro's army back to the Kingdom, now The Forsaken's Bastion. The Wizard 
+				finds himself cornered and, much to his surprise, he's fightin war on two fronts 
+				for Necro has unexplicably gained a will to fight and threatens his control over 
+				the Heart and his entire army.
+				 
+				In this decisive battle, the Great Alliance puts everything and everyone on the 
+				line to defeat the greatest enemy they have ever known. Their task is hard. 
+				Lossing this bout means lossing their world to darkness...
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]2. The Factions – Basic Descriptions[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]2.1 The Second Regnum (Playable - Humans)[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				It's society is highly religious and conservative, defined by traditions and a 
+				feudal system. There's a big difference between the common people and the 
+				nobles, the ruled and the rulers. Members from one group can never change to 
+				the other, “he who is born poor, dies poor”. This die-hard traditions have 
+				remained intact for centuries, but the rise of new political powers and religious 
+				entities shake the Kingdom's foundations as it fights for survival against new 
+				forces, and of it's very existence against the changing tides of history. 
+
+				The Regnum's rulers are ussually very proud of their power and social 
+				standing. Religion is a very important matter for their society. They believe in 
+				the existence of a God and a Goddess -Father and Mother. Both are opposites 
+				that compliment each other: Fire and Water, Air and Earth, Sword and Shield, 
+				Wrath and Forgiveness. This religion's organization is called the Church of the 
+				Twin Suns; the bright Sun that comes at dawn and the Pale Sun that comes at 
+				Dusk. The Father and the Mother, respectively.
+
+				It's a belief that firmly establishes the concept of unity within a family and 
+				thus, marriage is sacred; an unbreakable commitment. Adultery and Infidelity 
+				is heavilly punished by law. But law tends to fall harder on the poor.
+
+				Social hierarchy can be defined as a pyramid. The Head of State has total 
+				control over the Regnum. Below him are the nobility, land-owners; wealthy 
+				merchants and common citizens. The ruling head is both judge and jury and 
+				has a personally appointed Royal Exsecutori.
+
+				Seneca Castle is the Second Regnum's Capital city, older than the Kingdom 
+				itself. It was destroyed at the end of a civil war -1100 years before the events 
+				of FBF- after which the Second Regnum was born. A hundred years later, the 
+				castle was rebuilt into the great citadel it is today. That event marks the year 
+				zero in the Peninsula's timeline. Seneca Castle is admired by all for it's 
+				historical and cultural meaning as well as for it's size and commercial 
+				importance.
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]2.2 The Imperium Borealis (non-Playable)[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				A great empire now reduced to a small province in the northern mountains. 
+				Only recently, it was a great Empire conquering the Second Regnum's lands 
+				while fighting rebels inside it's borders. But the Forsaken became it's downfall.
+
+				Distinctively opposite to the Second Regnum, the Imperium buids upon a series 
+				of myths and teachings. There's a great Pantheon of Gods, with hundreds of 
+				temples scattered through the Imperial lands. Despite the many different 
+				beliefs, respect is king. Society looks down upon disrespectful priest and 
+				believers.
+
+				As free and democratic as the religion system is, the government is completely 
+				tyranical and authoritarian. The Emperor holds all power over the law and the 
+				land. Even so, he is close to common people as his agenda is heavilly invested 
+				in public events. In the Imperium's religious beliefs the Emperor stands as a 
+				prophet, a guardian.
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]2.3. The Forsaken Kingdom (Playable - Undead)[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				The Forsaken Kingdom, formerly the Kingdom d'Or, is the richest by far. Within 
+				it's borders it holds a seemingly infinite amount of resources and riches and 
+				the greatest castle ever built where upon sat the most vanidous of Kings, 
+				Marco Mithas. A kingdom barely two-hundred years old, It reeks of death.
+				
+				A Wizard from the South tricked the King and took over his throne. Known as 
+				'Cáligo', he has poisoned the Kingdom with his powerful Black Magic and taken 
+				control of a vast undead army. He calls his new kingdom The Forsaken 
+				Kingdom.
+
+				The Wizard succesfully waged war against it's unsuspecting neighbours at the 
+				peak of a long-going war. but a surprising invasion from a foreing nation 
+				crippled his army's advance. This turn of events turned the tides of the war as 
+				the Forsaken's enemies organized a counter-attack and pushed the undead 
+				back. 
+
+				At present time, A coalition of Cáligo's foes knock at his Bastion's gates. The 
+				result of the inveitable battle shall decide the fate of the Peninsula and the 
+				World.
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]2.4. The Bel'Trama, The 'Outlanders' (Playable - Orcs)[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				Men fear what is new and unknown, that which is foreign to their own personal 
+				worlds, they fear that which is bigger and stronger than them. When men feel 
+				threatened and cornered by this things they fear, they treat them with disdain 
+				and hostility.
+				
+				Men in the Peninsula fear the Bel'Trama for this reasons. A colossal mass of 
+				Green-skinned men and manlike animals. Foreign and unknown, they are 
+				different in every aspect to the common man. With the knowledge of their 
+				existence came the realization that the World stretches far beyond their lands, 
+				and their power over it may not be as great as they once thought.
+				
+				This outsiders known as the 'Outlanders' have set foot in the peninsula for the 
+				first time, intervening in the war against the Forsaken. Although they should 
+				be regarded as savior for pushing the Forsaken back, they are now feared even 
+				more.
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]2.5. Nova Republic (non-Playable)[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				A group of philosophers and scientist in the Imperium turned into enemies of 
+				the state, turned into a group of ragtag rebels, turned into a new social and 
+				political movement, turned into guardians of freedom and heroes of the 
+				common men, turned into a new nation. A chain reaction that began with the 
+				discovery of steam technology.
+				
+				The Imperium, at the time waging war against the Second Regnum, was unable 
+				to quell the revolts organized by the Septem, a small insurgent group led by 
+				seven intellectuals. In a matter of months, their small organization took towns 
+				over from the Imperium and won the hearts of it's people. Eventually, the long 
+				war against the Regnum and the sudden invasion from the East by the 
+				Forsaken Army destroyed the Empire's forces. The rebellion recovered the 
+				broken pieces to become the Respublica Nova Aurora, the Republic of the New 
+				Dawn. And, although they did have to fight the Forsaken, the war ended 
+				abruptly thanks to the surprising invasion launched by the 'Outlanders'.
+				
+				They've stayed away from the invasion against the Forsaken Bastion due to the 
+				hostile relations with the Second Regnum and the weight of having to 
+				reorganize their lands after the turmoil of the war against the Imperium. They 
+				want to be ready for the upcoming wars against the Second Regnum and 
+				possibly, the 'Outlanders'. They have an plan to free the world from corruption 
+				and slavery, and they're are ready to give their lives for it. 
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]2.6. The Order of the Moon (Playable – Night Elves)[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				A cult of magic-wielders located in the 'Luna' island, south of the Peninsula, 
+				territory of the Second Regnum. Only recently they made their existence public 
+				by preaching the coming of The End and The Rebirth.
+				
+				They believe time is cyclical. The universe is created at the start of each cycle, 
+				by an all-seeing Goddess ,who watches the world through the Moon -the Pale 
+				Sun to the Church of the Twin Suns-, and ends with a cleansing of souls. At the 
+				end of each cycle, the souls that remained pure return to the Goddess, as they 
+				were once a part of her, while the rest are left to die as all existence returns to 
+				zero. This cycle repeats itself indefinitely.
+				
+				A fatalistic belief that has found an enemy in the Church of the Twin Suns.
+				
+				Their leader and self-proclaimed messiah, (the POTM hero), claims she's been 
+				sent by the Goddess to save as many as possible from the inevitable End, and 
+				guide them back home; back to her womb. Her right hand, most faithful 
+				servant and protector, (Cenarius) is a mute half-animal, three times as old as 
+				the oldest man. He's a man more mysterious than the Cult itself.
+				
+				They have perceived a threat to their Goddess's plans in the Wizard and his 
+				Forsaken, so the Order of the Moon has been rallied under the POTM's 
+				command to fight side-by-side with the human armies. 
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]3. Factions Backstory[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]3.1. The Settlers and the Seneca Region[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				Before the construction of the Seneca Castle, of the wars for power and land, 
+				of the coming of the first settlers, this was a virgin land. Untouched, unmarked 
+				and unconquered. It was nature's paradise.
+				
+				The first settlers came down through the northern mountains, and in peace 
+				they built their homes freely throughout the land. Years, decades passed as 
+				they progressively expanded their domain and increased their numbers and, in 
+				time, they had full control over the peninsula. This was the first kingdom, the 
+				Seneca Region, ruled by Belliger Seneca and his family.
+				
+				About a hundred years before the creation of the Seneca Castle and the 
+				Second Regnum, King Seneca Mare ventured with his fleet into the western 
+				seas, looking to establish trade routes and new relations in undiscovered lands. 
+				He never came back. It is said his fleet was destroyed and he and his crew 
+				enslaved by Regira Sa'gara, the all-powerfull naga ruler of the western ocean. 
+				The King left behind a dying wife and six male sons. The relations between the 
+				heirs were very tense.
+				
+				The black sheep of the family was Seneca Primus, the eldest brother. Known 
+				for his lust, greed and intricate plans. Loyal to himself. Seneca Secundus lived 
+				overshadowed by his older brother. Since childhood he showed a great interest 
+				in religion and became a well-read faithful man. His lifestyle gave little room to 
+				concerns over land and money and this was a distressful matter for his father.
+				
+				The third and fourth sons were twins, Seneca Tertius and Quartus. They held 
+				Seneca Primus as their role model until they discovered his treacherous nature. 
+				A mix of their older brothers's traits, they had a strong sense of justice applied 
+				to politics and the aristocratic life. Seneca Quartus had mixed feelings towards 
+				religion and was an atheist in secret. The Fifth and Sixth sons, Seneca Quintus 
+				and Sextus were by far the youngest, teenagers at the the time of the King's 
+				dissappearance. As so, they were still seeking their place in the world. Both of 
+				them were reckless and naive. 
+				
+				As the King had died, all the power was held by the Queen who fell ill with the 
+				flu. Her sons took the hard decision of setting aside their differences and 
+				formed a regent council of which only they were members. The Queen then 
+				gave control of the Kigndom to this Council of Six.
+				
+				No more than a month later, the Queen died in her sleep and her offspring's 
+				frail alliance was broken the day after. Chaos ensued aa brother fought brother 
+				in the first of the Peninsula's great wars. The conflict ended with a siege that 
+				completely destroyed the Seneca Castle and taook the life of the eldest of the 
+				heirs, Seneca Primus, who had taken the structure by force. Afterwards, the 
+				Seneca Region was broken into a smaller kingdom and four duchies. Seneca 
+				Secundus, inherited the royal crown and his brothers took control of a different 
+				duchy each.
+				
+				The Death of Seneca Primus, although tragic, brought peace to the land. He 
+				had done much harm to the family, turning one against the other and playing 
+				everyone for a fool, all in his search for power.
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]3.2. Rise of the Second Regnum[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				When the Seneca Region was broken, the Council of Six was temporarily 
+				summoned to choose and appoint the new King. Secundus was favored over 
+				Quartus, as the latter stormed out of the meeting, forever to be his rival. The 
+				Second Regnum began with the Second Son's rule, marked by his strong faith 
+				and the rise of the church's power.
+				
+				With the following generations came peace and the reunification of the 
+				kingdom. All of the peninsula lands were once again under the rule of one sole 
+				king and the reconstruction of the Seneca Castle -ravaged by the heritage war 
+				that split the royal family. Centuries later, the Kingdom would be divided yet 
+				again when a rebellious general created the Imperium Borealis and later, a 
+				nobleman called Marco Mithas would make a fast and vast fortune with which 
+				to raise his own kingdom, the Kingdom d'Or  Known now as the Forsaken 
+				Kingdom. 
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]3.3. A Land Divided: The Rise of the Imperium Borealis[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				In the year 555, General Patronus Aurel, rose up against the established rule 
+				of the Second Regnum. A figure of rebellion and anti-establishment, he was 
+				joined by other radical groups. The dissidents swiftly conquered most of the 
+				northern provinces with minimun armed conflicts as the general's image was 
+				more often than not, enough to rout the townsfolk in his favor. Yet, the dispute 
+				was short-lived.
+				
+				The King and the General arranged for a private meeting that lasted several 
+				hours. A peace had been arranged where the general's rebellious campaign of 
+				warmongering and conquest had to end in exchange of all the conquered lands. 
+				Rumor has it that the General received a hefty sum of money during the 
+				encounter. The King's treaty also established that the General's future castle 
+				was not to be bigger or larger in any extent and meaning to that of his 
+				kingdom. 
+				
+				The General held all of the power as he was loved by his people and was 
+				considered a hero for decades and centuries even after his death. Patronus 
+				Aurel had no appointed heir and the three richest families of the region became 
+				bitter rivals in the struggle for power. The three families engaged in a silent 
+				conflict where hired killers, spies and thieves filled their pockets with gold and 
+				jewels. In the end two of the families gave up on their claims to the throne 
+				and, since then, the victorious family ruled unquestionably until the very end.
+
+				The political scene in the Imperium is considerably different and so is it's 
+				religion. They believe in the existence of many gods. Each represents an 
+				element of nature: The sun, the earth, air, water, fire, lightning & thunder (said 
+				to be twin brothers), and so on. Each of the Gods are made known to the 
+				people by several myths and stories. Different temples can be found all 
+				throughout the Northern lands. Different Gods have different teachings and 
+				traditions but the diferent cults treat each other with utmost respect. Life for 
+				the common man tended to be more peaceful and less occupied in political 
+				affairs than in the Second Regnum. 
+				
+				About ten to twenty years ago, the Secundian King declared war on the 
+				Imperium claiming a right to it's territories, and just like that, began the 
+				longest and most gruesome war that concludes with the Fall of the Forsaken 
+				Bastion. The Secundian King fell ill and died not long after the start of the war 
+				and since the Queen was unskilled in the art of warfare, her kingdom soon fell 
+				under the raw power of the Imperial Army. Yet, at the same time a small group 
+				off in the western territories of the Empire made a giant breakthrough with the 
+				creation of a fully functional steamboat. This technology was used by a group 
+				of dissident that managed to oppose the Empire's vast army.
+				
+				The Rebellion slowly pushed the Empire's forces back while at the same time, 
+				the Queen was forced out of Seneca Castle and into the southern provinces. 
+				Such continuous state of war drove the Empire to ruin and soon, the Regnum 
+				pushed them back. It was then that the Forsaken surprised all with a vast army 
+				of undead and put the final nail on the Imperium's coffin. 
+				
+				The Emperor was executed and the Imperium Borealis was turned into a 
+				vassal state by the rebels. Fully organized they called their land and 
+				government the Nova Republic; the Dawning Republic.			
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]3.4. The Nova Republic, the Rising New Dawn[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				In most of the Imperium, religion was a great part of every peasant's life but 
+				this was not the case in the westernmost towns. Many began looking for 
+				answers on the different sciences and through years of independent research 
+				and experimentation a group of engineers found a way to use the power of 
+				water and steam for the operation of mechanical contraptions.
+				
+				The revolution turned from scientific to political when seven intellectuals saw 
+				the rise of this new tech as the signs of change. The technology had been 
+				created by people in the farthest corners of the Imperium. It became easily 
+				accessible to all and potentially powerful. This meant that simple untrained 
+				peasants with access to it would be able to fight against the spears and swords 
+				of the Imperial Army and the Second Regnum, even if outnumbered.
+				
+				They called themelves Septem and thought it was time for the people to rule 
+				over themselves. All those tired of the Emperors' tyranical regime joined the 
+				ranks of the 'Steam Hunters', the armed group ruled by the Septem.
+				
+				The first weeks of the armed rebellion were peaceful. The neighbouring towns 
+				either surrendered or voluntarily joined them because of their technological 
+				prowess or their revolutinizing ideals. The Imperial Army underestimated the 
+				new rising powers and only sent a middle sized battallion to face them. 
+				Needless to say, the first battle was a sound victory for the inexperienced 
+				Hunters.
+				
+				The war turned out to be not as easy as the Septem had thought. The Empire 
+				had many more soldiers in reserve and the central cities and towns did not 
+				cede their control to the rebels so easilly. The Imperium Borealis was finally 
+				taken down as the war on three fronts was too much for it's army and it's 
+				economy.
+				
+				Feelings of peace and joy rose in the hearts of the rebels but not for long. The 
+				Imperium's retreat came at the cost of the Forsaken's advance. The rebels now 
+				had to defend the lands they just conquered. The Ultimate test, their 
+				technology was to face the most powerful Black Magic.
+				
+				With the help of the 'Outlanders', the Forsaken were driven back and a new 
+				government was settled. From the ashes of tirany and the rubble of war, the 
+				Nova Republic was built. Housing their capital in the city where it all began, 
+				the Septem formed a parliament. Each of them became a minister and, 
+				toghether, they rule the Republic. The power falls on the people and their task 
+				is to enforce it.
+				
+				New laws were passed, ones that would assure the peasant's rights and the 
+				nation's integrity. The various religions were left untouched as the intellectuals 
+				believed in the freedom of thought as Freedom was their motto and what they 
+				stood for. But their goals go far from freeing a few men on the north, far from 
+				control over a portion of land. Their goals are to bring down tiranny, to prove 
+				that there is no divine right to rule over someone else, to show people what 
+				true freedom is; To bring a new Dawn. 
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]3.5. The Kingdom d'Or. The Forsaken Kingdom[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				What was Seneca Quintus's Duchy was eventually absorbed by the Second 
+				Regnum and turned into one of its provinces. Around the year 800 ASC (After 
+				Seneca Castle) a young and ambicious nobleman was tasked with ruling the 
+				province, his name was Marco Mithas. During his rule, a seemingly infinite 
+				amount of resources was uncovered in his land. Cunning Crassio decided to 
+				hide this knowledge from the King and all that were loyal to him by any means 
+				necessary. The King found out only too late. Marco Mithas crowned himself 
+				King Crassio of Regnum Marco and severed all connections to the Second 
+				Regnum.
+				
+				As his first royal comand, he ordered the creation of a small army of elite 
+				soldiers, the Knights d'Or; loyal to the end. The Secundian King wanted the 
+				lands that were his by right and, of course, the vast resources it held. But his 
+				army, although three times superior in number was obliterated and humilliated 
+				by the Chevaliers. The Second Regnum was forced to recognize the new King. 
+				 
+				King Crassio eventually acquired all he ever wanted, but as time past him by 
+				he lost his youth and beauty. Desperate, he fell right into a travelling wizard's 
+				scheme; his name unkown, people reffered to him as 'Cáligo'. 'Cáligo' became 
+				close to the King until he cast a spell that doubled as a curse. The spell made 
+				Crassio recover his youth, but his next male son would become an Eater of 
+				Souls and the first he would claim would be the King's. The Wizard's plan 
+				succeeded, but that was only the first phase.
+				
+				The Prince's body was just a new vessel to replace the wizard's; old and frail. 
+				Young, strong and with the power of all the enslaved souls, 'Cáligo' could 
+				become the greatest dark mage.
+				
+				Unfortunately for him, his plan failed. He did not know about the Prince's Inner 
+				Strenght, his essence, pure like a god; waiting silently for the right time to 
+				emerge and clash with the Wizard's blight. A battle takes place in a 
+				dimmension unperceivable by the human eye.
+				
+				The encounter is too great and the Prince's body implodes, leaving only Marco 
+				Vas's Golden Heart, the last remaining piece of the prince's body wherein 
+				resides his soul, his pure essence engulfed by all the souls absorbed, now 
+				under the Wizards' control. Still, one free soul fights the wizard besides that of 
+				the Prince: Marco Mithas's, selflessly battling for his son's freedom.  
+				The Wizard still had control over Black Magic and so, he made his foe suffer by 
+				cursing his kingdom with undeath. Proving he's still in control, he raised an 
+				army off the dead and used it to conquer the Peninsula.
+				
+				While the Imperium Borealis had pushed back the Secundian Army over and 
+				over again with impressive might and strength, it quickly fell to the Noir 
+				Knights, formerly Marco Mithas's elite army. The Chevaliers advanced 
+				relentlessly, taking and destroying all in it's way, but the rising rebellious group 
+				to the west that had fought off the Empire's army proved to be a challenge to 
+				the Wizard's. And just as the Forsaken had spread towards the west and the 
+				south, the 'Outlanders' invaded from the North, across the sea.
+				
+				The Invasion marked a new turnabout in the war. The 'Outlanders'' raw 
+				strength and great numbers broke the Forsaken army's might. The Chevaliers 
+				fell back to face this new enemy granting a moment of peace to the rising 
+				Republic and the Second Regnum. In just a few months, the Forsaken army 
+				was broken, and the Forsaken Bastion all that remained. 
+				
+				Now, the tired champions of the Second Regnum, the eager 'Outlanders' and a 
+				mysterious new cult stand at the Bastion's Gates. The ultimate battle will 
+				begin. The Heart's control is at stake, but if it manages to fend off the attack it 
+				may just be enough to conquer the Peninsula once and for all.
+			[/tdalt]
+		[/tr]
+	[/otable]
+
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]ADDITIONAL INFORMATION / Appendix A – Glossary[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[LIST]
+					[*][B]Seneca Region:[/B] First Kingdom founded in the Peninsula. Seneca, leader of 
+					the Settlers. Also, it's the name of the Peninsula itself 
+					[*][B]Belliger Seneca:[/B] Founder of  Seneca Region. 
+					[*][B]Seneca Mare:[/B] Last King of the Seneca Region. The one that got lost in the 
+					sea. Mare means Sea in Latin. 
+					[*][B]Seneca Primus, Secundus, Tertius, Quartus, Quintus & Sextus:[/B] The 
+					sons of Seneca Mare. The meanings in order, First, Second, Third, Fourth, 
+					Fifth & Sixth. 
+					[*][B]Second Regnum:[/B] The Second Kingdom. Also Secundus' Kingdom, the 
+					Second son of Seneca Mare. 
+					[*][B]BSC; ASC:[/B] Before/After Seneca Castle. The Castle destroyed and rebuilt 
+					after the Seneca War of Heritage. It's the one drawn on the map. Capital to 
+					the Seneca Region and, later, to the Second Regnum. Event used to mark 
+					the year 0 in the timeline. 
+					[*][B]Sa'gara:[/B] Ocean (in hindi, native language form of the Naga). She's a 
+					legendary Naga Witch. The one said to have killed or captured Seneca Mare, 
+					the last King of the Seneca Region. 
+					[*][B]Imperium Borealis:[/B] Northern Empire. 
+					[*][B]Marco Mithas:[/B] The King tricked by the Wizard in the Forsaken Kingdom. 
+					Name taken from Marcus Crassus, wealthiest roman during his time and 
+					King Midas. 
+					[*][B]Kingdom d'Or:[/B] Marco Mithas's Kingdom. Later known as the Forsaken 
+					Kingdom. D'Or means Golden in French. 
+					[*][B]Patronus Aurel:[/B] Patronus, protector. Aurel, German form of Aurelius. 
+					Founder of the Imperium Borealis 
+					[*][B]Nova Republic:[/B] The Dawning Republic. They are the new dawn, the new 
+					rising power; they bear the beliefs and technology of a new world. 
+					[*][B]Knights d'Or:[/B] Golden Knights. Marco Mithas's elite army.
+					Marco Vas: 'Vas' is vessel in Latin. Son of Marco Mithas, bearer of the 
+					Golden Heart, slave to the Wizard Cáligo. 
+					[*][B]Cáligo:[/B] The Wizard that cursed the Kingdom d'Or. Stands for Mist, 
+					Darkness, Fog in Latin. 
+					[*][B]Noir Knights:[/B] Undead version of the Knights d'Or. Black Knights. 
+					[*][B]Bel'Trama:[/B] A wordplay on 'Beluis Trans Mare' which means 'Brutes across 
+					the sea' in Latin. Commonly called 'The Outsiders' despectively. They invade 
+					at the peak of the Forsaken War. 
+					[*][B]The Septem:[/B] They start the rebellion that turns into the Nova Republic. 
+					Septem is 'Seven' in Latin. 
+					[*][B]Order of the Moon:[/B] They are the magic wielders that reside in the Moon-shaped 
+					Island to the South of the Peninsula, called 'Luna'.
+				[/LIST]
+			[/tdalt]
+		[/tr]
+	[/otable]
+[/CENTER]

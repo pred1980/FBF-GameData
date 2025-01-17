@@ -1,0 +1,142 @@
+library AssassinAI initializer Init requires HeroAI, Backstab
+
+    globals
+        private constant integer UNIT_ID = 'E000' // Unit-type id of the hero
+
+        private group enumGroup = CreateGroup()
+    endglobals
+
+    private struct AI extends array
+        static constant real PERIOD = 0.25
+        static constant integer BLITZ_BUFF = 'B000'
+
+        boolean blitz
+        real count
+        real period
+
+        static method BackstabManaCost takes integer lvl returns real
+            return 55. + 14 * (lvl - 1)
+        endmethod
+
+        private static method onlyAffected takes nothing returns nothing
+            if not Backstab_Affected(temp.hero, GetEnumUnit()) then
+                call GroupRemoveUnit(enumGroup, GetEnumUnit())
+            endif
+        endmethod
+
+        // The following two methods will print out debug messages only when the events
+        // are enabled
+        method onAttacked takes unit attacker returns nothing
+            debug call BJDebugMsg("Assassin attacked by " + GetUnitName(attacker))
+        endmethod
+
+        method onAcquire takes unit target returns nothing
+            debug call BJDebugMsg("Assassin acquires " + GetUnitName(target))
+        endmethod
+
+        method assaultEnemy takes nothing returns nothing
+            local real ang
+
+            if not .blitz then
+                call .defaultAssaultEnemy()
+            else
+                if .mana < BackstabManaCost(GetUnitAbilityLevel(.hero, Backstab_SPELL_ID)) then
+                    call .defaultAssaultEnemy()
+                else
+                    // 852230 is the "fingerofdeath" order
+                    // Don't order the assassin to move into position if she's already casting Backstab.
+                    if GetUnitCurrentOrder(.hero) != 852230 then
+                        call .setPriorityEnemy(.enemies)
+                        set ang = GetUnitFacing(.priorityEnemy)*bj_DEGTORAD
+                        call IssuePointOrder(.hero, "move", GetUnitX(.priorityEnemy) - 100*Cos(ang), GetUnitY(.priorityEnemy) - 100*Sin(ang))
+                    endif
+                endif
+            endif
+        endmethod
+
+        // Cast wind walk if there's an enemy nearby
+        method loopActions takes nothing returns nothing
+            if .enemyNum > 0 then
+                if GetUnitAbilityLevel(.hero, BLITZ_BUFF) < 1 and not .blitz then
+                    if IssueImmediateOrder(.hero, "windwalk") then
+                        set .blitz = true
+                        set .period = .75
+                    endif
+                elseif GetUnitAbilityLevel(.hero, BLITZ_BUFF) == 0 and .blitz then
+                    set .blitz = false
+                    set .period = HeroAI_DEFAULT_PERIOD
+                endif
+            endif
+
+            call .defaultLoopActions()
+        endmethod
+
+        // A custom periodic method is defined for this hero as the AI constantly
+        // searches for units that have their backs to her in order to use Backstab.
+        static method onLoop takes nothing returns nothing
+            local thistype this = GetTimerData(GetExpiredTimer())
+            local unit u
+            local unit target
+            local real lowest = 9999999999
+
+            if not IsUnitType(.hero, UNIT_TYPE_DEAD) then
+                call .update()
+
+                if .mana >= BackstabManaCost(GetUnitAbilityLevel(.hero, Backstab_SPELL_ID)) then
+                    if .enemyNum > 0 then
+                        call GroupAddGroup(.enemies, enumGroup) // To avoid modifying the enemies group
+                        call ConsiderUnitsInRange(enumGroup, .hx, .hy, 250)
+                        call ForGroup(enumGroup, function thistype.onlyAffected)
+
+                        if FirstOfGroup(enumGroup) != null then
+                            loop
+                                set u = FirstOfGroup(enumGroup)
+                                exitwhen u == null
+                                call GroupRemoveUnit(enumGroup, u)
+
+                                if GetWidgetLife(u) < lowest then
+                                    set lowest = GetWidgetLife(u)
+                                    set target = u
+                                endif
+                            endloop
+
+                            if target != null then
+                                if IssueTargetOrder(.hero, "fingerofdeath", target) then
+                                    set target = null
+                                    return
+                                endif
+                            endif
+                        endif
+                    endif
+                endif
+
+                set .count = .count + PERIOD
+
+                if .count >= .period then
+                    set .count = 0
+                    call .loopActions()
+                endif
+            endif
+        endmethod
+
+        method onCreate takes nothing returns nothing
+            call TimerStart(.timer, PERIOD, true, function thistype.onLoop)
+            set .blitz = false
+            set .count = 0
+        endmethod
+
+        implement HeroAIStruct
+
+    endstruct
+
+    //! runtextmacro HeroAI_Register("UNIT_ID")
+
+    private function Init takes nothing returns nothing
+        // Backstab
+        call RegisterHeroAISkill(UNIT_ID, 1, 'A001')
+        call RegisterHeroAISkill(UNIT_ID, 3, 'A001')
+        call RegisterHeroAISkill(UNIT_ID, 5, 'A001')
+        call RegisterHeroAISkill(UNIT_ID, 7, 'A001')
+    endfunction
+
+endlibrary

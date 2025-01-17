@@ -1,0 +1,114 @@
+//==========================================================================================
+//  AIPlayerDifficultySettings
+//      by watermelon_1234
+//==========================================================================================
+// Allows the AI to have handicaps or advantages based on difficulty settings. Factors that are
+// available to change are experience rate, bonus gold per second, bonus lumber per second.
+//
+// Note that experience rate will be set for that player while bonus gold and lumber are
+// given per hero.
+//
+// This library is independent of HeroAI and only works for slots set to being a computer.
+//##########################################################################################
+// API:
+//
+//	* StartAIDifficultyBonuses takes nothing returns nothing *
+//      Periodic bonuses from difficulty aren't given until this function is called.
+//
+//  * StopAIDifficultyBonuses takes nothing returns nothing *
+//      Stops giving the periodic bonuses
+//==========================================================================================
+
+library AIPlayerDifficultySettings
+
+    globals
+        private constant real       BONUS_TIMER_LOOP    = 5. // The interval for giving bonuses to the AI
+
+        // Experience rate
+        private constant real       EASY_XP_RATE        = 2.
+        private constant real       NORM_XP_RATE        = 1.35
+        private constant real       HARD_XP_RATE        = 2.
+
+        // Gold gained per second
+        private constant integer    EASY_BONUS_GOLD     = 0
+        private constant integer    NORM_BONUS_GOLD     = 1
+        private constant integer    HARD_BONUS_GOLD     = 3
+
+        // Lumber gained per second
+        private constant integer    EASY_BONUS_LUMBER   = 0
+        private constant integer    NORM_BONUS_LUMBER   = 0
+        private constant integer    HARD_BONUS_LUMBER   = 0
+    endglobals
+
+    private struct dat extends array
+        static timer tim = null
+        integer bonusGold
+        integer bonusLumber
+
+        static method onInit takes nothing returns nothing
+            local aidifficulty diff
+            local integer i = 0
+            local player p
+            loop
+                exitwhen i == 12
+                set p = Player(i)
+                if GetPlayerController(p) == MAP_CONTROL_COMPUTER then
+                    set diff = GetAIDifficulty(p)
+
+                    // Easy
+                    if diff == AI_DIFFICULTY_NEWBIE then
+
+                        call SetPlayerHandicapXP(p, EASY_XP_RATE)
+                        set thistype[i].bonusGold = EASY_BONUS_GOLD
+                        set thistype[i].bonusLumber = EASY_BONUS_LUMBER
+
+                    // Normal
+                    elseif diff == AI_DIFFICULTY_NORMAL then
+
+                        call SetPlayerHandicapXP(p, NORM_XP_RATE)
+                        set thistype[i].bonusGold = NORM_BONUS_GOLD
+                        set thistype[i].bonusLumber = NORM_BONUS_LUMBER
+
+                    // Hard
+                    else
+
+                        call SetPlayerHandicapXP(p, HARD_XP_RATE)
+                        set thistype[i].bonusGold = HARD_BONUS_GOLD
+                        set thistype[i].bonusLumber = HARD_BONUS_LUMBER
+
+                    endif
+                endif
+                set i = i + 1
+            endloop
+        endmethod
+    endstruct
+
+    private function AIGiveBonuses takes nothing returns nothing
+        local integer i = 0
+        loop
+            exitwhen i == 12
+
+            if dat[i].bonusGold > 0 then
+                call SetPlayerState(Player(i), PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(Player(i), PLAYER_STATE_RESOURCE_GOLD) + R2I(dat[i].bonusGold * BONUS_TIMER_LOOP))
+            endif
+
+            if dat[i].bonusLumber > 0 then
+                call SetPlayerState(Player(i), PLAYER_STATE_RESOURCE_LUMBER, GetPlayerState(Player(i), PLAYER_STATE_RESOURCE_LUMBER) + R2I(dat[i].bonusLumber * BONUS_TIMER_LOOP))
+            endif
+
+            set i = i + 1
+        endloop
+    endfunction
+
+    function StartAIDifficultyBonuses takes nothing returns nothing
+        if dat.tim == null then
+            set dat.tim = CreateTimer()
+        endif
+        call TimerStart(dat.tim, BONUS_TIMER_LOOP, true, function AIGiveBonuses)
+    endfunction
+
+    function StopAIDifficultyBonuses takes nothing returns nothing
+        call PauseTimer(dat.tim)
+    endfunction
+
+endlibrary

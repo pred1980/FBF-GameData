@@ -1,0 +1,100 @@
+method defaultLoopActionsOld takes nothing returns nothing
+    	//call ClearTextMessages()
+    	call BJDebugMsg("State: " + I2S(.st))
+    	if .st == STATE_RUN_AWAY then
+            //call BJDebugMsg("0")
+			// Make the hero keep running if it's not within range
+			if not IsUnitInRangeXY(.hero, .runX, .runY, SAFETY_RANGE) then
+				//call BJDebugMsg("1")
+				static if thistype.runActions.exists then
+					//call BJDebugMsg("3")
+					// Only run if no actions were taken in runActions.
+					if not .runActions() then
+						//call BJDebugMsg("3")
+						call .run()
+					endif
+				else
+					//call BJDebugMsg("4")
+					call .run()
+				endif
+			else
+				static if thistype.safeActions.exists then
+					//call BJDebugMsg("5")
+                	call .safeActions()
+				else
+					//call BJDebugMsg("6")
+                	// Default looping actions for fighting so that the AI will try to do something at the safe spot.
+                	if not .isChanneling then
+                        //call BJDebugMsg("7")
+                        static if thistype.assistAlly.exists then
+                        	//call BJDebugMsg("8")
+							if .allyNum > 0 then
+								//call BJDebugMsg("9")
+								if .assistAlly() then
+									//call BJDebugMsg("10")
+									return
+								endif
+							endif
+						endif
+
+						if .enemyNum > 0 then
+							//call BJDebugMsg("11")
+							static if thistype.assaultEnemy.exists then
+								//call BJDebugMsg("12")
+								call .assaultEnemy()
+							else
+								//call BJDebugMsg("13")
+								call .defaultAssaultEnemy()
+							endif
+						endif
+					endif
+				endif
+			endif
+		else
+			//call BJDebugMsg("14")
+			if not .isChanneling then
+				//call BJDebugMsg("15")
+				static if thistype.assistAlly.exists then
+					//call BJDebugMsg("16")
+					if .allyNum > 0 then
+						//call BJDebugMsg("17")
+						if .assistAlly() then
+							//call BJDebugMsg("18")
+							return // Assisting an ally has precedence over anything else
+						endif
+					endif
+				endif
+				// Fight enemies if the hero is engaged
+				if .st == STATE_ENGAGED then
+					static if thistype.assaultEnemy.exists then
+						call .assaultEnemy()
+					else
+						call .defaultAssaultEnemy()
+					endif
+				else
+					// Makes the hero try to get any nearby item before attempting to shop
+					if not .getItems() then
+						if .st == STATE_GO_SHOP then
+							// If the hero isn't in range of the shop, make it move there.
+							if not IsUnitInRange(.hero, .shUnit, SELL_ITEM_RANGE) then
+								call IssuePointOrder(.hero, "move", GetUnitX(.shUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2), GetUnitY(.shUnit) + GetRandomReal(-SELL_ITEM_RANGE/2, SELL_ITEM_RANGE/2))
+							else
+								// Buys the item only if it was able to.
+                                if .canBuyItem(.curItem) then
+                                    call .buyItem(.curItem)
+                                else
+                                    set .st = STATE_IDLE
+                                endif
+							endif
+						else
+							// STATE_IDLE, make the hero move around randomly
+							call .move()
+							if IsHeroInBase(.hero) then
+								call .setTeleporterSpot()
+							endif
+						endif
+					endif
+				endif
+			endif
+		endif
+    endmethod

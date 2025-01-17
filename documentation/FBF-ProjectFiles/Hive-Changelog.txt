@@ -1,0 +1,59 @@
+[hidden=Changelog v0.2.9]
+	[SIZE="2"][B][COLOR="Olive"]Miscellaneous:[/COLOR][/B][/SIZE]
+	[LIST]
+		[*]code refactoring
+	[/LIST]
+	
+	[SIZE="2"][B][COLOR="SeaGreen"]Balance:[/COLOR][/B][/SIZE]
+	
+	[B]General Gameplay[/B]
+	[LIST]
+		[*]decreased the hp+damage of all spawing skeletons (-5% hp / -3% damage)
+		[*]increased the spawn interval of the worms on the graveyard from 10s-20s to 10s-30s
+		[*]decreased the damage of the worms on the graveyard by 10%
+		[*]optimized teleporter system
+		[*]allowed buying units from coalition units shops from all over the map
+	[/LIST]
+	
+	[B]Towers[/B]
+	[LIST]
+		[*]readjusted the lumber income for all rounds ( small changes +/- )
+	[/LIST]
+	
+	[B]Heroes[/B]
+	[B]Archmage[/B]
+	[I]Trappy Swap[/I]
+	[LIST]
+		[*]Archnathid's (Scorpions) can't control anymore
+	[/LIST]
+	
+	[B]Dark Ranger[/B]
+	[LIST]
+		[*]increased the range from 600 to 700
+	[/LIST]
+	
+	[B]Items[/B]
+	[LIST]
+		[*]removed cooldown from all Potion Items
+	[/LIST]
+	
+	[SIZE="2"][B][COLOR="Red"]Bugfixes:[/COLOR][/B][/SIZE]
+	
+	[B]General Gameplay[/B]
+	[LIST]
+		[*]Fixed some Bugs with the counters in the Multiboard
+	[/LIST]
+	
+	[B]Heroes[/B]
+	[B]Death Marcher[/B]
+	[I]Boiling Blood[/I]
+	[LIST]
+		[*]Fixed a bug with massive lag on more units
+	[/LIST]
+	
+	[B]Creeps[/B]
+	[LIST]
+		[*]Fixed a bug with the Brood Mother
+	[/LIST]
+	
+[/hidden]

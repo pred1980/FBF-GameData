@@ -1,0 +1,19 @@
+Undead:
+Basic - 'Potiondigger' as a play of words on gravedigger
+Rare - 'Coffin Scraps' as in stuff left in coffins of reanimated corpses.
+Unique - 'The Forgotten'
+
+Night Elf:
+Basic - 'Moon Elixirs'
+Rare - 'Natura Gratia' Nature's Favor in Latin
+Unique - 'Timeless Items'
+
+Human:
+Basic - 'Piero's Tonics'
+Rare - 'Seneca Sales'
+Unique - 'Sacred Relics'
+
+Orcs:
+Basic - 'Thirst Quencher' or 'Quencher'
+Rare - 'Wulfric's Items'
+Unique - 'Martyr's Legacy' or 'Martyr's Will'

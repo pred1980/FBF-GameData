@@ -1,0 +1,37 @@
+scope ItemShops
+    
+    globals
+        private unit array SHOPS[4][3]
+    endglobals
+    
+    struct ItemShops
+    
+        static method getShop takes integer raceId, integer shopId returns unit
+            return SHOPS[raceId][shopId]
+        endmethod
+    
+        static method initialize takes nothing returns nothing
+            //Undead Shops
+            set SHOPS[0][0] = gg_unit_u000_0003
+            set SHOPS[0][1] = gg_unit_u001_0018
+            set SHOPS[0][2] = gg_unit_u003_0021
+            
+            //Human Shops
+            set SHOPS[1][0] = gg_unit_u00K_0025
+            set SHOPS[1][1] = gg_unit_u00L_0026
+            set SHOPS[1][2] = gg_unit_u00M_0027
+            
+            //Orc Shops
+            set SHOPS[2][0] = gg_unit_u00N_0023
+            set SHOPS[2][1] = gg_unit_u00O_0022
+            set SHOPS[2][2] = gg_unit_u00P_0024
+            
+            //Nightelf Shops
+            set SHOPS[3][0] = gg_unit_u00H_0030
+            set SHOPS[3][1] = gg_unit_u00I_0029
+            set SHOPS[3][2] = gg_unit_u00J_0028
+        endmethod
+    
+    endstruct
+
+endscope

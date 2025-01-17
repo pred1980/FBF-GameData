@@ -1,0 +1,855 @@
+[CENTER]
+	[IMG]https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-prn2/p206x206/1236454_164940847045228_2031688499_n.jpg[/IMG]
+
+
+	[SIZE="4"][COLOR="DeepSkyBlue"]Map Info[/COLOR][/SIZE]
+
+	[COLOR="SandyBrown"]Type:[/COLOR] [B]Tower Defense + Aeon of Strife[/B]
+	[COLOR="SandyBrown"]Category:[/COLOR] [B]Miscellanous / Other[/B]
+	[COLOR="SandyBrown"]Map Size:[/COLOR] [B]160 x 160[/B]
+	[COLOR="SandyBrown"]Recommended players:[/COLOR] [B]10-12[/B]
+	[COLOR="SandyBrown"]Estimated gameplay time:[/COLOR] [B]1 - 1.5h[/B]
+	[COLOR="SandyBrown"]Tileset:[/COLOR] [B]Felwood[/B]
+	[COLOR="SandyBrown"]File Size:[/COLOR] [B]4.27MB[/B]
+	[COLOR="SandyBrown"]Doodads:[/COLOR] [B]~16.500[/B]
+	[COLOR="SandyBrown"]Lines of Code:[/COLOR] [B]~40.500[/B]
+	[COLOR="SandyBrown"]Number of Heroes:[/COLOR] [B]27[/B]
+	[COLOR="SandyBrown"]Buyable Items:[/COLOR] [B]120[/B]
+	[COLOR="SandyBrown"]Towers:[/COLOR] [B]11[/B]
+
+	[SIZE="3"][URL="https://www.facebook.com/F0rsaken.Bastions.Fall"]Facebook Fanpage[/URL]
+	[URL="http://forsaken-bastions-fall.com/"]Website [/URL][/SIZE]
+	
+	[URL="http://www.moddb.com/mods/forsaken-bastions-fall"][IMG]http://button.moddb.com/popularity/medium/mods/23884.png[/IMG][/URL]
+	
+	[SIZE="4"][COLOR="DeepSkyBlue"]Do you want to look behind the gates???[/COLOR][/SIZE]
+	[URL="http://www.livestream.com/forsakenbastionsfall"][IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/misc/livestream.jpg[/IMG][/URL]
+
+	[SIZE="3"][COLOR="DeepSkyBlue"]The Plot[/COLOR][/SIZE]
+
+	"[I]I have seen it in the mud covered face of the southern men; I have seen it in the warmongering north, and even in the god's forgotten, dead plagued army. Change...[/I]"
+	~~Brother Baritos, Philosopher and Priest of the 'Twin Suns Church'
+
+	For almost twenty years, war has plagued the Seneca Region: a peninsula divided by several nations and cultures essentially different one from the other. The original conflict between two major kingdoms triggered several major events as new religious and political groups rose to power. New technologies led to new philosophies and new ways of life, new ways to experience the world and new ways to rule society. The Seneca Region is in a state of change.
+
+	Amidst the chaos of change and the evolving societies, an old demon returned to the land. A Wizard, the last member of a forgotten cult long thought to been vanquished, executed a master plan to raise an undead army and enforce his twisted, necromantic black magic upon the world. He calls himself Cáligo and his kin, The Forsaken.
+
+	Cáligo entered the court of King Marco Mithas, a man whose greed was as big as his vast wealth. The naive King was easily tricked by the Wizard who cast a curse on him and his new born son, Marco Vas. Cáligo raised the Prince into his puppet, thus ruling the Kindom from the shadows. To channel the energies that would raise the undead, it was necessary to have a healthy body. Cáligo would transfer his soul from his frail carcass to Vas's younger form. But Vas proved to be a fighter on the inside. The invisible struggle that took place between them caused the Prince's body to implode, leaving in place his beating heart covered by the Wizard's magic.
+
+	Despite the outcome, the Heart raised an army of undead and executed it's campaign of terror over the exhausted people of the Seneca Region that had been fighting each other for years. The Prince's resistance was a major setback in Cáligo's plans, but what ultimately caused his defeat was 'change'. During the time he was executing his plan, the ways to wage war changed radically in the Region, new weapons that could make a simple peasant beat an expert swordman were readily available and, in the end, the Forsaken were pushed back.
+
+	Now, the Heart awaits deep within it's Bastion and the tired champions of the endless wars stand at the gates, ready to vanquish The Forsaken once and for all. Undoubtedly, this battle is the last as both the Forsaken and the Alliance of Nations put every man on the line. The winner takes all.
+
+	[SIZE="3"][COLOR="DeepSkyBlue"]Gameplay and Mechanics[/COLOR][/SIZE]
+
+	Forsaken Bastion's Fall is a multiplayer map that pits two sides, of up to 6 players each, one against the other. One of the teams, The Forsaken, has to defend the fortress from the Alliance team that's trying to reach the end and destroy the source of magic that keeps the defenders alive.
+
+	The players start in the Tower Defense stage, where The Forsaken team has to strategically place a series of diferent towers to stop the Alliance and it's waves of minions from reaching the entrance. The total number of waves is limited to 20 so the Alliance players need to end this stage as quickly as possible.
+
+	When the Alliance reaches the Bastion's Gates, the AoS stage begins. Here is when the Forsaken players take control of their chosen heroes. Alonside minions of their own and NPC Forsaken Bosses, they will have to defend the corridors of the stronghold from the Alliance's efforts to reach the end. The Alliance wins if they do so within the 20 minion waves, and the Forsaken win if they succesfully defeat all waves before their enemies complete their goal. 
+
+	[SIZE="3"][COLOR="DeepSkyBlue"]Tower Defense[/COLOR][/SIZE]
+
+	The tower defense is the first part of every wave and is solely played by the Undead. The Infidel can not interfere with the actions of the Undead players in that area. The defense strength is designed, and their HP and numbers are adjusted so that this number is achieved no matter how many Undead players there are in the game.
+
+	The towers are pretty standard towers you will see in most TDs, mostly meant for dealing damage, and only a handful have special abilities and effects.
+
+	The towers are paid in wood, which is given to the players at the end of every round and can not be obtained in another way. 
+
+	[SIZE="3"][COLOR="DeepSkyBlue"]Hero Battle[/COLOR][/SIZE]
+
+	Once the Alliance players reach the entrance of the fortress, the second stage begins. The Forsaken players now control their own heroes and all playable character statistics are rebalanced to fit the stage. The Alliance players will have a tougher time dealing with their enemies, as they not only face player heroes but, also, the Forsaken minion waves and a set number of bosses. Even more, the wave count keeps getting lower and if it reaches 0, the Alliance will lose.
+
+	Things don't get easier for the defending players as they lose the protection of the towers and run the risk of being vulnerable to their enemy's attacks.
+
+	[SIZE="3"][COLOR="DeepSkyBlue"]Screenshots[/COLOR][/SIZE]
+
+	[B]The complete Map[/B]
+
+	[IMG]https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-ash3/1011611_155818487957464_34862477_n.jpg[/IMG]
+	
+	[B]AoS Part[/B]
+	
+	[tab]The Entrance|The Heroes|The Dome|Nerubian Part|The Graveyard|The Final
+		[IMG]https://fbcdn-sphotos-b-a.akamaihd.net/hphotos-ak-ash3/533210_155818564624123_589316860_n.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-ash3/1185012_155818567957456_301704460_n.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-prn1/63907_163482700524376_1034855134_n.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-h-a.akamaihd.net/hphotos-ak-prn2/1239035_163482660524380_1338095498_n.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-g-a.akamaihd.net/hphotos-ak-prn1/156845_163482663857713_903508130_n.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-b-a.akamaihd.net/hphotos-ak-ash4/1185534_163482650524381_1648884042_n.jpg[/IMG]
+	[/tab]
+	
+	[B]Tower Defense Part[/B]
+	
+	[tab]Bel'Trama|The Regnum|The Order of the Moon
+		[IMG]https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-prn2/988246_165207070351939_336525103_n.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-prn2/1229945_165207077018605_1236938093_n.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-f-a.akamaihd.net/hphotos-ak-frc1/1239517_165207087018604_1807260242_n.jpg[/IMG]
+	[/tab]
+	
+	[B]Gameplay[/B]
+	
+	[tab]1|2|3|4|5|6|7|8
+		[IMG]https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-frc3/1401448_179736918898954_446591423_o.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-prn2/1403658_179736905565622_281762946_o.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-frc3/1396908_179736932232286_32519300_o.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-h-a.akamaihd.net/hphotos-ak-frc1/883752_179736948898951_885489348_o.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-b-a.akamaihd.net/hphotos-ak-frc3/1403408_179736975565615_2143738803_o.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-d-a.akamaihd.net/hphotos-ak-ash4/1398683_179737005565612_292009380_o.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-f-a.akamaihd.net/hphotos-ak-ash4/1403526_179737028898943_1235532644_o.jpg[/IMG]
+		{|}
+		[IMG]https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-prn1/55979_179737045565608_1578627004_o.jpg[/IMG]
+	[/tab]
+	
+	[SIZE="3"][COLOR="DeepSkyBlue"]Heroes[/COLOR][/SIZE]
+
+	[tab]Behemoth|Nerubian Widow|Ice Avatar|Ghoul|Master Banshee|Death Marcher|Skeleton Mage|Master Necromancer|Crypt Lord|Abomination|Destroyer|Dread Lord|Dark Ranger
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/behemoth-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Behemoth – Mundzuk & Octar[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Strength[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Male[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Slayer[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]48 - 54[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]7[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]305[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Normal[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]1.8[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]Melee[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]850[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]240[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+		It was thus written in old legends that on the clearest of nights, when the winds of the Peninsula were calm and peaceful, and the traveling merchants felt safe and secure, little would they suspect that they were being watched by an uncanny rider called Mundzuk and Octar, his ride, whose might and savageness were matched only by Mundzuk's battle proficiency. Rushing from the shadows with speed like a midnight blast, the victims of this duo never had a chance to retaliate before they were slain mercilessly. As if on the wings of the wind, the mysterious figures, having gathered up their trophies of the hunt, would vanish without a trace. The Behemoth's reign of terror lasted for many years until the day the hands of death claimed their life.
+
+		Centuries later, the Wizard, by the machinations of fate, discovered a nameless tomb containing the remains of the legendary rider, who had always been thought of as a myth. The Wizard offered them a second chance in life in exchange for their unquestionable loyalty. The fearsome Behemoth has returned, serving in the frontline of the Forsaken army and crushing all who dare oppose his new master's will.
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/explosive-tantrum.jpg[/IMG]
+			Explosive Tantrum:
+			Mundzuk orders Octar to thrust with his horn, damaging and knocking it's target back.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/beast-stomp.jpg[/IMG]
+			Beast Stomp:
+			Octar slams the ground, stunning and damaging nearby enemy units.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/roar.jpg[/IMG]
+			Roar:
+			Mundzuk & Octar send out a battelcry giving a bonus to damage and health regeneration to friendly units around them, for a short duration.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/adrenalin-rush.jpg[/IMG]
+			Adrenalin Rush:
+			Mundzuk and Octar become enraged, damaging and knocking back enemy units on their path.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/behemoth"]http://forsaken-bastions-fall.com/heroes/behemoth[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/nerubian-widow-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Nerubian Widow – The Widow[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Agility[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Female[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Nerubian[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Hunter[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]20 - 29[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]3[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]295[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Missile[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]1.7[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]500[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]450[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]195[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			Warriors often laugh at arachnophobia.
+
+			They always think spiders are nothing comparing to the beasts they fight daily.
+
+			But little they know of the Spiders underground.
+
+			Legs as tall as a door and fangs open as wide as a man's head,
+
+			The Widow crawls from beneath the earth to haunt on her victims.
+
+			Caught up. Webbed. Swarmed. Incapacitated. Consumed.
+
+			The Nerubian Widow finishes her meal quickly and spits out pieces of armor.
+
+			She then proceeds to the next prey. 
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/adolescence.jpg[/IMG]
+			Adolescence:
+			The Nerubian Widow lays eggs that spawn spiderlings. Growing up, these sworn companions support the Widow in teaching her enemies the real meaning of Arachnophobia.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/spider-web.jpg[/IMG]
+			Spider Web:
+			Spiders are known as the world best weavers. The Widow is no different, with her webs she's able to both catch her enemies and keep them at a distance. Once a vitcim is caught by her webs, it will be unable to even move a finger.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/sprint.jpg[/IMG]
+			Sprint:
+			The Widow whispers a forbidden curse that increases her movement speed at a constant mana cost.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/widow-bite.jpg[/IMG]
+			Widow Bite:
+			The Widow strikes an enemy with her deadly fangs, injecting lethal posion to the victim. The grim venom paralyzes and cripples the unit, until it finally causes a massive amount of damage on it.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/nerubian-widow"]http://forsaken-bastions-fall.com/heroes/nerubian-widow[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/ice-avatar-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Ice Avatar – Akull, The Cold Jester[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Intelligence[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Male[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Elementar[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Magician[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]34 - 43[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]4[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]300[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Missile[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]1.7[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]600[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]625[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]375[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			[I]"When hell freezes over, the cold shall traverse the Peninsula."[/I] – Akull, the Cold Jester. 
+
+			 A tale that sent chills down one’s spine told of a frosty jester who was cold and ever-bitter. Fed up with being given the cold shoulder all the time by this unfunny buffoon, his Lord used the harsh harvest of one winter as an excuse to kill off the jester in cold blood, proclaiming his death as a sacrifice to the Winter God. The jester's heart was the only thing left, frozen and buried in the snow.
+
+			Many years later, when the Lord was taking a stroll in his winter garden, as the cool breezes brushed past him, a freezing mist that materialized into a monstrous being exuding a bone-chilling aura appeared in front of him. “Ice to meet you, m'lord” were the last words the Lord heard before he was frozen solid and shattered. It is said that the former jester has returned, now known only as the Ice Avatar, and he has brought the icy apocalypse to this world.
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/ice-tornado.jpg[/IMG]
+			Ice Tornado:
+			The Cold Jester summons a frightful twister of frozen shrapnels around himself, hurting every enemy unit standing in his way.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/freezing-breath.jpg[/IMG]
+			Freezing Breath:
+			Akull's foul, freezing breath chills the air to a sub zero level, slowing enemy's movement and attack down.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/frost-aura.jpg[/IMG]
+			Frost Aura:
+			He freezes the air around him, creating solid particles of ice that slows enemies within a 500 range around him and hinders their healing processes.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/fog-of-death.jpg[/IMG]
+			Fog of Death:
+			Akull partially evaporates into a bone-chilling mist that deals damage over time to all units inside. As long as the spell is active, he's mostly formless, making 50% of the attacks on him miss.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/ice-avatar"]http://forsaken-bastions-fall.com/heroes/ice-avatar[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/ghoul-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Ghoul – Edmund Shieldbearer[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Agility[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Male[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Hunter[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]54 - 66[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]6[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]360[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Normal[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]1.65[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]Melee[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]450[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]150[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			Renowned for his unmatched valor and prowess, Edmund Shieldbearer --brother to Edgar Shieldbearer, a Paladin of the Twin Suns Church--, was a general of the Regnum respected by his allies and feared by his enemies. During the war against the Empire, he regrettably fell in battle at the tip of a dozen spears. The proper ceremonies were made, but soon after, the body disappeared.
+
+			The cruel strings of fate designated that his body become the ingredient for the Wizard’s daring experiment to create an undead abomination. Unholy magic from ancient eldritch grimoire ended up creating a frightening monstrosity. This being no longer feels fear, remorse or self-preservation. Charging into the battlefield with zero hesitation and maximum ferocity, 'the Ghoul' claws its way through the corpses of its former brethren in a never-ending fervor, as they stand frozen in awe, witnesses to the cruel fate of their hero, and ideal role model.
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/claws-attack.jpg[/IMG]
+			Claws Attack:
+			The Ghoul's claws deals physical bonus damage to heroes, when activated, but takes 20 damage per second.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/cannibalize.jpg[/IMG]
+			Cannibalize:
+			The Ghoul consumes a near corpse for up to 5 seconds to regenerate some hitpoints over time.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/flesh-wound.jpg[/IMG]
+			Flesh Wound:
+			After every second hit the Ghoul enfeebles him more. Reduces the armor of enemies by 2 per attack for 3 seconds.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/rage.jpg[/IMG]
+			Rage:
+			Gives the Ghoul max movement- and attackspeed for a short time but takes double damage.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/ghoul"]http://forsaken-bastions-fall.com/heroes/ghoul[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/master-banshee-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Master Banshee – Lady Venefica[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Intelligence[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Female[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Ghost[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Magician[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]22 - 36[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]2[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]270[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Missile[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]1.8[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]600[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]525[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]300[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			Legend has it that many years ago there lived a beautiful woman who was loved and cherished by all, called Lady Venefica. As time went by, she grew old and lost her appeal. Turning to witchcraft as her last resort, the woman followed an ancient ritual of sacrificing children and absorbing their essence to restore her youth. Her actions were noticed by the holy men and she was hanged afterwards. Suffering for days as the stolen life force slowly slipped away, until one day she finally died.
+
+			A few years later, the holy men who had hanged the woman before were met on the road with mysterious sounds that began to emanate from all around them. Desperately casting all their holy spells and magic to no avail, they ran in terror as fear invaded their mighty hearts. The wailing and weeping, like a child's cry, split the silence of the night unyielding. What ensued next was a symphony of screams and blood, concluding with a sonata of eerie silence.
+
+			Beware, for you may be the next…
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/dark-obedience.jpg[/IMG]
+			Dark Obedience:
+			The Grim Lady expels a magic orb that chases her target around, dealing damage to all units it passes through.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/spirit-burn.jpg[/IMG]
+			Spirit Burn:
+			Lady Venefica slowly consumes the spirit of the targeted unit, draining some of it's mana every second. If the unit's mana reaches 0 before the spell is over, the unit detonates violently, dealing damage equal to half of it's current health in an area. Units that do not have mana, instantly detonate. Heroes detonate for only 10% of their current health.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/cursed-soul.jpg[/IMG]
+			Cursed Soul:
+			She takes the soul from a near corpse, forcing it to possess a random enemy land unit. If that unit is different to the cursed soul, it will deal damage to the unit, else it will take control of that unit temporally, draining its life.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/barrage.jpg[/IMG]
+			Barrage:
+			Venefica shoots a barrage of unwordly missiles at a target area. These deal small area damage when they collide with a unit.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/master-banshee"]http://forsaken-bastions-fall.com/heroes/master-banshee[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/death-marcher-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Death Marcher – Dorian, The Gatekeeper[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Strength[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Male[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Ghost[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Defender[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]30 - 40[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]8[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]270[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Normal[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]2.2[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]Melee[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]700[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]255[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			The Knights d’Or was an army of elite knights handpicked by King Mithas himself. Under the leadership of, Great Knight Dorian a battle-hardened general, the army was able to hold its ground against overwhelming odds on numerous occasions. However, even the mightiest will eventually fall.
+
+			A loyal and close subject to the King, he was a liability to the Wizard who personally slain the trusting soldier while disguised as his liege. In a twist of irony, Dorian became a horrifying being known only as the Death Marcher. Now he stands tall and relentless as an impenetrable wall that protects the Forsaken Bastion. The combination of deadly magic and inhuman strength in the hand of such a merciless being demoralize all who witness its presence.  
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/death-pact.jpg[/IMG]
+			Death Pact:
+			The Death Marcher sacrifices an allied organic unit to use their HP to fuel an Aura that heals all allied Units nearby. Heroes get a further bonus to regeneration. Mana Concentration increases the healing and reduces the speed at which the HP is consumend.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/soul-trap.jpg[/IMG]
+			Soul Trap:
+			Spiders are known as the world best weavers. The Widow is no different, with her webs she's able to both catch her enemies and keep them at a distance. Once a vitcim is caught by her webs, it will be unable to even move a finger.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/mana-concentration.jpg[/IMG]
+			Mana Concentration:
+			Dorian sacrifices half of his current Mana to amplify the effects of his spells. The bonus is greater the more Mana is sacrificed.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/boiling-blood.jpg[/IMG]
+			Boiling Blood:
+			Dorian's dismal presence makes the blood of all his enemies reach boling point, burning them from within. The spell's effects last as long as they stay around The Gatekeeper. When their HP falls below 25%, they have a chance to implode, dealing area damage to nearby units. Mana Concentration increases damage and implosion chance.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/death-marcher"]http://forsaken-bastions-fall.com/heroes/death-marcher[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/skeleton-mage-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Skeleton Mage – Ukko, The Traitor[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Intelligence[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Male[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Magician[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]28 - 37[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]1[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]295[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Missile[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]1.5[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]600[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]400[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]375[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			The Magi’s Guild, an advanced school of magic ruled by the Philosopher's Council, had once been the utopia of all magicians in the land. They were the first to witness the blighted Forsaken Army as they were the deadly enemies of the Wizard, who had lost his brethren at the hands of this magic wielders. All slain in the onslaught.
+
+			Now the guild has become the domain of the Skeleton Mage, The Archmage and leader of the former council, punished to eternal undeath and servitude by the Wizard. Employing empowered necromantic magic sliding towards decay and soul manipulation, this shamble of bones seeks pleasure in cursing enemies with horrendous plagues, watching them die in agony and absorb their souls to grow stronger. Only eternal damnation awaits those who encounter this creature.
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/plague-infection.jpg[/IMG]
+			Plague Infection:
+			The curse afflicts the targeted unit with a deadly disease, dealing damage and slowing it's movement speed. Whenever the unit dies under these effects, it will infect up to 10 more units. Units that survived the plague, can't be affected again.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/soul-extraction.jpg[/IMG]
+			Soul Extraction:
+			Whenever Ukko or his minions kill an enemy unit, he will extract it's soul as long as he is close enough. Each soul increases his damage and that of his zombies, and increases the damage and area of effect of Call of the Damned. Can store up to 10 souls.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/spawn-zombie.jpg[/IMG]
+			Spawn Zombie:
+			The Traitor summons several zombies in a target area. Zombies will fight alongside him. They have an disease aura that deals damage over time to nearby enemies. Zombies are also valid targets for Call of the Damned, but they will die after they got affected by this ability.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/call-of-the-damned.jpg[/IMG]
+			Call of the Damned:
+			Ukko releases the souls of fallen units in a target area, which deal area of effect damage. A soul is released every 0.75 seconds but it takes 1.5 seconds till it finally is released. Zombies created with Spawn Zombies are also valid targets which will die after their soul gets released.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/skeleton-mage"]http://forsaken-bastions-fall.com/heroes/skeleton-mage[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/master-necromancer-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Master Necromancer – Kakos, Death Master[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Intelligence[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Male[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Magician[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]30 - 38[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]3[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]240[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Missile[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]1.7[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]600[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]425[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]420[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			Necromancers. Masters of the dark arts of death. Renowned for their ability to summon undead forces from the corpses of slain enemies and turn even their former comrades into mindless, brutal skeletons. They are an indispensable portion of the Wizard’s army. One among them, however, wishes beyond being a mere death caller.
+
+			Kakos Tabularius researched forbidden tomes and descended further into the dark art, obtaining powers that far exceed a normal necromancer’s capability. Careless, he went a step too far and experimented secret necromastery arts on his own body, turning himself into an undead being. The unexpected result did not disappoint him in the slightest, for he had finally made a breakthrough by being the only to actually tread the border of life and death. This nameless magician, now known among his enemies as the Master Necromancer, walks into battle alone and comes out escorted by loyal minions that trample the lifeless bodies of his foes.
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/necromancy.jpg[/IMG]
+			Necromancy:
+			The Master Necromancer raises a Skeleton from every corpse in the target area. The more skeletons raised, the weaker they are.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/malicious-curse.jpg[/IMG]
+			Malicious Curse:
+			By the power of his black magic, Kakos is able to put a hex on an enemy unit. This unit will drain either the health or the mana of its nearby allies, but the unit itself is immune to this effect.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/despair.jpg[/IMG]
+			Despair:
+			Kakos makes a unit enter a state crushing fear, reducing its attack speed. The penalty increases the more enemies the unit has to face.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/dead-souls.jpg[/IMG]
+			Dead Souls:
+			The Death Master calls forth vile souls to help him in his fight. He summons magical ghosts over 12 seconds, flying to enemies around him and dealing damage on impact.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/master-necromancer"]http://forsaken-bastions-fall.com/heroes/master-necromancer[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/crypt-lord-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Crypt Lord – Dominus[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Strength[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Male[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Nerubian[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Slayer[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]41 - 53[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]4[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]285[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Normal[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]1.85[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]Melee[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]525[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]225[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			Reports from a remote region of the Peninsula detailed how a small village was wiped out virtually overnight and the bodies of the villagers were all murdered in a horrendous, brutal manner. The Wizard, who was situated nearby, did not miss out the occasion to investigate this mystery. Arriving at the scene, his men were ambushed by oversized, vicious beetles. However, the attack proved to be fruitless as the Wizard effortlessly repelled the creatures and pushed them back to their hive: a tremendous ancient temple.
+
+			The subsequent excavation resulted in the unearthing of the skeleton of a giant, monstrous beetle. Figuring an apparent link between this skeleton and the earlier attacks, the Wizard decided on a whim to resurrect this enigmatic being, injecting an unwavering loyalty to it in the process. This 'Lord of the Crypt', called so by his new master is considered an exceptionally filthy and despicable being even among the undead masses as it possesses horrifying abilities, including ambushing the enemies from below, injecting his spawn to them and watching with pleasure as his young bursts forth from the corpse of the victim.
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/burrow-strike.jpg[/IMG]
+			Burrow Strike:
+			The Crypt Lord burrows himself below the earth, becoming invisible and magic immune. He digs with 650 speed to the target location, creating a dangerous spike when coming out from that deals damage to enemies and throws them in the air.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/burrow-move.jpg[/IMG]
+			Burrow Move:
+			Dominus and all his minions burrow for a limited time, after which, if there is a unit in the target area, they will come out of the earth close to it, else they will unburrow at the Crypt Lord's position.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/carrion-swarm.jpg[/IMG]
+			Carrion Swarm:
+			His giant horn allows Dominus to inject his spawn into a unit. If the unit dies within the next 5 seconds, a Grub will spawn out of the corpse. There only can be a limited amount of grubs and beetles at the same time.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/metamorphosis.jpg[/IMG]
+			Metamorphosis:
+			Gives your Grubs the ability to develop into the more powerful Carrion Beetles over 1 minute. They deal double damage and have more hp.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/crypt-lord"]http://forsaken-bastions-fall.com/heroes/crypt-lord[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/abomination-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Abomination – Blight Cleaver[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Strength[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Male[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Slayer[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]52 - 67[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]3[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]285[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Normal[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]1.95[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]Melee[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]700[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]210[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			Ancient tomes speak of a malicious necromantic ritual involving sewing the corpses of different beings together and attaching them to a single frame to create a grotesque being. The Wizard did not miss out the opportunity to experiment this ritual first hand and aptly named the resulting creature an 'Abomination'. Needless to say, he went far beyond creating one simple 'Abomination' and developed a machine run with steam technology to mass produce the tortured freaks.
+
+			One of this 'Abominations' is called Blight Cleaver. Hidden beneath his monstrous and brutish exterior is a cunning intelligence that allows this creature to plan tactics and stratagems, that exceed those of the common brutes that define his brethren; often reduced to running and smashing all that moves and can scream. Blight Cleaver roams the battlefield, a blob of meat planning the best way to snack upon his preys and push the battle line, as the unspeakable horror ensues in deadly silence.
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://media.moddb.com/images/articles/1/143/142841/auto/cleave.jpg[/IMG]
+			Cleave:
+			The Abomination's brutal strikes hit several units at once, a bonus percentage of the damage. There's a small chance to stun or knockback weaker units.
+
+			[IMG]http://media.moddb.com/images/articles/1/143/142841/auto/consume-himself.jpg[/IMG]
+			Consume Himself:
+			The Abomination consumes a chunk of his body to regenerate some hitpoints over 5 seconds. 
+
+			[IMG]http://media.moddb.com/images/articles/1/143/142841/auto/plague-cloud.jpg[/IMG]
+			Plague Cloud:
+			Each unit that comes in range of Blight Cleaver has a chance to get infected with the plague, taking damage over time. Each infected unit also has a low chance to infect others. The plague disappears after a few seconds if the unit is not reinfected.
+
+			[IMG]http://media.moddb.com/images/articles/1/143/142841/auto/snack.jpg[/IMG]
+			Snack:
+			Blight Cleaver joyfully feasts on an enemy hero, damaging him and healing himself for an equal amount. The enemy cannot move while being eaten. If the victim dies in the process, Blight Cleaver will permanently gain 3 points in Strength.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/abomination"]http://forsaken-bastions-fall.com/heroes/abomination[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/destroyer-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Destroyer – Gundagar, The Mana Eater[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Intelligence[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Male[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Slayer[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]36 - 43[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]4[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]320[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Normal[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]1.35[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]Melee[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]525[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]285[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			Many centuries ago, there existed a great mage with an unquenchable thirst for exploring the secret arts. This caused him to venture into forbidden territories and be branded a menace by the Twin Suns Church and the Magi's Guild alike; institutions that often find themselves one against the other. Finding himself cornered in the Tomb he made his hideout, the mage cast a desperate spell that turned his body into a sphere of pure mana quickly dissipating into thin air. An abandoned obsidian construct nearby, retaining traces of necromantic magic of its initial creation, absorbed the mage’s essence over the years and finally reconstituted his consciousness within its structure.
+
+			This nature-defying creature now serves the Forsaken as the official torturer and executor of the Wizard's enemies, acomplice of the creation of many of the creatures under the Great Conjurer's command. The Destroyer serves under the promise of a new body. Psionic annihilation is the only thing that awaits those who cross his path.
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/arcane-swap.jpg[/IMG]
+			Arcane Swap:
+			Gundagar restores mana to an enemy but damages his health for the same amount. The target is damaged by half the spell cost if it has no mana.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/mind-burst.jpg[/IMG]
+			Mind Burst:
+			The Mana Eater casts out two magical bolts towards a target. They deal damage and leave a mana draining debuff. If the target has mana, some of it will be transfered to Gundagar. 
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/mana-steal.jpg[/IMG]
+			Mana Steal:
+			Everytime Gundagar attacks a unit, he has a 25% chance to absorbs it's mana. But he cannot absorb more mana than what the target has.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/release-mana.jpg[/IMG]
+			Release Mana:
+			The Destroyer uses all of his mana to unleash an energy wave around him that damages and slows every enemy it hits. The AoE depends on the amount of mana used.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/destroyer"]http://forsaken-bastions-fall.com/heroes/destroyer[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/dread-lord-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Dread Lord – Snake Tongue Tristan[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Intelligence[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Male[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Supporter[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]22 - 28[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]5[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]270[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Normal[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]1.9[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]600[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]650[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]300[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			Before the coming of the Wizard, King Mithas had Tristan Langue d'Argent, his right hand, his chancellor, his advisor. This man had the unique ability to make the best our of any situation, specially when it came at the cost of others. His many tasks ranged from attending to important diplomatic meetings in the name of his liege, to making sure the people always owed the crown tax money and payed the debts in full amount. Interest rates included.
+
+			The Wizard soon took his place at the King's side with his silver tongue. But the Chancellor could see he and the Conjurer had much in common. This meant it was obvious to Tristan his new rival was lying and acting his way through a plot. At just the right moment he approched the outsider and offered him a devil's deal: he would betray his King in exchange of power and a high position under the Wizard's new rule, whom didn't consider him an equal as much as a useful pet. The deal came through, but at the cost of his sanity and image. He follows his new master with blind faith, too crazed to see the consequences of his actions.
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/vampire-blood.jpg[/IMG]
+			Vampire Blood:
+			The Dread Lord spills his own blood into a target area, enchanting allied units with a life-draining attack.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/purify.jpg[/IMG]
+			Purify:
+			Tristan heals a friendly unit and removes negative buffs or, he damages an enemy unit and removes positive buffs. It deals bonus damage to summons.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/sleepy-dust.jpg[/IMG]
+			Sleepy Dust:
+			The Snake Tongue summons an invisible Dust Bag on the floor that releases Sleep Powder when an enemy steps on it, effectively putting the unit to sleep.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/night-dome.jpg[/IMG]
+			Night Dome:
+			Snake Tongue Tristan increases the mana regeneration of friendly units by creating a great Dome around them. It absorbs mana everytime a unit inside it casts a spell, increasing its own output.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/dread-lord"]http://forsaken-bastions-fall.com/heroes/dread-lord[/URL]
+		[/TABLE]
+	[/CENTER]
+	{|}
+	[CENTER]
+		[CENTER]
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/heroes/dark-ranger-blank.jpg[/IMG]
+
+			[COLOR="SandyBrown"]Name:[/COLOR] [B]Dark Ranger – Gabrielle[/B]
+			[COLOR="SandyBrown"]Primary Attribute:[/COLOR] [B]Agility[/B]
+			[COLOR="SandyBrown"]Affilation:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Gender:[/COLOR] [B]Female[/B]
+			[COLOR="SandyBrown"]Race:[/COLOR] [B]Undead[/B]
+			[COLOR="SandyBrown"]Role:[/COLOR] [B]Hunter[/B]
+			[COLOR="SandyBrown"]Damage:[/COLOR] [B]23 - 31[/B]
+			[COLOR="SandyBrown"]Armor:[/COLOR] [B]4[/B]
+
+			[COLOR="SandyBrown"]Movementspeed:[/COLOR] [B]320[/B]
+			[COLOR="SandyBrown"]Health-Regeneration:[/COLOR] [B]0.25[/B]
+			[COLOR="SandyBrown"]Mana-Regeneration:[/COLOR] [B]0.01[/B]
+			[COLOR="SandyBrown"]Weapon Type:[/COLOR] [B]Missile[/B]
+			[COLOR="SandyBrown"]Cooldown:[/COLOR] [B]2.35[/B]
+			[COLOR="SandyBrown"]Range:[/COLOR] [B]600[/B]
+			[COLOR="SandyBrown"]Start Health Points:[/COLOR] [B]500[/B]
+			[COLOR="SandyBrown"]Start Mana Points:[/COLOR] [B]225[/B]
+		[/CENTER]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Story[/COLOR][/SIZE]
+
+			Among the numerous mercenary clans scattering around the Peninsula, there is a unique nameless guild operated by a single assassin, who is also the one to take care of contracted jobs. This female archer is tricky, treacherous and possesses an unrivaled marksmanship, befitting her title of the Dark Ranger. The origin of the Dark Ranger is shrouded in mystery. Some say she descended from a secret tribe of female warriors to the North that worships the gods of war, while others claim she is an assassin raised from birth and her arrows had never missed ever since she knew how to use a bow.
+
+			Enemies of the Dark Ranger often find themselves being chased by a ghostly archer and incapacitated by spectral arrows that pierce their soul. Even if the Ranger is missing from sight, her arrow is as deadly as ever and the victims only hear of the whizzing sound before their lives are forfeited. Fighting among the undead masses for sole monetary purposes, her bow is ready to bring the holy warriors to their knees. 
+		[/CENTER]
+		[/TABLE]
+
+		[TABLE="Heroes"][CENTER][SIZE="3"][COLOR="DeepSkyBlue"]Abilities[/COLOR][/SIZE]
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/ghost-form.jpg[/IMG]
+			Ghost Form:
+			The Dark Ranger becomes etheral, increasing her movement speed. In this form, she's able to walk through units.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/crippling-arrow.jpg[/IMG]
+			Crippling Arrow:
+			Gabrielle shoots a poisoned arrow that slows down the targeted unit. It deals bonus damage if the target is already affected by an arrow.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/snipe.jpg[/IMG]
+			Snipe:
+			The Dark Ranger shoots an arrow at a target outside of her usual range. She takes 3 seconds to aim.
+
+			[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/spells/coup-de-grace.jpg[/IMG]
+			Coup de Grace:
+			Gabrielle fires an arrow at an allied hero and instantly kills it. The energy released creates a powerful explosion that deals heavy area of effect damage to all enemy units.
+			[/CENTER]
+
+			[B]All Details:[/B]
+			[URL="http://forsaken-bastions-fall.com/heroes/dark-ranger"]http://forsaken-bastions-fall.com/heroes/dark-ranger[/URL]
+		[/TABLE]
+	[/CENTER]
+	[/tab]
+	
+	[SIZE="3"][COLOR="DeepSkyBlue"]Beta Start[/COLOR][/SIZE]
+
+	Beta Release: [B]23.01.2014[/B]
+[/CENTER]

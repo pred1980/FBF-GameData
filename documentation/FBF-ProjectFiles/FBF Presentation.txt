@@ -1,0 +1,539 @@
+[CENTER]
+	[otable]
+		[tr]
+			[titletd]
+				[h3][CENTER][FONT="Franklin Gothic Medium"][COLOR="LightBlue"]FBF Team presents[/COLOR][/FONT][/CENTER][/h3]
+			[/titletd]
+		[/tr]
+		[tr]
+			[td]
+				[IMG]https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-prn2/1236454_164940847045228_2031688499_n.jpg[/IMG]
+			[/td]
+		[/tr]	
+	[/otable]
+	
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]Map Info[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]FBF Team[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]Beta Tester[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[COLOR="Wheat"]Type: [/COLOR] [COLOR="LightBlue"]Tower Defense + Aeon of Strife[/COLOR]
+				[COLOR="Wheat"]Category: [/COLOR] [COLOR="LightBlue"]Miscellanous / Other[/COLOR]
+				[COLOR="Wheat"]Map Size: [/COLOR] [COLOR="LightBlue"]160 x 160[/COLOR]
+				[COLOR="Wheat"]Recommended players: [/COLOR] [COLOR="LightBlue"]10-12[/COLOR]
+				[COLOR="Wheat"]Estimated gameplay time: [/COLOR] [COLOR="LightBlue"]1 - 1.5h[/COLOR]
+				[COLOR="Wheat"]Tileset: [/COLOR] [COLOR="LightBlue"]Felwood[/COLOR]
+				[COLOR="Wheat"]File Size: [/COLOR] [COLOR="LightBlue"]5.02MB[/COLOR]
+				[COLOR="Wheat"]Doodads: [/COLOR] [COLOR="LightBlue"]~13.500[/COLOR]
+				[COLOR="Wheat"]Lines of Code: [/COLOR] [COLOR="LightBlue"]~80.500[/COLOR]
+				[COLOR="Wheat"]Number of Heroes: [/COLOR] [COLOR="LightBlue"]27[/COLOR]
+				[COLOR="Wheat"]Buyable Items: [/COLOR] [COLOR="LightBlue"]120[/COLOR]
+				[COLOR="Wheat"]Towers: [/COLOR] [COLOR="LightBlue"]11[/COLOR]
+			[/tdalt]
+			[tdalt]
+				[COLOR="Wheat"]Leader: [/COLOR] [COLOR="LightBlue"][URL="http://www.hiveworkshop.com/forums/members/pred1980/"]pred1980[/URL][/COLOR]
+				[COLOR="Wheat"]Writers: [/COLOR] [COLOR="LightBlue"][URL="http://www.hiveworkshop.com/forums/members/dzerpic/"]DZerpic[/URL] / [URL="http://www.hiveworkshop.com/forums/members/doomlord/"]Doomlord[/URL][/COLOR]
+				[COLOR="Wheat"]Terrain: [/COLOR] [COLOR="LightBlue"][URL="http://www.hiveworkshop.com/forums/members/situ/"]Situ[/URL][/COLOR]
+				[COLOR="Wheat"]Triggering: [/COLOR] [COLOR="LightBlue"]
+					- pred1980
+					- [URL="http://www.hiveworkshop.com/forums/members/alienatsystem/"]Alien@System[/URL] (inactive)
+					- [URL="http://www.hiveworkshop.com/forums/members/kricz/"]Kricz[/URL] (inactive)
+					- [URL="http://warcraft.ingame.de/forum/member.php?u=354541"]nzca[/URL] (inactive)
+					- [URL="http://www.hiveworkshop.com/forums/members/looking_for_help/"]looking_for_help[/URL] (inactive)
+- [URL="http://www.hiveworkshop.com/forums/members/anachron/"]Anachron[/URL] (inactive)
+				[/COLOR]
+				[COLOR="Wheat"]Artist: [/COLOR] 
+					[COLOR="LightBlue"][URL="http://vaejoun.deviantart.com/"]Vaejoun[/URL] (inactive)
+					[URL="http://www.hiveworkshop.com/forums/members/justicebringer/"]Justicebringer[/URL] (inactive)
+					[URL="http://www.hiveworkshop.com/forums/members/morbent/"]morbent[/URL] (inactive)[/COLOR]
+				[COLOR="Wheat"]Forum Moderator: [/COLOR] 
+					[COLOR="LightBlue"][URL="http://www.hiveworkshop.com/forums/members/chaosy/"]chaosy[/URL] (inactive)[/COLOR]
+					[COLOR="LightBlue"][URL="http://www.hiveworkshop.com/forums/members/drunken_jackal/"]drunken_jackal[/URL] (inactive)[/COLOR]
+				[COLOR="Wheat"]External Helpers: [/COLOR] 
+					[COLOR="LightBlue"][URL="http://www.hiveworkshop.com/forums/members/peq/"]peq[/URL] (inactive)[/COLOR]
+					[COLOR="LightBlue"][URL="http://www.hiveworkshop.com/forums/members/cokemonkey11/"]cokemonkey11[/URL] (inactive)[/COLOR]
+					[COLOR="LightBlue"][URL="http://www.hiveworkshop.com/forums/members/edo494/"]edo494[/URL] (inactive)[/COLOR]
+			[/tdalt]
+			[tdalt]
+				[I]Want to become a beta tester? 
+				Write me a PM![/I]
+			[/tdalt]
+		[/tr]
+	[/otable]
+	
+	[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]Project Recruitment[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+			[/tdalt]
+		[/tr]
+	[/otable]
+	
+	[URL="http://www.moddb.com/mods/forsaken-bastions-fall"][IMG]http://button.moddb.com/popularity/medium/mods/23884.png[/IMG][/URL]
+	
+	[box="Facebook Fanpage"][SIZE="2"][url]https://www.facebook.com/F0rsaken.Bastions.Fall[/url][/SIZE][/box]
+		
+[otable]
+		[tr]
+			[titletd]
+				[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]FBF Weekly Beta Testing Event[/COLOR][/SIZE][/FONT][/CENTER]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[otable]
+					[tr]
+						[tdalt]
+							[B][COLOR="Wheat"]Days:[/COLOR][/B]
+						[/tdalt]
+						[tdalt]
+							No Tests atm!!!
+						[/tdalt]
+					[/tr]
+					[tr]
+						[tdalt]
+							[B][COLOR="Wheat"]Times:[/COLOR][/B]
+						[/tdalt]
+						[tdalt]
+							8pm [B](UTC+1)[/B] (Europe)
+							8pm [B](UTC+7)[/B] (Asia)
+							8pm [B](UTC-5)[/B] (US East)
+							8pm [B](UTC-8)[/B] (US West)
+						[/tdalt]
+					[/tr]
+					[tr]
+						[tdalt]
+							[B][COLOR="Wheat"]Where:[/COLOR][/B]
+						[/tdalt]
+						[tdalt]
+							Battle.net / Notherend
+						[/tdalt]
+					[/tr]
+					[tr]
+						[tdalt]
+							[B][COLOR="Wheat"]Channel:[/COLOR][/B]
+						[/tdalt]
+						[tdalt]
+							FBF
+						[/tdalt]
+					[/tr]
+					[tr]
+						[tdalt]
+							[B][COLOR="Wheat"]Bots:[/COLOR][/B]
+						[/tdalt]
+						[tdalt]
+							
+						[/tdalt]
+					[/tr]
+					[tr]
+						[tdalt]
+							[B][COLOR="Wheat"]Games Modes:[/COLOR][/B]
+						[/tdalt]
+						[tdalt]
+							
+						[/tdalt]
+					[/tr]
+					[tr]
+						[tdalt]
+							[B][COLOR="Wheat"]Hosted Games:[/COLOR][/B]
+						[/tdalt]
+						[tdalt]
+						[/tdalt]
+					[/tr]
+[tr]
+						[tdalt]
+							[B][COLOR="Wheat"]Status:[/COLOR][/B]
+						[/tdalt]
+						[tdalt]
+						[/tdalt]
+					[/tr]
+					[tr]
+						[tdalt]
+							[B][COLOR="Wheat"]Official Beta Tester:[/COLOR][/B]
+						[/tdalt]
+						[tdalt]
+							[I]Want to become a beta tester? Write me a PM![/I]
+						[/tdalt]
+					[/tr]
+				[/otable]
+			[/tdalt]
+		[/tr]
+	[/otable]
+		
+	[otable]
+		[tr]
+			[titletd]
+				[h3][CENTER][SIZE="4"]Support us![/SIZE][/CENTER][/h3]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[CENTER]
+					[URL="http://www.hiveworkshop.com/forums/forsaken-bastions-fall-720/"]
+						[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/misc/Support-FBF.png[/IMG]
+					[/URL]
+				[/CENTER]
+				[HTML][URL="http://www.hiveworkshop.com/forums/map-development-202/forsaken-bastions-fall-242443/"][IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/misc/Support-FBF.png[/IMG][/URL][/HTML]
+			[/tdalt]
+		[/tr]	
+	[/otable]
+	
+	[otable]
+		[tr]
+			[titletd]
+				[h2][CENTER][SIZE=4]Overview[/SIZE][/CENTER][/h2]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[COLOR="LightBlue"]
+					Forsaken Bastion's Fall (FBF) is a map that combines Tower Defense gameplay with an AoS-like Hero PvP Battle. Our project started in 2008, when it was known as Defense of the Undead (DotU). As time went on, ideas, criticizing, and suggestions reshaped DotU into a whole new map which was then completely remade from scratch to become what it is now.
+					
+					FBF is set in a completely new universe with an extensive lore that keeps growing as time goes by. It is set in a key point of the World's history: At the very end of a long war that present many great changes at social, political and religious levels. The players can choose from 2 teams and 5 different factions. The Forsaken, an ancient cult of necromancers and it's undead army, have to defend their last fortress from The Alliance (The Infidel), a coalition of human nations using their last resources to take down the Forsaken.
+					
+					There is a total of 5 factions, 27 heroes, 104 items (8 base items and 24 items unique to each faction), 27 minions with varied statistics and skills, and 11 towers for the Forsaken to use. Alongside a great map terrain and an extensive lore.
+				[/COLOR]
+			[/tdalt]
+		[/tr]	
+	[/otable]
+	
+	[otable]
+		[tr]
+			[titletd]
+				[h2][CENTER][SIZE=4]The Plot[/SIZE][/CENTER][/h2]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[otable]
+					[tr]
+						[td]
+							[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/media/misc/FBF-World-Map.jpg[/IMG]
+							[CENTER]( World Map )[/CENTER]
+						[/td]
+						[td]
+							[COLOR="LightBlue"]
+								[CENTER][I]"I have seen it in the mud covered face of the southern men; I have seen it in the warmongering north, and even in the god's forgotten, dead plagued army. Change..."[/I]
+								~~Brother Baritos, Philosopher and Priest of the 'Twin Suns Church'[/CENTER]
+								
+								For almost twenty years, war has plagued the Seneca Region: a peninsula divided by several nations and cultures essentially different one from the other. The original conflict between two major kingdoms triggered several major events as new religious and political groups rose to power. New technologies led to new philosophies and new ways of life, new ways to experience the world and new ways to rule society. The Seneca Region is in a state of change.
+								
+								Amidst the chaos of change and the evolving societies, an old demon returned to the land. A Wizard, the last member of a forgotten cult long thought to been vanquished, executed a master plan to raise an undead army and enforce his twisted, necromantic black magic upon the world. He calls himself Cáligo and his kin, The Forsaken.
+									
+								Cáligo entered the court of King Marco Mithas, a man whose greed was as big as his vast wealth. The naive King was easily tricked by the Wizard who cast a curse on him and his new born son, Marco Vas. Cáligo raised the Prince into his puppet, thus ruling the Kindom from the shadows. To channel the energies that would raise the undead, it was necessary to have a healthy body. Cáligo would transfer his soul from his frail carcass to Vas's younger form. But Vas proved to be a fighter on the inside. The invisible struggle that took place between them caused the Prince's body to implode, leaving in place his beating heart covered by the Wizard's magic.
+
+								Despite the outcome, the Heart raised an army of undead and executed it's campaign of terror over the exhausted people of the Seneca Region that had been fighting each other for years. The Prince's resistance was a major setback in Cáligo's plans, but what ultimately caused his defeat was 'change'. During the time he was executing his plan, the ways to wage war changed radically in the Region, new weapons that could make a simple peasant beat an expert swordman were readily available and, in the end, the Forsaken were pushed back.
+								
+								Now, the Heart awaits deep within it's Bastion and the tired champions of the endless wars stand at the gates, ready to vanquish The Forsaken once and for all. Undoubtedly, this battle is the last as both the Forsaken and the Alliance of Nations put every man on the line. The winner takes all.
+							[/COLOR]
+						[/td]
+					[/tr]
+				[/otable]
+			[/tdalt]
+		[/tr]	
+	[/otable]
+	
+	[otable]
+		[tr]
+			[titletd]
+				[h2][CENTER][SIZE=4]Gameplay and Mechanics[/SIZE][/CENTER][/h2]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[COLOR="LightBlue"]
+					Forsaken Bastion's Fall is a multiplayer map that pits two sides, of up to 6 players each, one against the other. One of the teams, The Forsaken, has to defend the fortress from the Alliance team that's trying to reach the end and destroy the source of magic that keeps the defenders alive. 
+					
+					The players start in the Tower Defense stage, where The Forsaken team has to strategically place a series of different towers to stop the Alliance and it's waves of minions from reaching the entrance. The total number of waves is limited to 20 so the Alliance players need to end this stage as quickly as possible.
+					
+					When the Alliance reaches the Bastion's Gates, the AoS stage begins. Here is when the Forsaken players take control of their chosen heroes. Alonside minions of their own and NPC Forsaken Bosses, they will have to defend the corridors of the stronghold from the Alliance's efforts to reach the end. The Alliance wins if they do so within the 20 minion waves, and the Forsaken win if they succesfully defeat all waves before their enemies complete their goal.
+				[/COLOR]
+			[/tdalt]
+		[/tr]	
+	[/otable]
+	
+	[otable]
+		[tr]
+			[titletd]
+				[h2][CENTER][SIZE=4]Tower Defense[/SIZE][/CENTER][/h2]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[COLOR="LightBlue"]
+					The tower defense is the first part of every wave and is solely played by the Forsaken. The Coalition can not interfere with the actions of the Undead players in that area. The defense strength is designed, and their HP and numbers are adjusted so that this number is achieved no matter how many Forsaken players there are in the game.
+					
+					The towers are pretty standard towers you will see in most TDs, mostly meant for dealing damage, and only a handful have special abilities and effects.
+					
+					The towers are paid in wood, which is given to the players at the end of every round and can not be obtained in another way.
+				[/COLOR]
+			[/tdalt]
+		[/tr]	
+	[/otable]
+	
+	[otable]
+		[tr]
+			[titletd]
+				[h2][CENTER][SIZE=4]Hero Battle[/SIZE][/CENTER][/h2]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[COLOR="LightBlue"]
+					Once the Coalition players reach the entrance of the fortress, the second stage begins. The Forsaken players now control their own heroes and all playable character statistics are rebalanced to fit the stage. The Coalition players will have a tougher time dealing with their enemies, as they not only face player heroes but, also, the Forsaken minion waves and a set number of bosses. Even more, the wave count keeps getting lower and if it reaches 0, the Coalition will lose.
+					
+					Things don't get easier for the defending players as they lose the protection of the towers and run the risk of being vulnerable to their enemy's attacks.
+				[/COLOR]
+			[/tdalt]
+		[/tr]	
+	[/otable]
+	
+	[otable]
+		[tr]
+			[titletd]
+				[h2][CENTER][SIZE=4]Teams and Factions[/SIZE][/CENTER][/h2]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[COLOR="LightBlue"]
+					[B]The Forsaken and The Heart:[/B]
+					
+					The defending players play for The Forsaken: A vast undead army controlled by the last of an ancient necromantic cult. They have at their choosing a total of 13 Undead-themed heroes. Before it was corrupted by the wizard Cáligo, it was known as the Kingdom d'Or, the Golden Kingdom. King Marco Mithas was the supreme ruler, and the wealthiest man of his time. Yet, his vanity and greed allowed Cáligo to trick him and transform the Kingdom of Gold into his base of operations. 
+					
+					The Forsaken find themselves pushed all the way back to their last Bastion, yet they are willing to die for their master's cause and have several weapons and tricks at their disposal. They are all experienced fighters and mischievous tacticians, empowered by the Black magic that gives them life; a dangerous combination to face.
+				
+					[B]The Alliance:[/B]
+				
+					The Alliance is formed by 3 major factions: The Second Regnum, the Order of the Moon and the Bel'Trama. Additionally, there's a group of mercenaries ready to take the glory of victory for the highest bidder.
+				
+					[B]The Second Regnum. Of Knights and Honour:[/B]
+					
+					The Second Regnum traces it's origins back to the settlers that baptized the land. A long time ago, the Crown owned all the land in the Peninsula. It's society is highly religious and conservative, defined by traditions and a feudal system that have remained intact for centuries, but the recent events and the rise of new powers have shaken the Regnum's very foundations.
+					
+					One of the few things that keep the Kingdom together is religion. The only dogma allowed by the state is that of the Church of the Twin Suns, firmly constructed upon the idea of two opposite but complimentary parental Gods. The Church and the State are always keen on enforcing rules and laws upon the 'people' to keep them under control, but these are often bent or overlooked for a fair amount of gold.
+
+					[B]The Bel'Trama. Outlanders:[/B]
+					
+					[I]"Men fear what is new and unknown, that which is foreign to their own personal worlds, 	they fear that which is bigger and stronger than them. When men feel threatened and cornered by this things they fear, they treat them with disdain and hostility."[/I]
+					~Brother Baritos, Philosopher and Travelling Monk of the 'Twin Suns Church' about the Outlanders.
+					
+					Men in the Peninsula fear the Bel'Trama for this reasons. A colossal mass of Green-skinned men and manlike animals. Foreign and unknown, they are different in every aspect to the common man. They are called the Outlanders, among other names, because their home is far across the mountains to the north and the seas to the east.
+					
+					Their existence has been known for only a few decades and it has finished the age-long debate among the Regnum's philosophers as to whether or not the world extends beyond the known land. But the Bel'trama are regarded as wild barbarians, uneducated beasts ready to strike and take the peninsula with their vast army of primitives. Yet, the Bel'Trama have done nothing to earn this reputation as they, as a matter of fact, have ignored all attempts to establish a relationship by the Peninsula's nations.
+					
+					Despite all of this, the Bel'Trama kept a close eye to the war that ravaged the Seneca Region and have witnessed from afar the rise of the Forsaken. For reasons unknown, they launched an invasion on Forsaken territory, pushing them back and aiding the Heart's enemies. Still unsure, the Regnum agreed to an alliance with the Outlanders but only to defeat their common foe.
+					
+					[B]The Order of the Moon:[/B]
+					
+					They are a cult of magic-wielders located in the 'Luna' island, south of the Peninsula, territory of the Second Regnum. Only recently they made their existence public by preaching the coming of The End and The Rebirth.
+					
+					They believe time in a cyclical form of time that starts with the birth of an all-seeing Goddess and her giving birth to Man and all the creatures. The cycles end with men repenting and their souls returning back to the Goddess. This fatalistic belief has found an enemy in the Church of the Twin Suns, and so, the Order is seen as a threat by the Second Regnum.
+					
+					Their leader claims to have been sent by the Goddess to save as many as possible from the inevitable End, and guide them 'back to her womb'. Whether her intentions are good or not remains to be seen. Despite the criticism the Order receives, it has gained many followers in the southern provinces and many more have flocked to their numbers now that they have made themselves public and raised arms against the army of undead.
+					
+					As with the Bel'Trama, the Regnum has deemed necessary to establish a temporary alliance with the Order to defeat the Forsaken.
+				[/COLOR]
+			[/tdalt]
+		[/tr]	
+	[/otable]
+	
+	[otable]
+		[tr]
+			[titletd]
+				[h2][CENTER][SIZE=4]Features[/SIZE][/CENTER][/h2]
+			[/titletd]
+		[/tr]
+	[/otable]
+	[otable]
+		[tr]
+			[titletd][CENTER]Feature[/CENTER][/titletd]
+			[titletd][CENTER]Description[/CENTER][/titletd]
+		[/tr]
+		[tr]
+			[td][URL="http://forsaken-bastions-fall.com/heroes"]Heroes[/URL][/td]
+			[td]primary standard heroes but with unique abilities[/td]
+		[/tr]
+		[tr]
+			[td][URL="http://forsaken-bastions-fall.com/items"]Items[/URL][/td]
+			[td]32 items per race divided into Basic, Advanced and Ancient with a lot of special abilities[/td]
+		[/tr]	
+		[tr]
+			[td][URL="http://forsaken-bastions-fall.com/creeps"]Creeps[/URL][/td]
+			[td]27 different creeps which are spread over 20 rounds[/td]
+		[/tr]
+		[tr]
+			[td][URL="http://forsaken-bastions-fall.com/towers"]Towers[/URL][/td]
+			[td]11 Towers divided into 3 types, the common, rare and unique towers. All Towers can be upgraded 3 times and the majority have different abilities[/td]
+		[/tr]
+		[tr]
+			[td]Gameplay[/td]
+			[td]it's a unique gameplay experience because FBF combines two of the most popular genre -The TD and AoS-[/td]
+		[/tr]
+		[tr]
+			[td]Terrain[/td]
+			[td]with great attention to detail the terrain was created over several months and offer the player a dark and creepy atmosphere[/td]
+		[/tr]
+	[/otable]
+	
+	[otable]
+		[tr]
+			[titletd]
+				[h3][CENTER][SIZE=4]Screenshots[/SIZE][/CENTER][/h3]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[box=Complete Map]
+					[IMG]https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-ash4/1011611_155818487957464_34862477_n.jpg[/IMG]
+				[/box]
+			[/tdalt]
+		[/tr]
+		[tr]
+			[tdalt]
+				[hidden=AoS Part]
+					[tabs]
+						[tab=[CENTER]The Entrance[/CENTER]]
+							[IMG]https://fbcdn-sphotos-b-a.akamaihd.net/hphotos-ak-ash3/533210_155818564624123_589316860_n.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]The Heroes[/CENTER]]
+							[IMG]https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-ash3/1185012_155818567957456_301704460_n.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]The Dome[/CENTER]]
+							[IMG]https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-prn1/63907_163482700524376_1034855134_n.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]Nerubian Part[/CENTER]]
+							[IMG]https://fbcdn-sphotos-h-a.akamaihd.net/hphotos-ak-prn2/1239035_163482660524380_1338095498_n.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]The Graveyard[/CENTER]]
+							[IMG]https://fbcdn-sphotos-g-a.akamaihd.net/hphotos-ak-prn1/156845_163482663857713_903508130_n.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]The Final[/CENTER]]
+							[IMG]https://fbcdn-sphotos-b-a.akamaihd.net/hphotos-ak-ash4/1185534_163482650524381_1648884042_n.jpg[/IMG]
+						[/tab]
+					[/tabs]
+				[/hidden]
+			[/tdalt]
+		[/tr]
+		[tr]
+			[tdalt]
+				[hidden=Tower Defense Part]
+					[tabs]
+						[tab=[CENTER]Bel'Trama[/CENTER]]
+							[IMG]https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-prn2/988246_165207070351939_336525103_n.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]The Regnum[/CENTER]]
+							[IMG]https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-prn2/1229945_165207077018605_1236938093_n.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]The Order of the Moon[/CENTER]]
+							[IMG]https://fbcdn-sphotos-f-a.akamaihd.net/hphotos-ak-frc1/1239517_165207087018604_1807260242_n.jpg[/IMG]
+						[/tab]
+					[/tabs]
+				[/hidden]
+			[/tdalt]
+		[/tr]
+		[tr]
+			[tdalt]
+				[hidden=Gameplay]
+					[tabs]
+						[tab=[CENTER]1[/CENTER]]
+							[IMG]https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-frc3/1401448_179736918898954_446591423_o.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]2[/CENTER]]
+							[IMG]https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-prn2/1403658_179736905565622_281762946_o.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]3[/CENTER]]
+							[IMG]https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-frc3/1396908_179736932232286_32519300_o.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]4[/CENTER]]
+							[IMG]https://fbcdn-sphotos-h-a.akamaihd.net/hphotos-ak-frc1/883752_179736948898951_885489348_o.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]5[/CENTER]]
+							[IMG]https://fbcdn-sphotos-b-a.akamaihd.net/hphotos-ak-frc3/1403408_179736975565615_2143738803_o.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]6[/CENTER]]
+							[IMG]https://fbcdn-sphotos-d-a.akamaihd.net/hphotos-ak-ash4/1398683_179737005565612_292009380_o.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]7[/CENTER]]
+							[IMG]https://fbcdn-sphotos-f-a.akamaihd.net/hphotos-ak-ash4/1403526_179737028898943_1235532644_o.jpg[/IMG]
+						[/tab]
+						[tab=[CENTER]8[/CENTER]]
+							[IMG]https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-prn1/55979_179737045565608_1578627004_o.jpg[/IMG]
+						[/tab]
+					[/tabs]
+				[/hidden]
+			[/tdalt]
+		[/tr]
+	[/otable]
+	
+	[otable]
+		[tr]
+			[titletd]
+				[h3][CENTER][SIZE=4]Credits[/SIZE][/CENTER][/h3]
+			[/titletd]
+		[/tr]
+		[tr]
+			[tdalt]
+				[otable]
+					[tr]
+						[tdalt]
+							[COLOR="LightBlue"]
+								Hawkwing
+								Sephiroth_VII
+								Bribe
+								moyack
+								Anitarf
+								Magtheridon96
+							[/COLOR]
+						[/tdalt]
+						[tdalt]
+							[COLOR="LightBlue"]
+								kingking
+								s4nji
+								Axarion
+								The_Witcher
+								looking_for_help
+								Spinnaker
+								FURBY
+							[/COLOR]
+						[/tdalt]
+						[tdalt]
+							[COLOR="LightBlue"]
+								Anachron
+								Callahan
+								xXm0rpH3usXx
+								PitzerMike
+								Rising_Dusk
+								Cohadar
+							[/COLOR]
+						[/tdalt]
+						[tdalt]
+							[COLOR="LightBlue"]
+								Nestharus
+								Vexorian
+								Earth-Fury
+								Kricz
+								Adiktuz
+							[/COLOR]
+						[/tdalt]
+					[/tr]
+				[/otable]
+			[/tdalt]
+		[/tr]	
+	[/otable]
+	[B]and many more... contact us if we forgot you.[/B]
+	
+[/CENTER]

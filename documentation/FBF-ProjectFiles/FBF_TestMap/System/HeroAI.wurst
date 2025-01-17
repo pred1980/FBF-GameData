@@ -1,0 +1,860 @@
+//==========================================================================================
+//  HeroAI v4.3.3
+//      by watermelon_1234
+//==========================================================================================
+// This library provides a simple computer AI for arena-type maps.
+//
+// Basic hero actions taken care of:
+//	* moving around the map
+//	* attacking an enemy unit
+//	* spending gold on items and picking up nearby items
+//	* running to a "safe unit"
+//
+// Additionally, the system provides a module, HeroAIStruct, that can be implemented into a
+// struct to allow the user to further customize the AI of a specific hero type, such coding
+// conditions for it to cast certain spells.
+//
+// When making a custom AI, it's advised to make the struct private along with naming it AI.
+// This way, you can use the textmacro HeroAI_Register to simplify registering the AI.
+// Implement the HeroAIStruct module after coding all your interface methods.
+// Main control of the AI is done through periodic event.
+//
+// It is recommended to look at the AIs in the test map to see how a custom AI can be coded.
+//##########################################################################################
+// HeroAI struct:
+//
+//   Members:
+//
+//     * unit hero         -> The hero the AI is controlling
+//     * player owner      -> The owner of hero. It assumed that the owner will be constant.
+//     * integer hid       -> The handle id of the hero
+//     * Itemset itemBuild -> The item build the hero will try to buy. Defaults to DefaultItemBuild
+//							  If you want to define a custom item build for a specific AI, it is
+//							  recommended to change this in the onCreate method interface for your AI.
+//
+//    Values that are updated:
+//
+//     * integer itemCount -> The number of items the hero has
+//     * integer gold      -> The amount of gold the owner has
+//	   * integer lumber	   -> The amount of lumber the owner has
+//     * real life         -> Life of hero
+//	   * real maxLife	   -> Max life of hero
+//     * real mana         -> Mana of hero
+//     * hx                -> x-coordinate of the hero
+//     * hy                -> y-coordinate of the hero
+//     * group units       -> All alive units around the hero, excluding the hero and neutral units
+//     * group allies      -> Derived from group units, only has allied units
+//     * group enemies     -> Derived from group units, only has visible enemy units
+//     * integer allyNum   -> Number of nearby allied units
+//     * integer enemyNum  -> Number of nearby enemy units
+//     * unit shop         -> Set this to the shop that you want the AI to shop at. You only need to use this
+//							  if you define a custom loopActions and don't call update.
+//
+//     * static thistype temp -> Allow easier group enumerations
+//
+//
+//	   * static method getAIIndexFromHero takes unit hero returns integer
+//		 Returns the index of the AI struct created for a hero. Used primarily in event responses.
+//
+//	   * method update takes nothing returns nothing *
+//		 Updates information for the AI. Called periodically with timer. Should be called at least
+//		 once if the AI is dealt with outside of the periodic event.
+//
+//	   * method changeDefaultPeriod takes real period returns nothing *
+//		 Changes the timer period of the AI for calling default loop actions.
+//
+//    Item Methods: (Note: uses the custom defined structure in HeroAIItem, not the blizzard defined type)
+//
+//	   * method curItem takes nothing returns Item *
+//		 Returns the Item that the hero is trying to buy. Returns 0 if the hero should stop buying
+//		 items.
+//
+//     * method canBuyItem takes Item it returns boolean *
+//       Checks to see if the hero can buy an Item. An Item can be referred to as
+//       Item[ITEM-TYPE ID] or .curItem
+//
+//     * method buyItem takes Item it returns nothing *
+//       Simulates the purchase of an item by deducting the costs and adding the item to the hero's inventory.
+//       Use canBuyItem first to  check if the AI has enough resources to purchase the item.
+//
+//    Utility Methods:
+//
+//	   * method operator timer takes nothing returns nothing *
+//		 Gives access to the timer that controls the AI's periodic actions.
+//
+//     * method operator state takes nothing returns nothing *
+//       Gives access to the AI state.
+//
+//	   * method operator percentLife takes nothing returns real *
+//		 Returns the percentage life of the hero
+//
+//     * method operator badCondition takes nothing returns boolean *
+//       Condition used to tell when the hero should run to the safe spot
+//
+//     * method operator goodCondition takes nothing returns boolean *
+//       Condition used to tell when the hero should leave the safe spot
+//
+//	   * method operator isChanneling takes nothing returns boolean *
+//		 Returns true if the hero is channeling spell
+//
+//	   * method recountAllies takes nothing returns nothing *
+//		 Recounts allyNum, in case allies was changed
+//
+//	   * method recountEnemies takes nothing returns nothing *
+//		 Recounts enemyNum, in case enemies was changed
+//
+//	   * method setRunSpot takes nothing returns nothing *
+//		 Finds the closest safe spot for the hero to run to. This only needs to
+//		 be called once for every time you want the hero to run away.
+//
+//     * method setTeleportSpot takes nothing returns nothing *
+//       Finds the current active teleporter spot to return back to the base or
+//       if the hero is in base he will use the teleporter to return back to the battlefield
+//
+//    Action Methods:
+//
+//     * method canShop takes nothing returns nothing *
+//       Checks if the hero can go shopping and does it if it can. Called by update.
+//		 Note that attacking enemies will take precendence over shopping unless the shop is
+//		 within IGNORE_ENEMY_SHOP_RANGE (in HeroAIItem).
+//
+//     * method move takes nothing returns boolean *
+//       Makes the hero move around randomly. Returns true if it was able to.
+//
+//     * method run takes nothing returns boolean *
+//		 Makes the hero run to its safe spot. Should be used after setRunSpot has been called at
+//		 least once. Returns true if it was successful.
+//
+//	   * method getItems takes nothing returns boolean *
+//		 Makes the hero get items in range of SIGHT_RANGE. Returns true if it was able to.
+//
+//	  Default Methods:
+//
+//	   * method defaultAssaultEnemy takes nothing returns nothing
+//		 Causes the hero to attack a nearby enemy unit. Will factor in priority/life
+//		 if the required libraries are implemented.
+//
+//	   * method defaultLoopActions takes nothing returns nothing
+//		 Makes the hero act based on the default periodic actions.
+//
+//	  Interface for structs that implement the HeroAIStruct module:
+//
+//	   * method onCreate takes nothing returns nothing *
+//		 Runs when the AI struct is created for a hero.
+//
+//	   * method loopActions takes nothing returns nothing *
+//	  	 Allows complete control over how the AI acts periodically. Overrides the default
+//		 loop actions if defined.
+//
+//	   The following methods would only be called if the AI uses the default loop actions.
+//
+//	   * method assaultEnemy takes nothing returns nothing *
+//	  	 Define actions for the AI to take while fighting against an enemy.
+//
+//	   * method assistAlly takes nothing returns boolean *
+//	  	 Define actions for the AI to take while an allied unit is near the AI. Needs
+//	  	 to return true if some action was taken, false otherwise.
+//		 assistAlly takes precedence over assaultEnemy.
+//
+//     * method runActions takes nothing returns boolean *
+//	  	 The actions to take when the AI is running to the safe spot. Needs to return true if
+//	  	 some action was taken, false otherwise.
+//
+//	   * method safeActions takes nothing returns nothing *
+//	  	 Define actions for the AI to take while within the range of a safe spot. Defaults to
+//		 assistAlly and assaultEnemy if this method doesn't exist.
+//------------------------------------------------------------------------------------------
+// Function API:
+//
+//  * RunHeroAI takes unit hero returns nothing *
+//      Starts the AI for a unit. Runs the default AI if no custom AI is defined.
+//
+//  * RegisterHeroAI takes integer unitTypeId, code register returns nothing *
+//      Registers an AI creation function for a unit-type id.
+//      register should be a function that creates the AI struct for that hero. You must
+//		refer the unit getting their AI registered as HeroAI_RegisterUnit.
+//
+//	* textmacro HeroAI_Register takes HERO_UNIT_TYPEID
+//		For the purposes of simplifying hero AI registering. Requires that the custom AI
+//		struct be named "AI" and "ModuleHack" and "StructHack" to not be used as identifiers.
+//
+//  * DoesHeroHaveAI takes unit hero returns boolean *
+//      Returns true if a hero has an AI by this system.
+//##########################################################################################
+// Required Libraries:
+//	* GetClosestWidget			http://www.hiveworkshop.com/forums/jass-resources-412/snippet-getclosestwidget-204217/
+//  * Table (New Table)  		http://www.hiveworkshop.com/forums/jass-functions-413/snippet-new-table-188084/
+//	* RegisterPlayerUnitEvent 	http://www.hiveworkshop.com/forums/jass-resources-412/snippet-registerplayerunitevent-203338/
+//	* TimerUtils				http://www.wc3c.net/showthread.php?t=101322
+//
+// Optional:
+//
+//	* GroupUtils				http://www.wc3c.net/showthread.php?t=104464
+//		The system will use GroupEnumUnitsInArea for more accurate group enumeration and ENUM_GROUP if included.
+//      Note the test map uses this library for the AI provided
+//
+//  * HeroAIPriority OR PruneGroup & FitnessFunc [http://www.wc3c.net/showthread.php?t=106467]
+//	    These libraries control how the AI chooses to attack a target by default. HeroAIPriority allows
+//		the AI to attack enemies based on life and distance while PruneGroup makes the AI
+//		focus only on the lowest life enemy. HeroAIPriority takes precedence over PruneGroup, meaning
+//		that if both are in the map, HeroAIPriority's method will be used.
+//		If neither are present in the map, the AI will select a random enemy unit to attack by default.
+//
+//	* HeroAIThreat
+//		Gives the AI the ability to perceive threat. This will be considered in running away and can
+//      assist spellcast targeting.
+//
+//	* HeroAIEventResponse
+//		Allows the AI to interact with outside event responses. Requires more vJass code to be written.
+//
+//  * IsUnitChanneling          http://www.hiveworkshop.com/forums/submissions-414/snippet-isunitchanneling-211254/
+//      A recommended way of detecting if a unit is channeling rather than checking the unit's
+//      current order.
+//
+//      NOTE: Although I normally suggest using updated libraries, keep in mind that the updated IsUnitChanneling
+//      has no longer made its requirements optional, meaning that UnitIndexer would also have to be implemented
+//      For the purpose of remaining lightweight, the test-map will feature the older version,
+//      but feel free to update IsUnitChanneling.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Basic Importing:
+//	1. Implement the required libraries.
+//	2. Copy this trigger and its two parts, HeroAILearnset and HeroAIItem, into your map.
+//	3. Configure the library.
+//==========================================================================================
+
+library HeroAI requires GetClosestWidget, RegisterPlayerUnitEvent, Table, TimerUtils, /*
+					*/	optional FitnessFunc, optional GroupUtils, optional HeroAIPriority, 	/*
+					*/	optional HeroAIThreat, optional HeroAIEventResponse, optional IsUnitChanneling
+
+    globals
+      	public constant real    	DEFAULT_PERIOD  	= 3.0           // The period in which the hero AI will do actions. A very low period can cause strain.
+        public constant real    	SIGHT_RANGE         = 1200.         // Determines how the hero looks for items and units.
+        public constant real    	MOVE_DIST           = 1000.         // The random amount of distance the hero will move
+        public constant real    	SAFETY_RANGE      	= 500.          // The range the hero should be within the safe spot.
+        public constant real    	BASE_RANGE      	= 700.          // The range the hero should be in the base.
+        private constant player     NEUTRAL_PLAYER      = Player(15)    // The player considered neutral in your map
+    endglobals
+
+    // The function that determines what is a safe unit, like a fountain, for the hero to run to.
+    // Typically, you should check if the unit, u, matches the safe unit-type id in your map.
+    // The test-map makes a simple unit-type check since it assumes fountain units cannot be killed and will heal any hero
+    private function IsSafeUnit takes unit u, player heroOwner returns boolean
+    	return GetUnitTypeId(u) == 'nfnp'
+    endfunction
+
+	private function IsTeleportUnit takes unit u returns boolean
+		return GetUnitTypeId(u) == 'n007' or GetUnitTypeId(u) == 'n00M'
+	endfunction
+
+    // General conditions for units that should be considered shops in your map.
+    // * u is the unit that should be tested a shop
+    // * heroOwner is the owner of the hero in case you want the hero to only be able to buy
+    //   from allied shops
+    // The test-map has no special conditions for shops by assuming that shops cannot be
+    // killed and that anyone can buy items from a shop
+    private function ShopConditions takes unit u, player heroOwner returns boolean
+        return true
+    endfunction
+
+    // The following textmacros help configure internal conditions for the AI
+    // Note that you can access the struct members and methods in here:
+
+    	// The condition in which the hero will try to run away to a safe spot. Optionally complemented by the threat library
+		//! textmacro HeroAI_Default_badCondition
+			return .percentLife <= .35 or (.percentLife <= .55 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) <= .3) or (.maxLife < 700 and .life <= 250.)
+		//! endtextmacro
+
+		// The condition in which the hero will return to its normal activities
+		//! textmacro HeroAI_Default_goodCondition
+			return .percentLife >= .85 and .mana / GetUnitState(.hero, UNIT_STATE_MAX_MANA) >= .65
+		//! endtextmacro
+
+		// Determines which orders are considered channeling order so that the AI won't interrupt those spells
+		// o is the current order of the hero.
+
+        // Disregard this completely if you include IsUnitChanneling in your map
+		//! textmacro HeroAI_isChanneling
+			return o == 852652 or /* Cluster Rockets
+                */ o == 852488 or /* Flamestrike
+                */ o == 852089 or /* Blizzard
+                */ o == 852238 or /* Rain of Fire
+                */ o == 852664 or /* Healing spray
+			 	*/ o == 852183 or /* Starfall
+			 	*/ o == 852593    // Stampeded
+		//! endtextmacro
+
+//==========================================================================================
+// END OF USER CONFIGURATION
+//==========================================================================================
+
+    globals
+    	public constant integer STATE_IDLE      = 0 // The state in which the hero is doing nothing in particular
+		public constant integer STATE_ENGAGED   = 1 // The state in which the hero is fighting an enemy
+		public constant integer STATE_GO_SHOP   = 2 // The state in which the hero is running to a shop in order to buy an item
+        public constant integer STATE_RUN_AWAY  = 3 // The state in which the hero is trying to run away
+
+    	public unit RegisterUnit		// For registering an AI for a unit
+        private Table infoAI      		// Tracks custom AI structs defined for specific unit-type ids
+        private Table heroesAI  		// Tracks the AI struct a hero has
+
+        private integer ShopTypeId		// Used to pass the shop type id of an item
+        private player TempHeroOwner	// Used to refer to the AI hero for finding the closest safe unit
+    endglobals
+
+    //! runtextmacro HeroAILearnset()
+    //! runtextmacro HeroAIItem()
+
+	private function SafeUnitFilter takes nothing returns boolean
+		return IsSafeUnit(GetFilterUnit(), TempHeroOwner)
+	endfunction
+
+	private function TeleportUnitFilter takes nothing returns boolean
+		return IsTeleportUnit(GetFilterUnit())
+	endfunction
+
+	private function ShopTypeIdCheck takes nothing returns boolean
+		return GetUnitTypeId(GetFilterUnit()) == ShopTypeId and ShopConditions(GetFilterUnit(), TempHeroOwner)
+	endfunction
+	
+	private function IsHeroInBase takes unit hero returns boolean
+		local unit u = null
+		call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(hero), GetUnitY(hero), BASE_RANGE, null)
+	
+		loop
+            set u = FirstOfGroup(ENUM_GROUP)
+            exitwhen u == null
+            if GetUnitTypeId(u) == 'n006' or GetUnitTypeId(u) == 'n008' then
+                call GroupRemoveUnit(ENUM_GROUP, u)
+                return true
+            endif
+            call GroupRemoveUnit(ENUM_GROUP, u)
+        endloop
+        
+		return false
+	endfunction
+
+    module HeroAIStruct
+    	unit hero
+    	player owner
+        integer hid
+        Itemset itemBuild
+        integer itemCount
+		real life
+        real maxLife
+        real mana
+        real hx
+        real hy
+        group units
+        group allies
+        group enemies
+        integer allyNum
+        integer enemyNum
+        private timer tim
+
+        private integer st 					// Holds the state of the AI
+
+        private real runX
+        private real runY
+        private integer itemsetIndex
+
+        private unit shUnit					// Shop unit used internally
+
+        static thistype temp                // Set whenever update is called
+
+    	private static integer stack = 1    // Used for creating
+
+    	implement optional HeroAIPriority
+        implement optional HeroAIThreat
+        implement optional HeroAIEventResponse
+
+    	private static method filtUnits takes nothing returns boolean
+            local unit u = GetFilterUnit()
+            // Filter out dead units, the hero itself, and neutral units
+            if not  IsUnitType(u, UNIT_TYPE_DEAD) and /*
+            */ 		u != temp.hero and /*
+            */		GetOwningPlayer(u) != NEUTRAL_PLAYER and /*
+            */		GetUnitTypeId(u) != 'n007' and /*
+            */		GetUnitTypeId(u) != 'n00M' then
+                // Filter unit is an ally
+                if IsUnitAlly(u, temp.owner) then
+                    call GroupAddUnit(temp.allies, u)
+                    set temp.allyNum = temp.allyNum + 1
+                // Filter unit is an enemy, only enum it if it's visible
+                elseif IsUnitVisible(u, temp.owner) then
+                    call GroupAddUnit(temp.enemies, u)
+                    set temp.enemyNum = temp.enemyNum + 1
+                    call BJDebugMsg("Feind-Name: " + GetUnitName(u))
+                endif
+                set u = null
+                return true
+            endif
+            set u = null
+            return false
+        endmethod
+
+        // For recounting enemies
+        private static method enumCountEnemies takes nothing returns nothing
+            set temp.enemyNum = temp.enemyNum + 1
+        endmethod
+
+        // For recounting allies
+        private static method enumCountAllies takes nothing returns nothing
+            set temp.allyNum = temp.allyNum + 1
+        endmethod
+
+      // Helper methods
+
+      	method operator timer takes nothing returns timer
+    		return .tim
+    	endmethod
+
+        method operator state takes nothing returns integer
+            return .st
+        endmethod
+
+        method operator shop takes nothing returns unit
+            return .shUnit
+        endmethod
+
+        method operator shop= takes unit u returns nothing
+            set .st = STATE_GO_SHOP
+            set .shUnit = u
+        endmethod
+
+    	method operator gold takes nothing returns integer
+    		return GetPlayerState(.owner, PLAYER_STATE_RESOURCE_GOLD)
+    	endmethod
+
+    	method operator gold= takes integer g returns nothing
+    		call SetPlayerState(.owner, PLAYER_STATE_RESOURCE_GOLD, g)
+    	endmethod
+
+    	method operator lumber takes nothing returns integer
+    		return GetPlayerState(.owner, PLAYER_STATE_RESOURCE_LUMBER)
+    	endmethod
+
+    	method operator lumber= takes integer l returns nothing
+    		call SetPlayerState(.owner, PLAYER_STATE_RESOURCE_LUMBER, l)
+    	endmethod
+
+        method operator percentLife takes nothing returns real
+            return .life / .maxLife
+        endmethod
+
+        method operator badCondition takes nothing returns boolean
+            //! runtextmacro HeroAI_Default_badCondition()
+        endmethod
+
+        method operator goodCondition takes nothing returns boolean
+        	//! runtextmacro HeroAI_Default_goodCondition()
+        endmethod
+
+        method operator isChanneling takes nothing returns boolean
+            static if LIBRARY_IsUnitChanneling then
+            	return IsUnitChanneling(.hero)
+            else
+	            local integer o = GetUnitCurrentOrder(.hero)
+	            //! runtextmacro HeroAI_isChanneling()
+            endif
+        endmethod
+
+        method recountEnemies takes nothing returns nothing
+            set .enemyNum = 0
+            call ForGroup(.enemies, function thistype.enumCountEnemies)
+        endmethod
+
+        method recountAllies takes nothing returns nothing
+            set .allyNum = 0
+            call ForGroup(.allies, function thistype.enumCountAllies)
+        endmethod
+
+        method setRunSpot takes nothing returns nothing
+        	local unit u
+        	set TempHeroOwner = .owner
+        	set u = GetClosestUnit(.hx, .hy, Filter(function SafeUnitFilter))
+        	static if DEBUG_MODE then
+
+        	if u == null then
+        		call BJDebugMsg("[HeroAI] Error: Couldn't find a safe unit for " + GetUnitName(.hero) + ", will run to (0, 0)")
+        	endif
+
+        	endif
+			set .runX = GetUnitX(u)
+			set .runY = GetUnitY(u)
+			set u = null
+        endmethod
+
+		method setTeleporterSpot takes nothing returns nothing
+        	local unit u
+        	set TempHeroOwner = .owner
+        	
+        	//call ClearTextMessages()
+        	//Is the hero in the base?
+			if IsHeroInBase(.hero) then
+				call BJDebugMsg("The Hero " + GetUnitName(.hero) + " is in Base!")
+				set u = GetClosestUnit(.hx, .hy, Filter(function TeleportUnitFilter))
+			else
+				call BJDebugMsg("The Hero " + GetUnitName(.hero) + " is NOT in Base!")
+				if (GetUnitRace(.hero) == RACE_UNDEAD) then
+					set u = ForsakenTeleport.getActiveTeleporter()
+					call BJDebugMsg("Forsaken Teleporter")
+				else
+					set u = CoalitionTeleport.getActiveTeleporter()
+					call BJDebugMsg("Coalition Teleporter")
+				endif
+			endif
+
+			call PingMinimap(GetUnitX(u), GetUnitY(u), 1.0)
+			set .runX = GetUnitX(u)
+			set .runY = GetUnitY(u)
+			set u = null
+        endmethod
+
+        // Item-related methods
+      	method operator curItem takes nothing returns Item
+      		return .itemBuild.item(.itemsetIndex)
+      	endmethod
+
+        method canBuyItem takes Item it returns boolean
+            static if CHECK_REFUND_ITEM_COST then
+
+            local Item check
+            if .itemCount == MAX_INVENTORY_SIZE then
+                set check = Item[GetItemTypeId(UnitItemInSlot(.hero, ModuloInteger(.itemsetIndex, MAX_INVENTORY_SIZE)))]
+                return it.goldCost <= .gold + check.goldCost * SELL_ITEM_REFUND_RATE and it.lumberCost <= .lumber + check.lumberCost * SELL_ITEM_REFUND_RATE
+            endif
+
+            endif
+        	return it.goldCost <= .gold and it.lumberCost <= .lumber
+        endmethod
+
+        private method refundItem takes Item it returns nothing
+            if it.goldCost > 0 then
+                set .gold = R2I(.gold + it.goldCost * SELL_ITEM_REFUND_RATE)
+            endif
+
+            if it.lumberCost > 0 then
+                set .lumber = R2I(.lumber + it.lumberCost * SELL_ITEM_REFUND_RATE)
+            endif
+        endmethod
+
+        method buyItem takes Item it returns nothing
+            local item i
+
+			if .itemCount == MAX_INVENTORY_SIZE then
+                set i = UnitItemInSlot(.hero, ModuloInteger(.itemsetIndex, MAX_INVENTORY_SIZE) )
+                if i != null then
+                    call .refundItem(Item[GetItemTypeId(i)])
+                    call RemoveItem(i)
+                    set i = null
+                endif
+            endif
+
+            set .itemsetIndex = .itemsetIndex + 1
+
+            // Set back to state idle now that the hero is done shopping.
+            if .st == STATE_GO_SHOP then
+                set .st = STATE_IDLE
+            endif
+
+        	if it.goldCost > 0 then
+				set .gold = .gold - it.goldCost
+            endif
+
+            if it.lumberCost > 0 then
+            	set .lumber = .lumber - it.lumberCost
+            endif
+			
+			call BJDebugMsg("it.itemid: " + I2S(it.typeId))
+			call UnitAddItemById(.hero, it.typeId)
+        endmethod
+
+      // Action methods
+
+        method move takes nothing returns nothing
+        	call BJDebugMsg("The Hero " + GetUnitName(.hero) + " just move around!")
+            call IssuePointOrder(.hero, "attack", .hx + GetRandomReal(-MOVE_DIST, MOVE_DIST), .hy + GetRandomReal(-MOVE_DIST, MOVE_DIST))
+        endmethod
+
+        method run takes nothing returns boolean
+        	call BJDebugMsg("The Hero " + GetUnitName(.hero) + " runs away!")
+            return IssuePointOrder(.hero, "move", .runX + GetRandomReal(-SAFETY_RANGE/2, SAFETY_RANGE/2), .runY + GetRandomReal(-SAFETY_RANGE/2, SAFETY_RANGE/2) )
+        endmethod
+
+        method getItems takes nothing returns boolean
+        	set OnlyPowerUp = .itemCount == MAX_INVENTORY_SIZE
+        	call BJDebugMsg("The Hero " + GetUnitName(.hero) + " try to get some Items")
+            return IssueTargetOrder(.hero, "smart", GetClosestItemInRange(.hx, .hy, SIGHT_RANGE, Filter(function AIItemFilter)))
+        endmethod
+
+        method defaultAssaultEnemy takes nothing returns nothing
+            static if thistype.setPriorityEnemy.exists then
+                call .setPriorityEnemy(.enemies)
+                call IssueTargetOrder(.hero, "attack", .priorityEnemy)
+            else
+                static if LIBRARY_FitnessFunc then
+                	static if LIBRARY_GroupUtils then
+
+                	call GroupClear(ENUM_GROUP)
+                    call GroupAddGroup(.enemies, ENUM_GROUP)
+                    call PruneGroup(ENUM_GROUP, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
+                    call IssueTargetOrder(.hero, "attack", FirstOfGroup(ENUM_GROUP))
+
+                    else
+
+                    call GroupClear(bj_lastCreatedGroup)
+                    call GroupAddGroup(.enemies, bj_lastCreatedGroup)
+                    call PruneGroup(bj_lastCreatedGroup, FitnessFunc_LowLife, 1, NO_FITNESS_LIMIT)
+                    call IssueTargetOrder(.hero, "attack", FirstOfGroup(bj_lastCreatedGroup))
+
+                    endif
+                 else // A lazy way to make the hero attack a random unit if none of the special targetting libraries are there
+                    call IssueTargetOrder(.hero, "attack", GroupPickRandomUnit(.enemies))
+                endif
+            endif
+        endmethod
+        
+        method defaultLoopActions takes nothing returns nothing
+        	call BJDebugMsg("State: " + I2S(.st))
+        
+        endmethod        
+        
+        // Updates information about the hero and its surroundings
+        method update takes nothing returns nothing
+        	// Information about self
+			set .hx = GetUnitX(.hero)
+			set .hy = GetUnitY(.hero)
+			set .life = GetWidgetLife(.hero)
+			set .mana = GetUnitState(.hero, UNIT_STATE_MANA)
+			set .maxLife = GetUnitState(.hero, UNIT_STATE_MAX_LIFE)
+			set .itemCount = UnitInventoryCount(.hero)
+			// Group enumeration
+			set temp = this
+			call GroupClear(.enemies)
+			call GroupClear(.allies)
+			set .enemyNum = 0
+			set .allyNum = 0
+			static if LIBRARY_GroupUtils then
+				call GroupEnumUnitsInArea(.units, .hx, .hy, SIGHT_RANGE, Filter(function thistype.filtUnits))
+			else
+				call GroupEnumUnitsInRange(.units, .hx, .hy, SIGHT_RANGE, Filter(function thistype.filtUnits))
+			endif
+			
+			if .st != STATE_RUN_AWAY then
+				if .enemyNum > 0 then
+					call .calcThreat()
+					if .threat > .threatThreshold * .thresholdRunFactor then
+						set .st = STATE_RUN_AWAY
+						call .setTeleporterSpot()
+						//call .setRunSpot()
+					endif
+				elseif .badCondition then
+					set .st = STATE_RUN_AWAY
+					call .setTeleporterSpot()
+					//call .setRunSpot()
+				endif
+			elseif .goodCondition then
+				set .st = STATE_IDLE
+			endif
+			
+			// Only check to do shopping if in the AI hasn't completed its itemset and it's in STATE_IDLE
+			call BJDebugMsg("itemsetIndex: " + I2S(.itemsetIndex))
+			call BJDebugMsg("itemBuild.size: " + I2S(.itemBuild.size))
+		    if .itemsetIndex < .itemBuild.size and .st == STATE_IDLE then
+		        call .canShop()
+			endif
+			
+			// Don't want to override STATE_RUN_AWAY since it's more important
+		    if .st != STATE_RUN_AWAY then
+		        if .st == STATE_ENGAGED then
+		            if .enemyNum < 1 then
+		                set .st = STATE_IDLE
+		            endif
+		        else
+		        	// STATE_ENGAGED will only take precedence over STATE_GO_SHOP if the hero is not within IGNORE_ENEMY_SHOP_RANGE of the shop
+		            if .enemyNum > 0 and .st == STATE_IDLE or (.st == STATE_GO_SHOP and not IsUnitInRange(.hero, .shUnit, IGNORE_ENEMY_SHOP_RANGE)) then
+		                set .st = STATE_ENGAGED
+		            endif
+		        endif
+		    endif
+        endmethod        
+                
+    	private static method defaultLoop takes nothing returns nothing
+        	local thistype this = GetTimerData(GetExpiredTimer())
+        	if not IsUnitType(.hero, UNIT_TYPE_DEAD) then
+                call .update()
+				static if thistype.loopActions.exists then
+					call .loopActions()
+				else
+					call .defaultLoopActions()
+				endif
+			endif
+        endmethod
+
+		// This method will be called by update periodically to check if the hero can do any shopping
+        method canShop takes nothing returns nothing
+        	local Item it
+        	
+        	call BJDebugMsg("can Shop")
+        	loop
+				set it = .curItem
+				exitwhen not .canBuyItem(it) or .itemsetIndex == .itemBuild.size
+				if it.shopTypeId == 0 then
+                    call .buyItem(it)
+				else
+					set ShopTypeId = it.shopTypeId
+                    set TempHeroOwner = .owner
+					set .shUnit = GetClosestUnit(.hx, .hy, Filter(function ShopTypeIdCheck))
+					if .shUnit == null then
+                        call BJDebugMsg("[Hero AI] Error: Null shop found for " + GetUnitName(.hero))
+                    endif
+                    if IsUnitInRange(.hero, .shUnit, SELL_ITEM_RANGE) then
+						call .buyItem(it)
+					else
+						set .st = STATE_GO_SHOP
+						exitwhen true
+					endif
+				endif
+			endloop
+        endmethod
+		
+        method changeDefaultPeriod takes real period returns nothing
+        	call TimerStart(.tim, period, true, function thistype.defaultLoop)
+        endmethod
+
+        static method getAIIndexFromHero takes unit hero returns thistype
+            return heroesAI[GetHandleId(hero)]
+        endmethod
+
+    	static method create takes unit h returns thistype
+    		local thistype this = stack
+    		local integer lvl = 1	// For levelling up skills
+            local integer typeId = GetUnitTypeId(h)
+
+            static if MULTIPLE_SKILLS_PER_LVL then
+
+            local integer i
+
+            endif
+
+            set .hero = h
+            set .owner = GetOwningPlayer(.hero)
+            set .hid = GetHandleId(h)
+			
+            set .units = CreateGroup()
+            set .enemies = CreateGroup()
+            set .allies = CreateGroup()
+
+            set .itemBuild = DefaultItemBuild
+            set .itemsetIndex = 0
+
+            set .st = STATE_IDLE
+
+            set .tim = NewTimerEx(this)
+            call TimerStart(.tim, DEFAULT_PERIOD, true, function thistype.defaultLoop)
+
+            if GetHeroSkillPoints(.hero) > 0 then
+				loop
+					// Need to loop a bit differently if multiple skills are supported at each level
+                    static if MULTIPLE_SKILLS_PER_LVL then
+
+                    set i = 0
+                    loop
+                        exitwhen i == LearnsetInfo[lvl].skillNum(typeId)
+                        call SelectHeroSkill(h, LearnsetInfo[lvl].getSkill(typeId, i))
+                        set i = i + 1
+                    endloop
+
+                    else
+
+                    call SelectHeroSkill(h, LearnsetInfo[lvl][typeId])
+
+                    endif
+
+					set lvl = lvl + 1
+					exitwhen lvl > GetUnitLevel(h)
+				endloop
+			endif
+
+            static if LIBRARY_HeroAIEventResponse then
+                call .registerEventResponses()
+            endif
+
+            static if thistype.onCreate.exists then
+				call .onCreate()
+			endif
+
+			set stack = stack + 1
+			set heroesAI[.hid] = this
+    		return this
+    	endmethod
+    endmodule
+
+    private struct DefaultHeroAI extends array
+    	implement HeroAIStruct
+    endstruct
+
+    globals
+        private trigger fireTrigger = CreateTrigger()
+    endglobals
+
+    // credits to Magtheridon96 for this function
+    private function FireCondition takes boolexpr b returns nothing
+        call TriggerClearConditions(fireTrigger)
+        call TriggerAddCondition(fireTrigger, b)
+        call TriggerEvaluate(fireTrigger)
+    endfunction
+
+    function RunHeroAI takes unit hero returns nothing
+        if heroesAI.has(GetHandleId(hero)) then
+            debug call BJDebugMsg("[Hero AI] Error: Attempt to run an AI for a unit that already has one, aborted.")
+            return
+        endif
+
+        if infoAI.boolexpr[GetUnitTypeId(hero)] != null then
+        	set RegisterUnit = hero
+            call FireCondition(infoAI.boolexpr[GetUnitTypeId(hero)])
+        else
+            call DefaultHeroAI.create(hero)
+        endif
+    endfunction
+
+    function RegisterHeroAI takes integer unitTypeId, code register returns nothing
+        if infoAI.boolexpr[unitTypeId] != null then
+            debug call BJDebugMsg("[Hero AI] Error: Attempt to register an AI struct for a unit-type id again, aborted")
+            return
+        endif
+        set infoAI.boolexpr[unitTypeId] = Filter(register)
+    endfunction
+
+    function DoesHeroHaveAI takes unit hero returns boolean
+        return heroesAI.has(GetHandleId(hero))
+    endfunction
+
+    //! textmacro HeroAI_Register takes HERO_UNIT_TYPEID
+    private function RegisterAI takes nothing returns nothing
+        call AI.create(HeroAI_RegisterUnit)
+    endfunction
+
+    private module ModuleHack
+     	static method onInit takes nothing returns nothing
+     		call RegisterHeroAI($HERO_UNIT_TYPEID$, function RegisterAI)
+     	endmethod
+    endmodule
+
+    private struct StructHack extends array
+    	implement ModuleHack
+    endstruct
+    //! endtextmacro
+
+    private module I
+        static method onInit takes nothing returns nothing
+            set infoAI = Table.create()
+            set heroesAI = Table.create()
+        endmethod
+    endmodule
+
+    private struct A extends array
+        implement I
+    endstruct
+endlibrary

@@ -1,0 +1,87 @@
+[CENTER]
+	[SIZE="4"][B]Forsaken Bastion's Fall[/B][/SIZE]
+	[SIZE="2"][I]WORLD MAP / References[/I][/SIZE]
+	[SIZE="2"][I]Author: [URL="http://www.hiveworkshop.com/forums/members/dzerpic/"]Dzerpic[/URL][/I][/SIZE]
+	[SIZE="2"][I]Artist: [URL="http://www.hiveworkshop.com/forums/members/justicebringer/"]Justicebringer[/URL][/I][/SIZE]
+	
+	[otable]
+		[tr]
+			[td]
+				[CENTER]
+					[otable]
+						[tr]
+							[titletd]
+								[FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]Work Progress[/COLOR][/SIZE][/FONT]
+							[/titletd]
+						[/tr]
+					[/otable]
+				[/CENTER]
+				[CENTER]
+				[tabs]
+					[tab=[CENTER]1[/CENTER]]
+						[CENTER]
+							[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/media/misc/FBF-World-Map-Scribble.jpg[/IMG]
+						[/CENTER]
+					[/tab]
+					[tab=[CENTER]2[/CENTER]]
+						[CENTER]
+							[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/media/misc/FBF-World-Map-Reference.jpg[/IMG]
+						[/CENTER]
+					[/tab]
+					[tab=[CENTER]3[/CENTER]]
+						[CENTER]
+							[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/media/misc/FBF-World-Map-First-Step.jpg[/IMG]
+						[/CENTER]
+					[/tab]
+					[tab=[CENTER]4[/CENTER]]
+						[CENTER]
+							[IMG]http://forsaken-bastions-fall.com/files/frontend/img/enUS/media/misc/FBF-World-Map.jpg[/IMG]
+						[/CENTER]
+					[/tab]
+				[/tabs]
+				[/CENTER]
+			[/td]
+		[/tr]
+		[tr]
+			[tdalt]
+				[otable]
+					[tr]
+						[td]
+							[LIST=1]
+[*]The lands beyond the Mountain Range to the North are unknown. This lines should be drawn in a simpler more “free-hand”, less accurate way because they are speculative.
+
+[*]							The only way past the Mountain Range is through this road. A very dangerous one because of it's extreme altitude and harsh weather.
+
+[*]							Weather on the eastern Ocean is extreme enough to disencourage any adventurer or organization intending to explore beyond the map's limits. 
+
+[*]							This is the only explored terrain beyond the Mountain Range. It is the home to one of the game's factions: the Tribals (WIP name); where heroes like Tauren Cieftain, Fire Panda, Cenarius and etc. come from. This kingdom had barely any contact with what was the “Forsaken Bastion” kingdom. Because of this scarce diplomacy they didn't share their maps and knowledge.
+
+[*]							This very small piece of land is where the game takes place: the Forsaken Bastion.
+
+[*]							This is where the capital of a non-playable faction is located. This faction's existence only affects Out Of Game content.
+
+[*]							This is the Oldest Castle standing and Second in size only to the Forsaken Bastion. It's the capital to one of the playable factions; a very medieval-style kingdom, very conservative and traditionalist. Home to heroes like the Paladin, the Knight and the Priestess of the Moon (the Princess or Queen. WIP character.).
+
+[*]							A simple bay. I'd like to give it some importance of some sort but nothing as of yet. (those lines mean calm water, by the way :P)
+
+[*]							This is suppossed to be two rivers coming out of the mountains and into a small lake or lagoon.
+
+[*]							This island is deserted and barely explored. Both the “highly religious conservative kingdom” and the “forsaken bastion kingdom” are uninterested in the isle due to its lack of resources, small size and distance to land. They are unsuspicious of the secrets hidden underground (It's so misterious not even I know what's in there! WIP lore.)
+
+[*]							What looks like a speech bubble is actually a river and a lake.
+
+[*]							& 12*- Beach areas. 
+
+[*]							A great Lighthouse. A giant fire has been kept alive for centuries. Another of the “conservative kingdom's” locations. The rise of steam technology threatens the lighthouse existence and with it, the kingdom's traditions.
+
+[*]							MoonNight Islands (WIP name). The less conservative members of the “conservative kingdom” are gathered here. Not a rebelious force yet, but it's a socially unstable region due to cultural differences and the Kingdom's tyranical approach to the situation.
+[*]						
+[*]							This is one of the Giant Turtles natural habitats. Where they are either studied, hunted or captured. Giant Turtles can be tamed and trained or used to craft superb pieces of armor. One of the MoonNight Islands' main resources.
+[/LIST]
+						[/td]
+					[/tr]
+				[/otable]
+			[/tdalt]
+		[/tr]
+	[/otable]
+[/CENTER]

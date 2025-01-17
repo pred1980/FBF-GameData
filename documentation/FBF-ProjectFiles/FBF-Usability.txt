@@ -1,0 +1,23 @@
+Untote:
+
+"Walk into the selection circle in front of a hero to pick them.
+Click on a hero to see their abilities." (Wenn sie Helden picken)
+
+"The units in your spawn zone offer equipment and consumables.
+Walk through the teleporter to be transported to the front.
+Return between rounds to be healed by the fountain." (Sobald sie Helden haben)
+
+"Build a Tower Defense with your Acolyte to hamper the Coalition's progress." (Wenn sie ihren Acolyten erhalten)
+
+"New Towers have been unlocked." (Tower upgrade)
+
+Allianz:
+
+"Walk into the selection circle in front of a hero to pick them.
+Click on a hero to see their abilities." (Wenn sie Helden picken)
+
+"The units in your spawn zone offer equipment and consumables.
+Walk through the teleporter to be transported to the front.
+Return between rounds to be healed by the fountain." (Sobald sie Helden haben)
+
+"You can buy units from the casters at the edge of the shield." (Wenn sie das erste mal durch den Teleporter gehen."

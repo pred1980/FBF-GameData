@@ -1,0 +1,43 @@
+/*
+This guide assumes that you only want to use the default AI for your units.
+It guides you through implementing the most basic parts of the system and
+configuration along with running AI for units.
+
+1) Implement the required libraries. This can be done by the following:
+    i) Going to each url listed in the system and copying the code from the
+        required library. This ensures that the libraries are up-to-date.
+    ii) Copying the triggers in the folder  "Required Libraries" into your map.
+    (GetClosestWidget, NewTable, RegisterPlayerUnitEvent,
+    and TimerUtils)
+2) Copy the triggers called HeroAI, HeroAIItem, and HeroAILearnset into your map.
+3) HeroAILearnset Configuration:
+    Go to the HeroAILearnset trigger
+    Configure the globals, MAX_SKILL_LVL, MULTIPLE_SKILLS_PER_LVL, and
+    MAX_SKILL_PER_LVL.
+
+    If you have morphing heroes, make sure HAVE_MORPH_HEROES is set to true
+    and follow the specified syntax for configuring them near the bottom of
+    SetupLearnset.
+    If you don't have morphing heroes, set HAVE_MORPH_HEROES to false and
+    remove any morphing configuration in "SetupLearnset."
+
+    Now, follow the syntax specified in the function "SetupLearnset" to add skills for all heroes in your map at the level they should learn it.
+4) Inside HeroAIItem, go to "private function SetupItems takes nothing returns nothing"
+    Register all items the AI can buy by following the syntax specified.
+    It is also advised to register any non-power up item the hero can pick up so that it can refund it properly.
+5) Inside HeroAIItem, go to "private function SetupDefaultItemBuild takes nothing returns nothing"
+    Follow the syntax specified to create a default item build that all
+    AI heroes will have.
+6) Configure the constants in HeroAIItem.
+7) In HeroAI, configure the function IsSafeUnit so that your AI heroes will
+    have a spot to run to. Basically, it should check if the unit can provide
+    some kind of healing
+8) To actually run the AI for a unit, you need to call the function RunHeroAI,
+    which takes a unit parameter.
+    It's advised to call the function when the hero is picked.
+
+    The RunAIForAllHeroes trigger shows how to run the AI for all hero units on the map
+
+Optional add-ons:
+It's relatively easy to add in any of the optional libraries because their triggers only need to be copied over into your map and you can easily configure the globals.
+*/

@@ -1,0 +1,9 @@
+scope MapInit initializer Init
+
+    private function Init takes nothing returns nothing
+    	call BJDebugMsg("Enable AI by pressing Esc.\n\nUse the greedisgood cheat to test buying items.")
+        call BJDebugMsg("To upgrade to the full default itemset without refunding, the gold cost will be 2100.")
+        call StartAIDifficultyBonuses()
+    endfunction
+
+endscope

@@ -1,0 +1,29 @@
+Ignite ( Row:2, Column:2 ) : Für den Tower "Cauldron"
+----------------
+
+The tower has a 30% chance on damaging a creep to ignite the target, dealing 15%/20%/25% of the tower ' s attack damage as spell damage per second 
+and reducing the target ' s health regeneration by 25%/30%/35% for 8 seconds.
+
+
+Corpse Explosion ( Row:2, Column:3 )
+----------------
+
+Explodes a corpse within 1000 range of the tower, causing enemies in 300 range of the corpse to take 8%/11%/13% more damage 
+and move 8%/11%/13% slower for 8 seconds. 5 second cooldown. Doesn ' t affect Air.
+
+
+//----------------------------------------------------------------------------//
+
+Ice Shard ( Row:3, Column:1 )
+---------
+This tower fires an ice shard towards an enemy. After a distance of 300 the ice shard splits into 2 new shards which will split again. 
+If a shard collides with an enemy it deals 2280 spell damage. There is a maximum of 3/4/5 splits.
+
+Ultimate Fighter ( Row:3, Column:2 )
+----------------
+
+The Tower uses his great power to specialize his attacks:
+- Every 3rd/4rd/5rd attack is a critical hit
+- Every 7th/8th/9th attack deals 1000/1500/2000 bonus spell damage
+- Every 12th/13th/14th attack stuns the target for 1/1.25/1.5 second
+- Every 15th/16th/17th attack adds 0.5% attack damage permanently

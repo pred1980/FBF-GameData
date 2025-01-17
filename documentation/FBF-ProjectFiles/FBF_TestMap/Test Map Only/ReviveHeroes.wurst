@@ -1,0 +1,16 @@
+function Trig_ReviveHeroes_Actions takes nothing returns nothing
+    local unit u = GetTriggerUnit()
+    if IsUnitType(u, UNIT_TYPE_HERO) then
+        call PolledWait( 30.00 )
+        call ReviveHero(u, GetRandomReal(GetRectMinX(bj_mapInitialPlayableArea), GetRectMaxX(bj_mapInitialPlayableArea)), GetRandomReal(GetRectMinY(bj_mapInitialPlayableArea), GetRectMaxY(bj_mapInitialPlayableArea)), true )
+    endif
+    set u = null
+endfunction
+
+//===========================================================================
+function InitTrig_ReviveHeroes takes nothing returns nothing
+    local trigger t = CreateTrigger(  )
+    call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_DEATH )
+    call TriggerAddAction( t, function Trig_ReviveHeroes_Actions )
+endfunction
+

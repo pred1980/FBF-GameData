@@ -1,0 +1,87 @@
+/**************************************
+*
+*   IsUnitChanneling
+*   v2.1.0.0
+*   By Magtheridon96
+*
+*   - Tells whether a unit is channeling or not.
+*
+*   Requirements:
+*   -------------
+*
+*       - RegisterPlayerUnitEvent by Magtheridon96
+*           - hiveworkshop.com/forums/jass-resources-412/snippet-registerplayerunitevent-203338/
+*
+*       Optional:
+*       ---------
+*
+*           - UnitIndexer by Nestharus
+*               - hiveworkshop.com/forums/jass-resources-412/system-unit-indexer-172090/
+*           - Table by Bribe
+*               - hiveworkshop.com/forums/jass-resources-412/snippet-new-table-188084/
+*
+*   API:
+*   ----
+*
+*       - function IsUnitChanneling takes unit whichUnit returns boolean
+*           - Tells whether a unit is channeling or not.
+*
+*       - function IsUnitChannelingById takes integer unitIndex returns boolean
+*           - Tells whether a unit is channeling or not given the unit index.
+*             (This function is only available if you have UnitIndexer)
+*
+**************************************/
+library IsUnitChanneling requires optional UnitIndexer, optional Table, RegisterPlayerUnitEvent
+
+    private struct OnChannel extends array
+        static if LIBRARY_UnitIndexer then
+            static boolean array channeling
+        else
+            static if LIBRARY_Table then
+                static key k
+                static Table channeling = k
+            else
+                static hashtable hash = InitHashtable()
+            endif
+        endif
+
+        private static method onEvent takes nothing returns nothing
+            static if LIBRARY_UnitIndexer then
+                local integer id = GetUnitUserData(GetTriggerUnit())
+                set channeling[id] = not channeling[id]
+            else
+                static if LIBRARY_Table then
+                    local integer id = GetHandleId(GetTriggerUnit())
+                    set channeling.boolean[id] = not channeling.boolean[id]
+                else
+                    local integer id = GetHandleId(GetTriggerUnit())
+                    call SaveBoolean(hash, 0, id, not LoadBoolean(hash, 0, id))
+                endif
+            endif
+        endmethod
+
+        private static method onInit takes nothing returns nothing
+           call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_CHANNEL, function thistype.onEvent)
+           call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_ENDCAST, function thistype.onEvent)
+        endmethod
+    endstruct
+
+    static if LIBRARY_UnitIndexer then
+        function IsUnitChannelingById takes integer id returns boolean
+            return OnChannel.channeling[id]
+        endfunction
+    endif
+
+    function IsUnitChanneling takes unit u returns boolean
+        static if LIBRARY_UnitIndexer then
+            return OnChannel.channeling[GetUnitUserData(u)]
+        else
+            static if LIBRARY_Table then
+                return OnChannel.channeling.boolean[GetHandleId(u)]
+            else
+                return LoadBoolean(OnChannel.hash, 0, GetHandleId(u))
+            endif
+        endif
+    endfunction
+
+endlibrary

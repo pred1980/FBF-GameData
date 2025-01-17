@@ -1,0 +1,193 @@
+[B][COLOR="Orange"][SIZE="5"]Announcements[/SIZE][/COLOR][/B]
+
+As AlienAtSystem mentioned, the next official release of FBF is dated for [U]next week[/U]. A first view in the new version is possible Saturday 9pm (UTC+1) on the inwc Funmap Evening.
+
+The complete list of changes:
+
+[hidden=Changelog v0.2]
+	[SIZE="2"][B][COLOR="SeaGreen"]Balance:[/COLOR][/B]
+	[LIST]
+[*]Brood Mother and her offsprings get their hp and damage based on how many players are in the game
+[*]Death Wardens get their hp and damage based on how many players are in game
+[*]Titan Devourer gets its hp and damage based on how many players are in game
+[*]Gravestone Zombies get their hp and damage based on how many players are in game
+[*]Forsaken Heart gets its hp based on how many players are in game
+[*]Increased Gold-Income (Forsaken: 1->2 and Coalition 2->4)
+[*]Gold per unit kill ( forsaken units and creep round units ) based on how many forsaken players are in game
+[*]Changed the Tower Builder System:
+[*]Round 1-5: You can build towers 1-4
+[*]Round 5-10: You can build towers 1-8
+[*]Round 10 -20: You can build all towers
+
+[*]Optimized Forsaken Defense spawn points
+[*]Optimized the Waypoints of the creep units
+[*]Reduced the fog on the graveyard
+[*]Increased the number of worms on the graveyard from 1 to 3 every 15s-30s
+[*]Optimized the defense for the forsaken players on the graveyard
+[*]The Coalition Dome prevents unwanted entry by Forsaken Units
+
+[*] a new creep spawn logic prevent a massive increase of units on the map.
+[*] --> 1-2 Forsaken Players: 30 Units per lane
+[*] --> 3 Forsaken Players: 20 Units per lane
+[*] --> 4-6 Forsaken Players: 10 Units per lane
+[/LIST]
+	
+	[B][COLOR="Red"]Bugfixes:[/COLOR][/B]
+	
+	[B]General Gameplay[/B]
+	[LIST]
+[*]Fixed a bug in the revive hero process
+[*]Fixed a bug when a player left the game ( now it removes the Hero, Tower Builder and Towers )
+[*]Fixed the most known bug in AoS/TD that units run back to start point
+[*]Fixed a bug that allows forsaken heroes to buy coalition units
+[*]Fixed a bug that allows coalition units to heal on the forsaken fountain
+[*]Fixed a bug in the creep round system
+[*]Fixed a bug with Healing and Mana Potions which are buyable but not usable
+[*]Fixed a bug in the Repick System that allows to pick a hero after the repick time
+[*]Fixed the Team names in the Multiboard
+[*]Fixed a bug that made it possible to repick a new hero in AR Mode
+[*]Fixed a bug that prevented players 1 and 4 to build towers north of their lane
+[*]Fixed a bug that resulted in the Forsaken Heart not being attackable
+[*]Fixed a bug that could result in the final boss getting killed during the intro cinematic
+[/LIST]
+	
+	[B]Heroes[/B]
+	
+	[LIST]
+[*]added short hero description to all nightelf heroes and updated the website in this point
+[/LIST]
+
+	[I]Nerubian Widow:[/I]
+	[LIST]
+[*]Fixed a bug in the Hero Selection
+[*]Adolescence: Fixed a bug with the damage value of the offspring
+[/LIST]
+
+	[I]Blood Mage:[/I]
+	[LIST]
+[*]Fixed a bug that made it possible to skill the Ultimate Fire Storm on level 1
+[/LIST]
+
+	[I]Ice Avatar:[/I]
+	[LIST]
+[*]Fixed a bug with skill point and the second ability
+[/LIST]
+	
+	[B]Creeps[/B]
+	
+	[LIST]
+[*]Brood Mother and other units lose aggro when kited too far
+[*]Fixed a bug that casters did not use their active abilities
+[/LIST]
+
+	[COLOR="Yellow"]New Feature:[/COLOR]
+	
+	[LIST]
+[*]Added a small tutorial cinematic to the first two minutes of gameplay
+[/LIST][/SIZE] 
+[/hidden]
+
+In this step we want to start a "[B][COLOR="RoyalBlue"]FBF Weekly Beta Testing Event[/COLOR][/B]". We start on [B]27.02.2014 8pm [URL="http://www.timeanddate.com/worldclock/city.html?n=195"](UTC+1)[/URL][/B].
+
+Here are some general information for this events:
+
+[otable]
+	[tr]
+		[titletd]
+			[CENTER][FONT="Franklin Gothic Medium"][SIZE="2"][COLOR="MediumTurquoise"]Event Information[/COLOR][/SIZE][/FONT][/CENTER]
+		[/titletd]
+	[/tr]
+	[tr]
+		[tdalt]
+			[otable]
+				[tr]
+					[tdalt]
+						[B][COLOR="Wheat"]Day:[/COLOR][/B]
+					[/tdalt]
+					[tdalt]
+						Every Thursday
+					[/tdalt]
+				[/tr]
+				[tr]
+					[tdalt]
+						[B][COLOR="Wheat"]Time:[/COLOR][/B]
+					[/tdalt]
+					[tdalt]
+						8pm (UTC+1)
+					[/tdalt]
+				[/tr]
+				[tr]
+					[tdalt]
+						[B][COLOR="Wheat"]Where:[/COLOR][/B]
+					[/tdalt]
+					[tdalt]
+						Battle.net / Notherend
+					[/tdalt]
+				[/tr]
+				[tr]
+					[tdalt]
+						[B][COLOR="Wheat"]Channel:[/COLOR][/B]
+					[/tdalt]
+					[tdalt]
+						FBF
+					[/tdalt]
+				[/tr]
+				[tr]
+					[tdalt]
+						[B][COLOR="Wheat"]Bots:[/COLOR][/B]
+					[/tdalt]
+					[tdalt]
+						FBF-HostBot-1
+						FBF-HostBot-2
+						FBF-HostBot-3
+						FBF-HostBot-4
+						FBF-HostBot-5
+					[/tdalt]
+				[/tr]
+				[tr]
+					[tdalt]
+						[B][COLOR="Wheat"]Games Modes:[/COLOR][/B]
+					[/tdalt]
+					[tdalt]
+						AP / AR
+					[/tdalt]
+				[/tr]
+				[tr]
+					[tdalt]
+						[B][COLOR="Wheat"]Hosted Games:[/COLOR][/B]
+					[/tdalt]
+					[tdalt]
+						FBF-HostBot-1: [B][FBF] 2v2 -ap[/B]
+						FBF-HostBot-2: [B][FBF] 3v3 -ap[/B]
+						FBF-HostBot-3: [B][FBF] 4v4 -ap[/B]
+						FBF-HostBot-4: [B][FBF] 6v6 -ap[/B]
+						FBF-HostBot-5: [B][FBF] 3v3 -ar[/B]
+					[/tdalt]
+				[/tr]
+				[tr]
+					[tdalt]
+						[B][COLOR="Wheat"]Official Beta Tester:[/COLOR][/B]
+					[/tdalt]
+					[tdalt]
+						[COLOR="LightBlue"][URL="http://www.hiveworkshop.com/forums/members/jonhysone/"]jonhysone[/URL] (Hive)[/COLOR]
+						[COLOR="LightBlue"][URL="http://www.hiveworkshop.com/forums/members/i_am_death/"]I_am_Death[/URL] (Hive)[/COLOR]
+						[COLOR="LightBlue"][URL="http://forsaken-bastions-fall.com/forums/User-zlowly"]zlowly[/URL] (FBF)[/COLOR]
+						[COLOR="LightBlue"][URL="http://forsaken-bastions-fall.com/forums/User-bhusta"]bhusta[/URL] (FBF)[/COLOR]
+						[COLOR="LightBlue"][URL="http://www.hiveworkshop.com/forums/members/neo_sluf/"]neo_sluf[/URL] (Hive)[/COLOR]
+						
+						[I]Want to become a beta tester? Write me a PM![/I]
+					[/tdalt]
+				[/tr]
+			[/otable]
+		[/tdalt]
+	[/tr]
+[/otable]
+
+Before we start our testing we should meet each other in the channel to discuss the lastest things and then let's have some fun.
+After testing it's very important to give us suggestions, critics and if found bugs, report them!!!
+
+Bug Report: [URL="http://forsaken-bastions-fall.com/forums/"]Click![/URL]
+
+If you have any questions drop us a line.
+
+Best Reg.

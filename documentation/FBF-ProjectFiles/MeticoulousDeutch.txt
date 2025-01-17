@@ -1,0 +1,25 @@
+Woodland Protectors:
+Der Held verliert X HP und channelt für 3 sekunden. In dieser Zeit wachsen Bäume in zufälligen Stellen innerhalb des AoE rund um den Held. 
+Die Bäume können angegriffen werden, haben viel Rüstung aber wenig Leben. Wenn die 3 Sekunden um sind, verwandeln sich alle noch lebenden Bäume in 
+Treants mit vollem Leben, die sich dann bewegen und angreifen können.
+
+Wildfire:
+Der Held verliert HP pro Sekunde und erhält dafür Angriffsgeschwindigkeit- und Bewegungsgeschwindigkeit-Boni. 
+Gegnerische Einheiten innerhalb des AoE um den Helden verlieren ebenfalls HP pro Sekunde. 
+Sollten Treants innerhalb des AoE sein, verlieren sie ebenfalls HP, allerdings mit anderer Geschwindigkeit, 
+und erhalten geringere AS- und MS-Boni. Der Held selbst kann durch den HP-Drain nicht sterben, die Fähigkeit schaltet sich ab bei 1 HP, aber Gegner und die Treants 
+von Woodland Protectors können durch den HP-Drain sterben.Schadenstyp is magisch.
+
+Seed Bomb:
+Der Held wirft ein Geschoss (magische Eichel) auf einen Punkt. Gegner innerhalb von einem AoE von 250 um den Einschlagpunkt werden verlangsamt 
+(AS und MS) und erhalten Schaden pro sekunde. Gegner innerhalb einen AoE von 100 werden zusätzlich Entangled und bekommen Schaden ausgeteilt.
+
+Overgrowth:
+Der Held wird stationär und erhält einen langreichweitigen Angriff mit ein wenig bonus-schaden. 
+In einem großen AoE um den Helden geschehen eine menge von Effekten: Freunde werden jede halbe Sekunde geheilt, 
+mit der menge an Heilung steigend je länger der Effekt anhält. Feinde werden verlangsamt, ebenfalls mit steigender stärke. 
+Nach 5 sekunden sind 100% slow erreicht. Dabei wird mit der Zeit gerechnet, seit der der Held sich eingewurzelt hat, 
+wenn also ein gegner nach 5 sekunden in den AoE latscht, erhält er gleich die 100% slow. Sollte der Held Wildfire anhaben oder an machen, 
+so erstreckt sich der Effekt dann über den AoE des Ultimates, nich bloß den kleinen radius.
+
+[Das Ultimate ist Effekt-Overload. Da sollten wir noch mal mit ihm drüber reden.]

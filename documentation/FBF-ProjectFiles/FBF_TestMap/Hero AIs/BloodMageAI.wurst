@@ -1,0 +1,44 @@
+library BloodMageAI requires HeroAI, GroupFunctionality
+
+    private struct AI extends array
+
+        method assaultEnemy takes nothing returns nothing
+            call .defaultAssaultEnemy()
+
+            if .mana >= 135. then
+                call ConsiderUnitsInRange(.enemies, .hx, .hy, 800)
+                call .setPriorityEnemy(.enemies)
+                if .priorityEnemy != null then
+                    if IssuePointOrder(.hero, "flamestrike", GetUnitX(.priorityEnemy), GetUnitY(.priorityEnemy)) then
+                        return
+                    endif
+                endif
+            endif
+
+            call ConsiderUnitsInRange(.enemies, .hx, .hy, 250)
+            call .recountEnemies()
+
+            if .enemyNum > 0 then
+
+                call ConsiderUnitsInRange(.allies, .hx, .hy, 800)
+
+                call .calcThreat()
+
+                call .retreat()
+
+            endif
+        endmethod
+
+        method safeActions takes nothing returns nothing
+            if not .isChanneling and .enemyNum > 0 then
+                call .assaultEnemy()
+            endif
+        endmethod
+
+        implement HeroAIStruct
+
+    endstruct
+
+    //! runtextmacro HeroAI_Register("'Hblm'")
+
+endlibrary

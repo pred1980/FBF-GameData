@@ -1,0 +1,359 @@
+//==========================================================================================
+// This is separated from the main system of HeroAI to provide better organization.
+//
+// It covers what items the AI will buy and how the data structures are set up.
+// Configuration of what kinds of items shops sell is also done here.
+//##########################################################################################
+//  Itemset API:
+//
+//	* struct HeroAI_Itemset
+//		The data structure for storing the item ids and costs. Only holds up to MAX_INVENTORY_SIZE
+//		items. You should treat instances of these as being static since they shouldn't be destroyed.
+//
+//  * method addItemTypeId takes integer itemTypeId returns nothing *
+//      Adds an item type to the itemset instance.
+//==========================================================================================
+
+// Please don't call this textmacro.
+//! textmacro HeroAIItem
+
+	globals
+		private constant integer    MAX_INVENTORY_SIZE      = 6     // The max amount of items a hero can hold
+        public  constant real       SELL_ITEM_RANGE         = 300.  // The range at which shops sell items
+		private constant real       SELL_ITEM_REFUND_RATE   = 0.5   // The rate at which items' cost are refunded
+        private constant real       IGNORE_ENEMY_SHOP_RANGE = 600.  // The range at which the hero is from a shop and will ignore enemies in favor of buying items. Only considered if the hero is not already in STATE_ENGAGED
+		private constant integer    MAX_ITEMSET_SIZE        = 12    // The max amount of items that can be in one itemset
+        private constant boolean    CHECK_REFUND_ITEM_COST  = true  // Decides if the AI should consider an item's refund price when deciding to buy items
+    endglobals
+
+	// Don't touch the following
+	public keyword Item
+	public keyword Itemset
+	globals
+		public Itemset DefaultItemBuild
+	endglobals
+
+	// You must set up all the items the AI can buy here. Each item should only be set up once.
+	// Note that a shop type id of 0 will cause the AI to buy the item without bothering to
+    // go to an actual shop.
+    // It is also advised to set up all items the hero can pick up and sell so that
+    // they will be refunded properly.
+    //
+    // Currently, multiple shops selling the same item is not supported.
+	private function SetupItems takes nothing returns nothing
+		// Syntax:
+    	// call Item.setup(ITEM-TYPE ID, SHOP-TYPE ID, GOLD COST, LUMBER COST)
+		
+		/*
+		 * Human Shop 1 Items
+		 */
+    	call Item.setup('I000', 'u00K', GetItemGold('I000'), 0) // HEALING_POTION
+		call Item.setup('I001', 'u00K', GetItemGold('I001'), 0) // MANA_POTION
+		call Item.setup('I003', 'u00K', GetItemGold('I003'), 0) // HEALING_ELEXIR
+		call Item.setup('I01R', 'u00K', GetItemGold('I01R'), 0) // MANA_ELEXIR
+		call Item.setup('I004', 'u00K', GetItemGold('I004'), 0) // ANTI_MAGIC_POTION
+		call Item.setup('I005', 'u00K', GetItemGold('I005'), 0) // INVULNERABILITY_POTION
+		call Item.setup('I002', 'u00K', GetItemGold('I002'), 0) // POTION_OF_INVISIBILITY
+		call Item.setup('I006', 'u00K', GetItemGold('I006'), 0) // SPEED_UP_POTION
+		
+		/*
+		 * Human Shop 2 Items
+		 * ITEM_CLASS_ADVANCED: Human
+		 */
+		 call Item.setup('I01A', 'u00L', GetItemGold('I01A'), 0) // SILVERMOON_SHIELD
+		 call Item.setup('I01D', 'u00L', GetItemGold('I01D'), 0) // GUARDIAN_HELMET
+		 call Item.setup('I01H', 'u00L', GetItemGold('I01H'), 0) // CHAINMAIL
+		 call Item.setup('I01K', 'u00L', GetItemGold('I01K'), 0) // SUNRAY_BLOSSOM
+		 call Item.setup('I019', 'u00L', GetItemGold('I019'), 0) // DWARVEN_HAMMER
+		 call Item.setup('I01I', 'u00L', GetItemGold('I01I'), 0) // FENCING_SWORD
+		 call Item.setup('I01G', 'u00L', GetItemGold('I01G'), 0) // TIME_AMULET
+		 call Item.setup('I01C', 'u00L', GetItemGold('I01C'), 0) // BOOTS_OF_QUEL_THALAS
+		 call Item.setup('I01F', 'u00L', GetItemGold('I01F'), 0) // TIGERS_EYE
+		 call Item.setup('I01B', 'u00L', GetItemGold('I01B'), 0) // POINTY_HAT
+		 call Item.setup('I01E', 'u00L', GetItemGold('I01E'), 0) // ARCANE_CIRCLET
+		 call Item.setup('I01J', 'u00L', GetItemGold('I01J'), 0) // ANTI_MAGIC_WAND
+		 
+		 /*
+		 * Human Shop 3 Items
+		 * ITEM_CLASS_ANCIENT: Human
+		 */
+		 call Item.setup('I027', 'u00M', GetItemGold('I027'), 0) // KNIGHT_HELMET
+		 call Item.setup('I023', 'u00M', GetItemGold('I023'), 0) // LUCKY_RING
+		 call Item.setup('I029', 'u00M', GetItemGold('I029'), 0) // STORMWIND_SHIELD
+		 call Item.setup('I01Q', 'u00M', GetItemGold('I01Q'), 0) // HOLY_SHIELD
+		 call Item.setup('I01T', 'u00M', GetItemGold('I01T'), 0) // WAR_FLAIL
+		 call Item.setup('I01Z', 'u00M', GetItemGold('I01Z'), 0) // VOLCANO_HAMMER
+		 call Item.setup('I025', 'u00M', GetItemGold('I025'), 0) // CROWBAR
+		 call Item.setup('I01O', 'u00M', GetItemGold('I01O'), 0) // SEVEN_LEAGUE_BOOTS
+		 call Item.setup('I01X', 'u00M', GetItemGold('I01X'), 0) // GRYPHONS_EYE
+		 call Item.setup('I01V', 'u00M', GetItemGold('I01V'), 0) // RUNESTONE
+		 call Item.setup('I021', 'u00M', GetItemGold('I021'), 0) // FIRE_WAND
+		 call Item.setup('I01M', 'u00M', GetItemGold('I01M'), 0) // SEEING_STAFF
+		 
+		 /*
+		  ***********************************************************************
+		  */
+		  
+		 /*
+		  * Orc Shop 1 Items
+		  */
+    	call Item.setup('I000', 'u00N', GetItemGold('I000'), 0) // HEALING_POTION
+		call Item.setup('I001', 'u00N', GetItemGold('I001'), 0) // MANA_POTION
+		call Item.setup('I003', 'u00N', GetItemGold('I003'), 0) // HEALING_ELEXIR
+		call Item.setup('I01R', 'u00N', GetItemGold('I01R'), 0) // MANA_ELEXIR
+		call Item.setup('I004', 'u00N', GetItemGold('I004'), 0) // ANTI_MAGIC_POTION
+		call Item.setup('I005', 'u00N', GetItemGold('I005'), 0) // INVULNERABILITY_POTION
+		call Item.setup('I002', 'u00N', GetItemGold('I002'), 0) // POTION_OF_INVISIBILITY
+		call Item.setup('I006', 'u00N', GetItemGold('I006'), 0) // SPEED_UP_POTION
+		
+		/*
+		 * Orc Shop 2 Items
+		 * ITEM_CLASS_ADVANCED: Orc
+		 */
+		 call Item.setup('I02I', 'u00O', GetItemGold('I02I'), 0) // BLOOD_STONE
+		 call Item.setup('I02L', 'u00O', GetItemGold('I02L'), 0) // SPIKED_COLLAR
+		 call Item.setup('I02C', 'u00O', GetItemGold('I02C'), 0) // OGRIMMAR_SHIELD
+		 call Item.setup('I02J', 'u00O', GetItemGold('I02J'), 0) // DARKSPEAR_MASK
+		 call Item.setup('I02B', 'u00O', GetItemGold('I02B'), 0) // BLACKROCK_AXE
+		 call Item.setup('I02K', 'u00O', GetItemGold('I02K'), 0) // TROLL_DAGGER
+		 call Item.setup('I02D', 'u00O', GetItemGold('I02D'), 0) // MACE
+		 call Item.setup('I02E', 'u00O', GetItemGold('I02E'), 0) // CENTAUR_BOOTS
+		 call Item.setup('I02M', 'u00O', GetItemGold('I02M'), 0) // PIPE
+		 call Item.setup('I02F', 'u00O', GetItemGold('I02F'), 0) // SHAMAN_GLOVE
+		 call Item.setup('I02H', 'u00O', GetItemGold('I02H'), 0) // WARSONG_DRUMS
+		 call Item.setup('I02G', 'u00O', GetItemGold('I02G'), 0) // THUNDER_RING
+		 
+		 /*
+		 * Orc Shop 3 Items
+		 * ITEM_CLASS_ANCIENT: Orc
+		 */
+		 call Item.setup('I030', 'u00P', GetItemGold('I030'), 0) // BLACKROCK_ARMOR
+		 call Item.setup('I02Y', 'u00P', GetItemGold('I02Y'), 0) // KODO_VEST
+		 call Item.setup('I02W', 'u00P', GetItemGold('I02W'), 0) // SHAMAN_HOOD
+		 call Item.setup('I032', 'u00P', GetItemGold('I032'), 0) // DEFENSIVE_CHARM
+		 call Item.setup('I02O', 'u00P', GetItemGold('I02O'), 0) // ASSASSINS_DAGGER
+		 call Item.setup('I02S', 'u00P', GetItemGold('I02S'), 0) // BROAD_AXE
+		 call Item.setup('I02Q', 'u00P', GetItemGold('I02Q'), 0) // LONGSWORD
+		 call Item.setup('I036', 'u00P', GetItemGold('I036'), 0) // KODO_BOOTS
+		 call Item.setup('I034', 'u00P', GetItemGold('I034'), 0) // STONE_AMULET
+		 call Item.setup('I038', 'u00P', GetItemGold('I038'), 0) // FRENZY_RING
+		 call Item.setup('I02U', 'u00P', GetItemGold('I02U'), 0) // TAUREN_TOTEM
+		 call Item.setup('I03A', 'u00P', GetItemGold('I03A'), 0) // DRAGON_RING
+		 
+		 /*
+		  ***********************************************************************
+		  */
+		  
+		 /*
+		  * Undead Shop 1 Items
+		  */
+    	call Item.setup('I000', 'u000', GetItemGold('I000'), 0) // HEALING_POTION
+		call Item.setup('I001', 'u000', GetItemGold('I001'), 0) // MANA_POTION
+		call Item.setup('I003', 'u000', GetItemGold('I003'), 0) // HEALING_ELEXIR
+		call Item.setup('I01R', 'u000', GetItemGold('I01R'), 0) // MANA_ELEXIR
+		call Item.setup('I004', 'u000', GetItemGold('I004'), 0) // ANTI_MAGIC_POTION
+		call Item.setup('I005', 'u000', GetItemGold('I005'), 0) // INVULNERABILITY_POTION
+		call Item.setup('I002', 'u000', GetItemGold('I002'), 0) // POTION_OF_INVISIBILITY
+		call Item.setup('I006', 'u000', GetItemGold('I006'), 0) // SPEED_UP_POTION
+		
+		/*
+		 * Undead Shop 2 Items
+		 * ITEM_CLASS_ADVANCED: Undead
+		 */
+		 call Item.setup('I00D', 'u001', GetItemGold('I00D'), 0) // BONE_HELMET
+		 call Item.setup('I00B', 'u001', GetItemGold('I00B'), 0) // BELT_OF_GIANT_STRENGTH
+		 call Item.setup('I008', 'u001', GetItemGold('I008'), 0) // DARK_PLATES
+		 call Item.setup('I00E', 'u001', GetItemGold('I00E'), 0) // PLATE_GLOVE
+		 call Item.setup('I007', 'u001', GetItemGold('I007'), 0) // BLOOD_BLADE
+		 call Item.setup('I00A', 'u001', GetItemGold('I00A'), 0) // SPIDER_BRACELET
+		 call Item.setup('I00G', 'u001', GetItemGold('I00G'), 0) // TWIN_AXE
+		 call Item.setup('I00I', 'u001', GetItemGold('I00I'), 0) // FRENZY_BOOTS
+		 call Item.setup('I00C', 'u001', GetItemGold('I00C'), 0) // RUNIC_CHARM
+		 call Item.setup('I009', 'u001', GetItemGold('I009'), 0) // CURSED_ROBE
+		 call Item.setup('I00H', 'u001', GetItemGold('I00H'), 0) // UNHOLY_ICON
+		 call Item.setup('I00F', 'u001', GetItemGold('I00F'), 0) // SKULL_ROD
+		 
+		 /*
+		 * Undead Shop 3 Items
+		 * ITEM_CLASS_ANCIENT: Undead
+		 */
+		 call Item.setup('I012', 'u003', GetItemGold('I012'), 0) // BLOOD_PLATE_ARMOR
+		 call Item.setup('I00P', 'u003', GetItemGold('I00P'), 0) // DEMONIC_AMULET
+		 call Item.setup('I010', 'u003', GetItemGold('I010'), 0) // METAL_HAND
+		 call Item.setup('I00V', 'u003', GetItemGold('I00V'), 0) // CORRUPTED_ICON
+		 call Item.setup('I014', 'u003', GetItemGold('I014'), 0) // SPEAR_OF_VENGEANCE
+		 call Item.setup('I00Y', 'u003', GetItemGold('I00Y'), 0) // MORNING_STAR
+		 call Item.setup('I016', 'u003', GetItemGold('I016'), 0) // MAGIC_AXE
+		 call Item.setup('I00J', 'u003', GetItemGold('I00J'), 0) // RAVING_SWORD
+		 call Item.setup('I00R', 'u003', GetItemGold('I00R'), 0) // ARCANE_FLARE
+		 call Item.setup('I00M', 'u003', GetItemGold('I00M'), 0) // NECROMANCERS_ROBE
+		 call Item.setup('I018', 'u003', GetItemGold('I018'), 0) // BONE_CHARM
+		 call Item.setup('I00N', 'u003', GetItemGold('I00N'), 0) // TEMPEST_SKULL
+		 
+		 /*
+		  ***********************************************************************
+		  */
+		  
+		 /*
+		  * Nightelf Shop 1 Items
+		  */
+    	call Item.setup('I000', 'u00H', GetItemGold('I000'), 0) // HEALING_POTION
+		call Item.setup('I001', 'u00H', GetItemGold('I001'), 0) // MANA_POTION
+		call Item.setup('I003', 'u00H', GetItemGold('I003'), 0) // HEALING_ELEXIR
+		call Item.setup('I01R', 'u00H', GetItemGold('I01R'), 0) // MANA_ELEXIR
+		call Item.setup('I004', 'u00H', GetItemGold('I004'), 0) // ANTI_MAGIC_POTION
+		call Item.setup('I005', 'u00H', GetItemGold('I005'), 0) // INVULNERABILITY_POTION
+		call Item.setup('I002', 'u00H', GetItemGold('I002'), 0) // POTION_OF_INVISIBILITY
+		call Item.setup('I006', 'u00H', GetItemGold('I006'), 0) // SPEED_UP_POTION
+		
+		/*
+		 * Nightelf Shop 2 Items
+		 * ITEM_CLASS_ADVANCED: Nightelf
+		 */
+		 call Item.setup('I03G', 'u00I', GetItemGold('I03G'), 0) // BARK_SKIN
+		 call Item.setup('I03F', 'u00I', GetItemGold('I03F'), 0) // TREANT_ROOT
+		 call Item.setup('I03D', 'u00I', GetItemGold('I03D'), 0) // ANCIENT_SHIELD
+		 call Item.setup('I03I', 'u00I', GetItemGold('I03I'), 0) // REINFORCED_GLOVE
+		 call Item.setup('I03C', 'u00I', GetItemGold('I03C'), 0) // SURAMAR_BLADE
+		 call Item.setup('I03M', 'u00I', GetItemGold('I03M'), 0) // SUN_BOW
+		 call Item.setup('I03L', 'u00I', GetItemGold('I03L'), 0) // HUNTRESS_STEEL
+		 call Item.setup('I03N', 'u00I', GetItemGold('I03N'), 0) // SCOUT_BOOTS
+		 call Item.setup('I03K', 'u00I', GetItemGold('I03K'), 0) // BOUND_WISP
+		 call Item.setup('I03E', 'u00I', GetItemGold('I03E'), 0) // DRUID_STAFF
+		 call Item.setup('I03H', 'u00I', GetItemGold('I03H'), 0) // MOON_BLOSSOM
+		 call Item.setup('I03J', 'u00I', GetItemGold('I03J'), 0) // CYCLONE_WAND
+		 
+		 /*
+		 * Nightelf Shop 3 Items
+		 * ITEM_CLASS_ANCIENT: Nightelf
+		 */
+		 call Item.setup('I03T', 'u00J', GetItemGold('I03T'), 0) // TWILIGHT_ARMOR
+		 call Item.setup('I03Y', 'u00J', GetItemGold('I03Y'), 0) // MOON_GUARD_ROBE
+		 call Item.setup('I03W', 'u00J', GetItemGold('I03W'), 0) // MIDNIGHT_ARMOR
+		 call Item.setup('I044', 'u00J', GetItemGold('I044'), 0) // CHIMERA_BOOTS
+		 call Item.setup('I03R', 'u00J', GetItemGold('I03R'), 0) // DAWN_BOW
+		 call Item.setup('I046', 'u00J', GetItemGold('I046'), 0) // EMERALD_SWORD
+		 call Item.setup('I04A', 'u00J', GetItemGold('I04A'), 0) // DEMONSLAYER
+		 call Item.setup('I042', 'u00J', GetItemGold('I042'), 0) // WARDEN_CHAKRAM
+		 call Item.setup('I03V', 'u00J', GetItemGold('I03V'), 0) // KEEPER_STAFF
+		 call Item.setup('I048', 'u00J', GetItemGold('I048'), 0) // EVERYOUNG_LEAF
+		 call Item.setup('I040', 'u00J', GetItemGold('I040'), 0) // DRUID_BOOTS
+		 call Item.setup('I03P', 'u00J', GetItemGold('I03P'), 0) // ANTI_MAGIC_STAFF
+	endfunction
+
+	// Sets up the default item build for AI heroes to get if itemBuild is not overridden.
+    // You should configure this for your own map.
+	private function SetupDefaultItemBuild takes nothing returns nothing
+		// Syntax:
+    	// call DefaultItemBuild.addItem(ITEM-TYPE ID)
+
+    	//call DefaultItemBuild.addItemTypeId('gcel')
+    	//call DefaultItemBuild.addItemTypeId('bspd')
+    	//call DefaultItemBuild.addItemTypeId('rlif')
+    	//call DefaultItemBuild.addItemTypeId('prvt')
+    	//call DefaultItemBuild.addItemTypeId('rwiz')
+    	//call DefaultItemBuild.addItemTypeId('pmna')
+
+        //call DefaultItemBuild.addItemTypeId('rwiz') // Replaces item in hero's first slot
+    endfunction
+
+//==========================================================================================
+// END OF USER CONFIGURATION
+//==========================================================================================
+
+    // serves more of an information wrapper for item cost and shop-type id
+	struct Item extends array
+		private static integer count = 0
+		private static Table info
+
+		private static integer array typeIds
+		private static integer array shopIds
+		private static integer array goldCosts
+		private static integer array lumberCosts
+
+		static method operator [] takes integer itemTypeId returns thistype
+            debug if not info.has(itemTypeId) then
+                debug call BJDebugMsg("[HeroAIItem] Error: Item not registered with system")
+                return 0
+            debug endif
+			return info[itemTypeId]
+		endmethod
+
+		method operator typeId takes nothing returns integer
+			return typeIds[this]
+		endmethod
+
+		method operator shopTypeId takes nothing returns integer
+			return shopIds[this]
+		endmethod
+
+		method operator goldCost takes nothing returns integer
+			return goldCosts[this]
+		endmethod
+
+		method operator lumberCost takes nothing returns integer
+			return lumberCosts[this]
+		endmethod
+
+		static method setup takes integer itemTypeId, integer shopTypeId, integer goldCost, integer lumberCost returns nothing
+			if count < 8190 then
+				set count = count + 1
+				set info[itemTypeId] = count
+				set typeIds[count] = itemTypeId
+				set shopIds[count] = shopTypeId
+				set goldCosts[count] = goldCost
+				set lumberCosts[count] = lumberCost
+			debug else
+				debug call BJDebugMsg("[HeroAIItem] Error: Max number of items registered")
+			endif
+		endmethod
+
+		static method onInit takes nothing returns nothing
+			set thistype.info = Table.create()
+			call SetupItems()
+		endmethod
+	endstruct
+
+	struct Itemset extends array
+		private static integer stack = 0
+		private static Item array items
+		private static integer array count
+
+		method item takes integer index returns Item
+        	return items[this * MAX_ITEMSET_SIZE + index]
+        endmethod
+
+		method operator size takes nothing returns integer
+			return count[this]
+		endmethod
+
+		method addItemTypeId takes integer itemTypeId returns nothing
+			if count[this] < MAX_ITEMSET_SIZE then
+				set items[this * MAX_ITEMSET_SIZE + count[this]] = Item[itemTypeId]
+				set count[this] = count[this] + 1
+			debug else
+				debug call BJDebugMsg("[HeroAIItemset] Error: Itemset already has max item ids, aborted")
+			endif
+		endmethod
+
+		static method create takes nothing returns thistype
+			set stack = stack + 1
+			set count[stack] = 0
+			return stack
+		endmethod
+
+		static method onInit takes nothing returns nothing
+			set DefaultItemBuild = Itemset.create()
+			call SetupDefaultItemBuild()
+		endmethod
+	endstruct
+
+	globals
+		private boolean OnlyPowerUp     // Used to determine if the AI could only get power ups
+	endglobals
+
+	private function AIItemFilter takes nothing returns boolean
+		return GetWidgetLife(GetFilterItem()) > 0.405 and IsItemVisible(GetFilterItem()) and (IsItemPowerup(GetFilterItem()) or not OnlyPowerUp)
+	endfunction
+
+//! endtextmacro

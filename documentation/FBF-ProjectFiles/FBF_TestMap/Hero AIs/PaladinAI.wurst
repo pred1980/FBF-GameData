@@ -1,0 +1,117 @@
+library PaladinAI requires HeroAI, GroupFunctionality
+
+    globals
+        // An example to show that a Paladin can have different itemsets.
+        private HeroAI_Itemset array Itemsets
+        private group enumGroup = CreateGroup()
+    endglobals
+
+    private struct AI extends array
+
+        method HolyLightHeal takes nothing returns real
+            return 200. * GetUnitAbilityLevel(.hero, 'AHhb')
+        endmethod
+
+        static method HolyLightEnemyFilter takes nothing returns nothing
+            local unit u = GetEnumUnit()
+            if not IsUnitType(u, UNIT_TYPE_UNDEAD) or IsUnitType(u, UNIT_TYPE_MECHANICAL) then
+                call GroupRemoveUnit(enumGroup, u)
+            endif
+            set u = null
+        endmethod
+
+        /*
+        static method modPriority takes unit u returns real
+            if GetUnitTypeId(u) == 'Hblm' then
+                return 9001. // This will multiply an enemy Blood Mage's priority
+            endif
+            return 1. // Return 1 to not affect other units' priority
+        endmethod
+        */
+
+        // look for any non-UD allied units to heal
+        method assistAlly takes nothing returns boolean
+            local unit ally = null // Initially set to null so it won't fail
+            local boolean b = false
+            local unit u
+            local real lowest = 9999999999
+
+            if .mana >= 65. then
+                call GroupClear(enumGroup)
+                call GroupAddGroup(.allies, enumGroup)
+                loop
+                    set u = FirstOfGroup(enumGroup)
+                    exitwhen u == null
+                    call GroupRemoveUnit(enumGroup, u)
+                    if not IsUnitType(u, UNIT_TYPE_UNDEAD) and not IsUnitType(u, UNIT_TYPE_MECHANICAL) then
+                        if GetWidgetLife(u) < lowest then
+                            set lowest = GetWidgetLife(u)
+                            set ally = u
+                        endif
+                    endif
+                endloop
+                if ally != null then
+                    // Cast Holy Light only if the ally has less life than the heal
+                    if GetUnitState(ally, UNIT_STATE_MAX_LIFE) - GetWidgetLife(ally) >= HolyLightHeal()  then
+                        set b = IssueTargetOrder(.hero, "holybolt", ally)
+                    endif
+                    set ally = null
+                endif
+            endif
+
+            return b
+        endmethod
+
+        // nuke any UD enemies with Holy Light, then try the default attacking
+        method assaultEnemy takes nothing returns nothing
+            if .mana >= 65. then
+                call GroupClear(enumGroup)
+                call GroupAddGroup(.enemies, enumGroup)
+                call ConsiderUnitsInRange(enumGroup, .hx, .hy, 800.)
+                call ForGroup(enumGroup, function thistype.HolyLightEnemyFilter)
+                if FirstOfGroup(enumGroup) != null then
+                    call .setPriorityEnemy(enumGroup)
+                    if IssueTargetOrder(.hero, "holybolt", .priorityEnemy) then
+                        return // Skip the default attacking
+                    endif
+                endif
+            endif
+
+            call .defaultAssaultEnemy()
+        endmethod
+
+
+        // Must return a boolean that tells the system if he took an action
+        method runActions takes nothing returns boolean
+            debug call BJDebugMsg("The Paladin[" + I2S(.hid) + "] runs away!")
+            return false // He's only yelling at us through debug messages so return false
+        endmethod
+
+        // This is where you would define a custom item build
+        method onCreate takes nothing returns nothing
+            set .itemBuild = Itemsets[GetRandomInt(0, 1)]
+        endmethod
+
+        implement HeroAIStruct
+
+    endstruct
+
+    //! runtextmacro HeroAI_Register("'Hpal'")
+
+    private module M
+        static method onInit takes nothing returns nothing
+            set Itemsets[0] = HeroAI_Itemset.create()
+            call Itemsets[0].addItemTypeId('bspd')
+            call Itemsets[0].addItemTypeId('stwp')
+
+            set Itemsets[1] = HeroAI_Itemset.create()
+            call Itemsets[1].addItemTypeId('dust')
+            call Itemsets[1].addItemTypeId('tret')
+        endmethod
+    endmodule
+
+    private struct S extends array
+        implement M
+    endstruct
+
+endlibrary

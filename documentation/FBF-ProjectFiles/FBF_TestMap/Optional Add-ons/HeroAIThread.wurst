@@ -1,0 +1,168 @@
+//==========================================================================================
+//  HeroAIThreat
+//      by watermelon_1234
+//==========================================================================================
+// An optional add-on to HeroAI. It causes the hero AI to perceive threat from enemy units
+// based on their life, relative life, and level. It also allows two methods to be defined
+// to allow custom AI to perceive more specific threat from a unit. An additional method is
+// provided to change the AI's threat threshold for running away.
+//
+// The inclusion of this library automatically makes it available to HeroAI.
+//##########################################################################################
+// Additional Members:
+//	* real threat 			-> The total threat the hero faces
+//  * real threatThreshold	-> The threshold from which the hero would ignore threat
+//	* unit threatEnemy		-> The enemy with the most threat
+//
+// API:
+//	* method weightThreat takes unit u returns real *
+//		Returns the threat the hero would perceive from the unit.
+//
+//	* method calcThreat takes nothing returns nothing *
+//		Calculates threat and threatThreshold, along with setting threatEnemy. Will be called
+//		in method update if there is at least one enemy within SIGHT_RANGE of the hero.
+//
+//	* method retreat takes nothing returns boolean *
+//		Makes the hero retreat from threatEnemy if threat is larger than threatThreshold.
+//		Returns true if the hero retreated.
+//
+// Interface:
+//  * static method addThreat takes unit u returns real *
+//  	This method allows a custom AI to add threat from a unit u.
+//		Return the additional threat as a real. Note that this threat will be added
+// 		before being modified by any factor.
+//
+//  * static method modThreat takes unit u returns real *
+//		This method allows a customAI to modify threat for the unit u.
+//		Return the factor the unit's threat will be multiplied by.
+//
+//	* method selfRunFactor takes nothing returns real *
+//		This method should return the factor for the threat threshold when the AI is choosing
+//		to run away.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Installing:
+//  1. Copy this trigger into your map
+//  2. Configure the constants to control how threat is weighted
+//==========================================================================================
+
+library HeroAIThreat
+
+    globals
+    	public	constant real	THRESHOLD_RUN_FACTOR	= 2.5	// Factor for threat threshold when deciding to run away based on hero's percent life.
+    															// Used only if selfRunFactor is undefined
+
+    	private constant real 	RETREAT_DIST			= 225. 	// Distance the hero attempts to move away from threatEnemy
+
+		private constant real 	LIFE_PERCENT_WEIGHT		= 2.15 	// Threat weight given to percent life of the unit
+		private constant real 	LIFE_PERCENT_POWER		= 2.5 	// A higher value causes threat perceived from lower percent life to diminish
+		private constant real 	RELATIVE_LIFE_WEIGHT	= 0.75 	// Threat weight given to the relative life of enemy units compared to self
+
+		private constant real 	ALLY_LVL_WEIGHT			= .45 	// Determines weight for allied unit levels
+		private constant real 	ENEMY_LVL_DIFF_WEIGHT	= .58 	// Determines weight for enemy level difference
+
+		private constant real 	HERO_FACTOR				= 2.5 	// Multiplies the overall threat if the unit is a hero
+    endglobals
+
+//==========================================================================================
+//                              END OF CONFIGURATION
+//==========================================================================================
+
+    private function BaseViewedThreat takes unit hero, unit u, boolean allied returns real
+    	local real life = GetWidgetLife(u)
+    	local real threat = LIFE_PERCENT_WEIGHT * Pow( life/GetUnitState(u, UNIT_STATE_MAX_LIFE), LIFE_PERCENT_POWER)
+    	if allied then
+    		set threat = threat + ALLY_LVL_WEIGHT * GetUnitLevel(u)
+    	else
+    		set threat = threat + ENEMY_LVL_DIFF_WEIGHT * (GetUnitLevel(u) - GetUnitLevel(hero)) + RELATIVE_LIFE_WEIGHT*life/GetWidgetLife(hero)
+    	endif
+    	return threat
+    endfunction
+
+    private function BaseThreatFactor takes unit u returns real
+    	local real factor = 1
+		if IsUnitType(u, UNIT_TYPE_HERO) then
+			set factor = factor * HERO_FACTOR
+		endif
+		return factor
+	endfunction
+
+	module HeroAIThreat
+		real threat
+		real threatThreshold
+		unit threatEnemy
+
+		method weightThreat takes unit u returns real
+			local boolean allied = IsUnitAlly(u, .owner)
+			local real threat = BaseViewedThreat(.hero, u, allied)
+			local real factor = BaseThreatFactor(u)
+
+			static if thistype.addThreat.exists then
+				set threat = threat + .addThreat(u)
+			endif
+
+			if threat > 0 then
+				static if thistype.modThreat.exists then
+					set factor = factor * .modThreat(u)
+				endif
+
+				return threat * factor
+			endif
+			// Don't consider negative threat
+			return 0.
+		endmethod
+
+		method calcThreat takes nothing returns nothing
+			local unit u
+			local real highest = 0
+            local real t
+			set .threat = 0
+			set .threatThreshold = LIFE_PERCENT_WEIGHT * Pow(.percentLife, LIFE_PERCENT_POWER) + ALLY_LVL_WEIGHT * GetUnitLevel(.hero) // Threshold calculated for hero
+			set .threatEnemy = null
+
+			// Preserves group g by using another group variable
+            call GroupClear(bj_lastCreatedGroup)
+            call GroupAddGroup(.units, bj_lastCreatedGroup)
+            loop
+                set u = FirstOfGroup(bj_lastCreatedGroup)
+                exitwhen u == null
+                call GroupRemoveUnit(bj_lastCreatedGroup, u)
+
+                set t = weightThreat(u)
+                if IsUnitAlly(u, .owner) then
+                	set .threatThreshold = .threatThreshold + t
+                else
+                	set .threat = .threat + t
+                	if highest < t then
+                		set highest = t
+                		set .threatEnemy = u
+                	endif
+                endif
+            endloop
+		endmethod
+
+		method retreat takes nothing returns boolean
+			local real ang
+			if .threat > .threatThreshold then
+				if .state == HeroAI_STATE_RUN_AWAY then
+					return .run()
+				endif
+				set ang = Atan2(.hy - GetUnitY(.threatEnemy), .hx - GetUnitX(.threatEnemy))
+				return IssuePointOrder(.hero, "move", .hx + RETREAT_DIST*Cos(ang), .hy + RETREAT_DIST*Sin(ang))
+			endif
+			return false
+		endmethod
+
+		method operator thresholdRunFactor takes nothing returns real
+			static if thistype.selfRunFactor.exists then
+
+			return .selfRunFactor()
+
+			else
+
+            return THRESHOLD_RUN_FACTOR * .percentLife
+
+            endif
+        endmethod
+	endmodule
+
+endlibrary

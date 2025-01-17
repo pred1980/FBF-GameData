@@ -1,0 +1,74 @@
+//REQUIRED LIBS imports
+//! import "Required Libraries\GetClosestWidget.wurst"
+//! import "Required Libraries\TableBC.wurst"
+//! import "Required Libraries\Table.wurst"
+//! import "Required Libraries\RegisterPlayerUnitEvent.wurst"
+//! import "Required Libraries\TimerUtils.wurst"
+//! import "Required Libraries\GetUnitCollision.wurst"
+
+//Libs imports
+//! import "Libs\Misc Functions.wurst"
+//! import "Libs\GetPlayerNameColored.wurst"
+//! import "Libs\DamageEvent.wurst"
+//! import "Libs\DamageModifier.wurst"
+//! import "Libs\BonusMod.wurst"
+//! import "Libs\AutoIndex.wurst"
+//! import "Libs\SimError.wurst"
+
+//SYSTEM imports
+//! import "System\HeroAI.wurst"
+//! import "System\HeroAIItem.wurst"
+//! import "System\HeroAILearnset.wurst"
+
+//Optional Add-ons imports
+//! import "Optional Add-ons\HeroAIPriority.wurst"
+//! import "Optional Add-ons\HeroAIThread.wurst"
+//! import "Optional Add-ons\HeroAIEventResponse.wurst"
+//! import "Optional Add-ons\AIPlayerDifficultySettings.wurst"
+
+//Optional Libraries imports
+//! import "Optional Libraries\GroupUtils.wurst"
+//! import "Optional Libraries\IsUnitChanneling.wurst"
+
+// NOTE: The following two libraries will not be used by the system at all if you already have HeroAIPriority in your map.
+//! import "Optional Libraries\PruneGroup.wurst"
+//! import "Optional Libraries\FitnessFunc.wurst"
+
+//Test Map only imports
+//! import "Test Map Only\GroupFunctionality.wurst"
+
+//Items
+//! import "Item System\ItemRegister.wurst"
+//! import "Item System\Items.wurst"
+//! import "Item System\ItemShops.wurst"
+//! import "Item System\GetItemCosts.wurst"
+// import "Item System\ItemStackNSplit.wurst"
+// import "Item System\UnitInventory.wurst"
+
+// First Heroes
+
+//! import "Hero AIs\AbominationAI.wurst"
+// import "Hero AIs\PaladinAI.wurst"
+// import "Hero AIs\BloodMageAI.wurst"
+// import "Hero AIs\AssassinAI.wurst"
+
+// Map Inits
+//! import "Test Map Only\MapInit.wurst"
+//! import "Test Map Only\RunAIForAllHeroes.wurst"
+
+//FBF Game Mechanics imports
+//! import "FBF Game Mechanics\Game.wurst"
+
+//Tome Damage System imports
+//! import "Tome Damage System\Tome Damage System.wurst"
+
+//Tower System imports
+//! import "Tower System\CommonAlimports.wurst"
+//! import "Tower System\Get Tower Cost.wurst"
+//! import "Tower System\Tower System.wurst"
+//! import "Tower System\TowerAI.wurst"
+
+//Teleport System imports
+//! import "Teleport System\Coalition Teleport System TestMap.wurst"
+//! import "Teleport System\Forsaken Teleport System TestMap.wurst"
+//! import "Teleport System\Teleport Start.wurst"

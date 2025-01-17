@@ -1,0 +1,481 @@
+library DamageModifiers initializer Init requires Table, optional AbilityPreload, optional xepreload
+
+//*****************************************************************
+//*  DAMAGE MODIFIERS LIBRARY (Table version) 1.1
+//*
+//*  written by: Anitarf
+//*  requires: -Table
+//*            -a damage detection system (DamageEvent recommended)
+//*  optional: -AbilityPreload or xepreload
+//*
+//*    This is a library that allows you to modify the damage taken
+//*  by units. It is the most robust system of this kind available,
+//*  it can both reduce and increase damage, when increasing
+//*  damage it still awards bounty for kills correctly, it can
+//*  tolerate users dealing additional damage on the damage event
+//*  as well as allow them to get the correct life of the unit on
+//*  this event rather than a value inflated by damage prevention.
+//*
+//*  IMPLEMENTATION:
+//*
+//*    It is important to note that different damage modifying
+//*  systems can not operate in the same map, so you can not use
+//*  this system if you are already using a different one.
+//*
+//*    DamageModifiers does not work on its own, but is designed to
+//*  be used in combination with a damage detection system, which
+//*  needs to call the RunDamageModifiers function once whenever a
+//*  damage event occurs. The DamageEvent damage detection system
+//*  is already configured to do this.
+//*
+//*    function RunDamageModifiers takes nothing returns real
+//*
+//*  The real value that the RunDamageModifiers function returns
+//*  equals what the damage is after it has been affected by all
+//*  modifiers.
+//*
+//*    To be able to modify damage in situations where it exceeds
+//*  the max hp of the damaged unit, this system must temporarily
+//*  add a bonus hp ability to the unit. An external Objectmerger
+//*  call is provided in the calibration section that generates
+//*  this ability in a map automatically when the map is saved.
+//*  The ability will also get automatically preloaded to prevent
+//*  first-use lag as long as either the xepreload library or the
+//*  AbilityPreload library is present in the map.
+//*
+//*  USAGE:
+//*
+//*    Damage modifiers are implemented as structs that extend the
+//*  system's DamageModifier struct. A damage modifier is created
+//*  for a specific unit and can modify both the damage that the
+//*  unit deals and receives (using the onDamageDealt and
+//*  onDamageTaken methods respectively, see the interface defined
+//*  at the end of the calibration section).
+//*
+//*    Keep in mind that when a struct extends DamageModifier, the
+//*  allocate method of that struct must match the create method of
+//*  DamageModifier:
+//*
+//*    static method create takes unit u, integer priority returns DamageModifier
+//*
+//*    The unit argument determines on which unit will the modifier
+//*  be applied and the priority argument determines the order in
+//*  which the modifiers will be evaluated. The system always
+//*  evaluates the modifiers on the unit dealing the damage and on
+//*  the unit taking the damage simultaneously, starting with the
+//*  modifiers with the highest priority. If two modifiers share
+//*  the same priority, the one on the unit dealing the damage
+//*  is evaluated first, if the two modifiers are on the same unit
+//*  then the NEW_MODIFIER_ON_TOP calibration constant determines
+//*  which gets evaluated first.
+//*
+//*    The library also provides the functions GetUnitLife and
+//*  SetUnitLife. When used outside damage detection, these
+//*  functions work the same as the natives GetWidgetLife and
+//*  SetWidgetLife, however when called on a unit that has damage
+//*  stacked on it these functions will return/modify the life the
+//*  unit will have after the damage resolves, rather than its
+//*  current life which will be overwritten when damage modifiers
+//*  finish processing the unit. Again, the functions are:
+//*
+//*    function GetUnitLife takes unit u returns real
+//*    function SetUnitLife takes unit u, real newLife returns nothing
+//*
+//*  EXAMPLE:
+ /*
+    // This damage modifier will simply reduce all damage a unit takes by a constant value.
+    struct armour extends DamageModifier
+        // All additional struct members are optional:
+        static integer PRIORITY=0 // Default priority
+        real power // This lets us give different units differently strong armour.
+
+        // create method is optional, if you don't declare one then you must use
+        // the .allocate parameters (unit, integer) when creating a modifier of this kind.
+        static method create takes unit u, real power returns armour
+            // Note the parameters for .allocate, this is because this struct extends
+            // DamageModifier which asks for these parameters in its create method:
+            local armour this = armour.allocate(u, armour.PRIORITY)
+            set this.power = power
+            return this
+        endmethod
+
+        // This is the method that runs when damage is dealt to the unit with the modifier.
+        // The damage parameter tells how much damage got to this modifier past any modifiers
+        // with a higher priority that the unit may have.
+        // The value that the method returns tells the system by how much to modify the damage,
+        // a positive return value increases damage while a negative value reduces it.
+        method onDamageTaken takes unit damageSource, real damage returns real
+            // This is a simple modifier that just gives a flat damage reduction.
+            if this.power>damage then
+                return -damage
+            endif
+            return -this.power
+        endmethod
+        // There is no onDamageDealt method so this modifier does not affect the damage that the unit deals.
+        // onDestroy method is optional, in this case we don't need it.
+    endstruct
+ */
+//*  VERSION HISTORY:
+//*  1.1 -Fixed a bug that would cause an incorrect total damage to
+//*       be reported back to DamageEvent in some circumstances.
+//*      -GetUnitLife returns 0.0 instead of negative values for
+//*       for units that are about to die from the stacked damage.
+//*      -Narrowed the criteria for applying the survival ability.
+//*       it should now only be applied when it is really needed.
+//*      -Improved the documentation.
+//*****************************************************************
+
+    globals
+        // If two modifiers have the same priority, which one should
+        // modify the damage first? If true, the newer modifier will.
+        private constant boolean NEW_MODIFIER_ON_TOP = true
+
+        // If more damage is dealt to the unit than the unit's max hp, then this
+        // system must temporarily add a bonus hp ability to the unit in order to
+        // facilitate damage prevention.
+        // An objectmerger call is provided below that automatically generates
+        // the ability when you save the map in the NewGen world editor.
+        private constant integer SURVIVAL_ABILITY = 'DMsa'
+    endglobals
+
+    // This objectmerger call only needs to run once to generate the ability in a map,
+    // just save the map to run it, then close the map and re-open it and the ability
+    // should be there, after that you can disable the objectmerget call to speed up
+    // the map saving process in the future.
+    // (To disable the call, delete the "!" so it turns from a command into a comment.)
+    //! external ObjectMerger w3a AIl1 DMsa anam "LifeBonus" ansf "(DamageModifiers)" Ilif 1 100000 aite 0
+
+    // This interface is included in the calibration section
+    // for user reference only and should not be changed in any way.
+    // It is private because your modifiers shouldn't extend it directly,
+    // but should extend the DamageModifer struct instead.
+    private interface DamageModiferTemplate
+        // Returned real determines by how much the damage the unit deals should be modified.
+        method onDamageDealt takes unit damagedUnit, real damage returns real defaults 0.0
+        // Returned real determines by how much the damage the unit is dealt should be modified.
+        method onDamageTaken takes unit damageSource, real damage returns real defaults 0.0
+    endinterface
+
+// END OF CALIBRATION SECTION
+// ================================================================
+
+    private keyword Evaluate
+
+    // DAMAGE MODIFIER STRUCT
+    // To create your own damage modifiers, extend this struct.
+    struct DamageModifier extends DamageModiferTemplate
+        private unit targetunit
+        integer priority
+
+        private DamageModifier next=0
+        private static HandleTable first
+
+        private method listInsert takes nothing returns nothing
+            local DamageModifier dm=DamageModifier(DamageModifier.first[.targetunit])
+            if dm==0 or dm.priority<.priority or (NEW_MODIFIER_ON_TOP and dm.priority==.priority) then
+                set .next=DamageModifier(DamageModifier.first[.targetunit])
+                set DamageModifier.first[.targetunit]=integer(this)
+            else
+                loop
+                    exitwhen dm.next == 0 or dm.next.priority<.priority or (NEW_MODIFIER_ON_TOP and dm.next.priority==.priority)
+                    set dm=dm.next
+                endloop
+                set .next=dm.next
+                set dm.next=this
+            endif
+        endmethod
+
+        private method listRemove takes nothing returns nothing
+            local DamageModifier dm=DamageModifier(DamageModifier.first[.targetunit])
+            if dm==this then
+                set DamageModifier.first[.targetunit]=integer(.next)
+            else
+                loop
+                    exitwhen dm.next==this
+                    set dm=dm.next
+                endloop
+                set dm.next=.next
+            endif
+        endmethod
+
+        // ================================================================
+
+        static method create takes unit u, integer priority returns DamageModifier
+            local DamageModifier this
+            if u==null then
+                return 0
+            endif
+            set this=DamageModifier.allocate()
+            set .targetunit=u
+            set .priority = priority
+
+            call .listInsert()
+
+            return this
+        endmethod
+
+        method onDestroy takes nothing returns nothing
+            call .listRemove()
+            if DamageModifier.first[.targetunit]==0 then
+                call DamageModifier.first.flush(.targetunit)
+            endif
+        endmethod
+
+        // ================================================================
+
+        static method onInit takes nothing returns nothing
+            set DamageModifier.first=HandleTable.create()
+        endmethod
+
+        static method Evaluate takes unit damaged, unit damager, real damage returns real
+        // Loops through all the modifiers involved in a damage event and
+        // returns the total amount by which the damage must be modified.
+        // Positive values meaning a damage increase and negative a damage decrease.
+            local real modifier=0.0
+            local DamageModifier this=DamageModifier(DamageModifier.first[damager])
+            local DamageModifier that=DamageModifier(DamageModifier.first[damaged])
+            loop
+                exitwhen this==0 and that==0
+                if this!=0 and (that==0 or this.priority>=that.priority) then
+                    set modifier=modifier+this.onDamageDealt(damaged, damage+modifier)
+                    set this=this.next
+                elseif that !=0 then
+                    set modifier=modifier+that.onDamageTaken(damager, damage+modifier)
+                    set that=that.next
+                endif
+            endloop
+            return modifier
+        endmethod
+    endstruct
+
+// ================================================================
+
+    // DAMAGE STRUCT
+    // This is an internal struct created whenever a unit takes damage and
+    // destroyed after a 0.0 second timer to allow the damage to be dealt.
+    // If multiple damage events occur on that unit in that time, a single
+    // Damage struct will handle all of them.
+    private struct Damage
+        unit u
+
+        real hp=0.0
+        // Stores the correct hp of the unit. The actual hp may be higher
+        // if not all damage that was stacked on the unit has resolved yet,
+        // however once the damage resolves the correct hp and actual hp
+        // values should match again.
+        // There are two exceptions when this does not happen:
+        // - Actual hp could not be set correctly because that would kill the unit.
+        //   (in case of damage modifiers that increase damage)
+        // - Actual hp could not be set correctly because of unit's max life limit.
+        //   (in case of damage modifiers that reduce damage)
+
+        real temp=0.0
+        // In the case of the two exceptions mentioned above, this stores by how
+        // much the life of the unit could not be increased or reduced, so this
+        // is essentially the difference between the unit's actual and correct hp
+        // (after the damage stacked on the unit is resolved, of course).
+
+        // If another damage event should occur before the first one resolves,
+        // this value will be added to the new damage modifier, ensuring that any
+        // life modifications that couldn't be done previously are not forgotten.
+        // This way, if one damage event has a positive modifier and an event that
+        // occurs in response has a negative modifier or vice versa, the two will
+        // properly cancel each other even if the first one of them couldn't be
+        // fully applied. Likewise, if the unit is given the survival ability, any
+        // damage reduction that couldn't be aplied earlier due to max hp limit
+        // will get applied properly once the unit's max hp is increased.
+
+        private Damage next
+        private static Damage first=0
+        // A list of all active Damage structs.
+        private static timer delay=CreateTimer()
+        // The timer used to wait for the damage to be dealt.
+
+        private static method get takes unit u returns Damage
+            // In most cases, only one or very few units will be damaged
+            // at the same time, so a linear O(n) search is acceptable.
+            local Damage this=Damage.first
+            loop
+                exitwhen this==0 or .u==u
+                set this=.next
+            endloop
+            return this
+        endmethod
+        private static method create takes unit u returns Damage
+            // The only time a Damage is created is when it doesn't yet exist for the unit.
+            local Damage this=Damage.allocate()
+            set .u = u
+            set .next = Damage.first
+            set Damage.first=this
+            return this
+        endmethod
+        method onDestroy takes nothing returns nothing
+            // The only time a Damage is destroyed is when it is first, so this works.
+            set Damage.first=.next
+            set .u = null
+        endmethod
+
+        // ================================================================
+
+        private static method end takes nothing returns nothing
+            // This method is called with a very slight delay, which allows it to run
+            // after the life of the damaged unit has already been reduced by the damage.
+            loop
+                exitwhen Damage.first==0
+                call UnitRemoveAbility(Damage.first.u, SURVIVAL_ABILITY)
+                call SetWidgetLife(Damage.first.u, Damage.first.hp)
+                call Damage.first.destroy()
+            endloop
+        endmethod
+
+        static method RunModifiers takes nothing returns real
+            local unit damaged = GetTriggerUnit()
+            local unit damager = GetEventDamageSource()
+            local real damage = GetEventDamage()
+            local real modifier = 0.0
+            local real life = GetWidgetLife(damaged)
+            local real maxlife = GetUnitState(damaged,UNIT_STATE_MAX_LIFE)
+            local real stackeddamage
+            local Damage d
+
+            if damaged==null then
+                // Method not called from a damage event, terminate.
+                set damager=null
+                set damaged=null
+                return 0.0
+            endif
+
+            // Calculate by how much to modify the damage.
+            set modifier=DamageModifier.Evaluate(damaged, damager, damage)
+
+            // Get the unit's Damage struct.
+            set d=Damage.get(damaged)
+            if d==0 then
+                // First damage, create a new damage struct.
+                set d=Damage.create(damaged)
+                set d.hp=life
+                call TimerStart(Damage.delay, 0.0, false, function Damage.end)
+            endif
+
+            // Calculate the unresolved real damage stacked on the unit.
+            set stackeddamage=((life-d.temp)-d.hp)+damage
+            // Calculate the modified damage.
+            set damage=damage+modifier
+            // Calculate the correct hp of the unit.
+            set d.hp=d.hp-damage
+            // Check if we need to add the survival ability.
+            if d.hp>=UNIT_MIN_LIFE and maxlife-stackeddamage< UNIT_MIN_LIFE then
+                call UnitAddAbility(damaged, SURVIVAL_ABILITY)
+                set maxlife = GetUnitState(damaged,UNIT_STATE_MAX_LIFE)
+            endif
+            // If the unit's life couldn't be reduced or increased as much as we wanted
+            // on a previous damage event, it's time we compensate for that now.
+            set modifier=modifier+d.temp
+            set d.temp=0.0
+
+            // Modify unit life to make it appear as if damage was modified.
+            if life-modifier>=UNIT_MIN_LIFE and life-modifier<=maxlife then
+                // Set the unit's life so that after the damage is dealt, it will be correct.
+                call SetWidgetLife(damaged, life-modifier)
+            elseif life-modifier>maxlife then
+                // The unit's maxlife is preventing us from increasing life as needed,
+                // we need to remember that in the case the survival ability is ever added
+                // to the unit on another damage event before this damage resolves.
+                set d.temp=modifier-(life-maxlife)
+                call SetWidgetLife(damaged, maxlife)
+            else
+                // We have a damage modifier value that would kill the unit, so we
+                // let the actual damage kill it instead, thus awarding proper bounty.
+                // We need to remember that we failed to reduce the life as needed in case
+                // the unit is healed in response to this damage.
+                set d.temp=modifier-(life-UNIT_MIN_LIFE)
+                call SetWidgetLife(damaged, UNIT_MIN_LIFE)
+            endif
+
+            set damaged=null
+            set damager=null
+            return damage
+        endmethod
+
+        // ================================================================
+
+        static method getLife takes unit u returns real
+            local Damage d=Damage.get(u)
+            if d==0 then
+                return GetWidgetLife(u)
+            endif
+            if d.hp<UNIT_MIN_LIFE then
+                return 0.0
+            endif
+             return d.hp
+        endmethod
+
+        static method setLife takes unit u, real newLife returns nothing
+           local Damage d=Damage.get(u)
+            local real modifier
+            local real life
+            local real maxlife
+            local real stackeddamage
+
+            if d==0 then
+                // Unit not taking damage, proceed with setting the unit's life.
+                call SetWidgetLife(u, newLife)
+            else
+                // Calculate by how much the unit's life will change.
+                set modifier=newLife-d.hp
+                if modifier>0 and d.hp<UNIT_MIN_LIFE then
+                // Increasing life in a situation where the damage is about to kill the unit,
+                // so we must intervene and increase the unit's actual life as well.
+                    set life=GetWidgetLife(u)
+                    set maxlife = GetUnitState(u,UNIT_STATE_MAX_LIFE)
+                    // Calculate the unresolved damage stacked on the unit.
+                    set stackeddamage=(life-d.temp)-d.hp
+                    // Check if we need to add the survival ability.
+                    if d.hp>=UNIT_MIN_LIFE and maxlife-stackeddamage<UNIT_MIN_LIFE then
+                        call UnitAddAbility(u, SURVIVAL_ABILITY)
+                        set maxlife = GetUnitState(u,UNIT_STATE_MAX_LIFE)
+                    endif
+                    set d.hp=newLife
+                    if maxlife-life>modifier then
+                        call SetWidgetLife(u, life+modifier)
+                    else
+                        call SetWidgetLife(u, maxlife)
+                        set d.temp=d.temp-modifier+maxlife-life
+                    endif
+                else
+                // Nothing to worry about, the rest of the code will handle everything.
+                    set d.hp=newLife
+                    set d.temp=d.temp-modifier
+                endif
+            endif
+        endmethod
+    endstruct
+
+// ================================================================
+
+    private function Init takes nothing returns nothing
+      static if LIBRARY_xepreload then
+        call XE_PreloadAbility(SURVIVAL_ABILITY)
+      else
+      static if LIBRARY_AbilityPreload then
+        call AbilityPreload(SURVIVAL_ABILITY)
+      endif
+      endif
+    endfunction
+
+// ================================================================
+
+    // To make this system work, call this function once whenever a damage event occurs.
+    // The DamageEvent library is already designed to do this.
+    function RunDamageModifiers takes nothing returns real
+        return Damage.RunModifiers()
+    endfunction
+
+    // These functions allow you to get/set the proper life of a unit even when it's taking damage.
+    function GetUnitLife takes unit u returns real
+        return Damage.getLife(u)
+    endfunction
+    function SetUnitLife takes unit u, real newLife returns nothing
+        call Damage.setLife(u, newLife)
+    endfunction
+endlibrary

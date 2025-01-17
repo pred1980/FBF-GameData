@@ -1,0 +1,5 @@
+Slayer: Killt vor allem Creeps
+Hunter: Tötet vor allem Helden
+Magician: Nutzt primär Spells um Schaden auszuteilen
+Defender: Hält viel aus
+Supporter: Teilt wenig direkt aus, kann aber andere schützen oder stärken

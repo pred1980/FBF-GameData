@@ -1,0 +1,630 @@
+( |cffffcc00Q|r ) Shady Spire [|cffffffffCommon|r]
+
+The Shady Spire is a basic tower that deals mild damage to enemy units. Cheap and effective against low level creeps. It can be upgraded to the Dark Spire for more damage.
+
+DPS: |cff679bf249|r
+Damage: |cff679bf256 - 77|r
+Build Time: |cff679bf28 seconds|r
+Cooldown: |cff679bf21.1 seconds|r
+Range: |cff679bf2825|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+None
+
+ 
+( |cffffcc00Y|r ) Dark Spire [|cffffffffCommon|r]
+
+The Dark Spire is an upgrade to the Shady Spire. It deals mild damage. Cheap and effective against low level creeps.  Can be upgraded to the Black Spire for more damage.
+
+DPS: |cff679bf275|r
+Damage: |cff679bf282 - 103|r
+Build Time: |cff679bf29 seconds|r
+Cooldown: |cff679bf21.1 seconds|r
+Range: |cff679bf2825|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+None
+ 
+( |cffffcc00Y|r ) Black Spire [|cffffffffCommon|r]
+
+The Black Spire is an upgrade to the Dark Spire. It deals mild damage. Cheap and effective against low level creeps. It can't be upgraded.
+
+DPS: |cff679bf2111|r
+Damage: |cff679bf2118 - 139|r
+Build Time: |cff679bf210 seconds|r
+Cooldown: |cff679bf21.1 seconds|r
+Range: |cff679bf2825|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+None
+ 
+( |cffffcc00W|r ) Cold Obelisk [|cffffffffCommon|r]
+
+The Cold Obelisk is a common tower that slows it's targets for a short duration. It can be upgraded to the Frosty Obelisk for greater damage and slow effect.
+
+DPS: |cff679bf247|r
+Damage: |cff679bf252 - 57|r
+Build Time: |cff679bf212 seconds|r
+Cooldown: |cff679bf21.5 seconds|r
+Range: |cff679bf2700|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Zero Point|r
+The tower will slow the attacked creeps by 20% for 4 seconds.
+ 
+( |cffffcc00Y|r ) Frosty Obelisk [|cffffffffCommon|r]
+
+The Frosty Obelisk is upgraded from the Cold Obelisk, with improved stats. It can be upgraded to the Glacial Obelisk for greater damage and slow effect.
+
+DPS: |cff679bf254|r
+Damage: |cff679bf259 - 64|r
+Build Time: |cff679bf212 seconds|r
+Cooldown: |cff679bf21.5 seconds|r
+Range: |cff679bf2700|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Zero Point|r
+The tower will slow the attacked creeps by 30% for 4 seconds.
+ 
+( |cffffcc00Y|r ) Glacial Obelisk [|cffffffffCommon|r]
+
+The Glacial Obelisk is upgraded from the Frosty Obelisk, with improved stats. It can't be upgraded further.
+
+DPS: |cff679bf263|r
+Damage: |cff679bf268 - 73|r
+Build Time: |cff679bf212 seconds|r
+Cooldown: |cff679bf21.5 seconds|r
+Range: |cff679bf2700|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Zero Point|r
+The tower will slow the attacked creeps by 40% for 4 seconds.
+ 
+( |cffffcc00E|r ) Flaming Rock [|cffffffffCommon|r]
+
+The Flaming Rock is a basic tower with an Area of Effect attack. It gains bonus critical chance upon killing a creep. Effective against big groups of weak enemies. It can be upgraded to the Blazing Rock.
+
+DPS: |cff679bf2173|r
+Damage: |cff679bf2178 - 188|r
+Build Time: |cff679bf27 seconds|r
+Cooldown: |cff679bf21.6 seconds|r
+Range: |cff679bf2900|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Splash|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Hot Coals|r
+Whenever this tower kills a creep it gains 30% bonus crit chance for 8.5 seconds.
+|cffffcc00Specials|r
+|cff679bf2Splash Attack|r
+150 AoE: 25% damage
+ 
+( |cffffcc00Y|r ) Blazing Rock [|cffffffffCommon|r]
+
+The Blazing Rock is upgraded from the Flaming Rock, with an improved Area of Effect attack and bonus critical chance. Effective against big groups of weak enemies. It can be upgraded to the Magma Core.
+
+DPS: |cff679bf2222|r
+Damage: |cff679bf2227 - 237|r
+Build Time: |cff679bf27 seconds|r
+Cooldown: |cff679bf21.8 seconds|r
+Range: |cff679bf2900|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Splash|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Hot Coals|r
+Whenever this tower kills a creep it gains 40% bonus crit chance for 8.5 seconds.
+|cffffcc00Specials|r
+|cff679bf2Splash Attack|r
+160 AoE: 25% damage
+ 
+( |cffffcc00Y|r ) Magma Core [|cffffffffCommon|r]
+
+The Magma Core is upgraded from the Blazing Rock, with greater Area of Effect attack and bonus critical chance. Effective against big groups of enemies. It can't be upgraded.
+
+DPS: |cff679bf2276|r
+Damage: |cff679bf2281 - 291|r
+Build Time: |cff679bf27 seconds|r
+Cooldown: |cff679bf22.0 seconds|r
+Range: |cff679bf2900|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Splash|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Hot Coals|r
+Whenever this tower kills a creep it gains 50% bonus crit chance for 8.5 seconds.
+|cffffcc00Specials|r
+|cff679bf2Splash Attack|r
+170 AoE: 25% damage
+ 
+( |cffffcc00R|r ) Cursed Gravestone [|cffffffffCommon|r]
+
+The Cursed Gravestone is a common tower with a tiny chance to instantly kill a target regardless of it's remaining health. It can be upgraded to the Cursed Tombstone.
+
+DPS: |cff679bf2216|r
+Damage: |cff679bf2219 - 258|r
+Build Time: |cff679bf212 seconds|r
+Cooldown: |cff679bf21.5 seconds|r
+Range: |cff679bf21000|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Tomb's Curse|r
+This tower has a 0.6% chance on attack to kill a target immediately.
+ 
+( |cffffcc00Y|r ) Cursed Tombstone [|cffffffffCommon|r]
+
+The Cursed Tombstone is an upgraded tower with a minimal chance to instantly kill a target regardless of it's remaining health. It can be upgraded to the Cursed Memento.
+
+DPS: |cff679bf2252|r
+Damage: |cff679bf2255 - 294|r
+Build Time: |cff679bf212 seconds|r
+Cooldown: |cff679bf21.45 seconds|r
+Range: |cff679bf21000|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Tomb's Curse|r
+This tower has a 0.8% chance on attack to kill a target immediately.
+ 
+( |cffffcc00Y|r ) Cursed Memento [|cffffffffCommon|r]
+
+The Cursed Memento is an upgraded tower with a small chance to instantly kill a target regardless of it's remaining health. It can't be upgraded.
+
+DPS: |cff679bf2294|r
+Damage: |cff679bf2297 - 336|r
+Build Time: |cff679bf212 seconds|r
+Cooldown: |cff679bf21.4 seconds|r
+Range: |cff679bf21000|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Tomb's Curse|r
+This tower has a 1.0% chance on attack to kill a target immediately.
+ 
+( |cffffcc00A|r ) Decayed Earth Tower [|cff9090efRare|r]
+
+The Decayed Earth Tower is a rare structure that deals flat, direct damage to single targets. It compensates it's lack of an ability for low building costs. It can be Upgraded into the Plagued Earth Tower.
+
+DPS: |cff679bf2259|r
+Damage: |cff679bf2268 - 286|r
+Build Time: |cff679bf214 seconds|r
+Cooldown: |cff679bf21.4 seconds|r
+Range: |cff679bf2800|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+None
+ 
+( |cffffcc00Y|r ) Plagued Earth Tower [|cff9090efRare|r]
+
+The Plagued Earth Tower is a stronger version of the Decayed E. Tower. It can be Upgraded into the Plagued Earth Tower.
+
+DPS: |cff679bf2323|r
+Damage: |cff679bf2332 - 350|r
+Build Time: |cff679bf214 seconds|r
+Cooldown: |cff679bf21.4 seconds|r
+Range: |cff679bf2800|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+None
+ 
+( |cffffcc00Y|r ) Blighted Earth Tower [|cff9090efRare|r]
+
+The Blighted Earth Tower is a stronger version of the Plagued E. Tower. It has decent damage and low costs. It can't be upgraded.
+
+DPS: |cff679bf2404|r
+Damage: |cff679bf2413 - 431|r
+Build Time: |cff679bf214 seconds|r
+Cooldown: |cff679bf21.4 seconds|r
+Range: |cff679bf2800|r
+Missile Speed: |cff679bf2900|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+None
+ 
+( |cffffcc00S|r ) Icy Frenzy [|cff9090efRare|r]
+
+The Ice Frenzy is a rare tower with a slowing attack and chance to shortly stun it's target. It deals a 100 spell damage upon stunning. Great against slow enemies. It can be upgraded to the Ice Fury.
+
+DPS: |cff679bf2137|r
+Damage: |cff679bf2142 - 157|r
+Build Time: |cff679bf27 seconds|r
+Cooldown: |cff679bf21.5 seconds|r
+Range: |cff679bf21100|r
+Missile Speed: |cff679bf21100|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Cold Wrath|r
+Attacks of this tower slow the attacked creep by 7% for 3 seconds. Each attack has a 2% chance to stun the target for 0.8 seconds and to deal 100 spelldamage to the target. The chance to stun the target will increase by 2% per attack and resets after a target is stunned.
+ 
+( |cffffcc00Y|r ) Icy Fury [|cff9090efRare|r]
+
+The Ice Fury is upgraded from the Ice Frenzy. It deals slightly more damage and 200 spell damage upon stunning. Slowing effects are the same. It can be upgraded to the Icy Rage.
+
+DPS: |cff679bf2147|r
+Damage: |cff679bf2152 - 167|r
+Build Time: |cff679bf27 seconds|r
+Cooldown: |cff679bf21.4 seconds|r
+Range: |cff679bf21100|r
+Missile Speed: |cff679bf21100|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Cold Wrath|r
+Attacks of this tower slow the attacked creep by 7% for 3 seconds. Each attack has a 2% chance to stun the target for 0.8 seconds and to deal 200 spelldamage to the target. The chance to stun the target will increase by 2% per attack and resets after a target is stunned.
+ 
+( |cffffcc00Y|r ) Icy Rage [|cff9090efRare|r]
+
+The Icy Rage is upgraded from the Ice Fury. It deals slightly more damage and 300 spell damage upon stunning. Slowing effects are the same. It can't be upgraded.
+
+DPS: |cff679bf2155|r
+Damage: |cff679bf2160 - 175|r
+Build Time: |cff679bf27 seconds|r
+Cooldown: |cff679bf21.3 seconds|r
+Range: |cff679bf21100|r
+Missile Speed: |cff679bf21100|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Cold Wrath|r
+Attacks of this tower slow the attacked creep by 7% for 3 seconds. Each attack has a 2% chance to stun the target for 0.8 seconds and to deal 300 spelldamage to the target. The chance to stun the target will increase by 2% per attack and resets after a target is stunned.
+ 
+( |cffffcc00D|r ) Putrid Pot [|cff9090efRare|r]
+
+The Putrid Pot has an AoE attack with a 30% chance of dealing spell damage over time and reducing the target's health regeneration. It can be upgraded to the Putrid Vat.
+
+DPS: |cff679bf2999|r
+Damage: |cff679bf21002 - 1032|r
+Build Time: |cff679bf29 seconds|r
+Cooldown: |cff679bf23.0 seconds|r
+Range: |cff679bf2900|r
+Missile Speed: |cff679bf2500|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Ignite|r
+The tower has a 30% chance on damaging a creep to ignite the target, dealing 15% of the tower ' s attack damage as spell damage per second and reducing the target ' s health regeneration by 25% for 8 seconds.
+|cffffcc00Specials|r
+|cff679bf2Splash Attack|r
+150 AoE: 30% damage
+ 
+( |cffffcc00Y|r ) Putrid Vat [|cff9090efRare|r]
+
+The Putrid Vat upgrades from the Putrid Pot with increased dps and AoE and abilities. It can be upgraded to the Putrid Cauldron.
+
+DPS: |cff679bf21096|r
+Damage: |cff679bf21099 - 1129|r
+Build Time: |cff679bf29 seconds|r
+Cooldown: |cff679bf22.8 seconds|r
+Range: |cff679bf2900|r
+Missile Speed: |cff679bf2500|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Ignite|r
+The tower has a 30% chance on damaging a creep to ignite the target, dealing 20% of the tower ' s attack damage as spell damage per second and reducing the target ' s health regeneration by 30% for 8 seconds.
+|cffffcc00Specials|r
+|cff679bf2Splash Attack|r
+160 AoE: 30% damage
+ 
+( |cffffcc00Y|r ) Putrid Cauldron [|cff9090efRare|r]
+
+The Putrid Cauldron upgrades from the Putrid Vat with increased dps and AoE and abilities. It can't be upgraded.
+
+DPS: |cff679bf21193|r
+Damage: |cff679bf21196 - 1226|r
+Build Time: |cff679bf29 seconds|r
+Cooldown: |cff679bf22.6 seconds|r
+Range: |cff679bf2900|r
+Missile Speed: |cff679bf2500|r
+Attack Type: |cff679bf2Pierce|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Ignite|r
+The tower has a 30% chance on damaging a creep to ignite the target, dealing 25% of the tower ' s attack damage as spell damage per second and reducing the target ' s health regeneration by 35% for 8 seconds.
+|cffffcc00Specials|r
+|cff679bf2Splash Attack|r
+170 AoE: 30% damage
+ 
+( |cffffcc00F|r ) Gloom Orb [|cff9090efRare|r]
+
+The Gloom Orb is a rare tower. It has the 'Corpse Explosion' ability which creates an AoE attack and slows units close to a nearby corpse. It can be upgraded to the Ruin Orb.
+
+DPS: |cff679bf21404|r
+Damage: |cff679bf21411 - 1439|r
+Build Time: |cff679bf26 seconds|r
+Cooldown: |cff679bf22.4 seconds|r
+Range: |cff679bf2800|r
+Missile Speed: |cff679bf2600|r
+Attack Type: |cff679bf2Spells|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Corpse Explosion|r
+Explodes a corpse within 1000 range of the tower, causing enemies in 300 range of the corpse to take 8% more damage 
+and move 8% slower for 8 seconds. 5 second cooldown. Doesn't affect Air.
+ 
+( |cffffcc00Y|r ) Ruin Orb [|cff9090efRare|r]
+
+The Ruin Orb is upgraded from the Gloom Orb. 'Corpse Explsion' has more damage and slow effect. It can be upgraded to the Doom Orb.
+
+DPS: |cff679bf21012|r
+Damage: |cff679bf21019 - 1047|r
+Build Time: |cff679bf26 seconds|r
+Cooldown: |cff679bf21.6 seconds|r
+Range: |cff679bf2800|r
+Missile Speed: |cff679bf2600|r
+Attack Type: |cff679bf2Spells|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Corpse Explosion|r
+Explodes a corpse within 1000 range of the tower, causing enemies in 300 range of the corpse to take 11% more damage 
+and move 11% slower for 8 seconds. 5 second cooldown. Doesn't affect Air.
+ 
+( |cffffcc00Y|r ) Doom Orb [|cff9090efRare|r]
+
+The Doom Orb is upgraded from the Ruin Orb. 'Corpse Explsion' has more damage and slow effect. It can't be upgraded.
+
+DPS: |cff679bf2514|r
+Damage: |cff679bf2521 - 549|r
+Build Time: |cff679bf26 seconds|r
+Cooldown: |cff679bf20.8 seconds|r
+Range: |cff679bf2800|r
+Missile Speed: |cff679bf2600|r
+Attack Type: |cff679bf2Spells|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Corpse Explosion|r
+Explodes a corpse within 1000 range of the tower, causing enemies in 300 range of the corpse to take 13% more damage 
+and move 13% slower for 8 seconds. 5 second cooldown. Doesn't affect Air.
+ 
+( |cffffcc00Y|r ) Monolith of Hatred [|cffffa31fUnique|r]
+
+The Monolith of Hatred is a unique tower. It deals a great amount of damage and has a 20% chance to critically hit a target. It upgrades into the Monolith of Terror.
+
+DPS: |cff679bf21049|r
+Damage: |cff679bf21062 - 1153|r
+Build Time: |cff679bf210 seconds|r
+Cooldown: |cff679bf20.8 seconds|r
+Range: |cff679bf2750|r
+Missile Speed: |cff679bf22000|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Specials|r
+|cff679bf2Critical Strike|r
+20% chance / 2x damage
+ 
+( |cffffcc00Y|r ) Monolith of Terror [|cffffa31fUnique|r]
+
+The Monolith of Terror is a unique tower upgraded from the Monolith of Hatred. It deals more damage and upgrades into the Monolith of Destruction.
+
+DPS: |cff679bf21311|r
+Damage: |cff679bf21324 - 1415|r
+Build Time: |cff679bf210 seconds|r
+Cooldown: |cff679bf20.8 seconds|r
+Range: |cff679bf2750|r
+Missile Speed: |cff679bf22000|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Specials|r
+|cff679bf2Critical Strike|r
+20% chance / 2x damage
+ 
+( |cffffcc00Y|r ) Monolith of Destruction [|cffffa31fUnique|r]
+
+The Monolith of Destruction is a unique tower upgraded from the Monolith of Terror. It deals even more damage. I can't be upgraded.
+
+DPS: |cff679bf21638|r
+Damage: |cff679bf21651 - 1742|r
+Build Time: |cff679bf210 seconds|r
+Cooldown: |cff679bf20.8 seconds|r
+Range: |cff679bf2750|r
+Missile Speed: |cff679bf22000|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Specials|r
+|cff679bf2Critical Strike|r
+20% chance / 2x damage
+ 
+( |cffffcc00X|r ) Glacier of Sorrow [|cffffa31fUnique|r]
+
+The Glacier of Sorrow is a unique and powerful tower. It's basic attack has an AoE slow and it can shoot an Ice Shard that can split up more than once to deal a great amount of damage. It can be upgraded into the Glacier of Misery.
+
+DPS: |cff679bf23456|r
+Damage: |cff679bf23460 - 3504|r
+Build Time: |cff679bf210 seconds|r
+Cooldown: |cff679bf24.0 seconds|r
+Range: |cff679bf21200|r
+Missile Speed: |cff679bf21300|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Ice Shard|r
+This tower fires an ice shard towards an enemy. After a distance of 300 the ice shard splits into 2 new shards which will split again. If a shard collides with an enemy it deals 1150 spell damage. There is a maximum of 3 splits.
+|cff679bf2Frost Attack|r
+Attacks of this tower slows enemy units by 15% in range of 250 around the target for 5s.
+ 
+( |cffffcc00Y|r ) Glacier of Misery [|cffffa31fUnique|r]
+
+The Glacier of Misery is a unique tower. Upgraded from the Glacier of Sorrow. It's slow and 'Ice Shard' ability are greatly improved. It can be upgraded into the Glacier of Dispair.
+
+DPS: |cff679bf23312|r
+Damage: |cff679bf23316 - 3360|r
+Build Time: |cff679bf210 seconds|r
+Cooldown: |cff679bf24.0 seconds|r
+Range: |cff679bf21200|r
+Missile Speed: |cff679bf21300|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Ice Shard|r
+This tower fires an ice shard towards an enemy. After a distance of 300 the ice shard splits into 2 new shards which will split again. If a shard collides with an enemy it deals 1500 spell damage. There is a maximum of 4 splits.
+|cff679bf2Frost Attack|r
+Attacks of this tower slows enemy units by 30% in range of 250 around the target for 5s.
+ 
+( |cffffcc00Y|r ) Glacier of Despair [|cffffa31fUnique|r]
+
+The Glacier of Despair is a unique tower. Upgraded from the Glacier of Misery. It's slow and 'Ice Shard' ability are greatly improved. It can't be upgraded.
+
+DPS: |cff679bf22880|r
+Damage: |cff679bf22884 - 2928|r
+Build Time: |cff679bf210 seconds|r
+Cooldown: |cff679bf24.0 seconds|r
+Range: |cff679bf21200|r
+Missile Speed: |cff679bf21300|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Ice Shard|r
+This tower fires an ice shard towards an enemy. After a distance of 300 the ice shard splits into 2 new shards which will split again. If a shard collides with an enemy it deals 1850 spell damage. There is a maximum of 5 splits.
+|cff679bf2Frost Attack|r
+Attacks of this tower slows enemy units by 45% in range of 250 around the target for 5s.
+ 
+( |cffffcc00C|r ) Totem of Infamy [|cffffa31fUnique|r]
+
+The Totem of Infamy is a unique all-round specialist tower. It has the 'Ultimate Fighter' ability which adds a critical hit, bonus damage, a stun and a permanent attack increase every number of hits. It can be upgraded to the Totem of Malice.
+
+DPS: |cff679bf2659|r
+Damage: |cff679bf2666 - 694|r
+Build Time: |cff679bf211 seconds|r
+Cooldown: |cff679bf21.75 seconds|r
+Range: |cff679bf2800|r
+Missile Speed: |cff679bf2650|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Ultimate Fighter|r
+The tower uses his great power to specialize his attacks:
+- Every 3th attack is a critical hit
+- Every 7th attack deals 1000 bonus spell damage
+- Every 12th attack stuns the target for 1 second
+- Every 15th attack adds 0.5% attack damage permanently
+
+ 
+( |cffffcc00Y|r ) Totem of Malice [|cffffa31fUnique|r]
+
+The Totem of Malice is a unique all-round specialist tower. It's 'Ultimate Fighter' ability has increased effects. It can be upgraded to the Totem of Corruption.
+
+DPS: |cff679bf2659|r
+Damage: |cff679bf2666 - 694|r
+Build Time: |cff679bf211 seconds|r
+Cooldown: |cff679bf21.75 seconds|r
+Range: |cff679bf2800|r
+Missile Speed: |cff679bf2650|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Ultimate Fighter|r
+The tower uses his great power to specialize his attacks:
+- Every 4th attack is a critical hit
+- Every 8th attack deals 1500 bonus spell damage
+- Every 13th attack stuns the target for 1.25 seconds
+- Every 15th attack adds 0.5% attack damage permanently 
+
+( |cffffcc00Y|r ) Totem of Corruption [|cffffa31fUnique|r]
+
+The Totem of Malice is a unique all-round specialist tower. It's 'Ultimate Fighter' ability has increased effects. It can be upgraded to the Totem of Corruption.
+
+DPS: |cff679bf2618|r
+Damage: |cff679bf2625 - 653|r
+Build Time: |cff679bf211 seconds|r
+Cooldown: |cff679bf21.75 seconds|r
+Range: |cff679bf2800|r
+Missile Speed: |cff679bf2650|r
+Attack Type: |cff679bf2Hero|r
+Weapon Type: |cff679bf2Missile|r
+Targets: |cfff80516Air, Ground,  Enemy|r
+
+|cffffcc00Abilities:|r
+|cff679bf2Ultimate Fighter|r
+The tower uses his great power to specialize his attacks:
+- Every 5th attack is a critical hit
+- Every 9th attack deals 2000 bonus spell damage
+- Every 14th attack stuns the target for 1.5 seconds
+- Every 15th attack adds 0.5% attack damage permanently
+
+

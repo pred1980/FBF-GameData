@@ -1,0 +1,52 @@
+Namen:
+Rise against the Dark
+Fall of the Black City
+
+http://www.hiveworkshop.com/forums/concept-art-fan-art-275/fan-artist-wanted-230681/
+
+Spinnenbereich:
+Idee 1: Spinnenboss der den Eingang zum Friedhof blockiert, Die Spinnenkönigin wirft periodisch (Einfach, Spinnenboss wird benötigt, Fähigkeit relativ einfach aber nicht relevant/kann weggelassen werden)
+        Eiersäcke in den Spinnenbereich die die Untoten Truppen mit Spinnlingunterstützung versorgen
+Idee 2: Klebefelder, slowbereiche durch Netze die immer mal wieder auftauchen   (Einfach, Dummyeinheit)
+Idee 3: Parasitäre Spinnlinge die Gegner befallen falls sie nicht getötet werden (Einfach, aber eher für einen patch)
+Idee 4: Mitspieler werden manchmal weggezogen und eingesponnen, müssen dann befreit werden oder längere Zeit warten (+-30sec) (Mittel, aber sehr coole Fähigkeit, würd ich einbaun)
+        (kann auch als Bossfähigkeit geused werden)
+
+Friedhof:
+Idee 1: Zerstörbare Grabsteine die dauerhaft Untote spawnen (Einfach, eher aber idee 4)
+Idee 2: Periodisches Event- Wiederbelebung der Untoten  (Einfach, eher aber Idee 4)
+Idee 3: Unsichtbare(r) Reaper der sich ab und an Einheiten holt und nur während des tötens 3-5sec
+        sichtbar/tötbar ist (Mittel-Schwer, warscheinlich eher für nen Patch)
+Idee 4: Totenbeschwörer der durch 2-4 Hommunkuli auf dem Friedhof unbesiegbar ist, diese müssen vernichtet
+        werden. Der beschwörer wirkte [Idee 2] solange er lebt. (Einfach, daran denken auch eine kleine Energiemauer zum nächsten Sektor aufzubaun, die nach dem TOd des beschwörers ebenfalls fällt)
+
+Konstruktbereich:
+Idee 1: Monstrositätenboss der den Eingang zum Endgebiet bewacht,( ist am anfang leblos und kann von einem der Untotenspieler gesteuert werden) (Mittel-Schwer, Boss einfach mal sehn, aber die Steuerung wäre eher was für nen Patch)
+Idee 2: Einige Ud-Katapulte die den Konsturktbereich Bereich bombardieren (Einschlagsgebiet prebeleuchten), 
+        der Spieler muss sich beeilen um diese möglichst schnell zu zerstören (Einfach-Mittel,Musst du wissen ob du sowas magst, ich mag die Idee auf jedenfall^^)
+Idee 3: Giftmüllzombies (aoegiftwolke oder wie lebende minen/Sprengobbos) die ab und an aus
+        den Leichenbergen oder Pfützen steigen (Einfach,aber wenn du 2 machst wärs zuviel)
+Idee 4: Schleimwesen die aus den Teichen kriechen, die zwar nicht angreifen aber wie die Kodo-Fähigkeit
+        einfach Mobs Verschlingen die dann gerettet werden müssen. (Einfach,aber wenn du 2 machst wärs zuviel)
+
+Finale:
+Idee 1: Kleinere Monster an den Obelisken die ein Schutzschild auf dem Seelenstein aufrechterhalten und ab und an Respawnen ODER ein Boss der ab 5% des Seelensteins spawnt und solang er lebt den Stein unbesiegbar macht (Einfach-Mittel)
+Idee 2: Unterstützung von Schattenwesen durch den Schattenberich unter dem Seelenstein, werden diese nicht schnell genug getötet
+        verschmelzen diese zu noch größeren Wesen. (vl aber interner despawntimer) (Mittel, vl in Kombination mit 1 oder 4)
+        (könnte man aber auch an der Brücke vom Startgebiet zum Spinnenviertel einbaun) 
+Idee 3: Bei bestimmten hp% des Seelensteins wird einer oder mehrere Menschliche Spieler in eine Parallelwelt verschoben in der sie ihre dunklen
+        Spiegelbilder bekämpfen müssen um zurückzukehren, seelenstein solang unverwundbar. (health wieder auf 100% setzen!) (Mittel-Schwer, man braucht halt für jeden allyhelden eine Spiegelbild unit. fände die Idee aber super)
+Idee 4: Bei bestimmten hp% des Seelensteins erhalten Untote Helden im Endgebeit den Effeckt Schattenkraft für einen mittleren Zeitraum (20sec-1min)
+        bei dem sie reduzierten Schaden nehmen und einige Schattensalven abfeuern können (Fähigkeiten können natürlich noch verändert werden) (Einfach, müsste man drüber nachdenken, eher in Kombination mit 1 oder 2, bei 3 wärs zuviel)
+
+
+
+Aos umrechnung: Einheiten erreichen ud basis, pkte werden vergeben, pkte werden durch Spieler geteilt. spieler können durch pkte die aos einheiten kaufen
+
+- Allianzeinheiten erreichen die Tore der Festung, jede Einheit besitzt einen spezifischen Punktewert Bsp: footman 3 priest 6 
+ ( ich würde sie durch 3 teilbar machen dann kannst du auch noch eine Hp Abfrage machen und zbsp wenn einer nurnoch zwei drittel hp hat 2 pkt oder bei einem drittel 1 pkt vergeben)
+- Diese Punkte werden in jeder Fraktion jeweils durch die anzahl spielender Spieler geteilt  (zbsp kamen 100 unitpunkte durch, bei der allianz spielen 2 Spieler also krigt jeder 50 pkte, bei den Untoten Spielen 4 Spieler also krigt jeder 25 pkte)
+  ..musst halt ab und an auf oder abrunden
+- Jetzt haben alle Spieler kurz Zeit sich für die Aos Runde Einheiten zu kaufen mit ihren Punkten, nicht ausgegebene Punkte sollten verfallen (oder man nutzt es als strategisches element, dann kann es aber auch zu lags durch mass unit spawns und blockierungen kommen)
+
+        

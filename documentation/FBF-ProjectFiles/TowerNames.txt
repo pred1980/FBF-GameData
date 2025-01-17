@@ -1,0 +1,43 @@
+Dark Defender - Shady Spire
+		Dark Spire
+		Black Spire
+
+Cold Obelisk - Cold Obelisk
+	       Frosty Obelisk
+	       Glacial Obelisk	 
+
+Fiery Rock - Flaming Rock
+	     Blazing Rock
+	     Magma Core
+
+Tombstone - Cursed Gravestone
+	    Cursed Tombstone
+	    Cursed Memento	
+
+??? - Decayed Eart 
+      Plagued Earth
+      Blighted Earth
+
+Chilled Spire - Ice Frenzy
+		Ice Fury
+		Ice Rage
+
+Cauldron - Putrid Pot
+	   Putrid Vat
+	   Putrid Cauldron
+
+Orb of Darkness - Gloom Orb
+		  Ruin Orb
+		  Doom Orb
+
+Monolith Of... - ...Hatred
+		 ...Terror
+		 ...Destruction
+
+Cold ??? - Glacier of Sorrow
+	   Glacier of Misery
+	   Glacier of Despair
+
+Fire ??? - Totem of Infamy
+	   Totem of Malice
+	   Totem of Corruption

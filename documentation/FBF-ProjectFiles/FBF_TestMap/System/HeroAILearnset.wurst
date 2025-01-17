@@ -1,0 +1,279 @@
+//==========================================================================================
+// This is separated from the main system of HeroAI to provide better organization.
+// It covers how the AI will learn skills.
+//
+// When MULTIPLE_SKILLS_PER_LVL is true, you can register as many as MAX_SKILL_PER_LVL spells
+// to one level for a hero in case you want your hero to learn multiple skills at one level.
+//##########################################################################################
+// Function API:
+//
+//	* RegisterHeroAISkill takes integer unitTypeId, integer level, integer spellId *
+//		Registers the spell that a hero of unitTypeId should learn at level.
+//		This is provided as an alternative way of setting up skills in a custom AI and is
+//      recommended to do so then registering skills here.
+//==========================================================================================
+
+// Please don't call this textmacro.
+//! textmacro HeroAILearnset
+
+    globals
+        private constant integer	MAX_SKILL_LVL 		    = 10 	// The level at which the hero learns all of its skills
+        private constant boolean    HAVE_MORPH_HEROES       = false  // Set to true if you have heroes that can morph
+        private constant boolean    MULTIPLE_SKILLS_PER_LVL = false  // Set to true if you want learnsets to register more than one skill per level
+        private constant integer    MAX_SKILL_PER_LVL       = 1     // The max number of skills a hero can learn every level. Only configure this if you have MULTIPLE_SKILLS_PER_LVL set to true.
+    endglobals
+
+	// The following allow better ease of configuration
+    private keyword Learnset
+    static if HAVE_MORPH_HEROES then
+    private keyword MorphHeroType
+    endif
+    globals
+        private Learnset LearnsetInfo
+    endglobals
+
+    // Configures how the heroes learn skills by unit-type id.
+    // You need to override this function with your own heroes and their skills.
+
+    // You should also set up any morphing heroes to their normal unit-type id so
+    // that you won't need to copy a learnset again.
+    private function SetupLearnset takes nothing returns nothing
+    	// Learnset Syntax:
+    	// set LearnsetInfo[LEVEL OF HERO][HERO UNIT-TYPE ID] = SKILL ID
+
+    	// Abomination
+    	// Cleave
+    	set LearnsetInfo[1]['H00G'] = 'A06M'
+    	set LearnsetInfo[4]['H00G'] = 'A06M'
+    	set LearnsetInfo[8]['H00G'] = 'A06M'
+    	set LearnsetInfo[11]['H00G'] = 'A06M'
+    	set LearnsetInfo[15]['H00G'] = 'A06M'
+    	// Consum Himself
+        set LearnsetInfo[2]['H00G'] = 'A06K'
+    	set LearnsetInfo[5]['H00G'] = 'A06K'
+    	set LearnsetInfo[9]['H00G'] = 'A06K'
+    	set LearnsetInfo[13]['H00G'] = 'A06K'
+    	set LearnsetInfo[16]['H00G'] = 'A06K'
+    	// Plague Cloud
+        set LearnsetInfo[3]['H00G'] = 'A06G'
+    	set LearnsetInfo[7]['H00G'] = 'A06G'
+    	set LearnsetInfo[10]['H00G'] = 'A06G'
+    	set LearnsetInfo[14]['H00G'] = 'A06G'
+    	set LearnsetInfo[17]['H00G'] = 'A06G'
+    	// Snacke
+        set LearnsetInfo[6]['H00G'] = 'A06L'
+        set LearnsetInfo[12]['H00G'] = 'A06L'
+        set LearnsetInfo[18]['H00G'] = 'A06L'
+        //Teleporter
+		//set LearnsetInfo[6]['A021'] = 'A06L'
+    	
+        /*
+            Just an example of how to use MULTIPLE_SKILLS_PER_LVL.
+            The syntax remains the same, but the system won't override the value.
+        */
+        static if MULTIPLE_SKILLS_PER_LVL then
+
+        set LearnsetInfo[1]['Hblm'] = 'AHbn'
+
+        endif
+
+        // Morphing Hero Syntax:
+        // set MorphHeroType[MORPHED HERO UNIT-TYPE ID] = NORMAL HERO UNIT-TYPE ID
+        // If you don't have any morphing heroes, you should have HAVE_MORPH_HEROES set to false
+        // and remove the configuration.
+        //set MorphHeroType['Nrob'] = 'Ntin'
+    endfunction
+
+//==========================================================================================
+// END OF USER CONFIGURATION
+//==========================================================================================
+
+    private function MakeAILearnSkills takes nothing returns nothing
+        local unit u = GetTriggerUnit()
+        local integer typeId = GetUnitTypeId(u)
+        static if MULTIPLE_SKILLS_PER_LVL then
+
+        local integer i = 0
+
+        endif
+        if heroesAI.has(GetHandleId(u)) and GetHeroSkillPoints(u) > 0 then
+            static if HAVE_MORPH_HEROES then
+
+            if MorphHeroType.has(typeId) then
+                set typeId = MorphHeroType[typeId]
+            endif
+
+            endif
+
+            static if MULTIPLE_SKILLS_PER_LVL then
+
+            loop
+                exitwhen i == LearnsetInfo[GetUnitLevel(u)].skillNum(typeId)
+                call SelectHeroSkill(u, LearnsetInfo[GetUnitLevel(u)].getSkill(typeId, i))
+                set i = i + 1
+            endloop
+
+            else
+
+            call SelectHeroSkill(u, LearnsetInfo[GetUnitLevel(u)][typeId])
+
+            endif
+        endif
+        set u = null
+    endfunction
+
+    static if HAVE_MORPH_HEROES then
+
+    private module MorphSuperHack
+        static method onInit takes nothing returns nothing
+            set thistype.info = Table.create()
+        endmethod
+    endmodule
+
+    struct MorphHeroType extends array
+        private static Table info
+
+        static method operator [] takes integer morphedTypeId returns integer
+            return info[morphedTypeId]
+        endmethod
+
+        static method operator []= takes integer morphedTypeId, integer originalTypeId returns nothing
+            set info[morphedTypeId] = originalTypeId
+        endmethod
+
+        static method has takes integer morphedTypeId returns boolean
+            return info.has(morphedTypeId)
+        endmethod
+
+        implement MorphSuperHack
+    endstruct
+
+    endif
+
+
+    static if MULTIPLE_SKILLS_PER_LVL then
+
+    private module RawIdIndexerInit
+        static method onInit takes nothing returns nothing
+            set thistype.info = Table.create()
+        endmethod
+    endmodule
+
+    private struct RawIdIndexer
+        static Table info
+        static integer count = -1 // Zero-based indexing due to array storage
+
+        implement RawIdIndexerInit
+    endstruct
+
+    private function RawId2Index takes integer rawId returns integer
+        if RawIdIndexer.info.has(rawId) then
+            return RawIdIndexer.info[rawId]
+        endif
+        set RawIdIndexer.count = RawIdIndexer.count + 1
+        set RawIdIndexer.info[rawId] = RawIdIndexer.count
+        return RawIdIndexer.count
+    endfunction
+
+    struct SkillArray extends array
+        private static integer array skills     // Stores the skills based on hero raw id (indexed) and level it should be learned
+        private static integer array skillNums  // Number of skills for a particular level
+
+        // "this" refers to the level (zero-based) that the skill will be learned at
+
+        method operator []= takes integer r, integer s returns nothing
+            local integer index
+            set r = RawId2Index(r)
+            set index = this + r * MAX_SKILL_LVL
+
+            static if DEBUG_MODE then
+
+            if index + skillNums[index] > 8190 then
+                call BJDebugMsg("[Hero AI Learnset] Error: Index is too high, try lowering MAX_SKILL_PER_LVL?")
+                return
+            endif
+
+            endif
+
+            if skillNums[index] < MAX_SKILL_PER_LVL then
+                set skills[index + skillNums[index]] = s
+                set skillNums[index] = skillNums[index] + 1
+            debug else
+                debug call BJDebugMsg("[Hero AI Learnset] Error: Exceeding the registration of skills to level " + I2S(this + 1))
+            endif
+        endmethod
+
+        method getSkill takes integer r, integer whichOne returns integer
+            return skills[(this + RawId2Index(r) * MAX_SKILL_LVL) + whichOne]
+        endmethod
+
+        method skillNum takes integer r returns integer
+            return skillNums[this + RawId2Index(r) * MAX_SKILL_LVL]
+        endmethod
+    endstruct
+
+    endif
+
+    private module M
+        static method onInit takes nothing returns nothing
+            set LearnsetInfo = thistype.create()
+            call RegisterPlayerUnitEvent(EVENT_PLAYER_HERO_LEVEL, function MakeAILearnSkills)
+            call SetupLearnset()
+        endmethod
+    endmodule
+
+    // Wrapper to make things look better and cheat the zero-indexed Table.
+    // Only one instance will be created and used.
+    struct Learnset extends array
+
+        static if MULTIPLE_SKILLS_PER_LVL then
+
+        method operator [] takes integer lvl returns SkillArray
+            static if DEBUG_MODE then
+
+            if lvl > MAX_SKILL_LVL then
+                call BJDebugMsg("[Hero AI Learnset] Error: Level of " + I2S(lvl) + " is higher than MAX_SKILL_LVL")
+                return 0
+            endif
+
+            endif
+
+            return lvl - 1
+        endmethod
+
+        else
+
+        private static TableArray info
+
+        method operator [] takes integer lvl returns Table
+            static if DEBUG_MODE then
+
+            if lvl > MAX_SKILL_LVL then
+                call BJDebugMsg("[Hero AI Learnset] Error: Level of " + I2S(lvl) + " is higher than MAX_SKILL_LVL")
+                return 0
+            endif
+
+            endif
+
+            return info[lvl - 1]
+        endmethod
+
+        endif
+
+        static method create takes nothing returns thistype
+            static if not MULTIPLE_SKILLS_PER_LVL then
+
+            set info = TableArray[MAX_SKILL_LVL]
+
+            endif
+            return 1
+        endmethod
+
+        implement M
+    endstruct
+
+    function RegisterHeroAISkill takes integer unitTypeId, integer level, integer spellId returns nothing
+    	set LearnsetInfo[level][unitTypeId] = spellId
+    endfunction
+
+//! endtextmacro

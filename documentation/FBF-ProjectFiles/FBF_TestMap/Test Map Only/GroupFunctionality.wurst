@@ -1,0 +1,62 @@
+// A library that contains a lot of functions, most relating to groups
+// Not an actual part of HeroAI, use at your own risk.
+library GroupFunctionality requires TimerUtils
+
+    globals
+        private group TempGroup // Not set to CreateGroup() because it's only storing a group reference
+        private real TempReal
+        private real TempX
+        private real TempY
+    endglobals
+
+    private struct timedremoveunit
+        group g
+        unit u
+
+        static method remove takes nothing returns nothing
+            local thistype this = GetTimerData(GetExpiredTimer())
+
+            if .g != null and .u != null then
+                call GroupRemoveUnit(.g, .u)
+            debug else
+                debug call BJDebugMsg("[GroupFunctionality] Couldn't remove unit due to null group or null unit")
+            endif
+
+            call ReleaseTimer(GetExpiredTimer())
+            call .destroy()
+        endmethod
+
+        static method create takes group g, unit u, real time returns thistype
+            local thistype this = allocate()
+            local timer tim = NewTimer()
+            set .g = g
+            set .u = u
+
+            call SetTimerData(tim, this)
+            call TimerStart(tim, time, false, function thistype.remove)
+            set tim = null
+            return this
+        endmethod
+    endstruct
+
+    function GroupRemoveUnitTimed takes group g, unit u, real t returns nothing
+        call timedremoveunit.create(g, u, t)
+    endfunction
+
+    private function InRangeFilter takes nothing returns nothing
+        if not IsUnitInRangeXY(GetEnumUnit(), TempX, TempY, TempReal) then
+            call GroupRemoveUnit(TempGroup, GetEnumUnit())
+        endif
+    endfunction
+
+    // BJ like function to remove units from the group that aren't in range.
+    // preserves units that are in range.
+    function ConsiderUnitsInRange takes group g, real x, real y, real r returns nothing
+        set TempGroup = g
+        set TempReal = r
+        set TempX = x
+        set TempY = y
+        call ForGroup(TempGroup, function InRangeFilter)
+    endfunction
+
+endlibrary

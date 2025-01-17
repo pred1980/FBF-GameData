@@ -1,0 +1,34 @@
+library AbominationAI requires HeroAI
+
+    globals
+        private constant integer UNIT_ID = 'H00G' // Unit-type id of the hero
+        private HeroAI_Itemset array Itemsets
+    endglobals
+
+    private struct AI extends array
+        // This is where you would define a custom item build
+        method onCreate takes nothing returns nothing
+        	call BJDebugMsg("1")
+            set .itemBuild = Itemsets[0]
+        endmethod
+
+        implement HeroAIStruct
+
+    endstruct
+
+    //! runtextmacro HeroAI_Register("UNIT_ID")
+    
+    private module M
+        static method onInit takes nothing returns nothing
+            call BJDebugMsg("2")
+            set Itemsets[0] = HeroAI_Itemset.create()
+            call Itemsets[0].addItemTypeId('I003')
+            call Itemsets[0].addItemTypeId('I000')
+        endmethod
+    endmodule
+
+    private struct S extends array
+        implement M
+    endstruct
+
+endlibrary

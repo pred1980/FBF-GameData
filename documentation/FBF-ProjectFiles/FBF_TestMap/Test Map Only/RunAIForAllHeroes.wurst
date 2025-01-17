@@ -1,0 +1,34 @@
+scope RunAIForAllHeroes initializer OnInit
+
+	private function EnumCondition takes nothing returns boolean
+		return IsUnitType(GetFilterUnit(), UNIT_TYPE_HERO)
+	endfunction
+	
+	private function Actions takes nothing returns nothing
+		local group g = CreateGroup()
+		local unit u
+		
+		call GroupEnumUnitsInRect(g, GetPlayableMapRect(), Condition( function EnumCondition ))
+		
+		loop
+	        set u = FirstOfGroup(g)
+	        exitwhen(u == null)
+	        call GroupRemoveUnit(g, u)
+	        call RunHeroAI(u)
+    	endloop
+    	
+    	set u = null
+		call DestroyGroup(g)
+	endfunction
+	
+
+	private function OnInit takes nothing returns nothing
+		local trigger t = CreateTrigger()
+		
+		call TriggerRegisterPlayerEventEndCinematic( t, Player(0) )
+		call TriggerAddAction( t, function Actions )
+		set t = null
+	endfunction
+
+endscope
+
