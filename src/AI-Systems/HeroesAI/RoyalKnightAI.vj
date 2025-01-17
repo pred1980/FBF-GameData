@@ -90,7 +90,7 @@ scope RoyalKnightAI
         endmethod
         
         implement HeroAI     
-
+        implement CoalitionAI
     endstruct
 	
 	//! runtextmacro HeroAI_Register("HERO_ID")

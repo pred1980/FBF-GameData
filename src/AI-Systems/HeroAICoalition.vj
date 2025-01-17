@@ -1,0 +1,18 @@
+library CoalitionAI requires HeroAI
+    module CoalitionAI
+        method coalitionIdleActions takes nothing returns nothing
+            call BJDebugMsg(GetUnitName(.hero) + " führt Coalition-Idle-Aktionen aus.")
+            call .move() // Beispielbewegung
+        endmethod
+
+        method coalitionAssaultActions takes nothing returns nothing
+            call BJDebugMsg(GetUnitName(.hero) + " führt Coalition-Angriffsaktionen aus.")
+            call .defaultAssaultEnemy()
+        endmethod
+
+        method coalitionOnCreate takes nothing returns nothing
+            call BJDebugMsg("CoalitionAI wurde für " + GetUnitName(.hero) + " initialisiert.")
+            // Eventuell spezifische Coalition-Einstellungen hier
+        endmethod
+    endmodule
+endlibrary

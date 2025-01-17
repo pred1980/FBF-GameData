@@ -97,6 +97,7 @@
 //! import "C:\Users\patri\IdeaProjects\FBF\src\AI-Systems\PruneGroup.vj"
 //! import "C:\Users\patri\IdeaProjects\FBF\src\AI-Systems\FitnessFunc.vj"
 //! import "C:\Users\patri\IdeaProjects\FBF\src\AI-Systems\AI-Dummy-Missile.vj"
+//! import "C:\Users\patri\IdeaProjects\FBF\src\AI-Systems\HeroAICoalition.vj"
 
 //! import "C:\Users\patri\IdeaProjects\FBF\src\AI-Systems\HeroesAI\BehemotAI.vj"
 //! import "C:\Users\patri\IdeaProjects\FBF\src\AI-Systems\HeroesAI\NerubianWidowAI.vj"
