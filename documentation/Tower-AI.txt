@@ -1,8 +1,0 @@
-Anforderung:
-
-
-MS:
-1. Konfiguration erstellen mit der man einstellen kann, welche Tower nacheinander gebaut werden soll
-
-
-PP:
