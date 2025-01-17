@@ -1,0 +1,51 @@
+
+/* 1. Header */
+h2.index { width:153px; height:36px; background-position:-136px -941px }
+.index h2 { margin:0 }
+.index p { margin-top:10px; color:#878787; line-height:24px; font-size:14px }
+
+.intro { float:left; width:350px; padding-top:12px; font:normal 12px/16px arial }
+
+/* Content */
+.worldMap { margin:10px auto }
+
+.hostBotHead { float:left; width:222px; height:40px; margin:26px 0 0 102px; background-position:-5px -982px }
+.hostBot { position:relative; float:left; width:326px; height:276px; margin:15px 0 0 40px; padding:12px; background:transparent url('../img/enUS/backgrounds/hostbot-bg.jpg') no-repeat }
+.hostBot h2 { margin-top:5px; color:#fff; text-align:center }
+.hostBot .tableStats { width:305px; margin:20px 10px }
+.hostBot .tableStats td { padding-top:10px }
+.hostBotInfo { float:left; margin-left:40px; bottom:-30px }
+h2.screenshots { width:150px; height:36px; background-position:-5px -1028px }
+h2.community { width:148px; height:38px; background-position:-168px -1028px }
+
+.modContent { float:left; margin-top:20px }
+
+.imageSlider { width:326px; height:312px; margin:15px 40px 25px 0; padding:12px; background:transparent url('../img/enUS/backgrounds/image-slider-bg.png') no-repeat}
+.aboutFBF { float:left; width:350px; margin-top:35px }
+
+#screenshots, #gameFeatures { height:300px }
+#gameFeatures .galleria-counter { top:210px; opacity:0.7 !important }
+#gameFeatures .galleria-image-nav-right, #gameFeatures .galleria-image-nav-left { top:5px }
+
+.galleria-container { background:transparent }
+.galleria-image.active { border:1px solid #fff }
+.galleria-stage .galleria-image, .galleria-stage img { border-radius:5px }
+
+.left { float:left; width:350px; margin-right:40px }
+.gameFeatures { float:left; margin-top:20px }
+.gameFeatures .imageSlider { height:284px; background:transparent url('../img/enUS/backgrounds/image-slider-bg-small.png') no-repeat}
+
+/*Ghost++*/
+.isRunning { color:#53da2f }
+
+/* Livestream */
+.livestreamContent { float:left; margin:40px 0 0 75px }
+.livestreamContent h2 { text-align:center }
+.livestream { display:block; width:580px; height:360px; margin:20px auto; padding:10px; background-image:url(../img/enUS/backgrounds/livestream-background.jpg) }
+
+
+/* Iframe Ghopple*/
+.iframeGhopple {display:block; margin:0 auto }
+
+/* copy + paste gamename */
+.copyIcon { display:inline-block; width:16px; height:16px; margin-left:3px; background-image:url(../img/enUS/misc/Copy-icon.png); text-indent:-9999px;  }

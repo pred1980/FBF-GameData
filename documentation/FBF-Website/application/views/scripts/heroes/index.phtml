@@ -1,0 +1,16 @@
+<h2 class="heroes ti fontSprite">FBF Hereos</h2>
+<?php //class="introduction">&nbsp;</p> ?>
+<h3 class="forsaken ti fontSprite">Undead</h3>
+<ul class="heroesPreviewList clearfix">
+    <?php
+        echo $this->action('herothumbs', 'Heroes', null, array('img' => $this->forsakenHeroPreviewImages));
+    ?>
+</ul>
+<div class="previewBox alwaysHidden fs relative"></div>
+<h3 class="coalition ti fontSprite">Infidel</h3>
+<ul class="heroesPreviewList clearfix">
+    <?php
+        echo $this->action('herothumbs', 'Heroes', null, array('img' => $this->coalitionHeroPreviewImages));
+    ?>
+</ul>
+<div class="previewBox alwaysHidden co relative"></div>

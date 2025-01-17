@@ -1,0 +1,4 @@
+<?php
+foreach ($this->games as $id => $data) {
+    echo $this->partial('index/gamewaiting.phtml', array('botId' => ($id + 1), 'data' => $data));
+}

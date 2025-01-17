@@ -1,0 +1,36 @@
+<?php
+    //Facebook Informations
+    $title = strip_tags($this->headTitle());
+    $url = $this->serverUrl(true);
+    $summary = urlencode($this->placeholder('fb-summary'));
+    $image = $this->placeholder('fb-image');
+?>
+<nav class="topNavi">
+    <a class="contact clickable" href="<?php echo $this->baseUrl('about');?>" title="About Forsaken Bastion's Fall">ABOUT</a>
+    <a href="<?php echo $this->baseUrl('disclaimer');?>" title="Show FBF Disclaimer" rel="nofollow">DISCLAIMER</a>
+    <a href="mailto:info@forsaken-bastions-fall.com">CONTACT</a>
+    <a href="<?php echo $this->baseUrl('bugs');?>" title="Report us your bugs!" rel="nofollow">REPORT BUGS</a>
+    <a href="<?php echo $this->baseUrl('sitemap');?>" title="FBF Sitemap">SITEMAP</a>
+</nav>
+<h1>
+    <a href="<?php echo $this->baseUrl('/');?>" title="Forsaken Bastion's Fall" class="gameTitle">
+        <strong class="logoTitle ti">Forsaken Bastion's Fall</strong>
+    </a>
+</h1>
+<?php $controller = Zend_Controller_Front::getInstance()->getRequest()->getControllerName();  ?>
+<nav class="mainNavi clearfix">
+    <a class="fb" title="I like FBF" onClick="window.open('http://www.facebook.com/sharer.php?s=100&amp;p[title]=<?php echo $title;?>&amp;p[summary]=<?php echo $summary;?>&amp;p[url]=<?php echo $url; ?>&amp;p[images][0]=<?php echo $image;?>', 'sharer', 'toolbar=0,status=0,width=750,height=530');" target="_parent" href="javascript: void(0)">f</a>
+    <a <?php echo ($controller == 'heroes') ? 'class="active"' : ''; ?> href="<?php echo $this->baseUrl('heroes');?>" title="FBF Heroes">HEROES</a>
+    <span class="seperator mainSprite">&nbsp;</span>
+    <a rel="nofollow" <?php echo ($controller == 'items') ? 'class="active"' : ''; ?> href="<?php echo $this->baseUrl('items');?>" title="FBF Items">ITEMS</a>
+    <span class="seperator mainSprite">&nbsp;</span>
+    <a rel="nofollow" <?php echo ($controller == 'creeps') ? 'class="active"' : ''; ?> href="<?php echo $this->baseUrl('creeps');?>" title="FBF Creeps">CREEPS</a>
+    <span class="seperator mainSprite">&nbsp;</span>
+    <a rel="nofollow" <?php echo ($controller == 'towers') ? 'class="active"' : ''; ?> href="<?php echo $this->baseUrl('towers');?>" title="FBF Towers">TOWERS</a>
+    <span class="seperator mainSprite">&nbsp;</span>
+    <a rel="nofollow" <?php echo ($controller == 'mechanics') ? 'class="active"' : ''; ?> href="<?php echo $this->baseUrl('mechanics');?>" title="FBF Mechanics">MECHANICS</a>
+    <span class="seperator mainSprite">&nbsp;</span>
+    <a href="<?php echo $this->baseUrl('forums');?>" title="FBF Forums">FORUMS</a>
+    <span class="seperator mainSprite">&nbsp;</span>
+    <a <?php echo ($controller == 'download') ? 'class="active"' : ''; ?> href="<?php echo $this->baseUrl('download');?>" title="FBF Download">DOWNLOAD</a>
+</nav>

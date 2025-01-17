@@ -1,0 +1,104 @@
+<h2 class="towers ti fontSprite">FBF Towers</h2>
+<?php //<p class="introduction">*** Introduction Text for the Towers ***</p> ?>
+
+<div class="clearfix towersBox">
+	<div class="towerIconsBox">
+		<h4 class="common">Common Towers</h4>
+		<ul id="common" class="towerIcons clearfix">
+			<li><img alt="Shady Spire --> Dark Spire --> Black Spire" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?>icon0.png" title="Shady Spire --> Dark Spire --> Black Spire"></li>
+			<li><img alt="Cold Obelisk --> Frosty Obelisk --> Glacial Obelisk" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?>icon1.png" title="Cold Obelisk --> Frosty Obelisk --> Glacial Obelisk"></li>
+			<li><img alt="Flaming Rock --> Blazing Rock --> Magma Core" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?>icon2.png" title="Flaming Rock --> Blazing Rock --> Magma Core"></li>
+			<li><img alt="Cursed Gravestone --> Cursed Tombstone --> Cursed Memento" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?>icon3.png" title="Cursed Gravestone --> Cursed Tombstone --> Cursed Memento"></li>
+		</ul>
+		<h4 class="rare">Rare Towers</h4>
+		<ul id="rare" class="towerIcons clearfix">
+			<li><img alt="Decayed Earth Tower --> Plagued Earth Tower --> Blighted Earth Tower" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?>icon4.png" title="Decayed Earth Tower --> Plagued Earth Tower --> Blighted Earth Tower"></li>
+			<li><img alt="Ice Frenzy --> Ice Fury --> Icy Rage" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?>icon5.png" title="Ice Frenzy --> Ice Fury --> Icy Rage"></li>
+			<li><img alt="Putrid Pot --> Putrid Vat --> Putrid Cauldron" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?>icon6.png" title="Putrid Pot --> Putrid Vat --> Putrid Cauldron"></li>
+			<li><img alt="Gloom Orb --> Ruin Orb --> Doom Orb" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?>icon7.png" title="Gloom Orb --> Ruin Orb --> Doom Orb"></li>
+		</ul>
+		<h4 class="unique">Unique Towers</h4>
+		<ul id="unique" class="towerIcons clearfix">
+			<li><img alt="Monolith of Hatred --> Monolith of Terror --> Monolith of Destruction" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?>icon8.png" title="Monolith of Hatred --> Monolith of Terror --> Monolith of Destruction"></li>
+			<li><img alt="Glacier of Sorrow --> Glacier of Misery --> Glacier of Despair" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?>icon9.png" title="Glacier of Sorrow --> Glacier of Misery --> Glacier of Despair"></li>
+			<li><img alt="Totem of Infamy --> Totem of Malice --> Totem of Corruption" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?>icon10.png" title="Totem of Infamy --> Totem of Malice --> Totem of Corruption"></li>
+		</ul>
+		<b><u>Note:</u></b> Click on a <b>tower icon</b> to get detailed Information.
+	</div>
+	<div class="towerTabBox tabs">
+		<ul class="clearfix">
+			<?php $countTowers = count($this->towers);?>
+			<?php for ($i = 0; $i < $countTowers; $i++) :?>
+				<li><a class="fontSprite ti tab<?php echo $i;?> <?php echo ($i === 0) ? "tab".$i."Active" : "";?>" href="#tabs-<?php echo $i?>">Level <?php echo ($i + 1)?></a></li>
+			<?php endfor;?>
+		</ul>
+		<div class="panes">
+			<?php $number = 0;?>
+			<?php foreach ($this->towers as $tower) : ?>
+				<div id="tabs-<?php echo $number?>" class="clearfix">
+					<h5 class="ti fontSprite changelog">changelog</h5>
+					<b class="changelogVer"><?php echo $tower->getLatestChangeLog(); ?></b>
+					<img class="towerImage" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/towers/'); ?><?php echo $tower->getImagePath();?>" alt="<?php echo $tower->getName();?>" title="<?php echo $tower->getName();?>" width="150" height="150">
+					<h3 class="towerName"><?php echo $tower->getName(); ?></h3>
+					<ul class="statNames">
+						<li>Lumber</li>
+						<li>Rarity</li>
+						<li>DPS</li>
+						<li>Damage</li>
+						<li>Cooldown</li>
+						<li>Range</li>
+					</ul>
+					<div class="seperator mainSprite"></div>
+					<ul class="statValues">
+						<li id="lumber"><?php echo $tower->getLumber(); ?></li>
+						<li id="type"><?php echo $tower->getType(); ?></li>
+						<li id="dps"><?php echo $tower->getDPS(); ?></li>
+						<li id="damage"><?php echo $tower->getDamage(); ?></li>
+						<li id="cooldown"><?php echo $tower->getCoolDown(); ?></li>
+						<li id="range"><?php echo $tower->getRange(); ?></li>
+					</ul>
+					<div class="jScrollbar changelogBox clearfix">
+						<div class="jScrollbar_mask relative">
+                                                    <ul class="items clearfix">
+                                                        <?php
+                                                        $changelogData =  $this->stringManipulator()->splitData($tower->getChangeLogForVersion($tower->getLatestChangeLog()));
+                                                        foreach ($changelogData as $value) { ?>
+                                                            <li class="item hRepeats"><?php echo $value; ?></li>
+                                                        <?php } ?>
+                                                    </ul>
+						</div>
+						<div class="jScrollbar_draggable mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="towerData">
+						<h5>Description</h5>
+						<p id="desc"><?php echo $tower->getDescription(); ?></p>
+						<?php 
+							if (count($tower->getSpells()) > 0) { ?>
+							<h5 class="abilities">Abilities</h5>
+							<div class="towerAbility clearfix">
+								<?php foreach ($tower->getSpells() as $spellObject) :?>
+									<img class="towerAbilityImage" src="/files/frontend/img/enUS/towers/tower.jpg" alt="<?php echo $spellObject->getName();?>" title="<?php echo $spellObject->getName();?>" width="30" height="30">
+									<h6 id="towerAbiName"><?php echo $spellObject->getName();?></h6>
+									<p class="towerAbilityDescr"><?php echo $spellObject->getDescription();?></p>
+								<?php endforeach;?>
+							</div>
+						<?php } ?>
+					</div>
+				</div>
+				<?php $number++?>
+			<?php endforeach;?>
+		</div>
+	</div>
+	<div class="fb-commentBox">
+        <h3 class="fontSprite ti">Facebook Comments</h3>
+        <div class="borderTop"></div>
+        <div class="content">
+            <div id="fb-root"></div>
+                <div class="fb-comments" data-href="<?php echo $this->serverUrl().'/towers';?>" data-num-posts="2" data-width="713" data-colorscheme="dark"></div>
+        </div>
+        <div class="borderBottom"></div>
+    </div>
+    <div class="scrollTop fontSprite ti flr">scroll to top</div>
+</div>

@@ -1,0 +1,426 @@
+/**
+*	Project: Forsaken Bastion's Fall
+*	Author: Patrick Puls	
+*	Last modified: 13.01.2014	
+*
+*	1. Header
+*	2. Hero Content
+*	2.1 Heroes
+*
+*/
+
+/* Sprites */
+.heroesSprite { background-image:url('../img/enUS/heroesSprite.jpg') }
+.heroesMenuSprite { background-image:url('../img/enUS/heroesMenuSprite.jpg') }
+.abilitiesPreviewSprite { background-image:url('../img/enUS/abilitiesPreviewSprite.jpg') }
+
+/* 1. Header */
+h2.heroes { width:165px; height:35px; background-position:0 -93px }
+
+/* 2. Hero Content */
+.heroesPreviewList { width:765px; }
+.heroesPreviewList li { position:relative; float:left; margin:14px 17px 0 0 }
+.heroThumbnail { margin-left:11px; opacity:0.85 }
+.heroThumbnail:hover { opacity:1.00 }
+.heroThumbnail:first-child { margin-left:0 }
+
+/* 
+ * Heroes 
+ */
+
+.forsaken { width:234px; height:39px; margin-top:35px; background-position:-118px -1070px }
+.coalition { width:147px; height:30px; margin-top:35px; background-position:-4px -128px }
+.unitIcon { display:block; width:68px; height:73px }
+.unitIcon:hover, .unitIconHover { -moz-box-shadow: 0px 0px 10px #fff; -webkit-box-shadow: 0px 0px 10px #fff; box-shadow: 0px 0px 10px #fff }
+
+/* 
+ * Preview Box 
+ */
+
+.close { display:block; width:23px; height:24px; right:0; top:0; background-position:-111px 0; cursor:pointer }
+.close:hover { background-position:-111px -24px; }
+.previewBox { width:718px; height:182px; margin-top:17px; padding:19px; background-image:url(../img/enUS/heroes/previewBox.jpg) }
+.previewBox h4 { height:39px; margin-bottom:15px }
+
+/* Hero Preview Icon and Position on the Sprite */
+.BehemothPrevIcon { background-position:-5px -7px }
+.BehemothPrevIcon:hover, .BehemothPrevIconHover { background-position:-85px -7px }
+.NerubianWidowPrevIcon { background-position:-164px -7px }
+.NerubianWidowPrevIcon:hover, .NerubianWidowPrevIconHover { background-position:-244px -7px }
+.IceAvatarPrevIcon { background-position:-325px -7px }
+.IceAvatarPrevIcon:hover, .IceAvatarPrevIconHover { background-position:-405px -7px }
+.GhoulPrevIcon { background-position:-648px -246px }
+.GhoulPrevIcon:hover, .GhoulPrevIconHover { background-position:-728px -246px }
+.MasterBansheePrevIcon { background-position:-487px -7px }
+.MasterBansheePrevIcon:hover, .MasterBansheePrevIconHover { background-position:-567px -7px }
+.DeathMarcherPrevIcon { background-position:-647px -7px }
+.DeathMarcherPrevIcon:hover, .DeathMarcherPrevIconHover { background-position:-727px -7px }
+.SkeletonMagePrevIcon { background-position:-5px -86px }
+.SkeletonMagePrevIcon:hover, .SkeletonMagePrevIconHover { background-position:-85px -86px }
+.MasterNecromancerPrevIcon { background-position:-164px -86px }
+.MasterNecromancerPrevIcon:hover, .MasterNecromancerPrevIconHover { background-position:-244px -86px }
+.CryptLordPrevIcon { background-position:-5px -326px }
+.CryptLordPrevIcon:hover, .CryptLordPrevIconHover { background-position:-85px -326px }
+.AbominationPrevIcon { background-position:-164px -326px }
+.AbominationPrevIcon:hover, .AbominationPrevIconHover { background-position:-244px -326px }
+.DestroyerPrevIcon { background-position:-326px -326px }
+.DestroyerPrevIcon:hover, .DestroyerPrevIconHover { background-position:-406px -326px }
+.DreadLordPrevIcon { background-position:-325px -86px }
+.DreadLordPrevIcon:hover, .DreadLordPrevIconHover { background-position:-405px -86px }
+.DarkRangerPrevIcon { background-position:-487px -86px }
+.DarkRangerPrevIcon:hover, .DarkRangerPrevIconHover { background-position:-567px -86px }
+
+
+.TaurenChieftainPrevIcon { background-position:-648px -86px }
+.TaurenChieftainPrevIcon:hover, .TaurenChieftainPrevIconHover { background-position:-728px -86px }
+.ArchmagePrevIcon { background-position:-5px -166px }
+.ArchmagePrevIcon:hover, .ArchmagePrevIconHover { background-position:-85px -166px }
+.PriestessOfTheMoonPrevIcon { background-position:-164px -166px }
+.PriestessOfTheMoonPrevIcon:hover, .PriestessOfTheMoonPrevIconHover { background-position:-244px -166px }
+.NagaMatriarchPrevIcon { background-position:-326px -166px }
+.NagaMatriarchPrevIcon:hover, .NagaMatriarchPrevIconHover { background-position:-406px -166px }
+.OrcishWarlockPrevIcon { background-position:-488px -166px }
+.OrcishWarlockPrevIcon:hover, .OrcishWarlockPrevIconHover { background-position:-568px -166px }
+.BloodMagePrevIcon { background-position:-647px -166px }
+.BloodMagePrevIcon:hover, .BloodMagePrevIconHover { background-position:-727px -166px }
+.RoyalKnightPrevIcon { background-position:-5px -246px }
+.RoyalKnightPrevIcon:hover, .RoyalKnightPrevIconHover { background-position:-85px -246px }
+.PaladinPrevIcon { background-position:-164px -246px }
+.PaladinPrevIcon:hover, .PaladinPrevIconHover { background-position:-244px -246px }
+.GiantTurtlePrevIcon { background-position:-326px -246px }
+.GiantTurtlePrevIcon:hover, .GiantTurtlePrevIconHover { background-position:-406px -246px }
+.FirePandaPrevIcon { background-position:-488px -246px }
+.FirePandaPrevIcon:hover, .FirePandaPrevIconHover { background-position:-568px -246px }
+.OgreWarriorPrevIcon { background-position:-164px -407px }
+.OgreWarriorPrevIcon:hover, .OgreWarriorPrevIconHover { background-position:-244px -407px }
+.FarseerPrevIcon { background-position:-648px -327px }
+.FarseerPrevIcon:hover, .FarseerPrevIconHover { background-position:-728px -327px }
+.MountainGiantPrevIcon { background-position:-5px -407px }
+.MountainGiantPrevIcon:hover, .MountainGiantPrevIconHover { background-position:-85px -407px }
+.CenariusPrevIcon { background-position:-488px -326px }
+.CenariusPrevIcon:hover, .CenariusPrevIconHover { background-position:-568px -326px }
+
+
+/* Hero Name and Position on the Sprite */
+/* Forsaken */
+.BehemothPrevName { width:100px; background-position:-247px -207px }
+.NerubianWidowPrevName { width:169px; background-position:-6px -372px }
+.IceAvatarPrevName { width:109px; background-position:-234px -537px }
+.GhoulPrevName { width:71px; background-position:0 6px }
+.MasterBansheePrevName { width:172px; background-position:-152px -417px }
+.DeathMarcherPrevName { width:170px; background-position:-176px -377px }
+.SkeletonMagePrevName { width:162px; background-position:-3px -457px }
+.MasterNecromancerPrevName { width:224px; background-position:-3px -498px }
+.CryptLordPrevName { width:123px; background-position:-1px -33px }
+.AbominationPrevName { width:129px; background-position:-74px 9px }
+.DestroyerPrevName { width:110px; background-position:-126px -36px }
+.DreadLordPrevName { width:123px; background-position:-100px -536px }
+.DarkRangerPrevName { width:135px; background-position:-165px -334px }
+
+/* Coalition */
+.TaurenChieftainPrevName { width:176px; background-position:-3px -291px }
+.ArchmagePrevName { width:104px; background-position:-4px -206px }
+.PriestessOfTheMoonPrevName { width:236px; background-position:-3px -165px }
+.NagaMatriarchPrevName { width:176px; background-position:-2px -821px }
+.OrcishWarlockPrevName { width:165px; background-position:-181px -292px }
+.BloodMagePrevName { width:132px; background-position:-114px -207px }
+.RoyalKnightPrevName { width:136px; background-position:-89px -250px }
+.PaladinPrevName { width:81px; background-position:-6px -249px }
+.GiantTurtlePrevName { width:137px; background-position:-161px -129px }
+.FirePandaPrevName { width:112px; background-position:-232px -250px }
+.OgreWarriorPrevName { width:150px; background-position:-185px -788px }
+.FarseerPrevName { width:79px; background-position:-249px -33px }
+.MountainGiantPrevName { width:172px; background-position:-4px -786px }
+.CenariusPrevName { width:93px; background-position:-208px 2px }
+
+/* Attribute Icons */
+.attributeList { float:left }
+li.str, li.agi, li.int { width:35px; height:32px; margin-bottom:5px; padding-top:3px; border:1px solid #101114 }
+li.str { background-position:-3px 0 }
+li.agi { background-position:-39px 0 }
+li.int { background-position:-75px 0 }
+li.primary { border:1px solid #b6b6b7; -moz-box-shadow: 0px 0px 4px #fff; -webkit-box-shadow: 0px 0px 4px #fff; box-shadow: 0px 0px 4px #fff }
+
+/* Attribute Values */
+.attributeValues { float:left; margin-left:6px }
+.attributeValues li { width:55px; font:normal 11px/11px arial; color:#00bac2 }
+.attributeValues b { font:bold 14px/18px arial }
+li.primVal, li.primVal b { color:#fff }
+
+/* Seperators */
+.recommendedItems .seperator { width:86px; height:11px; margin:0 0 15px 0; background-position:-19px -41px }
+
+/* Ability Icons */
+.prevAbi { display:block; width:42px; height:42px }
+/* Behemoth's Abilities ( DB-HERO-ID:1 ) */
+.previewBox .hero1Abi1 { background-position:-172px 0 }
+.previewBox .hero1Abi2 { background-position:-214px 0 }
+.previewBox .hero1Abi3 { background-position:-257px 0 }
+.previewBox .hero1Abi4 { background-position:-299px 0 }
+/* Nerubian Widow's Abilities ( DB-HERO-ID:2 ) */
+.previewBox .hero2Abi1 { background-position:-172px -43px }
+.previewBox .hero2Abi2 { background-position:-214px -43px }
+.previewBox .hero2Abi3 { background-position:-257px -43px }
+.previewBox .hero2Abi4 { background-position:-299px -43px }
+/* Ice Avatar's Abilities ( DB-HERO-ID:3 ) */
+.previewBox .hero3Abi1 { background-position:-172px -85px }
+.previewBox .hero3Abi2 { background-position:-215px -85px }
+.previewBox .hero3Abi3 { background-position:-257px -85px }
+.previewBox .hero3Abi4 { background-position:-299px -85px }
+/* Ghoul's Abilities ( DB-HERO-ID:4 ) */
+.previewBox .hero4Abi1 { background-position:-172px -385px }
+.previewBox .hero4Abi2 { background-position:-214px -385px }
+.previewBox .hero4Abi3 { background-position:-257px -385px }
+.previewBox .hero4Abi4 { background-position:-300px -385px }
+/* Master Banshee's Abilities ( DB-HERO-ID:5 ) */
+.previewBox .hero5Abi1 { background-position:-171px -128px }
+.previewBox .hero5Abi2 { background-position:-214px -128px }
+.previewBox .hero5Abi3 { background-position:-257px -128px }
+.previewBox .hero5Abi4 { background-position:-300px -128px }
+/* Death Marcher's Abilities ( DB-HERO-ID:6 ) */
+.previewBox .hero6Abi1 { background-position:-171px -171px }
+.previewBox .hero6Abi2 { background-position:-214px -170px }
+.previewBox .hero6Abi3 { background-position:-257px -170px }
+.previewBox .hero6Abi4 { background-position:-299px -170px }
+/* Skeleton Mage's Abilities ( DB-HERO-ID:7 ) */
+.previewBox .hero7Abi1 { background-position:-172px -214px }
+.previewBox .hero7Abi2 { background-position:-214px -214px }
+.previewBox .hero7Abi3 { background-position:-257px -214px }
+.previewBox .hero7Abi4 { background-position:-299px -214px }
+/* Master Necromancer's Abilities ( DB-HERO-ID:8 ) */
+.previewBox .hero8Abi1 { background-position:-172px -258px }
+.previewBox .hero8Abi2 { background-position:-214px -257px }
+.previewBox .hero8Abi3 { background-position:-257px -257px }
+.previewBox .hero8Abi4 { background-position:-299px -257px }
+/* Master Crypt Lord's Abilities ( DB-HERO-ID:9 ) */
+.previewBox .hero9Abi1 { background-position:-172px -300px }
+.previewBox .hero9Abi2 { background-position:-214px -300px }
+.previewBox .hero9Abi3 { background-position:-257px -300px }
+.previewBox .hero9Abi4 { background-position:-299px -300px }
+/* Master Abominaion's Abilities ( DB-HERO-ID:10 ) */
+.previewBox .hero10Abi1 { background-position:0 -428px }
+.previewBox .hero10Abi2 { background-position:-43px -428px }
+.previewBox .hero10Abi3 { background-position:-86px -428px }
+.previewBox .hero10Abi4 { background-position:-128px -428px }
+/* Master Destroyer's Abilities ( DB-HERO-ID:11 ) */
+.previewBox .hero11Abi1 { background-position:-171px -428px }
+.previewBox .hero11Abi2 { background-position:-214px -428px }
+.previewBox .hero11Abi3 { background-position:-257px -428px }
+.previewBox .hero11Abi4 { background-position:-300px -428px }
+/* Master Destroyer's Abilities ( DB-HERO-ID:12 ) */
+.previewBox .hero12Abi1 { background-position:0 -470px }
+.previewBox .hero12Abi2 { background-position:-43px -470px }
+.previewBox .hero12Abi3 { background-position:-86px -470px }
+.previewBox .hero12Abi4 { background-position:-128px -470px }
+
+/* Tauren Chieftain's Abilities ( DB-HERO-ID:13 ) */
+.previewBox .hero13Abi1 { background-position:-1px 0 }
+.previewBox .hero13Abi2 { background-position:-43px 0 }
+.previewBox .hero13Abi3 { background-position:-86px 0 }
+.previewBox .hero13Abi4 { background-position:-129px 0 }
+/* Archmage's Abilities ( DB-HERO-ID:14 ) */
+.previewBox .hero14Abi1 { background-position:0 -43px }
+.previewBox .hero14Abi2 { background-position:-43px -43px }
+.previewBox .hero14Abi3 { background-position:-86px -43px }
+.previewBox .hero14Abi4 { background-position:-129px -43px }
+/* Priestess of the Moon's Abilities ( DB-HERO-ID:15 ) */
+.previewBox .hero15Abi1 { background-position:0 -86px }
+.previewBox .hero15Abi2 { background-position:-43px -86px }
+.previewBox .hero15Abi3 { background-position:-86px -86px }
+.previewBox .hero15Abi4 { background-position:-128px -85px }
+/* Naga Matriarch's Abilities ( DB-HERO-ID:16 ) */
+.previewBox .hero16Abi1 { background-position:0 -128px }
+.previewBox .hero16Abi2 { background-position:-43px -128px }
+.previewBox .hero16Abi3 { background-position:-86px -128px }
+.previewBox .hero16Abi4 { background-position:-129px -128px }
+/* Orcish Warlock's Abilities ( DB-HERO-ID:17 ) */
+.previewBox .hero17Abi1 { background-position:0 -171px }
+.previewBox .hero17Abi2 { background-position:-43px -171px }
+.previewBox .hero17Abi3 { background-position:-86px -171px }
+.previewBox .hero17Abi4 { background-position:-129px -171px }
+/* Dark Ranger's Abilities ( DB-HERO-ID:18 ) */
+.previewBox .hero18Abi1 { background-position:-172px -342px }
+.previewBox .hero18Abi2 { background-position:-214px -342px }
+.previewBox .hero18Abi3 { background-position:-257px -342px }
+.previewBox .hero18Abi4 { background-position:-299px -342px }
+/* Blood Mage's Abilities ( DB-HERO-ID:19 ) */
+.previewBox .hero19Abi1 { background-position:0 -214px }
+.previewBox .hero19Abi2 { background-position:-43px -214px }
+.previewBox .hero19Abi3 { background-position:-86px -214px }
+.previewBox .hero19Abi4 { background-position:-128px -214px }
+/* Royal Knight's Abilities ( DB-HERO-ID:20 ) */
+.previewBox .hero20Abi1 { background-position:0 -257px }
+.previewBox .hero20Abi2 { background-position:-43px -257px }
+.previewBox .hero20Abi3 { background-position:-86px -257px }
+.previewBox .hero20Abi4 { background-position:-128px -257px }
+/* Paladin's Abilities ( DB-HERO-ID:21 ) */
+.previewBox .hero21Abi1 { background-position:0 -300px }
+.previewBox .hero21Abi2 { background-position:-43px -300px }
+.previewBox .hero21Abi3 { background-position:-86px -300px }
+.previewBox .hero21Abi4 { background-position:-129px -300px }
+/* Giant Turtle's Abilities ( DB-HERO-ID:22 ) */
+.previewBox .hero22Abi1 { background-position:0 -342px }
+.previewBox .hero22Abi2 { background-position:-43px -343px }
+.previewBox .hero22Abi3 { background-position:-86px -342px }
+.previewBox .hero22Abi4 { background-position:-129px -342px }
+/* Fire Panda's Abilities ( DB-HERO-ID:23 ) */
+.previewBox .hero23Abi1 { background-position:0 -385px }
+.previewBox .hero23Abi2 { background-position:-43px -385px }
+.previewBox .hero23Abi3 { background-position:-86px -385px }
+.previewBox .hero23Abi4 { background-position:-129px -385px }
+/* Ogre Warrios's Abilities ( DB-HERO-ID:24 ) */
+.previewBox .hero24Abi1 { background-position:-171px -470px }
+.previewBox .hero24Abi2 { background-position:-214px -470px }
+.previewBox .hero24Abi3 { background-position:-257px -470px }
+.previewBox .hero24Abi4 { background-position:-300px -470px }
+/* Farseer's Abilities ( DB-HERO-ID:25 ) */
+.previewBox .hero25Abi1 { background-position:0 -512px }
+.previewBox .hero25Abi2 { background-position:-43px -512px }
+.previewBox .hero25Abi3 { background-position:-86px -512px }
+.previewBox .hero25Abi4 { background-position:-128px -512px }
+/* Mountain Giant's Abilities ( DB-HERO-ID:26 ) */
+.previewBox .hero26Abi1 { background-position:171px -512px }
+.previewBox .hero26Abi2 { background-position:-214px -512px }
+.previewBox .hero26Abi3 { background-position:-257px -512px }
+.previewBox .hero26Abi4 { background-position:-300px -512px }
+/* Cenarius's Abilities ( DB-HERO-ID:27 ) */
+.previewBox .hero27Abi1 { background-position:0 -554px }
+.previewBox .hero27Abi2 { background-position:-43px -554px }
+.previewBox .hero27Abi3 { background-position:-86px -554px }
+.previewBox .hero27Abi4 { background-position:-128px -554px }
+
+.previewBox .recommendedItems { position:absolute; top:25px; right:25px }
+
+ul.abilities p.abiName { font-weight:bold }
+span.prevAbi { margin-right:8px }
+p.abiName { max-width:70px; min-width:70px; line-height:14px }
+span.type { color:#00bac2; line-height:13px }
+a.details { display:block; bottom:-3px; left:350px; width:49px; height:20px; background-position:-218px -94px; cursor:pointer }
+/*a.details:hover { background-position:-218px -94px; cursor:pointer }*/
+
+h5.changelog { top:40px; right:85px }
+b.changelogVer { top:44px; right:24px }
+
+/* Changelog */
+.changelogBox { width:129px }
+.changelogBox li { width:100px }
+
+/*
+ * D E T A I L   P A G E
+ */
+.skills { margin-top:25px }
+
+.statisticBox ul.statValues { margin-left:15px; margin-right:10px }
+.heroDetails li.str, li.agi, li.int { border:none }
+.heroDetails h2 { width:509px; height:294px; margin-top:-20px; margin-left:0; padding-top:20px }
+.heroDetails img.heroImage { margin-top:-20px }
+.heroDetails .topBox { width:100% }
+.heroDetails .tableStats { margin-top:21px }
+.heroDetails .seperator { margin-top:1em }
+
+.attributeBox { position:absolute; top:73px; left:5px }
+
+/* Recommended Items */
+.recommendedItems { width:90px; margin-right:30px; color:#474747 }
+.recommendedItems span, .recommendedItems strong { display:block; text-align:center }
+.recommendedItems span {font:normal 12px/16px arial }
+.recommendedItems strong { margin-bottom:12px; font:bold 14px/20px arial }
+
+.recommendedItems ul.iconList { width:100%; padding-left:4px }
+.recommendedItems ul.iconList li { float:left; width:32px; height:32px; margin-bottom:13px }
+.recommendedItems ul.iconList li.left { margin:0 13px 0 4px }
+
+/* Tab Box */
+.panes { width:591px; height:182px; padding:22px; background:transparent url('../img/enUS/backgrounds/tabbox.jpg') no-repeat }
+.panes .jScrollbar {  width:575px; height:190px }
+.panes .jScrollbar_mask { width:525px; line-height:20px }
+.panes .jScrollbar_mask b { font-size:16px }
+.panes .jScrollbar_draggable { display:none; height:150px }
+.heroDetailTabBox li { float:left; margin-right:35px }
+.heroDetailTabBox li a { display:block; height:19px }
+.heroDetailTabBox ul.items li { margin:5px 0 }
+.heroDetailTabBox a.tab0 { width:76px; background-position:-4px -580px }
+.heroDetailTabBox a.tab0:hover, .heroDetailTabBox a.tab0Active { background-position:-158px -579px }
+.heroDetailTabBox a.tab1 { width:47px; background-position:-4px -601px }
+.heroDetailTabBox a.tab1:hover, .heroDetailTabBox a.tab1Active { background-position:-158px -601px }
+.heroDetailTabBox div.facebook { width:68px; background-position:-81px -581px }
+.heroDetailTabBox div.facebook:hover { background-position:-235px -579px; cursor:pointer }
+.heroDetailTabBox a.tab2 { width:75px; background-position:-50px -601px }
+.heroDetailTabBox a.tab2:hover, .heroDetailTabBox a.tab2Active { background-position:-205px -601px }
+.heroDetailTabBox .changelogVer { position:inherit; top:0; left:0 }
+
+.heroFanarts { padding:5px 0 0 5px }
+.heroFanarts li { min-height:100px; margin-right:25px }
+.fanart img:hover { -moz-box-shadow: 0px 0px 5px #fff; -webkit-box-shadow: 0px 0px 5px #fff; box-shadow: 0px 0px 5px #fff }
+
+.heroFanarts { padding:5px 0 0 5px }
+.heroFanarts li { min-height:100px; margin-right:25px }
+
+.fakeContent { height:50px }
+
+/* transparenz in der tabBox */
+.gradient { position:absolute; width:635px; height:50px; bottom:0; }
+
+/* Heroes inside the Menu */
+.sideMenu .unitIcon { width:35px; height:35px }
+/* .sideMenu h3.forsaken { width:178px; background-position:-3px -651px } */ /* �berschriften erstmal rausgenommen */
+/* .sideMenu h3.coalition { width:111px; margin-top:5px; background-position:-2px -1064px } */ 
+.sideMenu .BehemothPrevIcon { background-position:0 0 }
+.sideMenu .BehemothPrevIcon:hover, .sideMenu .BehemothPrevIconHover { background-position:-35px 0 }
+.sideMenu .NerubianWidowPrevIcon { background-position:-70px 0 }
+.sideMenu .NerubianWidowPrevIcon:hover, .sideMenu .NerubianWidowPrevIconHover { background-position:-105px 0 }
+.sideMenu .IceAvatarPrevIcon { background-position:-140px 0 }
+.sideMenu .IceAvatarPrevIcon:hover, .sideMenu .IceAvatarPrevIconHover { background-position:-175px 0 }
+.sideMenu .GhoulPrevIcon { background-position:-280px -106px }
+.sideMenu .GhoulPrevIcon:hover, .sideMenu .GhoulPrevIconHover { background-position:-315px -106px }
+.sideMenu .MasterBansheePrevIcon { background-position:-210px 0 }
+.sideMenu .MasterBansheePrevIcon:hover, .sideMenu .MasterBansheePrevIconHover { background-position:-245px 0 }
+.sideMenu .DeathMarcherPrevIcon { background-position:-280px 0 }
+.sideMenu .DeathMarcherPrevIcon:hover, .sideMenu .DeathMarcherPrevIconHover { background-position:-315px 0 }
+.sideMenu .SkeletonMagePrevIcon { background-position:0 -36px }
+.sideMenu .SkeletonMagePrevIcon:hover, .sideMenu .SkeletonMagePrevIconHover { background-position:-35px -36px }
+.sideMenu .MasterNecromancerPrevIcon { background-position:-70px -36px }
+.sideMenu .MasterNecromancerPrevIcon:hover, .sideMenu .MasterNecromancerPrevIconHover { background-position:-105px -36px }
+.sideMenu .CryptLordPrevIcon { background-position:0 -141px }
+.sideMenu .CryptLordPrevIcon:hover, .sideMenu .CryptLordPrevIconHover { background-position:-35px -141px }
+.sideMenu .AbominationPrevIcon { background-position:-70px -141px }
+.sideMenu .AbominationPrevIcon:hover, .sideMenu .AbominationPrevIconHover { background-position:-105px -141px }
+.sideMenu .DestroyerPrevIcon { background-position:-140px -141px }
+.sideMenu .DestroyerPrevIcon:hover, .sideMenu .DestroyerPrevIconHover { background-position:-175px -141px }
+.sideMenu .DreadLordPrevIcon { background-position:-140px -36px }
+.sideMenu .DreadLordPrevIcon:hover, .sideMenu .DreadLordPrevIconHover { background-position:-175px -36px }
+.sideMenu .DarkRangerPrevIcon { background-position:-210px -36px }
+.sideMenu .DarkRangerPrevIcon:hover, .sideMenu .DarkRangerPrevIconHover { background-position:-245px -36px }
+
+.sideMenu .TaurenChieftainPrevIcon { background-position:-280px -36px }
+.sideMenu .TaurenChieftainPrevIcon:hover, .sideMenu .TaurenChieftainPrevIconHover { background-position:-315px -36px }
+.sideMenu .ArchmagePrevIcon { background-position:0 -72px }
+.sideMenu .ArchmagePrevIcon:hover, .sideMenu .ArchmagePrevIconHover { background-position:-35px -72px }
+.sideMenu .PriestessOfTheMoonPrevIcon { background-position:-70px -72px }
+.sideMenu .PriestessOfTheMoonPrevIcon:hover, .sideMenu .PriestessOfTheMoonPrevIconHover { background-position:-105px -72px }
+.sideMenu .NagaMatriarchPrevIcon { background-position:-140px -72px }
+.sideMenu .NagaMatriarchPrevIcon:hover, .sideMenu .NagaMatriarchPrevIconHover { background-position:-175px -72px }
+.sideMenu .OrcishWarlockPrevIcon { background-position:-210px -72px }
+.sideMenu .OrcishWarlockPrevIcon:hover, .sideMenu .OrcishWarlockPrevIconHover { background-position:-245px -72px }
+.sideMenu .BloodMagePrevIcon { background-position:-280px -72px }
+.sideMenu .BloodMagePrevIcon:hover, .sideMenu .BloodMagePrevIconHover { background-position:-315px -72px }
+.sideMenu .RoyalKnightPrevIcon { background-position:0 -108px }
+.sideMenu .RoyalKnightPrevIcon:hover, .sideMenu .RoyalKnightPrevIconHover { background-position:-35px -108px }
+.sideMenu .PaladinPrevIcon { background-position:-70px -108px }
+.sideMenu .PaladinPrevIcon:hover, .sideMenu .PaladinPrevIconHover { background-position:-105px -108px }
+.sideMenu .GiantTurtlePrevIcon { background-position:-140px -108px }
+.sideMenu .GiantTurtlePrevIcon:hover, .sideMenu .GiantTurtlePrevIconHover { background-position:-175px -108px }
+.sideMenu .FirePandaPrevIcon { background-position:-210px -108px }
+.sideMenu .FirePandaPrevIcon:hover, .sideMenu .FirePandaPrevIconHover { background-position:-245px -108px }
+.sideMenu .CenariusPrevIcon { background-position:-210px -141px }
+.sideMenu .CenariusPrevIcon:hover, .sideMenu .CenariusPrevIconHover { background-position:-245px -141px }
+.sideMenu .FarseerPrevIcon { background-position:-280px -141px }
+.sideMenu .FarseerPrevIcon:hover, .sideMenu .FarseerPrevIconHover { background-position:-315px -141px }
+.sideMenu .MountainGiantPrevIcon { background-position:0 -176px }
+.sideMenu .MountainGiantPrevIcon:hover, .sideMenu .MountainGiantPrevIconHover { background-position:-35px -176px }
+.sideMenu .OgreWarriorPrevIcon { background-position:-70px -176px }
+.sideMenu .OgreWarriorPrevIcon:hover, ul.heroes .OgreWarriorPrevIconHover { background-position:-105px -176px }
+
+/* overriden Style from items.css */
+.jScrollbar .jScrollbar_mask { width:535px }
+.panes b { color:#cecfd4 }

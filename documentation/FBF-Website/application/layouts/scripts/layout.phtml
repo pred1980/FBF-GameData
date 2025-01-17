@@ -1,0 +1,72 @@
+<?php echo $this->doctype(); ?>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <?php echo $this->headTitle(); ?>
+      <?php echo $this->headMeta(); ?>
+      <?php
+        if (getenv('SERVER_NAME') === 'dev.forsaken-bastions-fall.com' || getenv('SERVER_NAME') === 'localhost') { ?>
+            <meta name="robots" content="noindex, nofollow" />
+    <?php } else { ?>
+              <meta name="robots" content="index, follow" />
+    <?php } ?>
+      <meta name="description" content="<?php echo $this->placeholder('description'); ?>" />
+      <meta name="keywords" content="<?php echo $this->placeholder('keywords'); ?>" />
+      <meta name="author" content="FBF Team" />
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php echo $this->headLink(); ?>
+      <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+      <?php /*echo $this->minifyHeadLink('/favicon.ico')
+                      ->prependStylesheet('/files/frontend/css/default.css'); */?>
+    <script src="http://www.modernizr.com/downloads/modernizr-latest.js"></script>
+    <script type="text/javascript"> var BASE_URL = "/files/frontend/"; </script>
+</head>
+<body>
+<div id="wrapper">
+    <form class="donate" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+        <input type="hidden" name="cmd" value="_donations">
+        <input type="hidden" name="business" value="patrick.puls@arcor.de">
+        <input type="hidden" name="lc" value="DE">
+        <input type="hidden" name="item_name" value="Forsaken Bastion's Fall">
+        <input type="hidden" name="no_note" value="0">
+        <input type="hidden" name="currency_code" value="EUR">
+        <input type="hidden" name="bn" value="PP-DonationsBF:btn_donate_SM.gif:NonHostedGuest">
+        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+        <img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
+    </form>
+    <header id="header" class="relative">
+        <div class="leftHeadCorner absolute"></div>
+        <?php echo $this->render("header.phtml"); ?>
+        <div class="rightHeadCorner absolute"></div>
+    </header>
+    <div id="content" class="relative clearfix" role="main">
+        <?php echo $this->layout()->content; ?>
+    </div>
+    <footer id="footer" class="relative">
+        <?php echo $this->render("footer.phtml"); ?>
+    </footer>
+</div>
+<?php //echo $this->jQuery()->enable()->uienable(); ?>
+<?php echo $this->headScript(); ?>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-42882387-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+<![endif]-->
+</body>
+</html>

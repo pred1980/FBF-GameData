@@ -1,0 +1,65 @@
+
+/* Header */
+h2.towers { width:152px; height:35px; background-position:-196px -705px }
+h5 { margin-bottom:4px; color:#474747; font-weight:bold }
+h6 { color:#00deff; font:bold 13px/18px arial }
+
+/* Box for alle 3 Shops */
+.box { width:200px; height:154px }
+
+.introduction { margin-bottom:20px }
+
+/* Icons */
+.towerIconsBox { float:left; width:200px; margin-top:30px; color:#474747 }
+.towerIconsBox u { color:#00bac2 }
+.towerIcons { width:200px; margin:0 2px 15px 0 }
+.towerIcons li { float:left; display:block; width:40px; height:40px; margin:4px 4px 4px 0; cursor:pointer }
+.towerIcons li.active { box-shadow:0 0 4px #fff }
+
+/* Tab Box */
+.towerTabBox { float:left }
+.towerTabBox li { float:left; margin-right:10px }
+.towerTabBox li a { display:block; height:23px; text-decoration:none }
+.towerTabBox ul.items li { margin:5px 0 }
+.towerTabBox a.info { width:76px; background-position:-4px -580px }
+.towerTabBox a.info:hover, .towerTabBox a.infoActive { background-position:-158px -579px }
+.towerTabBox a.media { width:47px; background-position:-4px -601px }
+.towerTabBox a.media:hover, .heroDetailTabBox a.mediaActive { background-position:-158px -601px }
+.towerTabBox a.changelog { width:75px; background-position:-50px -601px }
+.towerTabBox a.changelog:hover, .towerTabBox a.changelogActive { background-position:-205px -601px }
+.towerTabBox .statValues { width:70px }
+.towerTabBox .statValues li { width:70px; margin-right:0 }
+.towerTabBox .changelogBox { width:155px; margin-left:0 }
+
+.panes { position:relative; width:506px; height:356px; margin-top:4px; padding:22px; background-image:url('../img/enUS/towers/tabbox.jpg') }
+.panes .seperator { margin-right:1em }
+
+.towerName, .towerData, .lumberIcon, .rarity { float:left; width:65% }
+.towerName { margin-bottom:.9em }
+.towerImage { float:left; margin-right:1em }
+.towerData { width:100%; margin-top:1em }
+.towerData p { margin-bottom:0.6em }
+.statNames { width:75px }
+ul.statValues { width:50px; margin:0 }
+
+.changelogBox { width:162px; margin-left:1em }
+.jScrollbar_draggable { margin-left:.6em }
+.ui-tabs .ui-tabs-panel { padding-right:0 }
+.jScrollbar .jScrollbar_mask { width:123px }
+h5.changelog { top:32px; right:105px }
+b.changelogVer { top:35px; right:55px }
+
+.towerAbilityImage { float:left; margin-right:1em }
+.towerAbilityDescr { float:left; width:87% }
+.special { display:block }
+
+.towerTabBox a.tab0 { width:52px; background-position:-4px -899px }
+.towerTabBox a.tab0:hover, .towerTabBox a.tab0Active { background-position:-61px -900px }
+.towerTabBox a.tab1 { width:52px; background-position:-4px -925px }
+.towerTabBox a.tab1:hover, .towerTabBox a.tab1Active { background-position:-61px -927px }
+.towerTabBox a.tab2 { width:52px; background-position:-4px -953px }
+.towerTabBox a.tab2:hover, .towerTabBox a.tab2Active { background-position:-61px -954px }
+.towerTabBox .items li:first-child { margin-top:0 }
+.towerTabBox .jScrollbar { height:auto }
+
+.fb-commentBox { margin-top:40px }

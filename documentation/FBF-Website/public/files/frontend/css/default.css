@@ -1,0 +1,423 @@
+/**
+*	Project: Forsaken Bastion's Fall
+*	Author: Patrick Puls	
+*	Last modified: 15.09.2011	
+*
+*	1. Global Definions
+*	2. Header
+*		2.1	Navigation (Head)
+*	3. Content
+*		3.1 Right Content
+                3.2 Side Menu
+*	4. Footer
+*	5. Sitemap
+*	6. Contact
+*	7. Disclaimer
+*   8. 404 ( Error Page )
+*   9. Facebook Comment Box
+*	10. Tabs
+*	11. Jquery Scroll Plugin
+*   12. 
+*/
+
+/* 1. Global Defnitions */
+
+.clearfix:after	{ content:" . "; display:block; height:0; clear:both; visibility:hidden }
+/*for IE */
+.clearfix { display:inline-block; /* throws hasLayout */ display:block }
+
+.fontSprite { background-image:url(../img/enUS/fontSprite.png) }
+.mainSprite { background-image:url(../img/enUS/mainSprite.png) }
+.hRepeats { background:url(../img/enUS/hRepeats.png) no-repeat }
+
+.fll { float:left }
+.flr { float:right }
+.opaque { opacity:0.7; filter: alpha(opacity=70); -moz-opacity:0.7 }
+.relative { position:relative }
+.absolute { position:absolute }
+.block { display:block }
+.clickable { cursor:pointer }
+.alwaysHidden { display:none; visibility:hidden }
+.ti { text-indent:-9999px }
+
+.item, .notes .note { margin:10px 0; padding-left:12px; font:normal 12px/16px arial; color:#474747; background-position:0 4px } /* Aufz�hlungen */
+/* Tower Types Colors*/
+.common { color:#fff }
+.rare { color:#9090ef }
+.unique { color:#ffA31f }
+
+body { font: 100.1% Arial,Helvetica,Geneva,Tahoma,sans-serif; color:#cacaca; background:#000 }
+ul { list-style:none outside none }
+strong, b { font-weight:bold }
+a { outline:none; color:#00deff }
+
+h2 { margin-left:-20px; font:bold 22px/24px arial }
+h3 { font:normal 14px/18px arial; color:#7dc4da }
+
+#wrapper { margin:0 auto; padding:0; width:1280px; font-size:1.00em }
+
+.border { width:761px; height:35px; margin-bottom:20px; background:transparent url('../img/enUS/backgrounds/headline-1.jpg') no-repeat }
+
+.firstChar { float:left; margin:17px 6px 0 0 ; font-size:60px; color:#00bac2; text-shadow:0 0 18px #00bac2 }
+
+.colorboxImages img:hover { -moz-box-shadow: 0px 0px 5px #fff; -webkit-box-shadow: 0px 0px 5px #fff; box-shadow: 0px 0px 5px #fff }
+
+/* 
+ * 2. Header 
+ */
+.donate { position:absolute; top:5px; right:5px; z-index:1 }
+#header { width:1280px; height:283px; background:url("../img/enUS/layout/header.jpg") no-repeat }
+.leftHeadCorner { bottom:-108px; left:153px; width:146px; height:108px; background:url("../img/enUS/layout/leftHeadCorner.png") no-repeat; z-index:5 }
+.rightHeadCorner{ bottom:-79px; right:213px; width:17px; height:79px; background:url("../img/enUS/layout/rightHeadCorner.jpg") no-repeat; z-index:5}
+.gameTitle { position:absolute; top:70px; left:46% }
+.logoTitle { display:block; width:272px; height:100px; background:url("../img/enUS/layout/logoTitle.png") no-repeat;}
+
+/* 2.1	Navigation (Head) */
+.topNavi { position:absolute; top:0; left:208px; font:normal 10px/23px arial; color:#d5f4fa }
+.topNavi a { text-decoration:none; color:#d5f4fa; display:inline; margin-right:17px }
+.topNavi span.contact { margin-right:17px }
+.topNavi a:hover, .topNavi span.contact:hover { color:#00deff; -moz-transition:color 0.5s ease-in 0s; -o-transition:color 0.5s ease-in; -webkit-transition:color 0.5s ease-in }
+
+.mainNavi { position:absolute; top:250px; left:400px; height:27px; font:normal 12px/23px arial; color:#fff }
+.mainNavi a { float:left; margin-right:12px; text-decoration:none; color:#d5f4fa; cursor:pointer; text-shadow:#d3f4fa 0 0 4px; letter-spacing:2px }
+.mainNavi a:hover { color:#00deff; -moz-transition:color 0.5s ease-in 0s; -o-transition:color 0.5s ease-in; -webkit-transition:color 0.5s ease-in }
+.mainNavi .active { color:#00deff }
+
+/* Facebook Icon */
+.mainNavi a.fb { display:block; padding:11px 0 0 15px; width:24px; height:28px; position:absolute; top:-14px; left:-77px;
+	  font-size:33px; font-weight:bold; color:#fff }
+.mainNavi a.fb { text-shadow:none }
+.mainNavi a.fb:hover { color:#d3f4fa; text-shadow:#d3f4fa 0 0 4px }
+
+/* Seperators */
+.previewBox .seperator, .towerTabBox .seperator 
+	{ width:20px; height:120px; margin-right:9px; background-position:0 -36px }
+.seperator { display:block; float:left; width:2px; height:21px; margin-right:12px; background-position:0 0 }
+
+/* 
+ * 3. Content 
+ */
+#content { margin:0 auto; padding:35px 35px 35px 55px; width:764px; height:100%; background:url("../img/enUS/layout/borderBackground.png") repeat-y; font:normal 12px/16px arial; color:#cecfd4 }
+.FBFRelease img { display:block; margin:0 auto }
+.downloadNow { bottom:-14px; right:305px; width:125px; height:34px; background: url("../img/enUS/misc/download-now.png") no-repeat; cursor:pointer }
+.introduction { margin:15px 20px 0 0; line-height:18px } /* Text under Heroes, Items ... */
+.topBox { float:left; width:100% }
+
+/* Skills */
+.skills { float:left; width:100% }
+.skills .skill { margin-bottom:40px }
+.skills h3 { width:72px; height:30px; background-position:-236px -501px; margin:0 auto }
+.skills img.name { margin-right:20px }
+.skills h4 { width:350px; color:#00deff; font:bold 13px/18px arial }
+.skills .skillDescBox { width:452px; margin-bottom:20px }
+.skills .desc { width:350px }
+.tableStats { float:left; width:750px }
+.tableStats thead { color:#00bac2; border-bottom:2px solid #19191c }
+.tableStats td, .tableStats th { text-align:center }
+.tableStats td { padding:3px 3px 3px 0; font-size:12px; line-height:15px }
+.tableStats td.heroLevel, .tableStats th.heroLevel { text-align:right }
+.tableStats tbody tr { border-bottom:1px solid #0a0a0b }
+.skills th.level { width:50px }
+.skills th.duration { width:85px }
+.skills th.manaCost { width:75px }
+.skills th.cooldown { width:85px }
+.skills th.range { width:55px }
+.skills th.aoe { width:60px }
+.skills th.targets { width:122px }
+.skills th.effects { width:152px }
+.skills th.heroLevel { width:80px }
+.skills .abiTypeStats { width:145px; margin-left:67px; font:normal 12px/16px arial; color:#474747 }
+span.notes { margin-top:14px; font:bold 14px/14px arial; font-variant:small-caps; color:#00bac2 }
+ul.notes { margin-top:6px; margin-left:20px }
+ul.notes .note { margin:6px 0 2px 0; line-height:15px; color:#fff }
+
+/*
+ * 3.2 Side Menu
+ */
+/* Side Menu ( left side ) */
+.sideMenu { position:absolute; top:40px; left:-88px; width:60px; height:120px; background-position:-24px -63px; z-index:5 }
+.sideMenu .naviOpen { position:absolute; width:10px; height:99px; background-position:-100px -72px; top:10px; right:11px; cursor:pointer }
+.sideMenu .naviClose { position:absolute; width:10px; height:99px; background-position:-89px -72px; top:10px; right:11px; cursor:pointer }
+.sideMenu .sideBox { position:absolute; display:none; top:-50px; left:59px; width:198px; height:203px; padding:40px 25px 40px 25px; background:transparent url('../img/enUS/backgrounds/hero-menu-bg.png') no-repeat }
+.sideMenu ul { width:163px; padding:6px 6px 3px 6px }
+.sideMenu ul li { float:left; width:35px; margin-right:5px; margin-bottom:8px }
+.sideMenu h3 { height:25px; margin:0 auto }
+.sideMenu .seperator { width:155px; height:2px; margin:2px 0 2px 6px; background-position:0 -193px }
+.sideMenu .jScrollbar { position:absolute; width:199px; height:157px }
+.sideMenu .jScrollbar_mask { width:175px }
+.sideMenu .jScrollbar_draggable { position:absolute; top:0; right:3px; height:157px }
+.sideMenu .unitIcon:hover, .sideMenu .unitIconHover { -moz-box-shadow: 0px 0px 5px #fff; -webkit-box-shadow: 0px 0px 5px #fff; box-shadow: 0px 0px 5px #fff }
+
+
+/* 
+ * 4. Footer 
+ */
+#footer { margin:0 auto 35px; width:854px; height:324px; background-image:url(../img/enUS/layout/footer.jpg); font:normal 11px/17px arial; color:#64707c }
+#footer p { width:100%; text-align:center }
+#footer p.terms { bottom:115px }
+#footer p.blizzard { bottom:80px; left:100px; width:654px }
+#footer a { color:#64707c }
+.footerNavi { bottom:25px; right:108px } 
+#footer .footerNavi a { float:left; margin-left:9px; text-decoration:none; color:#00bac2; cursor:pointer; font:normal 11px/11px arial }
+#footer .footerNavi a:hover { color:#fff; -moz-transition:color 0.5s ease-in 0s; -o-transition:color 0.5s ease-in; -webkit-transition:color 0.5s ease-in }
+#footer .fanpage { position:absolute; bottom:15px; left:95px; width:123px; height:28px; padding:10px 0 0 50px; background-position:0 -197px; font:bold 24px/24px arial; color:#597e86; cursor:pointer; text-decoration:none }
+#footer .fanpage:hover { text-shadow:#a4dfed 0 0 2px; color:#a4dfed; -moz-transition:color 0.5s ease-in 0s; -o-transition:color 0.5s ease-in; -webkit-transition:color 0.5s ease-in  }
+/* Partners */
+.rocarena { position:absolute; bottom:16px; left:270px; width:35px; height:35px; background-position:0 -235px; }
+.moddb { position:absolute; bottom:14px; left:315px }
+#footer .hive { position:absolute; bottom:14px; left:355px }
+
+/* 
+ * 5. Sitemap 
+ */
+
+.sitemap a { color:#7dc4da }
+.sitemap h2 { width:172px; height:38px; margin-bottom:20px; background-position:2px -745px }
+.sitemap h3 a { font:normal 20px/22px Arial, Helvetica, sans-serif; text-decoration:none }
+.sitemap h3 a:hover { color:#d3effb }
+.sitemap h4 { padding:7px 7px 2px 16px; font:bold 14px/20px Arial, Helvetica, sans-serif; }
+.sitemap h5 { padding:7px 7px 2px 16px; font-weight:bold; color:#474747 }
+.sitemap ul.links { padding:0 7px 7px 30px }
+.sitemap ul.links li { margin:5px 0 5px 0; display:list-item; list-style:square }
+.sitemap ul.shopList { width:656px }
+.sitemap ul.shopList li { width:180px }
+.sitemap .items { width:100% }
+.linkList { float:left; margin-right:70px }
+
+
+/*
+ * 6. Contact
+ */
+
+#contact{
+    background:transparent url(../img/enUS/backgrounds/contactbg.jpg) repeat bottom center;
+    width:680px;
+    height:440px;
+    margin:0 auto 0 auto;
+}
+#contact h1{
+    color:#e73c00;
+    text-shadow:2px 1px 2px #f9f9f9;
+    margin-left:10px;
+}
+#contact form{
+	background:transparent url(../img/enUS/backgrounds/formbg.png) no-repeat bottom center;
+    width:680px;
+    height:440px;
+    margin:0px auto;
+    
+    clear:both;
+}
+#contact p{
+    width:100%;
+    float:left;
+    clear:both;
+    position:relative;
+    padding:5px 0px;
+}
+#contact label{
+    float:left;
+    width:210px;
+    text-align:right;
+    margin:10px 0px 5px 0px;
+    padding-right:10px;
+    text-shadow:1px 1px 1px #f0f0f0;
+    line-height:20px;
+    color:#000;
+}
+#contact input[type="text"],
+#contact textarea{
+    float:left;
+    margin:5px 0px 5px 0px;
+    font-family: Georgia, serif;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: normal;
+    letter-spacing: normal;
+    padding:4px 4px 6px 4px;
+    width:398px;
+    border:1px solid #ddd;
+    font-weight:bold;
+    color:#e73c00;;
+    text-shadow:-1px 1px 1px #aaa;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    -moz-box-shadow:1px 1px 3px #000;
+    -webkit-box-shadow:1px 1px 3px #000;
+    box-shadow:1px 1px 3px #000;
+}
+#contact textarea{
+    overflow-x:hidden;
+}
+#contact input[type="text"]:focus,
+#contact textarea:focus{
+    -moz-box-shadow:0px 0px 8px #e73c00;
+    -webkit-box-shadow:0px 0px 8px #e73c00;
+    box-shadow:0px 0px 8px #e73c00;
+}
+#contact input[type="button"]{
+    background:transparent url(../img/enUS/buttons/submit.png) no-repeat bottom center;
+    width:177px;
+    height:83px;
+    cursor:pointer;
+    color:#e73c00;
+    float:right;
+    border:none;
+    font-family: Georgia, serif;
+    font-weight:bold;
+    font-size:26px;
+    padding-left:15px;
+    cursor:pointer;
+    margin:5px 0 0 0;
+    text-shadow:1px 1px 1px #000;   
+}
+#contact input[type="button"]:hover{
+    color:#fff;
+}
+#contact p.submit{
+    height:40px;
+}
+#contact label span{
+    font-size:11px;
+    line-height:20px;
+    float:right;
+    margin-left:3px;
+    font-weight:bold;
+    color:#f0f0f0;
+    text-shadow:1px 0px 1px #000;
+}
+.error{
+    background:transparent url(../img/enUS/misc/errormsg.png) no-repeat top left;
+    width:203px;
+    height:50px;
+    position:absolute;
+    top:-15px;
+    right:-153px;
+    font-size:11px;
+    color:#fff;
+}
+.error span{
+    margin-left:25px;
+    line-height:40px;
+    text-shadow:1px 1px 1px #555;
+}
+.loader{
+    background:transparent url(../img/enUS/misc/ajax-loader.gif) no-repeat top left;
+    width:31px;
+    height:31px;
+    float:right;
+    margin-top:35px;
+
+}
+.success{
+    height:31px;
+	float:right;
+	margin:35px 10px 0px 0px;
+}
+.envelope img{
+    position:fixed;
+    top:50%;
+    left:50%;
+    margin-top:-88px;
+    margin-left:-123px;
+}
+#envelope { display:none }
+
+/*
+ * 7. Disclaimer
+ */
+
+.disclaimer h2 { width:190px; height:34px; margin-bottom:20px; background-position:-6px -712px }
+.disclaimer h3 { text-align:left; margin-bottom:3px }
+.disclaimer p { margin-bottom:28px; line-height:17px }
+.disclaimer ul { margin:0 0 17px 20px }
+.disclaimer li { list-style-type:square; list-style-position:inside }
+
+/*
+ * 8. 404 ( Error Page )
+ */
+
+.error404 { text-align:center }
+.error404 h2 { height:50px; font-size: 50px; text-align:center }
+.error404 span[frown] { transform: rotate(90deg); display:inline-block; color: #bbb; }
+.error404 a { color: rgb(36, 109, 56); text-decoration:none; }
+.error404 a:hover { color: rgb(96, 73, 141) ; text-shadow: 2px 2px 2px rgba(36, 109, 56, 0.5); }
+.error404 ul { margin:11px 0 0 13px; list-style:circle }
+
+/* 
+ * 9. Facebook Comment Box 
+ */
+.fb-commentBox { float:left; width:760px }
+.fb-commentBox h3 { width:253px; height:33px; background-position:0 -622px; margin:0 auto }
+.fb-commentBox .borderTop { width:760px; height:33px; background:transparent url('../img/enUS/backgrounds/headline-2.jpg') no-repeat }
+.fb-commentBox .content { width:750px; min-height:100px; margin-left:2px; padding:0 1px 0 1px; background:transparent url('../img/enUS/backgrounds/fb-bg-repeat.jpg') repeat-y }
+.fb-commentBox .content .fb { width:712px }
+.fb-commentBox .fb_iframe_widget { margin-left:12px; background-color:#333333; border:1px solid #16191b }
+.fb-commentBox .fb_ltr { padding:5px }
+.fb-commentBox .borderBottom { width:752px; height:13px; margin-left:2px; background:transparent url('../img/enUS/backgrounds/fb-border-bottom.jpg') no-repeat }
+.scrollTop { width:43px; height:20px; margin-top:8px; background-position:-283px -600px }
+.scrollTop:hover { background-position:-283px -618px; cursor:pointer }
+
+/*
+ * 10. Tabs
+ */
+.ui-tabs { position: relative; padding: .2em; zoom: 1; } /* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
+.ui-tabs .ui-tabs-nav { margin: 0; padding: .2em .2em 0; }
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; padding-bottom: 1px; }
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }
+.ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
+.ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding:12px; background: none; }
+.ui-tabs .ui-tabs-hide { display: none !important; }
+
+/* 
+ * 11. Jquery Scroll Plugin 
+ */
+.jScrollbar { position:relative; width:129px; height:120px; overflow:hidden }
+.jScrollbar .jScrollbar_mask { width:99px; position:relative; top:0 }
+.jScrollbar .jScrollbar_mask p { margin:0; padding:0; color:#fff; font-size:12px }
+.jScrollbar_draggable { display:none; float:left; width:23px; height:189px; overflow:hidden; background-position:-141px 0; position:relative }
+.jScrollbar_draggable a.draggable { position:absolute; background-position:-111px -53px; display:block; height:34px; width:15px; left:4px; cursor:s-resize }
+
+/* 
+ * 12. Transparenz Box 
+ */
+/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+.gradient { background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzAwMDAwMCIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDAwMDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+); }
+.gradient { background: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%); /* FF3.6+ */ }
+.gradient { background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,1))); /* Chrome,Safari4+ */ }
+.gradient { background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%); /* Chrome10+,Safari5.1+ */ }
+.gradient { background: -o-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%); /* Opera 11.10+ */ }
+.gradient { background: -ms-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%); /* IE10+ */ }
+.gradient { background: linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%); /* W3C */ }
+.gradient { filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 ); /* IE6-8 */ }
+
+/*
+ * Statistics
+ */
+.statisticBox { position:absolute; top:70px; left:320px; width:430px }
+.statisticBox ul.statNames {float:left; width:95px }
+.statisticBox ul.second { width:120px }
+.statisticBox ul.second li { width:120px }
+.statisticBox ul.statValues { float:left; margin-right:0 }
+.statisticBox ul li { width:70px; margin-bottom:0 }
+.statisticBox .seperator { float:left; width:20px; height:120px; margin-right:9px; background-position:0 -36px }
+/* Hero Preview Stats */
+ul.statNames li, ul.statValues li{ min-width:44px; width:52px; height:18px; margin-bottom:3px; font:normal 12px/18px arial }
+ul.statNames, ul.abilities { float:left; color:#474747 }
+ul.abilities { float:left; width:260px }
+ul.abilities li { max-width:120px; margin-right:10px; margin-bottom:8px }
+ul.statValues { float:left; margin:0 19px 0 19px; color:#00bac2 }
+
+/* Changelog 
+ * -> Heroes Preview Box
+ * -> Tower
+ */
+.changelogBox { float:left }
+.changelogBox .jScrollbar_draggable { float:left; height:120px }
+.changelogBox ul li { float:none; margin:0 }
+h5.changelog { position:absolute; width:75px; height:22px; background-position:-269px -90px }
+b.changelogVer { position:absolute; font:bold 14px/16px arial; color:#88c5c5 }
+
+/* Colorbox */
+.galleria-lightbox-next, .galleria-lightbox-prev { z-index:100000 }

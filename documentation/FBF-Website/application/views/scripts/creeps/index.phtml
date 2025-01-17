@@ -1,0 +1,87 @@
+<h2 class="creeps ti fontSprite">FBF Creeps</h2>
+<?php //<p class="introduction">*** Introduction Text for the Creeps ***</p> ?>
+<ul class="creepsPreviewList clearfix">
+<?php
+    echo $this->action('creepthumbs', 'Creeps', null, array('img' => $this->creepData));
+?>
+</ul>
+
+<!-- Rounds Overview -->
+<h3 class="fontSprite ti creeps">Rounds</h3>
+<div class="border"></div>
+<table class="tableStats">
+	<thead>
+		<tr>
+			<th>Unit</th>
+			<th>Bounty</th>
+			<?php
+			for ($i = 1; $i <=20; $i++) { ?>
+				<th>R<?php echo $i; ?></th>
+			<?php } ?>
+		</tr>
+	</thead>
+	<tbody>
+	<?php
+		$k = 0;
+		foreach ($this->creepData as $value) { ?>
+		<tr>
+			<td><?php echo $value['name']; ?></td>
+			<?php
+				$key = $this->creepRoundData[$k]; ?>
+			<td><?php echo $value['bounty']; ?></td>
+			<?php
+				for ($i = 1; $i <=20; $i++) { ?>
+					<td><?php echo $key['round_'.$i]; ?></td>
+			<?php } ?>
+		</tr>
+	<?php $k++; } ?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<?php
+			for ($i = 1; $i <=20; $i++) { ?>
+				<td>&nbsp;</td>
+			<?php } ?>
+		</tr>
+		<tr>
+			<td><b>Melee Units: </b></td>
+			<td>&nbsp;</td>
+			<?php
+			for ($i = 0; $i < 20; $i++) { ?>
+				<td><?php echo $this->aggregated[$i]['melee']; ?></td>
+			<?php } ?>
+		</tr>
+		<tr>
+			<td><b>Ranged Units: </b></td>
+			<td>&nbsp;</td>
+			<?php
+			for ($i = 0; $i < 20; $i++) { ?>
+				<td><?php echo $this->aggregated[$i]['ranged']; ?></td>
+			<?php } ?>
+		</tr>
+		<tr>
+			<td><b>Caster Units: </b></td>
+			<td>&nbsp;</td>
+			<?php
+			for ($i = 0; $i < 20; $i++) { ?>
+				<td><?php echo $this->aggregated[$i]['caster']; ?></td>
+			<?php } ?>
+		</tr>
+		<tr>
+			<td><b>Overall Units: </b></td>
+			<td>&nbsp;</td>
+			<?php
+			for ($i = 0; $i < 20; $i++) { ?>
+				<td><?php echo $this->aggregated[$i]['total']; ?></td>
+			<?php } ?>
+		</tr>
+	</tfoot>
+</table>
+<div class="otherCreeps">
+	<?php echo $this->render("creeps/broodMother.phtml"); ?>
+	<?php echo $this->render("creeps/graveyard.phtml"); ?>
+	<?php echo $this->render("creeps/titanDevourer.phtml"); ?>
+	<?php echo $this->render("creeps/kingMithas.phtml"); ?>
+</div>

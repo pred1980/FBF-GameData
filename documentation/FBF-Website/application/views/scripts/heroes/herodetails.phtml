@@ -1,0 +1,253 @@
+<div class="heroDetails clearfix relative">
+    <div class="sideMenu ti mainSprite">All Heroes
+        <div class="naviOpen mainSprite ti toRight">open</div>
+        <div class="sideBox">
+            <div class="jScrollbar clearfix">
+                <div class="jScrollbar_mask fll relative">
+                    <?php //<h3 class="forsaken ti fontSprite">Forsaken</h3>?>
+                    <ul class="heroes clearfix">
+                        <?php foreach ($this->forsakenHeroPreviewImages as $value) { ?>
+                            <li>
+                                <a class="<?php echo $value['affilation']; ?> heroesMenuSprite unitIcon ti <?php echo $this->stringManipulator()->strtocamelcase($value['name']); ?>PrevIcon<?php echo ($this->heroDetails[0]['name'] === $value['name']) ? 'Hover unitIconHover' : ''; ?>" href="<?php echo $this->baseUrl('heroes')?>/<?php echo $value['fname']; ?>" title="<?php echo $value['name']; ?>" ><?php echo $value['name']; ?></a>
+                            </li>
+                        <?php } ?>
+                    </ul>
+                    <div class="seperator mainSprite"></div>
+                    <?php //<h3 class="coalition ti fontSprite">Coalition</h3>?>
+                    <ul class="heroes clearfix">
+                        <?php foreach ($this->coalitionHeroPreviewImages as $value) { ?>
+                            <li>
+                                <a class="<?php echo $value['affilation']; ?> heroesMenuSprite unitIcon ti <?php echo $this->stringManipulator()->strtocamelcase($value['name']); ?>PrevIcon<?php echo ($this->heroDetails[0]['name'] === $value['name']) ? 'Hover unitIconHover' : ''; ?>" href="<?php echo $this->baseUrl('heroes')?>/<?php echo $value['fname']; ?>" title="<?php echo $value['name']; ?>" ><?php echo $value['name']; ?></a>
+                            </li>
+                        <?php } ?>
+                    </ul>
+                </div>
+                <div class="jScrollbar_draggable fll mainSprite">
+                    <a href="#" class="draggable mainSprite"></a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="relative topBox">
+        <h2> <?php echo $this->heroDetails[0]['name']; ?>
+            <img class="heroImage" alt="<?php echo $this->heroDetails[0]['name']; ?>" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/heroes/').$this->heroDetails[0]['image']; ?>" width="509px" height="294px">
+        </h2>
+        <?php $primary = $this->heroDetails[0]['primary_attribute_name']; ?>
+        <div class="attributeBox">
+            <ul class="attributeList">
+                <li class="mainSprite ti str <?php echo ($primary === 'Strength') ? 'primary' : ''; ?>">Strength</li>
+                <li class="mainSprite ti agi <?php echo ($primary === 'Agility') ? 'primary' : ''; ?>">Agility</li>
+                <li class="mainSprite ti int <?php echo ($primary === 'Intelligence') ? 'primary' : ''; ?>">Intelligence</li>
+            </ul>
+            <ul class="attributeValues">
+                <li class="str <?php echo ($primary === 'Strength') ? 'primVal' : ''; ?>"><b><?php echo $this->heroDetails[0]['str_value']; ?></b><br />(<?php echo "+" . $this->heroDetails[0]['str_bonus']; ?>)</li>
+                <li class="agi <?php echo ($primary === 'Agility') ? 'primVal' : ''; ?>"><b><?php echo $this->heroDetails[0]['agi_value']; ?></b><br />(<?php echo "+" . $this->heroDetails[0]['agi_bonus']; ?>)</li>
+                <li class="int <?php echo ($primary === 'Intelligence') ? 'primVal' : ''; ?>"><b><?php echo $this->heroDetails[0]['int_value']; ?></b><br />(<?php echo "+" . $this->heroDetails[0]['int_bonus']; ?>)</li>
+            </ul>
+        </div>
+        <div class="statisticBox clearfix">
+            <ul class="statNames">
+                <li>Affilation</li>
+                <li>Gender</li>
+                <li>Race</li>
+                <li>Role</li>
+                <li>Damage</li>
+                <li>Armor</li>
+                <li>Movementspeed</li>
+            </ul>
+            <ul class="statValues">
+                <li><?php echo $this->heroDetails[0]['affilation']; ?></li>
+                <li><?php echo $this->heroDetails[0]['gender']; ?></li>
+                <li><?php echo $this->heroDetails[0]['race']; ?></li>
+                <li><?php echo $this->heroDetails[0]['role']; ?></li>
+                <li><?php echo $this->heroDetails[0]['damage']; ?></li>
+                <li><?php echo $this->heroDetails[0]['armor']; ?></li>
+                <li><?php echo $this->heroDetails[0]['movementspeed']; ?></li>
+            </ul>
+            <div class="seperator mainSprite"></div>
+            <ul class="statNames second">
+                <li>Health-Regeneration</li>
+                <li>Mana-Regeneration</li>
+                <li>Weapon Type</li>
+                <li>Cooldown</li>
+                <li>Range</li>
+                <li>Start Health Points</li>
+                <li>Start Mana Points</li>
+            </ul>
+            <ul class="statValues">
+                <li><?php echo $this->heroDetails[0]['health_reg']; ?></li>
+                <li><?php echo $this->heroDetails[0]['mana_reg']; ?></li>
+                <li><?php echo $this->heroDetails[0]['weapen_type']; ?></li>
+                <li><?php echo $this->heroDetails[0]['cooldown']; ?></li>
+                <li><?php echo $this->heroDetails[0]['range']; ?></li>
+                <li><?php echo $this->heroDetails[0]['HP']; ?></li>
+                <li><?php echo $this->heroDetails[0]['Mana']; ?></li>
+            </ul>    
+        </div>
+    </div>
+    <div class="clearfix fll">
+        <div class="recommendedItems fll">
+            <div class="seperator mainSprite"></div>
+            <span>Recommended</span>
+            <strong>Items</strong>
+            <ul class="iconList clearfix">
+            <?php
+                $count = 0; 
+                foreach ($this->heroItems as $value) { ?>
+                <li class="ti itemsSprite <?php echo $value['f-name']; ?> <?php echo ($count%2 == 0) ? 'left"' : ''; ?>" title="<?php echo $value['name']; ?>"><?php echo $value['name']; ?></li>
+            <?php $count++; } ?>
+            </ul>
+        </div>
+        <div class="heroDetailTabBox tabs fll">
+            <ul class="clearfix">
+                <li><a class="tab0 fontSprite ti tab0Active" href="#tabs-0">Information</a></li>
+                <li><a class="tab1 fontSprite ti" href="#tabs-1">Media</a></li>
+                <li><div class="facebook fontSprite ti">Facebook</div></li>
+                <li><a class="tab2 fontSprite ti" href="#tabs-2">Changelog</a></li>
+            </ul>
+            <div class="panes">
+                <div id="tabs-0">
+                    <div class="jScrollbar">
+                        <div class="jScrollbar_mask">
+                            <?php $splitedText = $this->stringManipulator()->split($this->heroDetails[0]['text']); ?>
+                            <b><?php echo $splitedText[0]; ?></b>
+                            <?php echo $splitedText[1]; ?>
+                            <div class="fakeContent"></div>
+                        </div>
+                        <div class="jScrollbar_draggable mainSprite">
+                            <a href="#" class="draggable mainSprite"></a>
+                        </div>
+                    </div>
+                </div>
+                <div id="tabs-1">
+                	<div class="jScrollbar">
+                        <div class="jScrollbar_mask">
+		                    <ul class="heroFanarts clearfix">
+		                        <?php foreach ($this->heroPictures as $value) { ?>
+		                            <li>
+		                                <a href="/files/frontend/img/enUS/media/big/<?php echo $value['source']; ?>" rel="colorbox" class="colorboxImages">
+		                                    <img width="100"
+		                                        src="/files/frontend/img/enUS/media/medium/<?php echo $value['source']; ?>"
+		                                        title="<?php echo $value['title']; ?>"
+		                                        data-description="<?php echo $value['description']; ?>"
+		                                    >
+		                                </a>
+		                            </li>
+		                        <?php } ?>
+		                    </ul>
+		                    <div class="fakeContent"></div>
+		               </div>
+		               <div class="jScrollbar_draggable mainSprite">
+		                   <a href="#" class="draggable mainSprite"></a>
+		               </div>
+		           </div>
+                </div>
+                <div id="tabs-2">
+                <?php
+                    if (!empty($this->changelog[0]['description'])) { ?>
+                    <div class="jScrollbar">
+                        <div class="jScrollbar_mask">
+                            <b class="changelogVer">Version: <?php echo !empty($this->changelog[0]['version']) ? "(v " . $this->changelog[0]['version'] . ")" : ''; ?> </b>
+                            <ul class="items clearfix">
+                            <?php
+                                $changelogData =  $this->stringManipulator()->splitData($this->changelog[0]['description']);
+                                foreach ($changelogData as $value) { ?>
+                                    <li class="item hRepeats"><?php echo $value; ?></li>
+                                <?php } ?>
+                            </ul>
+                            <div class="fakeContent"></div>
+                        </div>
+                        <div class="jScrollbar_draggable mainSprite">
+                            <a href="#" class="draggable mainSprite"></a>
+                        </div>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+            <div class="gradient"></div>
+        </div>
+    </div>
+    <div class="skills">
+        <h3 class="fontSprite ti">Skills</h3>
+        <div class="border"></div>
+        <div class="skillDetails">
+            <?php for ($i = 0; $i < 18; $i++) { 
+                if ($i === 0 || $i === 5 || $i === 10 || $i === 15) { ?>
+                    <div class="clearfix skill">
+                        <?php $spellName =  str_replace(' ', '-', strtolower($this->heroSpells[$i]['name']));?>
+                        <div class="fll clearfix skillDescBox">
+                            <img class="fll name" alt="<?php echo $this->heroSpells[$i]['name']; ?>" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/spells/').$spellName.".jpg"; ?>" width="55px" height="55px">
+                            <h4 class="fll"><?php echo $this->heroSpells[$i]['name']; ?></h4>
+                            <div class="desc fll"><?php echo $this->heroSpells[$i]['description']; ?></div>
+                        </div>
+                        <div class="clearfix fll abiTypeStats">
+                            <span class="fll">Ability Type:</span>
+                            <b class="fll">&nbsp;<?php echo $this->heroSpells[$i]['ability_type']; ?></b>
+                            <span class="fll">Targeting Type:</span>
+                            <b class="fll">&nbsp;<?php echo $this->heroSpells[$i]['targeting_type']; ?></b>
+                            <span class="fll">Hotkey:</span>
+                            <b class="fll">&nbsp;<?php echo $this->heroSpells[$i]['ability_hotkey']; ?></b>
+                        </div>
+                        <table class="tableStats" cellspacing="2px" cellpadding="0px">
+                            <thead>
+                                <tr>
+                                    <th class="level">Level</th>
+                                    <th class="duration">Duration</th>
+                                    <th class="manaCost">Mana Cost</th>
+                                    <th class="cooldown">Cooldown</th>
+                                    <th class="range">Range</th> 
+                                    <th class="aor">AoE</th>
+                                    <th class="targets">Targets</th>
+                                    <th class="effects">Effects</th>
+                                    <th class="heroLevel">Hero Level</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                                $index = ($i < 15) ? 5 : 3;
+                                for ($k = $i; $k < $index + $i; $k++) { ?>
+                                    <tr>
+                                        <td><?php echo $this->heroSpells[$k]['level']; ?></td>
+                                        <td><?php echo $this->heroSpells[$k]['duration']; ?></td>
+                                        <td><?php echo $this->heroSpells[$k]['mana_cost']; ?></td>
+                                        <td><?php echo $this->heroSpells[$k]['cooldown']; ?></td>
+                                        <td><?php echo $this->heroSpells[$k]['range']; ?></td>
+                                        <td><?php echo $this->heroSpells[$k]['aoe']; ?></td>
+                                        <td><?php echo $this->heroSpells[$k]['targets']; ?></td>
+                                        <td><?php echo $this->heroSpells[$k]['effects']; ?></td>
+                                        <td class="heroLevel"><?php echo $this->heroSpells[$k]['required_level']; ?></td>
+                                    </tr>  
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                        <?php if (!empty($this->heroSpells[$i]['note'])) { ?>
+                            <span class="notes fll">NOTES</span>
+                            <ul class="fll notes">
+                                <?php 
+                                $notes =  $this->stringManipulator()->splitData($this->heroSpells[$i]['note']);
+                                foreach ($notes as $value) { ?>
+                                    <li class="note hRepeats"><?php echo $value; ?></li>
+                                <?php } ?>
+                            </ul>
+                        
+                        <?php } ?>
+                    </div>
+                <?php } ?>
+        <?php } ?>
+            
+        </div>
+    </div>
+    <div class="fb-commentBox">
+        <h3 class="fontSprite ti">Facebook Comments</h3>
+        <div class="borderTop"></div>
+        <div class="content">
+            <div id="fb-root"></div>
+            <?php foreach ($this->heroDetails as $value) { ?>
+                <div class="fb-comments" data-href="<?php echo $this->serverUrl().'/heroes/'.$value['fname'];?>" data-num-posts="2" data-width="713" data-colorscheme="dark"></div>
+            <?php } ?>
+        </div>
+        <div class="borderBottom"></div>
+    </div>
+    <div class="scrollTop fontSprite ti flr">scroll to top</div>
+</div>

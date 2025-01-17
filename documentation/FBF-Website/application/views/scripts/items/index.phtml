@@ -1,0 +1,477 @@
+<h2 class="items ti fontSprite">FBF Items</h2>
+<?php //<p class="introduction">Text about the FBF Items</p> ?>
+
+<div class="clearfix itemsBox relative">
+    <div class="mainSprite race UD"></div>
+    <div class="fll boxSpaceRight boxSpaceBottom relative">
+        <div class="ice1 absolute mainSprite"></div>
+        <div class="itemsDetailTabBox undead tabs fll">
+            <ul class="clearfix UD">
+                <?php 
+                    /* Undead Item Shop Tabs */
+                    $index = 0;
+                    
+                    foreach ($this->itemData['UD'] as $value) { ?>
+                        <li><a class="ti block shopsFontSprite shop<?php echo ++$index; ?><?php echo ($index === 1) ? 'Active shop1' : ''; ?>" href="#tabs-<?php echo $index-1; ?>"><?php echo $value[0]['name']; ?></a></li>
+                <?php } ?>
+            </ul>
+            <div class="panes box">
+                <?php /* Undead Item Shop 1 */ ?>
+                <div id="tabs-0" class="clearfix relative">
+                    <ul class="fll itemList UD-Shop10">
+                        <?php 
+                            /* Undead Items in 3 rows a 4 Items */
+                            $index = 0;
+                            foreach ($this->itemData['UD']['10'] as $value) { ++$index; ?>
+                                <li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+                        <?php } ?>
+                    </ul>
+                    <h3 class="fll"><strong><?php echo $this->itemData['UD']['10'][0]['iName'];?></strong></h3>
+                    <span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['UD']['10'][0]['iCosts']; ?> Gold"></span>
+                    <span class="seperator mainSprite"></span>
+                    <span class="fll itemDesc"><?php echo $this->itemData['UD']['10'][0]['iDesc']; ?></span>
+                    <div class="jScrollbar fll clearfix">
+                        <div class="jScrollbar_mask fll relative">    
+                            <div class="fll bonusBox clearfix">
+                                <b class="fll bonus">Bonus:</b>
+                                <ul class="bonusList clearfix">
+                                    <?php 
+                                        $itemBonus =  $this->stringManipulator()->splitData($this->itemData['UD']['10'][0]['iBonus']);
+                                        foreach ($itemBonus as $value) { ?>
+                                            <li class="item hRepeats"><?php echo $value; ?></li>
+                                    <?php }    ?>
+                                </ul>
+                            </div>
+                            <div class="fll fakeContent"></div>
+                        </div>
+                        <div class="jScrollbar_draggable fll mainSprite">
+                            <a href="#" class="draggable mainSprite"></a>
+                        </div>
+                    </div>
+                    <div class="fll gradient"></div>
+                </div>
+                <div id="tabs-1" class="clearfix relative">
+                    <ul class="fll itemList UD-Shop11">
+                        <?php 
+                            /* Undead Items in 3 rows a 4 Items */
+                            $index = 0;
+                            foreach ($this->itemData['UD']['11'] as $value) { ++$index; ?>
+                                <li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+                        <?php } ?>
+                    </ul>
+                    <h3 class="fll"><strong><?php echo $this->itemData['UD']['11'][0]['iName'];?></strong></h3>
+                    <span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['UD']['11'][0]['iCosts']; ?> Gold"></span>
+                    <span class="seperator mainSprite"></span>
+                    <span class="fll itemDesc"><?php echo $this->itemData['UD']['11'][0]['iDesc']; ?></span>
+                    <div class="jScrollbar fll clearfix">
+                        <div class="jScrollbar_mask fll relative">    
+                            <div class="fll bonusBox clearfix">
+                                <b class="fll bonus">Bonus:</b>
+                                <ul class="bonusList clearfix">
+                                    <?php 
+                                        $itemBonus =  $this->stringManipulator()->splitData($this->itemData['UD']['11'][0]['iBonus']);
+                                        foreach ($itemBonus as $value) { ?>
+                                            <li class="item hRepeats"><?php echo $value; ?></li>
+                                    <?php }    ?>
+                                </ul>
+                            </div>
+                            <div class="fll fakeContent"></div>
+                        </div>
+                        <div class="jScrollbar_draggable fll mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="fll gradient"></div>
+				</div>
+				<div id="tabs-2" class="clearfix relative">
+					<ul class="fll itemList UD-Shop12">
+						<?php 
+							/* Undead Items in 3 rows a 4 Items */
+							$index = 0;
+							foreach ($this->itemData['UD']['12'] as $value) { ++$index; ?>
+								<li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+						<?php } ?>
+					</ul>
+					<h3 class="fll"><strong><?php echo $this->itemData['UD']['12'][0]['iName'];?></strong></h3>
+					<span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['UD']['12'][0]['iCosts']; ?> Gold"></span>
+					<span class="seperator mainSprite"></span>
+					<span class="fll itemDesc"><?php echo $this->itemData['UD']['12'][0]['iDesc']; ?></span>
+					<div class="jScrollbar fll clearfix">
+						<div class="jScrollbar_mask fll relative">	
+							<div class="fll bonusBox clearfix">
+								<b class="fll bonus">Bonus:</b>
+								<ul class="bonusList clearfix">
+									<?php 
+										$itemBonus =  $this->stringManipulator()->splitData($this->itemData['UD']['12'][0]['iBonus']);
+										foreach ($itemBonus as $value) { ?>
+											<li class="item hRepeats"><?php echo $value; ?></li>
+									<?php }	?>
+								</ul>
+							</div>
+							<div class="fll fakeContent"></div>
+						</div>
+						<div class="jScrollbar_draggable fll mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="fll gradient"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="mainSprite race NE"></div>
+	<div class="fll boxSpaceBottom">
+		<div class="itemsDetailTabBox tabs fll">
+			<ul class="clearfix NE">
+				<?php 
+					/* Human Item Shop Tabs*/
+					$index = 0;
+					foreach ($this->itemData['NE'] as $value) { ?>
+						<li><a class="ti block shopsFontSprite shop<?php echo ++$index; ?><?php echo ($index === 1) ? 'Active shop1' : ''; ?>" href="#tabs-<?php echo $index-1; ?>"><?php echo $value[0]['name']; ?></a></li>
+				<?php } ?>
+			</ul>
+			<div class="panes box">
+				<div id="tabs-0" class="clearfix relative">
+					<ul class="fll itemList NE-Shop1">
+						<?php 
+							/* Nightelf Items in 3 rows a 4 Items */
+							$index = 0;
+							foreach ($this->itemData['NE']['1'] as $value) { ++$index; ?>
+								<li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+						<?php } ?>
+					</ul>
+					<h3 class="fll"><strong><?php echo $this->itemData['NE']['1'][0]['iName'];?></strong></h3>
+					<span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['NE']['1'][0]['iCosts']; ?> Gold"></span>
+					<span class="seperator mainSprite"></span>
+					<span class="fll itemDesc"><?php echo $this->itemData['NE']['1'][0]['iDesc']; ?></span>
+					<div class="jScrollbar fll clearfix">
+						<div class="jScrollbar_mask fll relative">	
+							<div class="fll bonusBox clearfix">
+								<b class="fll bonus">Bonus:</b>
+								<ul class="bonusList clearfix">
+									<?php 
+										$itemBonus =  $this->stringManipulator()->splitData($this->itemData['NE']['1'][0]['iBonus']);
+										foreach ($itemBonus as $value) { ?>
+											<li class="item hRepeats"><?php echo $value; ?></li>
+									<?php }	?>
+								</ul>
+							</div>
+							<div class="fll fakeContent"></div>
+						</div>
+						<div class="jScrollbar_draggable fll mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="fll gradient"></div>
+				</div>
+				<div id="tabs-1" class="clearfix relative">
+					<ul class="fll itemList NE-Shop2">
+						<?php 
+							/* Nightelf Items in 3 rows a 4 Items */
+							$index = 0;
+							foreach ($this->itemData['NE']['2'] as $value) { ++$index; ?>
+								<li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+						<?php } ?>
+					</ul>
+					<h3 class="fll"><strong><?php echo $this->itemData['NE']['2'][0]['iName'];?></strong></h3>
+					<span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['NE']['2'][0]['iCosts']; ?> Gold"></span>
+					<span class="seperator mainSprite"></span>
+					<span class="fll itemDesc"><?php echo $this->itemData['NE']['2'][0]['iDesc']; ?></span>
+					<div class="jScrollbar fll clearfix">
+						<div class="jScrollbar_mask fll relative">	
+							<div class="fll bonusBox clearfix">
+								<b class="fll bonus">Bonus:</b>
+								<ul class="bonusList clearfix">
+									<?php 
+										$itemBonus =  $this->stringManipulator()->splitData($this->itemData['NE']['2'][0]['iBonus']);
+										foreach ($itemBonus as $value) { ?>
+											<li class="item hRepeats"><?php echo $value; ?></li>
+									<?php }	?>
+								</ul>
+							</div>
+							<div class="fll fakeContent"></div>
+						</div>
+						<div class="jScrollbar_draggable fll mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="fll gradient"></div>
+				</div>
+				<div id="tabs-2" class="clearfix relative">
+					<ul class="fll itemList NE-Shop3">
+						<?php 
+							/* Nightelf Items in 3 rows a 4 Items */
+							$index = 0;
+							foreach ($this->itemData['NE']['3'] as $value) { ++$index; ?>
+								<li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+						<?php } ?>
+					</ul>
+					<h3 class="fll"><strong><?php echo $this->itemData['NE']['3'][0]['iName'];?></strong></h3>
+					<span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['NE']['3'][0]['iCosts']; ?> Gold"></span>
+					<span class="seperator mainSprite"></span>
+					<span class="fll itemDesc"><?php echo $this->itemData['NE']['3'][0]['iDesc']; ?></span>
+					<div class="jScrollbar fll clearfix">
+						<div class="jScrollbar_mask fll relative">	
+							<div class="fll bonusBox clearfix">
+								<b class="fll bonus">Bonus:</b>
+								<ul class="bonusList clearfix">
+									<?php 
+										$itemBonus =  $this->stringManipulator()->splitData($this->itemData['NE']['3'][0]['iBonus']);
+										foreach ($itemBonus as $value) { ?>
+											<li class="item hRepeats"><?php echo $value; ?></li>
+									<?php }	?>
+								</ul>
+							</div>
+							<div class="fll fakeContent"></div>
+						</div>
+						<div class="jScrollbar_draggable fll mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="fll gradient"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="mainSprite race HUM"></div>
+	<div class="fll boxSpaceRight">
+		<div class="itemsDetailTabBox human tabs fll">
+			<ul class="clearfix HUM">
+				<?php 
+					/* Orc Item Shop Tabs */
+					$index = 0;
+					foreach ($this->itemData['HUM'] as $value) { ?>
+						<li><a class="ti block shopsFontSprite shop<?php echo ++$index; ?><?php echo ($index === 1) ? 'Active shop1' : ''; ?>" href="#tabs-<?php echo $index-1; ?>"><?php echo $value[0]['name']; ?></a></li>
+				<?php } ?>
+			</ul>
+			<div class="panes box">
+				<div id="tabs-0" class="clearfix relative">
+					<ul class="fll itemList HUM-Shop7">
+						<?php
+							/* Human Items in 3 rows a 4 Items */
+							$index = 0;
+							foreach ($this->itemData['HUM']['7'] as $value) { ++$index; ?>
+								<li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+						<?php } ?>
+					</ul>
+					<h3 class="fll"><strong><?php echo $this->itemData['HUM']['7'][0]['iName'];?></strong></h3>
+					<span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['HUM']['7'][0]['iCosts']; ?> Gold"></span>
+					<span class="seperator mainSprite"></span>
+					<span class="fll itemDesc"><?php echo $this->itemData['HUM']['7'][0]['iDesc']; ?></span>
+					<div class="jScrollbar fll clearfix">
+						<div class="jScrollbar_mask fll relative">	
+							<div class="fll bonusBox clearfix">
+								<b class="fll bonus">Bonus:</b>
+								<ul class="bonusList clearfix">
+									<?php 
+										$itemBonus =  $this->stringManipulator()->splitData($this->itemData['HUM']['7'][0]['iBonus']);
+										foreach ($itemBonus as $value) { ?>
+											<li class="item hRepeats"><?php echo $value; ?></li>
+									<?php }	?>
+								</ul>
+							</div>
+							<div class="fll fakeContent"></div>
+						</div>
+						<div class="jScrollbar_draggable fll mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="fll gradient"></div>
+				</div>
+				<div id="tabs-1" class="clearfix relative">
+					<ul class="fll itemList HUM-Shop8">
+						<?php 
+							/* Human Items in 3 rows a 4 Items */
+							$index = 0;
+							foreach ($this->itemData['HUM']['8'] as $value) { ++$index; ?>
+								<li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+						<?php } ?>
+					</ul>
+					<h3 class="fll"><strong><?php echo $this->itemData['HUM']['8'][0]['iName'];?></strong></h3>
+					<span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['HUM']['8'][0]['iCosts']; ?> Gold"></span>
+					<span class="seperator mainSprite"></span>
+					<span class="fll itemDesc"><?php echo $this->itemData['HUM']['8'][0]['iDesc']; ?></span>
+					<div class="jScrollbar fll clearfix">
+						<div class="jScrollbar_mask fll relative">	
+							<div class="fll bonusBox clearfix">
+								<b class="fll bonus">Bonus:</b>
+								<ul class="bonusList clearfix">
+									<?php 
+										$itemBonus =  $this->stringManipulator()->splitData($this->itemData['HUM']['8'][0]['iBonus']);
+										foreach ($itemBonus as $value) { ?>
+											<li class="item hRepeats"><?php echo $value; ?></li>
+									<?php }	?>
+								</ul>
+							</div>
+							<div class="fll fakeContent"></div>
+						</div>
+						<div class="jScrollbar_draggable fll mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="fll gradient"></div>
+				</div>
+				<div id="tabs-2" class="clearfix relative">
+					<ul class="fll itemList HUM-Shop9">
+						<?php 
+							/* Human Items in 3 rows a 4 Items */
+							$index = 0;
+							foreach ($this->itemData['HUM']['9'] as $value) { ++$index; ?>
+								<li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+						<?php } ?>
+					</ul>
+					<h3 class="fll"><strong><?php echo $this->itemData['HUM']['9'][0]['iName'];?></strong></h3>
+					<span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['HUM']['9'][0]['iCosts']; ?> Gold"></span>
+					<span class="seperator mainSprite"></span>
+					<span class="fll itemDesc"><?php echo $this->itemData['HUM']['9'][0]['iDesc']; ?></span>
+					<div class="jScrollbar fll clearfix">
+						<div class="jScrollbar_mask fll relative">	
+							<div class="fll bonusBox clearfix">
+								<b class="fll bonus">Bonus:</b>
+								<ul class="bonusList clearfix">
+									<?php 
+										$itemBonus =  $this->stringManipulator()->splitData($this->itemData['HUM']['9'][0]['iBonus']);
+										foreach ($itemBonus as $value) { ?>
+											<li class="item hRepeats"><?php echo $value; ?></li>
+									<?php }	?>
+								</ul>
+							</div>
+							<div class="fll fakeContent"></div>
+						</div>
+						<div class="jScrollbar_draggable fll mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="fll gradient"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="mainSprite race ORC"></div>
+	<div class="fll">
+		<div class="itemsDetailTabBox orc tabs fll">
+			<ul class="clearfix ORC">
+				<?php 
+					/* Orc Item Shop Tabs */
+					$index = 0;
+					foreach ($this->itemData['ORC'] as $value) { ?>
+						<li><a class="ti block shopsFontSprite shop<?php echo ++$index; ?><?php echo ($index === 1) ? 'Active shop1' : ''; ?>" href="#tabs-<?php echo $index-1; ?>"><?php echo $value[0]['name']; ?></a></li>
+				<?php } ?>
+			</ul>
+			<div class="panes box">
+				<div id="tabs-0" class="clearfix relative">
+					<ul class="fll itemList ORC-Shop4">
+						<?php
+							/* Orc Items in 3 rows a 4 Items */
+							$index = 0;
+							foreach ($this->itemData['ORC']['4'] as $value) { ++$index; ?>
+								<li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+						<?php } ?>
+					</ul>
+					<h3 class="fll"><strong><?php echo $this->itemData['ORC']['4'][0]['iName'];?></strong></h3>
+					<span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['ORC']['4'][0]['iCosts']; ?> Gold"></span>
+					<span class="seperator mainSprite"></span>
+					<span class="fll itemDesc"><?php echo $this->itemData['ORC']['4'][0]['iDesc']; ?></span>
+					<div class="jScrollbar fll clearfix">
+						<div class="jScrollbar_mask fll relative">	
+							<div class="fll bonusBox clearfix">
+								<b class="fll bonus">Bonus:</b>
+								<ul class="bonusList clearfix">
+									<?php 
+										$itemBonus =  $this->stringManipulator()->splitData($this->itemData['ORC']['4'][0]['iBonus']);
+										foreach ($itemBonus as $value) { ?>
+											<li class="item hRepeats"><?php echo $value; ?></li>
+									<?php }	?>
+								</ul>
+							</div>
+							<div class="fll fakeContent"></div>
+						</div>
+						<div class="jScrollbar_draggable fll mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="fll gradient"></div>
+				</div>
+				<div id="tabs-1" class="clearfix relative">
+					<ul class="fll itemList ORC-Shop5">
+						<?php 
+							/* Orc Items in 3 rows a 4 Items */
+							$index = 0;
+							foreach ($this->itemData['ORC']['5'] as $value) { ++$index; ?>
+								<li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+						<?php } ?>
+					</ul>
+					<h3 class="fll"><strong><?php echo $this->itemData['ORC']['5'][0]['iName'];?></strong></h3>
+					<span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['ORC']['5'][0]['iCosts']; ?> Gold"></span>
+					<span class="seperator mainSprite"></span>
+					<span class="fll itemDesc"><?php echo $this->itemData['ORC']['5'][0]['iDesc']; ?></span>
+					<div class="jScrollbar fll clearfix">
+						<div class="jScrollbar_mask fll relative">	
+							<div class="fll bonusBox clearfix">
+								<b class="fll bonus">Bonus:</b>
+								<ul class="bonusList clearfix">
+									<?php 
+										$itemBonus =  $this->stringManipulator()->splitData($this->itemData['ORC']['5'][0]['iBonus']);
+										foreach ($itemBonus as $value) { ?>
+											<li class="item hRepeats"><?php echo $value; ?></li>
+									<?php }	?>
+								</ul>
+							</div>
+							<div class="fll fakeContent"></div>
+						</div>
+						<div class="jScrollbar_draggable fll mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="fll gradient"></div>
+				</div>
+				<div id="tabs-2" class="clearfix relative">
+					<ul class="fll itemList ORC-Shop6">
+						<?php 
+							/* Orc Items in 3 rows a 4 Items */
+							$index = 0;
+							foreach ($this->itemData['ORC']['6'] as $value) { ++$index; ?>
+								<li class="ti itemsSprite <?php echo $value['fName']; ?> <?php echo ($index === 1) ? 'active' : ''; ?>" title="<?php echo $value['iName']; ?>"><?php echo $value['iName']; ?></li>
+						<?php } ?>
+					</ul>
+					<h3 class="fll"><strong><?php echo $this->itemData['ORC']['6'][0]['iName'];?></strong></h3>
+					<span class="fll mainSprite goldIcon" title="<?php echo $this->itemData['ORC']['6'][0]['iCosts']; ?> Gold"></span>
+					<span class="seperator mainSprite"></span>
+					<span class="fll itemDesc"><?php echo $this->itemData['ORC']['6'][0]['iDesc']; ?></span>
+					<div class="jScrollbar fll clearfix">
+						<div class="jScrollbar_mask fll relative">	
+							<div class="fll bonusBox clearfix">
+								<b class="fll bonus">Bonus:</b>
+								<ul class="bonusList clearfix">
+									<?php 
+										$itemBonus =  $this->stringManipulator()->splitData($this->itemData['ORC']['6'][0]['iBonus']);
+										foreach ($itemBonus as $value) { ?>
+											<li class="item hRepeats"><?php echo $value; ?></li>
+									<?php }	?>
+								</ul>
+							</div>
+							<div class="fll fakeContent"></div>
+						</div>
+						<div class="jScrollbar_draggable fll mainSprite">
+							<a href="#" class="draggable mainSprite"></a>
+						</div>
+					</div>
+					<div class="fll gradient"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="fb-commentBox">
+	<h3 class="fontSprite ti">Facebook Comments</h3>
+	<div class="borderTop"></div>
+	<div class="content">
+		<div id="fb-root"></div>
+		<div class="fb-comments" data-href="<?php echo $this->serverUrl().'/items';?>" data-num-posts="2" data-width="723" data-colorscheme="dark"></div>
+	</div>
+	<div class="borderBottom"></div>
+</div>
+<div class="scrollTop fontSprite ti flr">scroll to top</div>

@@ -1,0 +1,32 @@
+<?php if (isset($this->glossary['Y'])){ ?>
+    <div id="content-for-y">
+        <h2>Y</h2>
+        <?php
+            foreach ($this->glossary['Y'] as $value) { ?>
+                <p>
+                    <strong>
+                        <?php echo $value['name']; ?>
+                    </strong>
+                </p>
+                <p>
+                    <?php echo $value['description'] ?>
+                </p>
+        <?php } ?>
+    </div>
+<?php }
+    if (isset($this->glossary['Z'])){ ?>
+        <div id="content-for-z">
+            <h2>Z</h2>
+            <?php
+                foreach ($this->glossary['z'] as $value) { ?>
+                    <p>
+                        <strong>
+                            <?php echo $value['name']; ?>
+                        </strong>
+                    </p>
+                    <p>
+                        <?php echo $value['description'] ?>
+                    </p>
+            <?php } ?>
+        </div>
+<?php } ?>

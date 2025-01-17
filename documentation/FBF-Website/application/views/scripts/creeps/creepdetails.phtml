@@ -1,0 +1,147 @@
+<div class="creepDetails clearfix">
+	<div class="sideMenu ti mainSprite">All Creeps
+		<div class="naviOpen mainSprite ti toRight">open</div>
+		<div class="sideBox">
+			<div class="jScrollbar clearfix">
+				<div class="jScrollbar_mask fll relative">
+					<ul class="creeps clearfix">
+						<?php foreach ($this->creepData as $value) { ?>
+							<li>
+								<a class="creepMenuSprite unitIcon ti <?php echo $this->stringManipulator()->strtocamelcase($value['name']); ?>PrevIcon unitIconHover' : ''; ?>" href="<?php echo $this->baseUrl('creeps')?>/<?php echo $value['fname']; ?>" title="<?php echo $value['name']; ?>" ><?php echo $value['name']; ?></a>
+							</li>
+						<?php } ?>
+					</ul>
+				</div>
+				<div class="jScrollbar_draggable fll mainSprite">
+					<a href="#" class="draggable mainSprite"></a>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	
+	<div class="relative topBox">
+		<h2> <?php echo $this->creepDetails[0]['name']; ?>
+			<img class="creepImage" alt="<?php echo $this->creepDetails[0]['name']; ?>" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/creeps/').$this->creepDetails[0]['image']; ?>"width="509px" height="294px">
+		</h2>
+		<div class="statisticBox clearfix">
+			<ul class="statNames">
+				<li>Affilation</li>
+				<li>Race</li>
+				<li>Damage</li>
+				<li>Armor</li>
+				<li>Armor Type</li>
+				<li>Attack Type</li>
+			</ul>
+			<ul class="statValues">
+				<li><?php echo $this->creepDetails[0]['affilation']; ?></li>
+				<li><?php echo $this->creepDetails[0]['race']; ?></li>
+				<li><?php echo $this->creepDetails[0]['damage']; ?></li>
+				<li><?php echo $this->creepDetails[0]['armor']; ?></li>
+				<li><?php echo $this->creepDetails[0]['armor_type']; ?></li>
+				<li><?php echo $this->creepDetails[0]['attack_type']; ?></li>
+			</ul>
+			<div class="seperator mainSprite"></div>
+			<ul class="statNames second">
+				<li>Weapon Type</li>
+				<li>HP-Reg.</li>
+				<li>Mana-Reg.</li>
+				<li>Cooldown</li>
+				<li>Range</li>
+				<li>Movement Speed</li>
+			</ul>
+			<ul class="statValues">
+				<li><?php echo $this->creepDetails[0]['weapon_type']; ?></li>
+				<li><?php echo $this->creepDetails[0]['health_reg']; ?></li>
+				<li><?php echo $this->creepDetails[0]['mana_reg']; ?></li>
+				<li><?php echo $this->creepDetails[0]['cooldown']; ?></li>
+				<li><?php echo $this->creepDetails[0]['range']; ?></li>
+				<li><?php echo $this->creepDetails[0]['movementspeed']; ?></li>
+			</ul>
+			<b class="round">The <strong><?php echo $this->creepDetails[0]['name'] ?></strong> runs in the Round <?php echo $this->roundData; ?>.</b>
+		</div>
+		<p><?php echo $this->creepDetails[0]['description']; ?></p>
+	</div>
+	
+	
+	
+	<div class="creepInfos">
+		<h3 class="fontSprite ti information">Information</h3>
+		<div class="border"></div>
+		 <p><?php echo $this->creepDetails[0]['information']; ?></p>
+	</div>
+	
+	<?php if($this->creepSpells !== null) { ?>
+	<div class="skills">
+		<h3 class="fontSprite ti">Skills</h3>
+		<div class="border"></div>
+		<?php
+		foreach ($this->creepSpells as $value) { ?>
+		<div class="skillDetails">
+			<div class="clearfix skill">
+			<?php $spellName =  str_replace(' ', '-', strtolower($value['name']));?>
+				<div class="clearfix skillDescBox">
+					<img class="fll name" alt="<?php echo $value['name']; ?>" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/spells/').$spellName.".jpg"; ?>" width="55px" height="55px">
+					<h4 class="fll"><?php echo $value['name']; ?></h4>
+					<div class="desc fll"><?php echo $value['description']; ?></div>
+				</div>
+				<table class="tableStats">
+					<thead>
+						<tr>
+							<th class="duration">Duration</th>
+							<th class="manaCost">Mana Cost</th>
+							<th class="cooldown">Cooldown</th>
+							<th class="range">Range</th> 
+							<th class="aor">AoE</th>
+							<th class="targets">Targets</th>
+							<th class="effects">Effects</th>
+						</tr>
+					</thead>
+					<tbody>
+							<tr>
+								<td><?php echo $value['duration']; ?></td>
+								<td><?php echo $value['mana_cost']; ?></td>
+								<td><?php echo $value['cooldown']; ?></td>
+								<td><?php echo $value['range']; ?></td>
+								<td><?php echo $value['aoe']; ?></td>
+								<td><?php echo $value['targets']; ?></td>
+								<td><?php echo $value['effects']; ?></td>
+							</tr>  
+					</tbody>
+				</table>
+				<?php if (!empty($value['note'])) { ?>
+					<span class="notes fll">NOTES</span>
+					<ul class="fll notes">
+						<?php 
+						$notes =  $this->stringManipulator()->splitData($value['note']);
+						foreach ($notes as $noteValue) { ?>
+							<li class="note hRepeats"><?php echo $noteValue; ?></li>
+						<?php } ?>
+					</ul>
+				
+				<?php } ?>
+			</div>
+			<?php if (!empty($value['information'])) { ?>
+			<b> <?php echo $value['name'] ?> Information</b>
+			<ul class="skillInfos">
+				<?php echo $value['information'] ?>
+			</ul>
+			<?php } ?>
+		</div>
+	<?php } ?>
+	</div>
+	<?php } ?>
+	
+	<div class="fb-commentBox">
+		<h3 class="fontSprite ti">Facebook Comments</h3>
+		<div class="borderTop"></div>
+		<div class="content">
+			<div id="fb-root"></div>
+			<?php foreach ($this->creepDetails as $value) { ?>
+				<div class="fb-comments" data-href="<?php echo $this->serverUrl().'/creeps/'.$value['fname'];?>" data-num-posts="2" data-width="713" data-colorscheme="dark"></div>
+			<?php } ?>
+		</div>
+		<div class="borderBottom"></div>
+	</div>
+	<div class="scrollTop fontSprite ti flr">scroll to top</div>
+</div>

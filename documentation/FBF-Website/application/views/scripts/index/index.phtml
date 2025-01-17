@@ -1,0 +1,96 @@
+<div class="index">
+	<h2 class="index ti fontSprite">Introduction</h2>
+	<div class="intro clearfix">
+		<p>
+			<span class="firstChar">I</span>
+			have seen it in the mud covered face of the southern men. I have seen it in the warmongering northerns, and even in the god's forgotten, dead plagued army. It is Change...
+		</p>
+		<img class="worldMap" alt="FBF World Map" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/media/misc/FBF-World-Map.jpg'); ?>" width="350">
+	</div>
+	
+	
+	<h3 class="hostBotHead ti fontSprite">Host Bots Status</h3>
+	<div class="hostBot">
+<!-- 		<iframe class="iframeGhopple" src="http://ghopple.ideaplexus.com/iframe" width="300px" height="100%" name="FBF Ghost Bots"></iframe> -->
+		<table class="tableStats" cellspacing="2px" cellpadding="0px">
+			<thead>
+				<tr>
+					<th class="number">Nr</th>
+					<th class="gameName">Game Name</th>
+					<th class="inGame">inGame</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+	</div>
+	
+	<p class="hostBotInfo">
+		<b>You want to play a game?</b> <br /><br />
+		You better hurry up. Make your choice!<br />
+		Choose a game from the list. Copy the game name!<br />
+		Start Warcraft III TFT and have fun!<br /><br />
+		Your FBF Team
+	</p>
+	
+	<div class="modContent clearfix">
+		<div class="left">
+			<h2 class="screenshots ti fontSprite">Screenshots</h2>
+			<div class="imageSlider">
+				<div id="screenshots">
+					<?php foreach ($this->mediaDataSlider1 as $value) { ?>
+						<a href="<?php echo $this->baseUrl('/files/frontend/img/enUS/media/medium/'); ?><?php echo $value['source']; ?>">
+							<img 
+								src="<?php echo $this->baseUrl('/files/frontend/img/enUS/media/small/'); ?><?php echo $value['source']; ?>"
+								data-big="<?php echo $this->baseUrl('/files/frontend/img/enUS/media/big/'); ?><?php echo $value['source']; ?>"
+								data-title="<?php echo $value['title']; ?>"
+								data-description="<?php echo $value['description']; ?>"
+							>
+						</a>
+					<?php } ?>
+				</div>
+			</div>
+			<h2 class="community ti fontSprite">Community</h2>
+			<div class="community">
+				<p>
+					<span class="firstChar">D</span>
+					o you want to share your opinions/suggestions about this map? Talk with other people about strategies, prepare private/public matches, or just join clans? You can do it now, in the <a href="<?php echo $this->baseUrl('forums');?>" title="FBF Forums">forums section</a>.
+				</p>
+			</div>
+		</div>
+		<div class="aboutFBF clearfix">
+			<h2>What is Forsaken Bastion's Fall?</h2>
+			<p>
+				<span class="firstChar">F</span>
+				orsaken Bastion's Fall (FBF) is a map that combines Tower Defense gameplay with an AoS-like Hero PvP Battle. Our project started in 2008, when it was known as Defense of the Undead (DotU). As time went on, ideas, criticizing, and suggestions reshaped DotU into a whole new map which was then completely remade from scratch to become what it is now.<br />
+				FBF is set in a completely new universe with an extensive lore that keeps growing as time goes by. It is set in a key point of the World's history: At the very end of a long war that present many great changes at social, political and religious levels. The players can choose from 2 teams and 5 different factions. The Forsaken, an ancient cult of necromancers and it's undead army, have to defend their last fortress from The Alliance (The Infidel), a coalition of human nations using their last resources to take down the Forsaken.<br />
+				There is a total of 5 factions, 27 heroes, 104 items (8 base items and 24 items unique to each faction), 27 minions with varied statistics and skills, and 11 towers for the Forsaken to use. Alongside a great map terrain and an extensive lore.
+			</p>
+		</div>
+		<?php /*
+		<div class="gameFeatures">
+			<h2>Game Features</h2>
+			<div class="imageSlider">
+				<div id="gameFeatures">
+					<?php foreach ($this->mediaDataSlider2 as $value) { ?>
+						<a href="/files/frontend/img/enUS/media/medium/<?php echo $value['source']; ?>">
+							<img 
+								src="/files/frontend/img/enUS/media/small/<?php echo $value['source']; ?>"
+								data-big="/files/frontend/img/enUS/media/big/<?php echo $value['source']; ?>"
+								data-title="<?php echo $value['title']; ?>"
+								data-description="<?php echo $value['description']; ?>"
+							>
+						</a>
+					<?php } ?>
+				</div>
+			</div>
+		</div>
+		*/ ?>
+	</div>
+	
+	<?php /*<div class="livestreamContent">
+		<h2>Do you want to look behind the gates?</h2>
+		<iframe class="livestream" width="560" height="340" src="http://cdn.livestream.com/embed/forsakenbastionsfall?layout=4&color=0xe7e7e7&autoPlay=true&mute=false&iconColorOver=0x888888&iconColor=0x777777&allowchat=true&height=340&width=560" style="border:0;outline:0" frameborder="0" scrolling="no"></iframe>
+	</div>*/?>
+</div>

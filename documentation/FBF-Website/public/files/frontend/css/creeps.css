@@ -1,0 +1,128 @@
+/* 
+    Document   : creeps
+    Created on : 12.06.2013, 06:20:49
+    Author     : Patrick Puls
+*/
+
+/* Sprites */
+.creepsSprite { background-image:url('../img/enUS/creepsSprite.jpg') }
+.creepMenuSprite { background-image:url('../img/enUS/creepsMenuSprite.jpg') }
+
+/* Header */
+h2.creeps { width:145px; height:39px; background-position:-184px -833px }
+h3.creeps { width:99px; height:33px; background-position:-153px -870px; margin:0 auto }
+
+/* Side Menu ( left side ) */
+.sideMenu { background-position:-260px -200px }
+.sideMenu .unitIcon { width:35px; height:35px }
+/* Melee */
+.sideMenu .MurgulReaverPrevIcon { background-position:0 0 }
+.sideMenu .FootmanPrevIcon { background-position:-35px 0 }
+.sideMenu .HuntressPrevIcon { background-position:-70px 0 }
+.sideMenu .RaiderPrevIcon { background-position:-105px 0 }
+.sideMenu .GruntPrevIcon { background-position:-140px 0 }
+.sideMenu .SpellBreakerPrevIcon { background-position:-175px 0 }
+.sideMenu .DruidOfTheClawPrevIcon { background-position:-210px 0 }
+.sideMenu .DruidOfTheClawBearPrevIcon { background-position:-245px 0 }
+.sideMenu .KnightPrevIcon { background-position:-280px 0 }
+.sideMenu .MountainGiantPrevIcon { background-position:-315px 0 }
+.sideMenu .TaurenPrevIcon { background-position:-350px 0 }
+
+/* Ranged */
+.sideMenu .NagaRoyalGuardPrevIcon { background-position:-385px 0 }
+.sideMenu .ArcherPrevIcon { background-position:-420px 0 }
+.sideMenu .RiflemanPrevIcon { background-position:-455px 0 }
+.sideMenu .TrollHeadhunterPrevIcon { background-position:-490px 0 }
+.sideMenu .SnapDragonPrevIcon { background-position:-525px 0 }
+.sideMenu .DryadPrevIcon { background-position:-560px 0 }
+.sideMenu .MotarTeamPrevIcon { background-position:-595px 0 }
+.sideMenu .KodoBeastPrevIcon { background-position:-630px 0 }
+.sideMenu .DragonTurtlePrevIcon { background-position:-665px 0 }
+.sideMenu .DruidOfTheTalonPrevIcon { background-position:-700px 0 }
+.sideMenu .PriestPrevIcon { background-position:-735px 0 }
+
+/* Caster */
+.sideMenu .WitchDoctorPrevIcon { background-position:-770px 0 }
+.sideMenu .SorceressPrevIcon { background-position:-805px 0 }
+.sideMenu .SirenPrevIcon { background-position:-840 0 }
+.sideMenu .SpiritWalkerPrevIcon { background-position:-875px 0 }
+.sideMenu .ShamanPrevIcon { background-position:-910px 0 }
+
+/* Creep Details */
+.statisticBox p { float:left }
+.creepDetails { position:relative }
+.creepDetails b { float:left; display:block; width:100%; margin:1em 0 .5em 0; text-decoration:underline }
+.creepDetails ul.statValues { margin:0 19px 0 0 }
+.creepsPreviewList { width:765px; margin-bottom:3.5em }
+.creepsPreviewList li { position: relative; float: left; margin: 14px 17px 0 0 }
+.unitIcon { display: block; width: 68px; height: 73px }
+.creepDetails h2 { width:509px; height:294px; margin-top:-20px; margin-left:0; padding-top:20px }
+.creepImage { margin-top:-20px }
+.creepInfos { float:left; margin-top:3em }
+.creepInfos p { margin-bottom:1em }
+.creepDetails .skills, .creepDetails .fb-commentBox { margin-top:3em }
+.creepDetails ul.statNames li { width:70px }
+.creepDetails ul.second li { width:97px }
+b.round { float:left; color:#575757; text-decoration:none }
+.round strong { color:#00bac2 }
+.information { width:150px; height:33px; margin:0 auto; background-position:0 -865px }
+
+.skillInfos { margin-left:2em; list-style:circle }
+
+/* Creep Preview Icon and Position on the Sprite */
+.MulgurReaverPrevIcon { background-position:0 0 }
+.FootmanPrevIcon { background-position:-70px 0 }
+.HuntressPrevIcon { background-position:-140px 0 }
+.RaiderPrevIcon { background-position:-210px 0 }
+.GruntPrevIcon { background-position:-280px 0 }
+.SpellBreakerPrevIcon { background-position:-350px 0 }
+.DruidOfTheClawPrevIcon { background-position:-420px 0 }
+.DruidOfTheClawBearPrevIcon { background-position:-490px 0 }
+.KnightPrevIcon { background-position:-560px 0 }
+.MountainGiantPrevIcon { background-position:-630px 0 }
+.TaurenPrevIcon { background-position:-700px 0 }
+
+.NagaRoyalGuardPrevIcon { background-position:0 -75px }
+.ArcherPrevIcon { background-position:-70px -75px }
+.RiflemanPrevIcon { background-position:-140px -75px }
+.TrollHeadhunterPrevIcon { background-position:-210px -75px }
+.SnapDragonPrevIcon { background-position:-280px -75px }
+.DryadPrevIcon { background-position:-350px -75px }
+.MotarTeamPrevIcon { background-position:-420px -75px }
+.KodoBeastPrevIcon { background-position:-490px -75px }
+.DragonTurtlePrevIcon { background-position:-560px -75px }
+.DruidOfTheTalonPrevIcon { background-position:-630px -75px }
+.PriestPrevIcon { background-position:-700px -75px }
+
+.WitchDoctorPrevIcon { background-position:0 -150px }
+.SorceressPrevIcon { background-position:-70px -150px }
+.SirenPrevIcon { background-position:-140px -150px }
+.SpiritWalkerPrevIcon { background-position:-210px -150px }
+.ShamanPrevIcon { background-position:-280px -150px }
+
+.tableStats { float:none; border-collapse:separate; margin-bottom:3em; padding:3px; border:1px solid #606377; border-radius:6px }
+.tableStats thead { height:30px }
+.tableStats thead th { vertical-align:middle }
+.tableStats tbody tr { height:28px; text-shadow:1px 1px 3px #A6A6A6 }
+.tableStats tbody td { vertical-align:middle }
+.tableStats tbody tr:nth-child(2n+1) {background: #021C24}
+
+/* Other Creeps */
+.otherCreeps p { margin-top:10px; color:#878787; font-size:14px; line-height:24px }
+
+/* King Mithas */
+.broodMother h2 { margin:0 }
+.motherImage { float:left; margin:15px 15px 0 0 }
+.childrenImage { float:right; margin:5px 0 0 15px }
+
+/* The Graveyard */
+.graveyard h2 { margin:40px 0 15px 0; text-align:center }
+.graveyardImage { display:block; text-align:center }
+
+/* Titan Devourer */
+.titanDevourer h2 { margin:40px 0 0 0 }
+.titanImage { float:left; margin:15px 15px 0 0 }
+
+/* King Mithas */
+.kingMithas h2 { margin:40px 0 0 0; text-align:left }
+.mithasImage { float:right; margin:15px 0 0 15px }

@@ -1,0 +1,64 @@
+<?php if (isset($this->glossary['I'])){ ?>
+    <div id="content-for-i">
+        <h2>I</h2>
+        <?php
+            foreach ($this->glossary['I'] as $value) { ?>
+                <p>
+                    <strong>
+                        <?php echo $value['name']; ?>
+                    </strong>
+                </p>
+                <p>
+                    <?php echo $value['description'] ?>
+                </p>
+        <?php } ?>
+    </div>
+<?php }
+    if (isset($this->glossary['J'])){ ?>
+        <div id="content-for-j">
+            <h2>J</h2>
+            <?php
+                foreach ($this->glossary['J'] as $value) { ?>
+                    <p>
+                        <strong>
+                            <?php echo $value['name']; ?>
+                        </strong>
+                    </p>
+                    <p>
+                        <?php echo $value['description'] ?>
+                    </p>
+            <?php } ?>
+        </div>
+<?php } 
+    if (isset($this->glossary['K'])){ ?>
+        <div id="content-for-k">
+            <h2>K</h2>
+            <?php
+                foreach ($this->glossary['K'] as $value) { ?>
+                    <p>
+                        <strong>
+                            <?php echo $value['name']; ?>
+                        </strong>
+                    </p>
+                    <p>
+                        <?php echo $value['description'] ?>
+                    </p>
+            <?php } ?>
+        </div>
+<?php } 
+    if (isset($this->glossary['L'])){ ?>
+<div id="content-for-l">
+    <h2>L</h2>
+    <?php
+        foreach ($this->glossary['L'] as $value) { ?>
+            <p>
+                <strong>
+                    <?php echo $value['name']; ?>
+                </strong>
+            </p>
+            <p>
+                <?php echo $value['description'] ?>
+            </p>
+    <?php } ?>
+</div>
+<?php } ?>

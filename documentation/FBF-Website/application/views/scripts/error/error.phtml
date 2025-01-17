@@ -1,0 +1,23 @@
+<div class="error404">
+    <h2>Not found <span frown>:(</span></h1>
+           <div>
+               <p>Sorry, but the page you were trying to view does not exist.</p>
+               <p>It looks like this was the result of either:</p>
+               <ul>
+                   <li>a mistyped address</li>
+                   <li>an out-of-date link</li>
+               </ul>
+           </div>
+    <?php if (isset($this->exception)): ?>
+          <h3>Exception information:</h3>
+          <p>
+            <b>Message:</b> <?php echo $this->exception->getMessage() ?>
+          </p>
+    
+          <h3>Stack trace:</h3>
+          <pre><?php echo $this->exception->getTraceAsString() ?></pre>
+    
+          <h3>Request Parameters:</h3>
+          <pre><?php echo var_export($this->request->getParams(), true) ?></pre>
+      <?php endif ?>
+ </div>

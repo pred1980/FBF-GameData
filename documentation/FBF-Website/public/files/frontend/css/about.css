@@ -1,0 +1,21 @@
+.about p { margin:6px 0 15px }
+.about strong { text-align:center; font-size:14px }
+.about img { margin-right:6px; border:1px solid #333 }
+.about img:hover { cursor:pointer }
+
+.about h3 { text-align:center; font:32px/38px arial; text-shadow:0 0 18px #00BAC2 }
+.about h4 { color:#7dc4da; text-align:left }
+.about h6 { color:#7dc4da; text-align:center }
+
+.gameStats { margin:0 auto; border-collapse:collapse; text-align:left }
+.gameStats td { padding:9px; color:#f5deb3 }
+.gameStats td b { color:#fff }
+.gameStats th { padding:9px; font-weight:bold; font-size:15px }
+
+.facebookAndBugReport { text-align:center }
+.facebookAndBugReport img { border:none }
+.facebook { color:#3b5998 }
+
+.featureStats { margin:0 auto; border-collapse:collapse; text-align:left }
+.featureStats td { padding:5px 15px 5px 0; color:#f5deb3 }
+.featureStats td b { color:#fff }

@@ -1,0 +1,19 @@
+body { font: 13px Arial,Helvetica,Geneva,Tahoma,sans-serif; background:#000; color:#878787 }
+
+table { border:none }
+table, 
+table thead, 
+table tfoot,
+table tr.even, 
+table tr.alt, 
+table tr:nth-of-type(2n) { background:transparent }
+
+table tbody td { font-size:12px }
+table tr th, table tr td { color:#878787 }
+table thead tr th, table thead tr td, table tfoot tr th, table tfoot tr td { color:#878787 }
+
+.status { width: 100px; }
+.details { width: 50px; }
+.large{ font-size: 40px; line-height: 40px; }
+.medium { font-size: 25px; padding: 0 5px; }
+.small { font-size: 20px; padding: 0 5px; }

@@ -1,0 +1,38 @@
+<div class="downloadBox">
+    <h2 class="download ti fontSprite">FBF Download</h2>
+	<div class="clearfix">
+        <div class="left">
+            <strong>FBF:</strong>
+            <span><?php echo $this->version; ?></span>
+        </div>
+        <div class="seperator mainSprite"></div>
+        <div class="middle clearfix">
+            <ul class="left">
+                <li>Uploaded</li>
+                <li>Language</li>
+                <li>Map Size</li>
+                <li>Downloads</li>
+            </ul>
+            <ul class="right">
+                <li><?php echo $this->uploadTime; ?></li>
+                <li><?php echo $this->language; ?></li>
+                <li><?php echo $this->mapSize; ?></li>
+                <li class="counts"><?php echo $this->counts[0]['hits']; ?></li>
+            </ul>
+        </div>
+        <div class="seperator mainSprite"></div>
+        <div class="right">
+            <a class="download mainSprite ti" title="Download FBF v<?php echo $this->version; ?>" href="<?php echo $this->baseUrl('download/').'download'; ?>">Download FBF v<?php echo $this->version; ?></a>
+        </div>
+    </div>
+    <br />
+    <br />
+    <h3 class="alternateHeadline">Alternate Download Servers</h3>
+    <div class="border"></div>
+    <ul class="alternatives clearfix">
+    	<li><script src="http://wc3.nibbits.com/maps/view/138638/widget.js"></script></li>
+    	<li><a href="http://www.moddb.com/mods/forsaken-bastions-fall/downloads/fbf-v028-fbf-v029" title="Download FBF-v0.2.8 -> FBF-v0.2.9 - Mod DB" target="_blank"><img src="http://button.moddb.com/download/medium/69050.png" alt="FBF-v0.2.8 -> FBF-v0.2.9" /></a></li>
+    	<li><a href="http://www.epicwar.com/maps/242633/" target="_blank"><img class="alternative" src="http://bane.epicwar.com/i/logo.jpg" height="50"></a></li>
+    	<li><a href="http://www.hiveworkshop.com/forums/maps-564/forsaken-bastions-fall-248608/" target="_blank"><img class="alternative" alt="Forsaken Bastion's Fall" src="<?php echo $this->baseUrl('/files/frontend/img/enUS/misc/hiveLogo.jpg'); ?>" width="50" height="50"></a></li>
+    </ul>
+</div>

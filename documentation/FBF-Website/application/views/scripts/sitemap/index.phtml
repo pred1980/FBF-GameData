@@ -1,0 +1,109 @@
+<div class="sitemap clearfix">
+	<h2 class="fontSprite ti"><strong>Sitemap</strong></h2>
+	<div class="linkList">
+		<h3><a href="<?php echo $this->baseUrl()?>/heroes" name="Heroes" title="Show all Heroes of FBF"><strong>Heroes</strong></a></h3>
+		<h4>The Forsaken</h4>
+		<ul class="links">
+		<?php 
+			foreach ($this->forsakenHeroes as $value) { ?>
+			<li>
+				<a href="<?php echo $this->baseUrl()?>/heroes/<?php echo $value['fname']; ?>" name="<?php echo $value['name']; ?>" title="Show all information about the Hero <?php echo $value['name']; ?>"><?php echo $value['name']; ?></a>
+			</li>
+		<?php } ?>
+		</ul>
+		<h4>The Coalition</h4>
+		<ul class="links">
+		<?php 
+			foreach ($this->coalitionHeroes as $value) { ?>
+			<li>
+				<a href="<?php echo $this->baseUrl()?>/heroes/<?php echo $value['fname']; ?>" name="<?php echo $value['name']; ?>" title="Show all information about the Hero <?php echo $value['name']; ?>"><?php echo $value['name']; ?></a>
+			</li>
+		<?php } ?>	
+		</ul>
+	</div>
+	
+	<div class="linkList">
+		<h3><a href="<?php echo $this->baseUrl()?>/creeps" name="Creeps" title="Show all Creeps of FBF"><strong>Creeps</strong></a></h3>
+		<ul class="links clearfix">
+			<?php
+			foreach ($this->creepData as $value) { ?>
+				<li>
+					<a href="<?php echo $this->baseUrl()?>/creeps/<?php echo $value['fname']; ?>" name="<?php echo $value['name']; ?>" title="Show all information about the Creep <?php echo $value['name']; ?>"><?php echo $value['name']; ?></a>
+				</li>
+			<?php } ?>		
+		</ul>
+	</div>
+	
+	<div class="linkList">
+		<h3><a href="<?php echo $this->baseUrl()?>/towers" name="Towers" title="Show all Towers of FBF"><strong>Towers</strong></a></h3>
+		<ul class="links clearfix">
+			<?php foreach ($this->towerData as $value) {   ?>
+				<li><?php echo $value['name']; ?> <b class="<?php echo $value['type']; ?>">( <?php echo $value['type']; ?> )</b></li>
+			<?php } ?>
+		</ul>
+	</div>
+	
+	<div class="linkList">
+		<h3><a href="<?php echo $this->baseUrl()?>/items" name="Items" title="Show all Items of FBF"><strong>Items</strong></a></h3>
+		<div class="fll">
+			<h4>Undead</h4>
+			<?php 
+				$shopIndex = 10;
+				foreach ($this->itemData['UD'] as $shop) { ?>
+				<h5><?php echo $shop[0]['name']; ?></h5>
+				<ul class="links">
+				<?php 
+					foreach ($this->itemData['UD'][$shopIndex] as $item) { ?>
+					<li><?php echo $item['iName']; ?></li>
+				<?php } ?>
+				</ul>
+			<?php $shopIndex++; } ?>
+		</div>
+		
+		<div class="fll">
+			<h4>Nightelf</h4>
+			<?php 
+				$shopIndex = 1;
+				foreach ($this->itemData['NE'] as $shop) { ?>
+				<h5><?php echo $shop[0]['name']; ?></h5>
+				<ul class="links">
+				<?php 
+					foreach ($this->itemData['NE'][$shopIndex] as $item) { ?>
+					<li><?php echo $item['iName']; ?></li>
+				<?php } ?>
+				</ul>
+			<?php $shopIndex++; } ?>
+		</div>
+		
+		<div class="fll">
+			<h4>Human</h4>
+			<?php 
+				$shopIndex = 7;
+				foreach ($this->itemData['HUM'] as $shop) { ?>
+				<h5><?php echo $shop[0]['name']; ?></h5>
+				<ul class="links">
+				<?php 
+					foreach ($this->itemData['HUM'][$shopIndex] as $item) { ?>
+					<li><?php echo $item['iName']; ?></li>
+				<?php } ?>
+				</ul>
+			<?php $shopIndex++; } ?>
+		</div>
+		
+		<div class="fll">
+			<h4>Orc</h4>
+			<?php 
+				$shopIndex = 4;
+				foreach ($this->itemData['ORC'] as $shop) { ?>
+				<h5><?php echo $shop[0]['name']; ?></h5>
+				<ul class="links">
+				<?php 
+					foreach ($this->itemData['ORC'][$shopIndex] as $item) { ?>
+					<li><?php echo $item['iName']; ?></li>
+				<?php } ?>
+				</ul>
+			<?php $shopIndex++; } ?>
+		</div>
+	</div>
+
+</div>

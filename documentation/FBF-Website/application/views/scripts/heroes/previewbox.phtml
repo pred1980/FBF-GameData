@@ -1,0 +1,70 @@
+<span class="absolute close mainSprite ti" title="Close">Close</span>
+<h4 class="ti fontSprite <?php echo $this->stringManipulator()->strtocamelcase($this->previewHeroData[0]['name']); ?>PrevName">
+    <strong><?php echo $this->previewHeroData[0]['name']; ?></strong>
+</h4>
+<div class="clearfix fll">
+    <?php $primary = $this->previewHeroData[0]['primary_attribute_name']; ?>
+    <ul class="attributeList fll">
+        <li class="mainSprite ti str <?php echo ($primary === 'Strength') ? 'primary' : ''; ?>">Strength</li>
+        <li class="mainSprite ti agi <?php echo ($primary === 'Agility') ? 'primary' : ''; ?>">Agility</li>
+        <li class="mainSprite ti int <?php echo ($primary === 'Intelligence') ? 'primary' : ''; ?>">Intelligence</li>
+    </ul>
+    <ul class="attributeValues fll">
+        <li class="str <?php echo ($primary === 'Strength') ? 'primVal' : ''; ?>"><b><?php echo $this->previewHeroData[0]['str_value']; ?></b><br />(<?php echo "+" . $this->previewHeroData[0]['str_bonus']; ?>)</li>
+        <li class="agi <?php echo ($primary === 'Agility') ? 'primVal' : ''; ?>"><b><?php echo $this->previewHeroData[0]['agi_value']; ?></b><br />(<?php echo "+" . $this->previewHeroData[0]['agi_bonus']; ?>)</li>
+        <li class="int <?php echo ($primary === 'Intelligence') ? 'primVal' : ''; ?>"><b><?php echo $this->previewHeroData[0]['int_value']; ?></b><br />(<?php echo "+" . $this->previewHeroData[0]['int_bonus']; ?>)</li>
+    </ul>
+    <div class="seperator mainSprite"></div>
+    <ul class="statNames">
+        <li>Affilation</li>
+        <li>Gender</li>
+        <li>Race</li>
+        <li>Role</li>
+        <li>Damage</li>
+        <li>Armor</li>
+    </ul>
+    <ul class="statValues">
+        <li><?php echo $this->previewHeroData[0]['affilation']; ?></li>
+        <li><?php echo $this->previewHeroData[0]['gender']; ?></li>
+        <li><?php echo $this->previewHeroData[0]['race']; ?></li>
+        <li><?php echo $this->previewHeroData[0]['role']; ?></li>
+        <li><?php echo $this->previewHeroData[0]['damage']; ?></li>
+        <li><?php echo $this->previewHeroData[0]['armor']; ?></li>
+    </ul>
+    <div class="seperator mainSprite"></div>
+    <ul class="fll abilities clearfix">
+        <li class="clearfix fll">
+            <span title="<?php echo $this->previewHeroData[0]['ability1']; ?>" class="ti fll prevAbi hero<?php echo $this->previewHeroData[0]['ID']; ?>Abi1 abilitiesPreviewSprite"><?php echo $this->previewHeroData[0]['ability1']; ?></span>
+            <p class="fll abiName"><?php echo $this->previewHeroData[0]['ability1']; ?></p>
+            <span class="fll type"><?php echo $this->previewAbiData[0]['ability_type']; ?></span>
+        </li>
+        <li class="clearfix fll">
+            <span title="<?php echo $this->previewHeroData[0]['ability2']; ?>" class="ti fll prevAbi hero<?php echo $this->previewHeroData[0]['ID']; ?>Abi2 abilitiesPreviewSprite"><?php echo $this->previewHeroData[0]['ability2']; ?></span>
+            <p class="fll abiName"><?php echo $this->previewHeroData[0]['ability2']; ?></p>
+            <span class="fll type"><?php echo $this->previewAbiData[1]['ability_type']; ?></span>
+        </li>
+        <li class="clearfix fll">
+            <span title="<?php echo $this->previewHeroData[0]['ability3']; ?>" class="ti fll prevAbi hero<?php echo $this->previewHeroData[0]['ID']; ?>Abi3 abilitiesPreviewSprite"><?php echo $this->previewHeroData[0]['ability3']; ?></span>
+            <p class="fll abiName"><?php echo $this->previewHeroData[0]['ability3']; ?></p>
+            <span class="fll type"><?php echo $this->previewAbiData[2]['ability_type']; ?></span>
+        </li>
+        <li class="clearfix fll">
+            <span title="<?php echo $this->previewHeroData[0]['ability4']; ?>" class="ti fll prevAbi hero<?php echo $this->previewHeroData[0]['ID']; ?>Abi4 abilitiesPreviewSprite"><?php echo $this->previewHeroData[0]['ability4']; ?></span>
+            <p class="fll abiName"><?php echo $this->previewHeroData[0]['ability4']; ?></p>
+            <span class="fll type"><?php echo $this->previewAbiData[3]['ability_type']; ?></span>
+        </li>
+    </ul>
+    <div class="seperator mainSprite"></div>
+</div>
+<div class="recommendedItems">
+    <span>Recommended</span>
+    <strong>Items</strong>
+    <ul class="iconList clearfix">
+    <?php
+        $count = 0; 
+        foreach ($this->heroItems as $value) { ?>
+        <li class="ti itemsSprite <?php echo $value['f-name']; ?> <?php echo ($count%2 == 0) ? 'left"' : ''; ?>" title="<?php echo $value['name']; ?>"><?php echo $value['name']; ?></li>
+    <?php $count++; } ?>
+    </ul>
+</div>
+<a title="Show more details to <?php echo $this->previewHeroData[0]['name']; ?>" href="<?php echo $this->baseUrl('heroes')?>/<?php echo $this->previewHeroData[0]['fname']; ?>" class="ti fontSprite absolute details">details</a>

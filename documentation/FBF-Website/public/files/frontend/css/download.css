@@ -1,0 +1,14 @@
+/*.downloadBox { display:none }*/ /* beim Release start entfernen! */
+.downloadBox h2.download { width:200px; height:34px; margin-left:-20px; margin-bottom:20px; margin-top:0; background-position:-6px -677px }
+.downloadBox .left, .downloadBox .middle, .downloadBox .right { float:left; width:185px }
+.downloadBox .left { padding-left:18px; font:bold 30px/60px arial }
+.downloadBox .left strong { font:bold 14px/60px arial }
+.downloadBox .middle { width:245px; padding-left:15px }
+.downloadBox .seperator { float:left; width:10px; height:64px; background-position:-128px -55px }
+.downloadBox ul.left li, .downloadBox ul.right li { min-width:44px; height:18px; font:normal 12px/12px arial }
+.downloadBox ul.left { width:95px; color:#474747 }
+.downloadBox ul.right { width:70px; color:#00bac2 }
+.downloadBox .download { display:block; width:128px; height:42px; margin:11px auto 0; background-position:-52px -256px }
+
+.alternatives li { float:left; margin-right:10px }
+.alternateHeadline { margin:25px 0 20px 0; font-size:24px; text-align:center }

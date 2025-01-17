@@ -1,0 +1,7 @@
+<?php
+    foreach ($this->heroThumbs['img'] as $value) { ?>
+        <li>
+            <a class="<?php echo $value['affilation']; ?> heroesSprite unitIcon ti <?php echo $this->stringManipulator()->strtocamelcase($value['name']); ?>PrevIcon" href="<?php echo $this->url()?>/<?php echo $value['fname']; ?>" title="<?php echo $value['name']; ?>" ><?php echo $value['name']; ?></a>
+        </li>
+    <?php }
+?>

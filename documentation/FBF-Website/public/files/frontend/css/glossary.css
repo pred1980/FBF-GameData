@@ -1,0 +1,18 @@
+.glossaryWelcomeText { padding:15px; font:normal 12px/18px arial; color:#ccc }
+
+.bgTop { top:0; left:0; width:825px; height:30px; background:transparent url('../img/enUS/layout/bg_glossary_top.png') repeat-x; z-index:1 }
+.bgBottom { bottom:0; left:0; width:825px; height:30px; background:transparent url('../img/enUS/layout/bg_glossary_bottom.png') repeat-x; z-index:1 }
+
+.glossaryPart {	overflow:hidden; font-family:'Arial',Verdana,Tahoma; font-size:10pt; clear:both }
+.glossaryPart div { padding-left:10px; border-bottom:1px #666 solid }
+.glossaryPart div h2 {margin-top:0 }
+
+.jScrollbar { height:400px;	overflow:hidden; position:relative; background-color:#181818; padding:10px }
+.jScrollbar .jScrollbar_mask { width:795px; position:relative; top:0 }
+.jScrollbar .jScrollbar_mask p { margin:0; padding:0; color:#fff; font-size:12px }
+.jScrollbar_draggable { width:12px; height:400px; overflow:hidden; background:none; background-color:#222; border:1px solid #000;
+						margin-left:23px; position:relative	}
+.jScrollbar_draggable a.draggable { position:relative; background:transparent url('../img/enUS/layout/bg_draggable.png') no-repeat;
+									display:block; height:52px; width:12px; margin-left:0; cursor:s-resize }
+
+.glossaryPagination li { cursor:pointer }

@@ -1,0 +1,11 @@
+<?php 
+$timeDiff = $this->data['since'];
+$sec      = ((int) $timeDiff) % 60;
+$min      = ((int) $timeDiff) / 60;
+$hours    = (int) ($min / 60);
+$min      = $min % 60;
+?>
+<tr>
+    <td><?php echo $this->botId; ?></td>
+    <td colspan="2"><?php echo '<b class="isRunning">Game is running since ' . ((0 != $hours) ? $hours . 'h ' : '' ) . $min . 'm ' . $sec . 's</b>'; ?></td>
+</tr>
