@@ -7,6 +7,8 @@ description: Review a GitHub pull request against its linked issue in Forsaken B
 
 Input: a PR number. If none was given, ask for it. Invoking this skill authorizes review feedback and, only after every gate below passes, approval, a normal merge into `master` and the cleanup after the merge described below. Never enable auto-merge or force-push.
 
+`implement-ticket` runs this skill in its step 9 right after it opens a PR. In that flow, `implement-ticket` fixes blocking findings on the PR branch and then runs this skill again on the new head. A standalone run of this skill gives feedback and does not change the PR's files unless the user explicitly asks for a fix.
+
 Write review comments, feedback and the final report in simple German (see `AGENTS.md`, "Sprache"). Keep technical identifiers unchanged.
 
 ## Read the complete record
@@ -20,13 +22,13 @@ Write review comments, feedback and the final report in simple German (see `AGEN
 - Preserve unrelated local changes. Review and run checks against the PR's current head. When local changes would contaminate results, use a temporary detached worktree outside the repository, for example `git worktree add --detach "<tmp-dir>/pr-<n>" <head-sha>`, and record the path of every worktree you create. A detached worktree creates no local branch. Do not modify gameplay code as part of review unless explicitly asked to fix the PR.
 - For changes under `src/`, read and apply `.agents/skills/safe-vjass-change/SKILL.md`. Check relevant rawcodes and order strings across `src/`, hero ability/AI coupling, shared-library consumers, new `.vj` entries in `src/imports.j`, encoding and line endings, and any `.w3x` or Object Editor implications. A changed binary map is a `BLOCKER` under `AGENTS.md`.
 - Run applicable static checks against the PR changes, including `git diff --check` for the PR diff. For vJASS, use the safe-vJASS script in a suitable PR-head checkout and inspect its findings; the script compares its working tree to `HEAD`, so it cannot by itself validate an already committed PR diff. Inspect committed changes separately.
-- Check current GitHub CI/status results, required approvals and branch protection. Failed, pending, missing required or stale checks block merging. Confirm the PR is open, targets `master`, is not a draft, and is cleanly mergeable. Unresolved review threads and outstanding change requests block merging until addressed.
+- Check current GitHub CI/status results, required approvals, branch protection and repository rulesets (`gh api repos/<owner>/<repo>/branches/master/protection`, `gh api repos/<owner>/<repo>/rules/branches/master` and `reviewDecision` in `gh pr view`). Failed, pending, missing required or stale checks block merging. Confirm the PR is open, targets `master`, is not a draft, and is cleanly mergeable. Unresolved review threads and outstanding change requests block merging until addressed.
 - Never report an agent static check as a World Editor/JassHelper compile or Warcraft III runtime test.
 
 ## Warcraft III merge gate
 
-- Documentation-only and tooling-only changes may merge without a Warcraft III playtest when review confirms they cannot affect map runtime behavior.
-- For any gameplay or runtime-affecting change, require an explicit human report on the PR or linked issue that the **current PR head** saved successfully in the World Editor with JassHelper and vJASS enabled, and that the required Warcraft III scenario was playtested successfully. Check that the report covers the affected hero, system or mode and any relevant AI difficulty or Object Editor work. If the head changed afterward, require renewed verification for affected behavior.
+- The PR's changed-file list decides whether this gate applies. If the PR changes at least one file under `src/`, human Warcraft III verification is required before merging. If it changes no file under `src/`, there is no Warcraft III test gate. A changed `.w3x` is a `BLOCKER` in any case (see above).
+- For a PR with changes under `src/`, require an explicit human report on the PR or linked issue that the **current PR head** saved successfully in the World Editor with JassHelper and vJASS enabled, and that the required Warcraft III scenario was playtested successfully. Check that the report covers the affected hero, system or mode and any relevant AI difficulty or Object Editor work. The tested head is the commit the report names; if it names none, take the PR head at the time of the report. If later commits change files under `src/` (`git diff --name-only <tested-sha> <head-sha> -- src`), require renewed verification for the new head. Later commits that change only files outside `src/` keep the confirmed result valid.
 - If either human result is missing or unsuccessful, leave the PR open. State the exact compile step and playtest scenario still needed. Passing static checks or CI does not waive this gate.
 
 ## Classify every finding
@@ -35,7 +37,7 @@ Assign every finding exactly one of these four severity levels. Use no other lev
 
 | Level | Meaning | Examples | Merge |
 |---|---|---|---|
-| `BLOCKER` | Merging is unsafe or not possible at all. | changed `.w3x`; failed, pending or missing required checks; merge conflict; missing human Warcraft III verification for a gameplay change | blocks |
+| `BLOCKER` | Merging is unsafe or not possible at all. | changed `.w3x`; failed, pending or missing required checks; merge conflict; missing human Warcraft III verification for a PR with changes under `src/`; missing approval that branch protection or a ruleset requires | blocks |
 | `ERROR` | A confirmed defect, or an acceptance criterion of the linked issue is not met. | wrong number or fact; broken reference or path; required file or section missing | blocks |
 | `MAJOR` | A substantial problem with correctness, architecture, scope or maintainability that must be fixed before merging. | unrelated changes; rules that contradict each other; a design that will clearly cause follow-up defects | blocks |
 | `MINOR` | A small improvement, style question, wording issue or other non-critical observation. | clearer wording; formatting; optional cleanup | does not block |
@@ -51,7 +53,9 @@ Assign every finding exactly one of these four severity levels. Use no other lev
 ## Finish the review
 
 - If any `BLOCKER`, `ERROR` or `MAJOR` is open, do not merge. Leave precise feedback on the PR that lists every finding with its level and states what would clear it, and request changes when code or scope must change. For missing human verification alone, leave a clear comment rather than claiming a code defect.
-- If every gate passes and only `MINOR` findings or no findings remain, approve when GitHub permits and approval is appropriate. List the open `MINOR` findings in the review so they stay visible. Recheck the PR head, checks, reviews, mergeability and human-test evidence immediately before merging. Merge into `master` with an ordinary supported merge method; never bypass failed checks, required approvals or branch protection, and never use auto-merge. Do not pass `--delete-branch` to `gh pr merge`; clean up branches with the checked steps below.
+- If every gate passes and only `MINOR` findings or no findings remain, approve when GitHub permits and approval is appropriate. List the open `MINOR` findings in the review so they stay visible.
+- If GitHub refuses an approval or a change request only because the reviewer is the PR author, post the complete review result as a PR comment instead. A refused self-approval alone does not block the merge. If branch protection, a ruleset or `reviewDecision` `REVIEW_REQUIRED` requires an approving review, an approval by another account is a real gate: it stays a `BLOCKER` until it exists, and you must never bypass it.
+- Recheck the PR head, checks, reviews, mergeability and human-test evidence immediately before merging. Merge into `master` with an ordinary supported merge method; never bypass failed checks, required approvals or branch protection, and never use auto-merge. Do not pass `--delete-branch` to `gh pr merge`; clean up branches with the checked steps below.
 - Remove every temporary worktree this review created once it is no longer needed, whether or not the PR merged: `git worktree remove <path>`, never with `--force`. If Git refuses because the worktree has changes, leave it and report its path. Never remove a worktree you did not create.
 
 ## After the merge
@@ -82,7 +86,7 @@ Only after a successful merge. Work through these steps in order and record the 
 
 Report in simple German, with each point listed separately:
 
-- review findings, each with its severity level, checks, human verification evidence, and the feedback or approval given;
+- review findings, each with its severity level, checks, human verification evidence, and the feedback or approval given, including whether the approval was formal or documented as a PR comment because GitHub refused a self-approval;
 - merged PR (number, merge method, merge commit), or, if the PR stays open, every open `BLOCKER`, `ERROR` and `MAJOR` and the exact manual test still required;
 - open `MINOR` findings that were documented but not fixed;
 - closed issue and project status (`Done`, or the exact remaining action);
