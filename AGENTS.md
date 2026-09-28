@@ -1,47 +1,116 @@
-# Regeln für dieses Repository
+# Regeln für das Repository
+
+Diese Datei enthält die gemeinsamen Regeln für alle Coding-Agents. Codex liest sie direkt; Claude Code bindet sie über `CLAUDE.md` ein. `CLAUDE.md` erklärt zusätzlich die Architektur. Lies vor größeren Änderungen am Spiel den passenden Abschnitt dort. Der Ablauf für Menschen steht in `WORKFLOW.md`.
 
 ## Projektaufbau
 
-Dieses Repository enthält die Warcraft-III-Karte *Forsaken Bastion's Fall*. `FBF_v0.4.9_dev.w3x` im Hauptverzeichnis ist die aktuelle Entwicklungskarte. Sie wurde im aktuellen World Editor geöffnet und gespielt. Im Hauptverzeichnis liegt auch `FBF_v0.4.9_dev - Working copie.w3x`. `release/` enthält ältere `.w3x`-Versionen.
+Dieses Repository enthält die Warcraft-III-Karte *Forsaken Bastion's Fall*.
 
-Der Spielcode liegt vor allem als vJASS (`.vj`) unter `src/`. Beispiele sind Fähigkeiten unter `src/Heroes/<Hero>/`, Helden- und Turm-KI unter `src/AI-Systems/` und gemeinsame Bibliotheken unter `src/Libraries/`. `src/imports.j` legt fest, welche Dateien in die Karte eingebunden werden. Unter `documentation/` liegen ältere Bilder, Projektdaten, eine archivierte Website und eine getrennte Testkarte. Neuer Spielcode gehört zum passenden System unter `src/`.
+Die aktuelle Entwicklungskarte liegt im Hauptverzeichnis und folgt dem
+Namensschema `FBF_v<Version>_dev.w3x`. Sie ist die Map, die im aktuellen
+World Editor bearbeitet, gespeichert und getestet wird.
 
-## Sprache
+Zusätzlich kann im Hauptverzeichnis eine versionierte `Working copie` liegen.
+Sie stammt aus dem früheren Entwicklungsablauf und wurde als Sicherheitskopie
+verwendet, weil das Speichern einer Map im Editor früher zu beschädigten oder
+nicht mehr weiter bearbeitbaren Ständen führen konnte.
 
-Schreibe menschenlesbare Projektinhalte in einfachem Deutsch. Das gilt für Dokumentation, GitHub Issues, Pull-Request-Beschreibungen, Reviews, Commit-Nachrichten, Agent-Zusammenfassungen und Antworten. Maschinenlesbare Agent-Anweisungen und Prompts dürfen in klarem, strukturiertem Englisch bleiben, wenn das zuverlässiger ist. Übersetze keine technischen Bezeichner oder festen Warcraft-III-Werte. Dazu gehören Namen von Funktionen, Structs, Libraries, Variablen, Dateien und Pfaden, Rawcodes wie `'A07K'`, Order-Strings wie `"roar"`, Warcraft-III-Natives, API-Namen und Befehle. Ändere bestehenden Quellcode nicht allein, um Kommentare zu übersetzen. Schreibe neue oder bearbeitete Code-Kommentare möglichst in einfachem Deutsch.
+Ob diese zusätzliche Sicherheitskopie mit dem heutigen World Editor noch nötig
+ist, wurde noch nicht geprüft. Bis die heutige Backup- und Versionsstrategie
+geklärt ist, darf eine solche Datei nicht gelöscht, ersetzt oder als
+überflüssig behandelt werden.
 
-## Bauen und Testen
+In `release/` liegen ältere veröffentlichte `.w3x`-Versionen.
 
-Für die Karte gibt es keinen geprüften Build-Befehl für die Kommandozeile und keine automatische Test-Suite für das Spiel. Erfinde keine solchen Befehle. Der geprüfte Ablauf ist:
+Der Spielcode besteht vor allem aus vJASS Dateien (`.vj`) unter `src/`. `src/Heroes/<Hero>/` enthält Fähigkeiten, `src/AI-Systems/` die Hero AI und Tower AI, und `src/Libraries/` gemeinsame Bibliotheken. `src/imports.j` ist die Liste der Dateien, die in die Map eingebunden werden. `src/TowerSystems/TowerIds.txt` ordnet Tower Rawcodes ihren Namen zu.
 
-1. Bearbeite den vJASS-Code unter `src/`.
-2. Prüfe, ob jede neue `.vj`-Datei in `src/imports.j` steht. Ohne diesen Eintrag wird die Datei nicht in die Karte eingebunden.
-3. Öffne `FBF_v0.4.9_dev.w3x` im aktuellen Warcraft III World Editor. Er enthält JassHelper und pJASS. Aktiviere `Enable JassHelper` und `Enable vJASS` und speichere die Karte. Dabei wird sie kompiliert.
-4. Starte die Karte aus dem Editor und teste die Änderung in Warcraft III.
+`documentation/` enthält ältere und ergänzende Materialien: Grafiken, Tabellen zu Helden, Fähigkeiten, Creeps und Towers, eine archivierte PHP Website und `FBF-ProjectFiles/FBF_TestMap/`. Diese Wurst Test Map gehört nicht zum Build. Ändere `documentation/` nur, wenn ein Ticket es verlangt. Neuer Spielcode gehört zum passenden System unter `src/`.
 
-`src/imports.j` enthält absolute Windows-Pfade zu einem bestimmten Checkout. An einem anderen Ort müssen die Pfadpräfixe vor dem Kompilieren lokal angepasst werden. Nimm diese lokale Anpassung nicht in einen fremden Commit auf. Stelle die Einträge nicht auf relative Pfade oder ein anderes Verfahren um, solange dies nicht im aktuellen Editor geprüft wurde.
+## Build und Prüfung
 
-`git status --short` zeigt Änderungen vor einem Commit. `git diff --check` findet Fehler bei Leerzeichen. Die vorhandenen `.psd`-Dateien sind normale Git-Dateien; für sie ist `git lfs pull` nicht nötig. Die Regel in `.gitattributes` für `*.psd` gilt für neue oder geänderte PSD-Dateien.
+Es gibt keinen CLI Build für das ganze Repository und keine automatischen Tests für das Spiel. Erfinde oder empfehle dafür keine Befehle. Der geprüfte Ablauf ist:
 
-## Schreibweise und Dateiformat
+1. Bearbeite den vJASS Code unter `src/`.
+2. Trage jede neue `.vj` Datei in `src/imports.j` ein. Ohne diesen Eintrag wird sie nicht in die Map eingebunden.
+3. Öffne `FBF_v<Version>_dev.w3x` im aktuellen Warcraft III World Editor. Dort sind JassHelper und pJASS enthalten. Aktiviere `Enable JassHelper` und `Enable vJASS` und speichere die Map. Das Speichern ist der eigentliche Build.
+4. Starte die Map aus dem Editor und teste die Änderung in Warcraft III. Das ist die Prüfung im laufenden Spiel.
 
-Verwende `.vj` für vJASS-Module und übernimm die Einrückung der jeweiligen Datei. Bestehender Code mischt Tabulatoren und Leerzeichen. Formatiere keine fremden Zeilen um. Halte dich an die vorhandenen Regeln für `scope`, `library`, `struct` und `private`. Verwende aussagekräftige Dateinamen wie `HeroAIThreat.vj` oder `Cleave.vj`. Belasse Warcraft-Objekt-IDs und zugehörige Konstanten bei der betreffenden Fähigkeit. Es gibt keinen Formatter oder Linter für das ganze Projekt.
+`src/imports.j` enthält absolute Windows Pfade zu einem bestimmten Checkout. An einem anderen Ort muss das Pfadpräfix vor dem Build lokal angepasst werden. Committe diese lokale Anpassung nie. Das Skript aus `safe-vjass-change` kann neue Importzeilen mit dem eingecheckten Präfix stagen. Stelle die Einträge erst dann auf relative Pfade oder ein anderes Schema um, wenn das im aktuellen Editor nachweislich funktioniert.
 
-Git speichert die Textdateien durch `* text=auto` mit LF. Unter Windows kann `core.autocrlf=true` sie im Arbeitsverzeichnis als CRLF auschecken. Behalte beim Bearbeiten die vorhandenen Zeilenenden einer Datei bei und vermeide Änderungen allein an Zeilenenden. Mische LF und CRLF nicht. Die meisten Quelldateien sind UTF-8 oder ASCII. Einige `.vj`-Dateien enthalten deutsche Umlaute in Windows-1252, zum Beispiel `src/GameConfig/GameConfig.vj`. Behalte die Kodierung jeder Datei bei.
+`git status --short` zeigt Änderungen vor einem Commit. `git diff --check` findet Fehler bei Leerzeichen. `.gitattributes` leitet neue oder geänderte `*.psd` Dateien zu Git LFS. Die bereits vorhandenen PSD Dateien sind normale Git Blobs (`git lfs ls-files` zeigt keine Dateien). Für sie ist `git lfs pull` nicht nötig.
 
-## Änderungen sicher prüfen
+## Code-Stil und Dateiformat
 
-- **Rawcodes und Order-Strings:** Objektdaten liegen nur in der `.w3x`. Bevor du einen Rawcode oder Order-String änderst, suche alle Verwendungen unter `src/`.
-- **Helden-KI:** Dateien unter `src/AI-Systems/HeroesAI/` wiederholen Werte aus Fähigkeiten unter `src/Heroes/`, etwa Spell-IDs, Order-Strings, Radien und Abklingzeiten. Passe beide Seiten gemeinsam an.
-- **Gemeinsame Bibliotheken:** Suche vor einer Änderung unter `src/Libraries/` nach allen Nutzern, auch nach `optional`-Abhängigkeiten, Modulen und Textmacros.
-- **Kartendateien:** Bearbeite, erzeuge oder speichere `.w3x`-Dateien nicht mit Agent-Werkzeugen. Nenne nötige Änderungen im Object Editor für einen Menschen.
+Nutze `.vj` für vJASS Module und übernimm die Einrückung der jeweiligen Datei. Im bestehenden Code gibt es Tabs und Leerzeichen; formatiere andere Zeilen nicht nebenbei um. Halte dich an die vorhandenen Regeln für `scope`/`library`, `struct` und `private`. Nutze sprechende PascalCase Namen wie `HeroAIThreat.vj` oder `Cleave.vj`. Rawcodes und zugehörige Konstanten stehen nahe bei der Fähigkeit, die sie nutzt. Es gibt keinen Formatter oder Linter für das ganze Projekt. Kommentare sind teils deutsch, teils englisch; orientiere dich an der Datei.
 
-## Prüfung und Berichte
+**Encoding:** Die meisten Quelldateien sind UTF-8 oder ASCII. Einige `.vj` Dateien mit deutschen Umlauten sind Windows-1252, etwa `src/GameConfig/GameConfig.vj`. Erhalte das Encoding jeder Datei. Edit Tools, die solche Dateien als UTF-8 lesen, beschädigen die Umlaute. Bearbeite sie über eine UTF-8 Kopie, wie in `safe-vjass-change` beschrieben. Neue `.vj` Dateien enthalten nur ASCII.
 
-Es gibt keine automatische Test-Suite für das Spiel und kein Ziel für Testabdeckung. Bei Änderungen am Spiel muss ein Mensch die Karte im Editor speichern und den betroffenen Helden, das System oder den Spielmodus in Warcraft III testen. Beschreibe Ablauf und Ergebnis im Pull Request. Die archivierte Website besitzt unter `documentation/FBF-Website/tests/phpunit.xml` eigene PHP-Tests; sie testen die Karte nicht.
+**Zeilenenden:** `* text=auto` speichert Textdateien im Repository mit LF. Windows Checkouts mit `core.autocrlf=true` erhalten CRLF. Shell Skripte (`*.sh`) haben immer LF. Erhalte die Zeilenenden einer Datei und mische LF und CRLF nicht.
 
-Agents können die Karte derzeit nicht nachweislich kompilieren oder im Spiel testen. Statische Prüfungen wie `git diff --check` beweisen weder das Kompilieren noch das Verhalten im Spiel. Behaupte beides nur, wenn ein Mensch das Speichern im Editor oder den Spieltest durchgeführt und das Ergebnis gemeldet hat. Sonst sage ausdrücklich, dass Kompilieren oder Spieltest noch fehlen, und nenne den genauen Testfall.
+## Änderungen sicher durchführen
+
+- **Rawcodes und Order-Strings:** Object Data für Units, Abilities, Items und Buffs liegt nur in der `.w3x`. Der Code nutzt Rawcodes wie `'A07K'` und Order-Strings wie `"roar"`. Das Repository allein kann ihre Gültigkeit nicht bestätigen. Suche vor einer Änderung alle Verwendungen unter `src/`.
+- **Hero AI:** Jede Datei `src/AI-Systems/HeroesAI/<Hero>AI.vj` wiederholt Spell IDs, Order-Strings, Radien und Cooldowns der Fähigkeiten unter `src/Heroes/<Hero>/`. Passe bei einer Änderung beide Seiten an.
+- **Gemeinsame Bibliotheken:** Suche vor einer Änderung unter `src/Libraries/` oder an einem anderen gemeinsamen System alle Nutzer. Berücksichtige auch `optional` Anforderungen, Module und Textmacros.
+- **Map Dateien:** Bearbeite, erzeuge, speichere, benenne oder lösche `.w3x` Dateien nie mit Tools. Nenne nötige Änderungen im Object Editor für einen Menschen.
+
+Der Skill `safe-vjass-change` enthält dazu eine Checkliste und statische Prüfungen.
+
+## Tests und Ergebnisse
+
+Es gibt keine automatischen Spieltests und kein Coverage Ziel. Bei Änderungen am Spiel muss ein Mensch die Map im Editor speichern und den betroffenen Helden, das System oder den Spielmodus testen. Beschreibe Szenario und Ergebnis im Pull Request. `documentation/FBF-Website/tests/phpunit.xml` gehört nur zur archivierten PHP Website und testet die Map nicht.
+
+Agents können die Map nicht nachweislich kompilieren oder starten. `git diff --check`, Suchen im Code und die Skripte aus `safe-vjass-change` beweisen weder einen erfolgreichen Build noch korrektes Verhalten im Spiel. Behaupte das nur, wenn ein Mensch das Speichern oder den Spieltest durchgeführt und das Ergebnis gemeldet hat. Sonst sage ausdrücklich, dass beides offen ist, und nenne das nötige Testszenario.
+
+## Tickets und Agent-Workflow
+
+- Jedes neue GitHub Ticket muss `.github/TICKET-STANDARD.md` folgen.
+- Ein Issue bekommt einen Branch und einen Pull Request. Erstelle den Branch von `origin/master` als `<type>/issue-<n>-<short-slug>` mit `feature`, `fix`, `docs` oder `chore`. Committe nie auf `master`.
+- Bei einem Auftrag zur Umsetzung darf ein Agent auf dem Issue Branch committen, pushen und einen PR gegen `master` mit `Closes #<n>` öffnen. `implement-ticket` merged nie, pusht nie auf `master`, aktiviert kein Auto-Merge und genehmigt den eigenen PR nicht. `review-pr` darf erst nach Review und allen nötigen Prüfungen genehmigen und mergen.
+- Verwirf, stashe oder committe keine fremden lokalen Änderungen. Stage nur ausdrücklich genannte Pfade.
+- `implement-ticket` beschreibt die Umsetzung und die PR Vorlage. `review-pr` beschreibt Review und Freigabe.
+
+Die Skills nutzen das Agent Skills Format (`SKILL.md`). Die maßgeblichen Dateien liegen unter `.agents/skills/<name>/`; Codex findet sie dort. `.claude/skills/<name>/SKILL.md` enthält schlanke Wrapper für Claude Code. Bearbeite nur die maßgebliche Datei. `name` und `description` im Wrapper müssen mit ihr übereinstimmen.
 
 ## Commits und Pull Requests
 
-Schreibe kurze, genaue Commit-Nachrichten in einfachem Deutsch. Sie sollen die geänderte Funktion oder Datei benennen. Fasse im Pull Request die Änderung zusammen, nenne das Ergebnis von Kompilieren und Spieltest oder sage, dass beides noch fehlt, und verlinke das Issue. Füge bei sichtbaren Änderungen am Spiel oder an Bildern einen Screenshot oder kurzen Clip hinzu. Committe keine Editor-Backups und keine fremden erzeugten Kartendateien.
+Commit-Nachrichten verwenden einfaches Deutsch. Beginne die kurze erste Zeile mit einem klaren Verb und beschreibe konkret die Änderung. Setze keinen Punkt ans Ende. Vermeide vage Betreffzeilen wie `Update`, `Changes`, `Fix stuff` oder `WIP`. Präfixe wie `feat:`, `fix:` oder `docs:` sind nicht nötig. Technische Bezeichner bleiben unverändert. Die Ticketnummer muss nicht im Commit-Betreff stehen.
+
+Gute Beispiele:
+
+- `Ergänze gemeinsamen Agent-Workflow`
+- `Dokumentiere Ticket-Standard`
+- `Behebe Zielauswahl der Archmage-KI`
+- `Prüfe Rawcodes der Turm-Upgrades`
+
+Fasse im Pull Request die Änderung zusammen. Nenne Ergebnisse für Build und Spieltest oder sage, dass sie noch offen sind. Verlinke das Issue. Bei sichtbaren Änderungen an Spiel oder Grafiken füge Screenshots oder einen kurzen Clip hinzu. Committe keine Editor Backups oder fremde erzeugte Map Dateien.
+
+## Community und externe Quellen
+
+Forsaken Bastion's Fall ist auch auf HiveWorkshop veröffentlicht:
+
+- Projektseite: `https://www.hiveworkshop.com/threads/forsaken-bastions-fall.248608/`
+- Ressourcen: `https://www.hiveworkshop.com/resources/`
+- Forum: `https://www.hiveworkshop.com/forums/`
+
+HiveWorkshop darf bei der Weiterentwicklung als zusätzliche Recherchequelle genutzt
+werden. Dort können Agents nach bestehenden Warcraft-III-Systemen, Modellen,
+Skins, Icons, Sounds, Tools und bekannten Lösungen für technische Probleme suchen.
+
+Bei Problemen gilt:
+
+1. Zuerst den bestehenden FBF-Code und die Projektdokumentation prüfen.
+2. Danach vorhandene Warcraft-III-APIs und bekannte technische Quellen prüfen.
+3. Wenn die Lösung weiterhin unklar ist, gezielt auf HiveWorkshop nach ähnlichen
+   Problemen, Systemen oder Diskussionen suchen.
+
+Externe Ressourcen oder Code nicht ungeprüft übernehmen. Vor einer Verwendung prüfen:
+
+- passt die Lösung zur aktuellen Warcraft-III-Version und zu vJASS/JassHelper?
+- gibt es bekannte Abhängigkeiten?
+- welche Lizenz oder Nutzungsbedingungen gelten?
+- ist eine Nennung des Autors erforderlich?
+- kollidiert die Lösung mit bestehenden FBF-Systemen?
+
+Wenn eine externe Ressource tatsächlich in FBF übernommen wird, Quelle und Autor
+im Ticket oder Pull Request dokumentieren.
