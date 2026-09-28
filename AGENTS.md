@@ -80,7 +80,14 @@ Agents können die Map nicht nachweislich kompilieren oder starten. `git diff --
 - Verwirf, stashe oder committe keine fremden lokalen Änderungen. Stage nur ausdrücklich genannte Pfade.
 - Der Project Status im Project `Forsaken Bastion's Fall` folgt dem Ablauf: `Todo` für ein neues Ticket, `In Progress` bei Beginn der Umsetzung, `Done` nach dem Merge. Die Befehle stehen in `.github/TICKET-STANDARD.md`. Kann ein Agent den Status nicht setzen, nennt er die offene Aktion ausdrücklich.
 - Nach dem Merge löscht `review-pr` den Branch des PRs, wenn das sicher ist. `master` wird nie gelöscht. Lokale Änderungen werden nie verworfen.
-- `implement-ticket` beschreibt die Umsetzung und die PR Vorlage. `review-pr` beschreibt Review, Freigabe, Merge und das Aufräumen danach.
+- Ein Review ordnet jeden Befund genau einem von vier Schweregraden zu:
+  - `BLOCKER`: Der Merge ist unsicher oder nicht möglich.
+  - `ERROR`: Ein Fehler ist bestätigt oder ein Akzeptanzkriterium ist nicht erfüllt.
+  - `MAJOR`: Ein wesentliches Problem bei Korrektheit, Architektur, Umfang oder Wartbarkeit.
+  - `MINOR`: Eine kleine Verbesserung, eine Stilfrage, eine Formulierung oder eine andere unkritische Auffälligkeit.
+
+  `BLOCKER`, `ERROR` und `MAJOR` müssen vor dem Merge behoben sein, auch wenn sie erst bei einer erneuten Review auffallen. `MINOR` wird im Review dokumentiert und blockiert den Merge nicht. Ein Agent behebt `MINOR` im selben PR nur auf ausdrücklichen Wunsch und legt dafür keine Folge-Tickets an. Die Einzelheiten stehen in `review-pr`.
+- `implement-ticket` beschreibt die Umsetzung und die PR Vorlage. `review-pr` beschreibt Review, Schweregrade, Freigabe, Merge und das Aufräumen danach.
 
 Die Skills nutzen das Agent Skills Format (`SKILL.md`). Die maßgeblichen Dateien liegen unter `.agents/skills/<name>/`; Codex findet sie dort. `.claude/skills/<name>/SKILL.md` enthält schlanke Wrapper für Claude Code. Bearbeite nur die maßgebliche Datei. `name` und `description` im Wrapper müssen mit ihr übereinstimmen.
 
