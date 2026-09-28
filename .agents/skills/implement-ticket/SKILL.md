@@ -1,13 +1,13 @@
 ---
 name: implement-ticket
-description: Implements one development ticket (a GitHub issue) end-to-end in this repository. Reads the ticket or issue and all its comments, creates a dedicated branch, makes the smallest sufficient change, verifies it with static checks and lists the required manual Warcraft III tests, then commits, pushes and opens a pull request that closes the issue. Use when asked to work on, implement, fix or resolve a ticket or a GitHub issue (for example "implement ticket 12" or "fix issue 12"). Never merges.
+description: Implements one development ticket (a GitHub issue) end-to-end in this repository. Reads the ticket or issue and all its comments, creates a dedicated branch, makes the smallest sufficient change, verifies it with static checks, commits, pushes and opens a pull request that closes the issue. Then continues with the review-pr flow - reviews the PR, fixes BLOCKER, ERROR and MAJOR findings, re-reviews and merges when no file under src/ changed; with changes under src/ it stops before the merge until a human confirms the World Editor build and Warcraft III playtest. Use when asked to work on, implement, fix or resolve a ticket or a GitHub issue (for example "implement ticket 12" or "fix issue 12").
 ---
 
 # Implement a GitHub issue
 
 One issue = one branch = one pull request.
 
-A request to implement an issue authorizes you to create the issue branch, commit to it, push it and open a PR. It never authorizes merging, pushing to `master`, enabling auto-merge or approving the PR; merging is a human decision.
+A request to implement an issue authorizes you to create the issue branch, commit to it, push it, open a PR and then run step 9: review the PR, fix blocking findings on the branch and, when every merge gate in `review-pr` passes, merge the PR into `master` and clean up. It never authorizes pushing to `master`, enabling auto-merge, bypassing branch protection or required reviews, fixing `MINOR` findings without an explicit request, or deciding design, balance or unclear scope.
 
 Input: the issue number. If none was given, ask for it.
 
@@ -91,8 +91,30 @@ Closes #<n>
 <optional>
 ```
 
-For a change without gameplay code, replace the two unchecked verification items with "Build und Spieltest: nicht nötig, kein Spielcode geändert". Never tick compile or playtest boxes yourself. End the body with your tool's PR attribution line, if configured.
+For a PR that changes no file under `src/`, replace the two unchecked verification items with "Build und Spieltest: nicht nötig, keine Datei unter `src/` geändert". Never tick compile or playtest boxes yourself. End the body with your tool's PR attribution line, if configured.
 
-## 9. Stop and report
+## 9. Review, fix and merge
 
-Report in simple German: the PR URL, the branch, the changed files, the checks you ran and their results, the project status you set (or the exact remaining action), and the manual tests that are still open. Do not run `gh pr merge`, enable auto-merge, approve the PR or close the issue by hand; the merge closes it through `Closes #<n>`.
+Do not stop after opening the PR. Continue in the same run:
+
+1. **Review.** Read `.agents/skills/review-pr/SKILL.md` completely and apply it to the new PR. Read the complete record, review and verify the current PR head, apply the Warcraft III merge gate and classify every finding. Review your own PR as strictly as a PR written by someone else. Post the review result on the PR, with every finding and its level.
+2. **Fix blocking findings.** If a `BLOCKER`, `ERROR` or `MAJOR` is open and you can fix it without a new human decision about design, balance or scope, fix it on the same branch. Follow steps 4 to 7: smallest change, static checks, commit with `Refs #<n>`, push. Keep the PR description accurate. Then go back to 9.1 and review the new head as a whole. Do not fix `MINOR` findings unless the user explicitly asks for it.
+3. **Stop when a human is needed.** Stop the loop and go to step 10 when:
+   - a finding needs a human decision about design, balance or scope; ask the decision as a concrete question;
+   - a gate needs a human action you cannot perform, for example missing permissions, an independent approval required by branch protection or a ruleset, or a check that fails for reasons outside this repository;
+   - a fix round fixes nothing or the same finding comes back; describe what you tried.
+4. **Changes under `src/`.** If the PR changes at least one file under `src/`, stop before the merge as soon as the missing human verification is the only open `BLOCKER`, `ERROR` or `MAJOR`. Go to step 10 and name the head SHA to test, the World Editor build (JassHelper and vJASS enabled) and the exact Warcraft III scenario. After a human reports the result on the PR, the merge continues with `review-pr`. If a later commit changes files under `src/`, the human verification is required again for the new head.
+5. **Merge.** If the PR changes no file under `src/`, no `BLOCKER`, `ERROR` or `MAJOR` is open and every other gate passes, finish the PR as `review-pr` describes in "Finish the review" and "After the merge". That covers the approval or the documented self-review, the merge into `master`, the issue, the project status `Done`, the branch cleanup and the fast-forward of the local `master`.
+
+## 10. Report
+
+Report in simple German:
+
+- the PR URL, the branch and the changed files;
+- the checks you ran and their results;
+- the project status you set, or the exact remaining action;
+- every review round with its findings and levels, and the fixes you pushed;
+- the open `MINOR` findings;
+- either the merge and cleanup results listed in the report section of `review-pr`, or why you stopped: the open decision as a concrete question, the missing human action, or the head SHA and the exact World Editor and Warcraft III tests still needed.
+
+Run `gh pr merge` only in step 9.5. Never enable auto-merge and never close the issue by hand; the merge closes it through `Closes #<n>`.

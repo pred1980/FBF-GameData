@@ -68,7 +68,7 @@ Der Skill `safe-vjass-change` enthält dazu eine Checkliste und statische Prüfu
 
 ## Tests und Ergebnisse
 
-Es gibt keine automatischen Spieltests und kein Coverage Ziel. Bei Änderungen am Spiel muss ein Mensch die Map im Editor speichern und den betroffenen Helden, das System oder den Spielmodus testen. Beschreibe Szenario und Ergebnis im Pull Request. `documentation/FBF-Website/tests/phpunit.xml` gehört nur zur archivierten PHP Website und testet die Map nicht.
+Es gibt keine automatischen Spieltests und kein Coverage Ziel. Ändert ein PR mindestens eine Datei unter `src/`, muss ein Mensch vor dem Merge die Map im Editor speichern und den betroffenen Helden, das System oder den Spielmodus testen. Beschreibe Szenario und Ergebnis im Pull Request. `documentation/FBF-Website/tests/phpunit.xml` gehört nur zur archivierten PHP Website und testet die Map nicht.
 
 Agents können die Map nicht nachweislich kompilieren oder starten. `git diff --check`, Suchen im Code und die Skripte aus `safe-vjass-change` beweisen weder einen erfolgreichen Build noch korrektes Verhalten im Spiel. Behaupte das nur, wenn ein Mensch das Speichern oder den Spieltest durchgeführt und das Ergebnis gemeldet hat. Sonst sage ausdrücklich, dass beides offen ist, und nenne das nötige Testszenario.
 
@@ -76,7 +76,9 @@ Agents können die Map nicht nachweislich kompilieren oder starten. `git diff --
 
 - Jedes neue GitHub Ticket muss `.github/TICKET-STANDARD.md` folgen.
 - Ein Issue bekommt einen Branch und einen Pull Request. Erstelle den Branch von `origin/master` als `<type>/issue-<n>-<short-slug>` mit `feature`, `fix`, `docs` oder `chore`. Committe nie auf `master`.
-- Bei einem Auftrag zur Umsetzung darf ein Agent auf dem Issue Branch committen, pushen und einen PR gegen `master` mit `Closes #<n>` öffnen. `implement-ticket` merged nie, pusht nie auf `master`, aktiviert kein Auto-Merge und genehmigt den eigenen PR nicht. `review-pr` darf erst nach Review und allen nötigen Prüfungen genehmigen und mergen.
+- Bei einem Auftrag zur Umsetzung darf ein Agent auf dem Issue Branch committen, pushen und einen PR gegen `master` mit `Closes #<n>` öffnen. Danach setzt `implement-ticket` den Ablauf mit `review-pr` fort: Review, Korrektur von `BLOCKER`, `ERROR` und `MAJOR`, erneutes Review des neuen Stands und Merge. Braucht ein Befund eine Entscheidung zu Design, Balance oder Umfang, behebt der Agent ihn nicht selbst. Er stoppt und stellt eine konkrete Frage.
+- Ändert der PR mindestens eine Datei unter `src/`, stoppt der Agent vor dem Merge. Gemerged wird erst, wenn ein Mensch den Build im World Editor und den Spieltest für den aktuellen PR-Head bestätigt hat. Ändern spätere Commits wieder Dateien unter `src/`, ist der Test für den neuen Stand erneut nötig. Ändert der PR keine Datei unter `src/`, ist der Warcraft-III-Test kein Merge-Gate.
+- Kein Agent pusht auf `master`, aktiviert Auto-Merge oder umgeht Branch Protection. `review-pr` genehmigt und merged erst, wenn alle nötigen Prüfungen erfüllt sind. Lehnt GitHub die Freigabe nur ab, weil Autor und Reviewer derselbe Account sind, steht das Review als PR-Kommentar. Das allein blockiert den Merge nicht. Verlangen Branch Protection oder Repository-Regeln eine Freigabe durch einen anderen Account, bleibt sie Pflicht.
 - Verwirf, stashe oder committe keine fremden lokalen Änderungen. Stage nur ausdrücklich genannte Pfade.
 - Der Project Status im Project `Forsaken Bastion's Fall` folgt dem Ablauf: `Todo` für ein neues Ticket, `In Progress` bei Beginn der Umsetzung, `Done` nach dem Merge. Die Befehle stehen in `.github/TICKET-STANDARD.md`. Kann ein Agent den Status nicht setzen, nennt er die offene Aktion ausdrücklich.
 - Nach dem Merge löscht `review-pr` den Branch des PRs, wenn das sicher ist. `master` wird nie gelöscht. Lokale Änderungen werden nie verworfen.
@@ -87,7 +89,7 @@ Agents können die Map nicht nachweislich kompilieren oder starten. `git diff --
   - `MINOR`: Eine kleine Verbesserung, eine Stilfrage, eine Formulierung oder eine andere unkritische Auffälligkeit.
 
   `BLOCKER`, `ERROR` und `MAJOR` müssen vor dem Merge behoben sein, auch wenn sie erst bei einer erneuten Review auffallen. `MINOR` wird im Review dokumentiert und blockiert den Merge nicht. Ein Agent behebt `MINOR` im selben PR nur auf ausdrücklichen Wunsch und legt dafür keine Folge-Tickets an. Die Einzelheiten stehen in `review-pr`.
-- `implement-ticket` beschreibt die Umsetzung und die PR Vorlage. `review-pr` beschreibt Review, Schweregrade, Freigabe, Merge und das Aufräumen danach.
+- `implement-ticket` beschreibt die Umsetzung, die PR Vorlage und den automatischen Ablauf bis zum Merge. `review-pr` beschreibt Review, Schweregrade, Freigabe, Merge und das Aufräumen danach.
 
 Die Skills nutzen das Agent Skills Format (`SKILL.md`). Die maßgeblichen Dateien liegen unter `.agents/skills/<name>/`; Codex findet sie dort. `.claude/skills/<name>/SKILL.md` enthält schlanke Wrapper für Claude Code. Bearbeite nur die maßgebliche Datei. `name` und `description` im Wrapper müssen mit ihr übereinstimmen.
 
