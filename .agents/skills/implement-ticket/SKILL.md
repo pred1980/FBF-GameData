@@ -56,7 +56,7 @@ When implementation begins, set the issue's Status in the GitHub project `Forsak
 
 - Stage explicit paths only (`git add <path>...`), never `git add -A`, `git add .` or `git commit -a`. For `src/imports.j` with a local prefix, use the staging script from the `safe-vjass-change` skill.
 - Review `git diff --cached --stat` and `git diff --cached` before committing.
-- Write the commit message in simple German (see `AGENTS.md`, sections "Sprache" and "Commits und Pull Requests"). Subject: short and specific, starting with a verb and naming the affected behavior or asset, without a trailing period. Body: what changed and why, then `Refs #<n>`. Add the attribution trailer your tool is configured to use, if any.
+- Write the commit message in simple German (see `AGENTS.md`, sections "Sprache" and "Commits und Pull Requests"). Subject: the prefix `[#<n>]` and one space at the very start, then a short, specific text that starts with a verb and names the affected behavior or asset, without a trailing period, for example `[#10] Ergänze Ticketnummern in Commit-Betreffzeilen`. Every commit for the issue uses this prefix, including later fix and review commits. Body: what changed and why, then `Refs #<n>`; the prefix does not replace it. Add the attribution trailer your tool is configured to use, if any.
 
 ## 7. Push
 
@@ -64,7 +64,7 @@ When implementation begins, set the issue's Status in the GitHub project `Forsak
 
 ## 8. Open the pull request
 
-`gh pr create --base master --head <branch> --title "<subject>" --body-file <file>`. Write the title and body in simple German and keep technical identifiers unchanged. Use this body:
+`gh pr create --base master --head <branch> --title "[#<n>] <subject>" --body-file <file>`. The title starts with the same `[#<n>]` prefix as the commits. Write the title and body in simple German and keep technical identifiers unchanged. Use this body:
 
 ```markdown
 Closes #<n>
@@ -98,7 +98,7 @@ For a PR that changes no file under `src/`, replace the two unchecked verificati
 Do not stop after opening the PR. Continue in the same run:
 
 1. **Review.** Read `.agents/skills/review-pr/SKILL.md` completely and apply it to the new PR. Read the complete record, review and verify the current PR head, apply the Warcraft III merge gate and classify every finding. Review your own PR as strictly as a PR written by someone else. Post the review result on the PR, with every finding and its level.
-2. **Fix blocking findings.** If a `BLOCKER`, `ERROR` or `MAJOR` is open and you can fix it without a new human decision about design, balance or scope, fix it on the same branch. Follow steps 4 to 7: smallest change, static checks, commit with `Refs #<n>`, push. Keep the PR description accurate. Then go back to 9.1 and review the new head as a whole. Do not fix `MINOR` findings unless the user explicitly asks for it.
+2. **Fix blocking findings.** If a `BLOCKER`, `ERROR` or `MAJOR` is open and you can fix it without a new human decision about design, balance or scope, fix it on the same branch. Follow steps 4 to 7: smallest change, static checks, commit with the `[#<n>]` prefix and `Refs #<n>`, push. Keep the PR description accurate. Then go back to 9.1 and review the new head as a whole. Do not fix `MINOR` findings unless the user explicitly asks for it.
 3. **Stop when a human is needed.** Stop the loop and go to step 10 when:
    - a finding needs a human decision about design, balance or scope; ask the decision as a concrete question;
    - a gate needs a human action you cannot perform, for example missing permissions, an independent approval required by branch protection or a ruleset, or a check that fails for reasons outside this repository;

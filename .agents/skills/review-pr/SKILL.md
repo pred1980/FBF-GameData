@@ -56,6 +56,7 @@ Assign every finding exactly one of these four severity levels. Use no other lev
 - If every gate passes and only `MINOR` findings or no findings remain, approve when GitHub permits and approval is appropriate. List the open `MINOR` findings in the review so they stay visible.
 - If GitHub refuses an approval or a change request only because the reviewer is the PR author, post the complete review result as a PR comment instead. A refused self-approval alone does not block the merge. If branch protection, a ruleset or `reviewDecision` `REVIEW_REQUIRED` requires an approving review, an approval by another account is a real gate: it stays a `BLOCKER` until it exists, and you must never bypass it.
 - Recheck the PR head, checks, reviews, mergeability and human-test evidence immediately before merging. Merge into `master` with an ordinary supported merge method; never bypass failed checks, required approvals or branch protection, and never use auto-merge. Do not pass `--delete-branch` to `gh pr merge`; clean up branches with the checked steps below.
+- Keep the ticket prefix in the history (see `AGENTS.md`, "Commits und Pull Requests"). If the merge creates a new commit, set its subject explicitly: `gh pr merge <pr> --merge` or `--squash` with `--subject "[#<n>] <Betreff>"` and `--body "PR #<pr>, Refs #<n>"`, where `<n>` is the linked issue and `<Betreff>` is the PR title without its prefix. Never keep GitHub's default subject `Merge pull request #...`. A rebase merge (`--rebase`) creates no merge commit; choose it only if every PR commit subject already starts with `[#<n>]`, and never add an extra commit just for the prefix. Never rewrite commits that are already on `master`.
 - Remove every temporary worktree this review created once it is no longer needed, whether or not the PR merged: `git worktree remove <path>`, never with `--force`. If Git refuses because the worktree has changes, leave it and report its path. Never remove a worktree you did not create.
 
 ## After the merge
@@ -87,7 +88,7 @@ Only after a successful merge. Work through these steps in order and record the 
 Report in simple German, with each point listed separately:
 
 - review findings, each with its severity level, checks, human verification evidence, and the feedback or approval given, including whether the approval was formal or documented as a PR comment because GitHub refused a self-approval;
-- merged PR (number, merge method, merge commit), or, if the PR stays open, every open `BLOCKER`, `ERROR` and `MAJOR` and the exact manual test still required;
+- merged PR (number, merge method, merge commit and its subject), or, if the PR stays open, every open `BLOCKER`, `ERROR` and `MAJOR` and the exact manual test still required;
 - open `MINOR` findings that were documented but not fixed;
 - closed issue and project status (`Done`, or the exact remaining action);
 - deleted remote branch;
