@@ -12,7 +12,7 @@ set -u
 cd "$(git rev-parse --show-toplevel)" || exit 2
 
 IMPORTS=src/imports.j
-# .vj files that are knowingly not imported (see CLAUDE.md, "Compile model").
+# .vj files that are knowingly not imported (see CLAUDE.md, "Dateien beim Build").
 KNOWN_UNIMPORTED='src/libraries/checkimmunity.vj
 src/libraries/xe/beziermissiles.vj'
 

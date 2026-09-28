@@ -13,7 +13,7 @@ Diese Datei hilft Claude Code bei der Arbeit in diesem Repository.
 
 ## Das Projekt
 
-Forsaken Bastion's Fall (FBF) ist eine Warcraft III Custom Map. Sie verbindet Tower Defense mit AoS Hero PvP zwischen zwei Fraktionen: den **Forsaken** (Undead Spieler) und der **Coalition** (Human, Orc und Night Elf Spieler). Der Spielcode liegt hauptsächlich als vJASS (`.vj`) unter `src/`. `FBF_v0.4.9_dev.w3x` ist ein binäres MPQ Archiv mit Terrain, Regionen (`gg_rct_*`) und Object Data.
+Forsaken Bastion's Fall (FBF) ist eine Warcraft III Custom Map. Sie verbindet Tower Defense mit AoS Hero PvP zwischen zwei Fraktionen: den **Forsaken** (Undead Spieler) und der **Coalition** (Human, Orc und Night Elf Spieler). Der Spielcode liegt hauptsächlich als vJASS (`.vj`) unter `src/`. Die Entwicklungskarte `FBF_v<Version>_dev.w3x` im Hauptverzeichnis ist ein binäres MPQ Archiv mit Terrain, Regionen (`gg_rct_*`) und Object Data.
 
 ## Dateien beim Build
 

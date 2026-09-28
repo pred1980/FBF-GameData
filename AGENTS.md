@@ -8,7 +8,9 @@ Dieses Repository enthält die Warcraft-III-Karte *Forsaken Bastion's Fall*.
 
 Die aktuelle Entwicklungskarte liegt im Hauptverzeichnis und folgt dem
 Namensschema `FBF_v<Version>_dev.w3x`. Sie ist die Map, die im aktuellen
-World Editor bearbeitet, gespeichert und getestet wird.
+World Editor bearbeitet, gespeichert und getestet wird. Ermittle die aktuelle
+Version aus dem Dateinamen, zum Beispiel mit `ls FBF_v*_dev.w3x`. Trage sie
+nicht fest in dauerhafte Dokumentation ein.
 
 Zusätzlich kann im Hauptverzeichnis eine versionierte `Working copie` liegen.
 Sie stammt aus dem früheren Entwicklungsablauf und wurde als Sicherheitskopie
@@ -26,6 +28,14 @@ Der Spielcode besteht vor allem aus vJASS Dateien (`.vj`) unter `src/`. `src/Her
 
 `documentation/` enthält ältere und ergänzende Materialien: Grafiken, Tabellen zu Helden, Fähigkeiten, Creeps und Towers, eine archivierte PHP Website und `FBF-ProjectFiles/FBF_TestMap/`. Diese Wurst Test Map gehört nicht zum Build. Ändere `documentation/` nur, wenn ein Ticket es verlangt. Neuer Spielcode gehört zum passenden System unter `src/`.
 
+## Sprache
+
+- Inhalte für Menschen stehen in einfachem Deutsch. Dazu gehören Dokumentation im Repository, GitHub Issues, Beschreibungen von Pull Requests, Reviews, Commit-Nachrichten und Zusammenfassungen von Agents.
+- Prompts und Anweisungen für Maschinen, etwa in `SKILL.md` Dateien, dürfen in klarem, strukturiertem Englisch stehen, wenn das zuverlässiger ist.
+- Übersetze keine technischen Bezeichner: Pfade, Dateinamen, Rawcodes wie `'A07K'`, Order-Strings wie `"roar"`, Befehle, APIs, Warcraft III Natives und Code-Symbole bleiben unverändert.
+- Ändere bestehenden Quellcode nicht nur, um Kommentare zu übersetzen. Neue oder ohnehin geänderte Code-Kommentare schreibst du nach Möglichkeit in einfachem Deutsch.
+- Wenn eine Datei nur ASCII enthalten darf, etwa eine neue `.vj` Datei, schreibe Umlaute als `ae`, `oe`, `ue` und `ss`. Deutscher Text darf das Encoding einer Datei nicht ändern; für Windows-1252 Dateien gilt der `iconv` Ablauf aus `safe-vjass-change`.
+
 ## Build und Prüfung
 
 Es gibt keinen CLI Build für das ganze Repository und keine automatischen Tests für das Spiel. Erfinde oder empfehle dafür keine Befehle. Der geprüfte Ablauf ist:
@@ -35,13 +45,13 @@ Es gibt keinen CLI Build für das ganze Repository und keine automatischen Tests
 3. Öffne `FBF_v<Version>_dev.w3x` im aktuellen Warcraft III World Editor. Dort sind JassHelper und pJASS enthalten. Aktiviere `Enable JassHelper` und `Enable vJASS` und speichere die Map. Das Speichern ist der eigentliche Build.
 4. Starte die Map aus dem Editor und teste die Änderung in Warcraft III. Das ist die Prüfung im laufenden Spiel.
 
-`src/imports.j` enthält absolute Windows Pfade zu einem bestimmten Checkout. An einem anderen Ort muss das Pfadpräfix vor dem Build lokal angepasst werden. Committe diese lokale Anpassung nie. Das Skript aus `safe-vjass-change` kann neue Importzeilen mit dem eingecheckten Präfix stagen. Stelle die Einträge erst dann auf relative Pfade oder ein anderes Schema um, wenn das im aktuellen Editor nachweislich funktioniert.
+`src/imports.j` enthält absolute Windows Pfade zu einem bestimmten Checkout. An einem anderen Ort muss das Pfadpräfix vor dem Build lokal angepasst werden. Committe diese lokale Anpassung nie. Das Skript `stage-imports-with-head-prefix.sh` aus `safe-vjass-change` stagt `src/imports.j` mit dem eingecheckten Präfix und lässt die lokale Arbeitskopie unverändert. Es bricht ohne Staging ab, wenn es keinen sicheren Stand bestimmen kann. Stelle die Einträge erst dann auf relative Pfade oder ein anderes Schema um, wenn das im aktuellen Editor nachweislich funktioniert.
 
 `git status --short` zeigt Änderungen vor einem Commit. `git diff --check` findet Fehler bei Leerzeichen. `.gitattributes` leitet neue oder geänderte `*.psd` Dateien zu Git LFS. Die bereits vorhandenen PSD Dateien sind normale Git Blobs (`git lfs ls-files` zeigt keine Dateien). Für sie ist `git lfs pull` nicht nötig.
 
 ## Code-Stil und Dateiformat
 
-Nutze `.vj` für vJASS Module und übernimm die Einrückung der jeweiligen Datei. Im bestehenden Code gibt es Tabs und Leerzeichen; formatiere andere Zeilen nicht nebenbei um. Halte dich an die vorhandenen Regeln für `scope`/`library`, `struct` und `private`. Nutze sprechende PascalCase Namen wie `HeroAIThreat.vj` oder `Cleave.vj`. Rawcodes und zugehörige Konstanten stehen nahe bei der Fähigkeit, die sie nutzt. Es gibt keinen Formatter oder Linter für das ganze Projekt. Kommentare sind teils deutsch, teils englisch; orientiere dich an der Datei.
+Nutze `.vj` für vJASS Module und übernimm die Einrückung der jeweiligen Datei. Im bestehenden Code gibt es Tabs und Leerzeichen; formatiere andere Zeilen nicht nebenbei um. Halte dich an die vorhandenen Regeln für `scope`/`library`, `struct` und `private`. Nutze sprechende PascalCase Namen wie `HeroAIThreat.vj` oder `Cleave.vj`. Rawcodes und zugehörige Konstanten stehen nahe bei der Fähigkeit, die sie nutzt. Es gibt keinen Formatter oder Linter für das ganze Projekt. Bestehende Kommentare sind teils deutsch, teils englisch. Für neue Kommentare gilt der Abschnitt „Sprache“.
 
 **Encoding:** Die meisten Quelldateien sind UTF-8 oder ASCII. Einige `.vj` Dateien mit deutschen Umlauten sind Windows-1252, etwa `src/GameConfig/GameConfig.vj`. Erhalte das Encoding jeder Datei. Edit Tools, die solche Dateien als UTF-8 lesen, beschädigen die Umlaute. Bearbeite sie über eine UTF-8 Kopie, wie in `safe-vjass-change` beschrieben. Neue `.vj` Dateien enthalten nur ASCII.
 
@@ -68,7 +78,9 @@ Agents können die Map nicht nachweislich kompilieren oder starten. `git diff --
 - Ein Issue bekommt einen Branch und einen Pull Request. Erstelle den Branch von `origin/master` als `<type>/issue-<n>-<short-slug>` mit `feature`, `fix`, `docs` oder `chore`. Committe nie auf `master`.
 - Bei einem Auftrag zur Umsetzung darf ein Agent auf dem Issue Branch committen, pushen und einen PR gegen `master` mit `Closes #<n>` öffnen. `implement-ticket` merged nie, pusht nie auf `master`, aktiviert kein Auto-Merge und genehmigt den eigenen PR nicht. `review-pr` darf erst nach Review und allen nötigen Prüfungen genehmigen und mergen.
 - Verwirf, stashe oder committe keine fremden lokalen Änderungen. Stage nur ausdrücklich genannte Pfade.
-- `implement-ticket` beschreibt die Umsetzung und die PR Vorlage. `review-pr` beschreibt Review und Freigabe.
+- Der Project Status im Project `Forsaken Bastion's Fall` folgt dem Ablauf: `Todo` für ein neues Ticket, `In Progress` bei Beginn der Umsetzung, `Done` nach dem Merge. Die Befehle stehen in `.github/TICKET-STANDARD.md`. Kann ein Agent den Status nicht setzen, nennt er die offene Aktion ausdrücklich.
+- Nach dem Merge löscht `review-pr` den Branch des PRs, wenn das sicher ist. `master` wird nie gelöscht. Lokale Änderungen werden nie verworfen.
+- `implement-ticket` beschreibt die Umsetzung und die PR Vorlage. `review-pr` beschreibt Review, Freigabe, Merge und das Aufräumen danach.
 
 Die Skills nutzen das Agent Skills Format (`SKILL.md`). Die maßgeblichen Dateien liegen unter `.agents/skills/<name>/`; Codex findet sie dort. `.claude/skills/<name>/SKILL.md` enthält schlanke Wrapper für Claude Code. Bearbeite nur die maßgebliche Datei. `name` und `description` im Wrapper müssen mit ihr übereinstimmen.
 

@@ -5,7 +5,7 @@ description: Safety checklist and static checks for changing Warcraft III vJASS 
 
 # Safe vJASS change
 
-No command can compile or run this map. The real build is a human saving `FBF_v0.4.9_dev.w3x` in the current Warcraft III World Editor, which includes JassHelper and pJASS, with `Enable JassHelper` and `Enable vJASS` turned on. The real runtime test is a human playtest in Warcraft III. This checklist catches what static inspection can. It never replaces those two steps, and passing it is no evidence that the map compiles.
+No command can compile or run this map. The real build is a human saving the current development map `FBF_v<Version>_dev.w3x` in the repository root (`ls FBF_v*_dev.w3x` shows it; it is not the `Working copie`) in the current Warcraft III World Editor, which includes JassHelper and pJASS, with `Enable JassHelper` and `Enable vJASS` turned on. The real runtime test is a human playtest in Warcraft III. This checklist catches what static inspection can. It never replaces those two steps, and passing it is no evidence that the map compiles.
 
 Run the commands from the repository root in Git Bash.
 
@@ -42,7 +42,7 @@ Cooldowns, mana costs, ranges and tooltips live in the Object Editor. When the c
 
 - Add `//! import "<prefix>\src\<Dir>\<File>.vj"` to `src/imports.j` under the matching section comment, with exactly the prefix the other lines use. A file that is not imported there is not compiled.
 - A `library` must declare every library it uses with `requires`; a `scope` can use any library. JassHelper orders libraries by these declarations, not by their position in `imports.j`.
-- Keep the file ASCII-only, and follow the `scope`/`library`, `struct`, `private` and PascalCase naming conventions in `AGENTS.md`.
+- Keep the file ASCII-only (write German umlauts in comments as `ae`, `oe`, `ue` and `ss`), and follow the `scope`/`library`, `struct`, `private` and PascalCase naming conventions in `AGENTS.md`.
 
 ### `imports.j` with a local path prefix
 
@@ -50,10 +50,10 @@ Cooldowns, mana costs, ranges and tooltips live in the Object Editor. When the c
 
 ```bash
 bash .agents/skills/safe-vjass-change/scripts/stage-imports-with-head-prefix.sh
-git diff --cached -- src/imports.j   # must show only your added lines
+git diff --cached -- src/imports.j   # must show only your added or removed import lines
 ```
 
-The script replaces only the index entry; the working copy keeps its local prefix. Undo with `git restore --staged src/imports.j`. After that, stage your other files by name, never with `git add -A` or `git add src/imports.j`, because both would stage the local prefix.
+The script replaces only the index entry; the working copy keeps its local prefix. It stages nothing and leaves the index as it was when it cannot determine a safe result: when `HEAD` or the working copy mixes prefixes, when no prefix can be found, when `src/imports.j` has merge conflicts, or when the staged version would change anything other than import lines with the `HEAD` prefix (for example a line that still points at your checkout, or an edited comment). It then exits with 1 and lists the offending lines. If the working copy already uses the `HEAD` prefix, it stages nothing and tells you to use `git add src/imports.j`. Undo a successful run with `git restore --staged src/imports.j`. After that, stage your other files by name, never with `git add -A` or `git add src/imports.j`, because both would stage the local prefix.
 
 Do not convert the paths to relative paths or any other scheme: no alternative has been verified to work with JassHelper.
 
@@ -81,7 +81,7 @@ Exit code 1 means at least one FAIL; fix it before committing. Then read `git di
 
 List in the PR what a human has to do:
 
-1. **Compile:** open `FBF_v0.4.9_dev.w3x` in the World Editor with JassHelper and vJASS enabled, save, and report any JassHelper or pJASS errors. The tester's `src/imports.j` must point at their checkout.
+1. **Compile:** open the current development map `FBF_v<Version>_dev.w3x` in the World Editor with JassHelper and vJASS enabled, save, and report any JassHelper or pJASS errors. The tester's `src/imports.j` must point at their checkout.
 2. **Playtest:** name concrete scenarios: faction, hero, ability and level, the difficulty of computer slots (easy/normal/insane) when hero AI is involved, the game mode (`-ap` or `-ar`), and what to watch for.
 3. **Object Editor:** list the values the code mirrors or requires.
 

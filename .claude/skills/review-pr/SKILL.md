@@ -1,6 +1,6 @@
 ---
 name: review-pr
-description: Review a GitHub pull request against its linked issue in Forsaken Bastion's Fall, leave actionable feedback when blocked, and merge into master only after code, CI, and required human Warcraft III verification pass. Use when asked to review or merge a PR by number.
+description: Review a GitHub pull request against its linked issue in Forsaken Bastion's Fall, leave actionable feedback when blocked, and merge into master only after code, CI, and required human Warcraft III verification pass, then set the project status and safely clean up the merged branch. Use when asked to review or merge a PR by number.
 argument-hint: "[pr-number]"
 ---
 

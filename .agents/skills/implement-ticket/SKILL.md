@@ -29,7 +29,7 @@ git fetch origin
 
 Never discard, stash, reset, overwrite or commit changes you did not make. If they touch files the issue needs, stop and report them. Otherwise leave them in place: they travel with you to the new branch and stay uncommitted. A typical local change is a machine-specific path prefix in `src/imports.j`; it must never be committed (see the `safe-vjass-change` skill).
 
-## 3. Create the branch
+## 3. Create the branch and set the project status
 
 ```bash
 git switch -c <type>/issue-<n>-<short-slug> origin/master
@@ -37,9 +37,11 @@ git switch -c <type>/issue-<n>-<short-slug> origin/master
 
 Use `feature`, `fix`, `docs` or `chore` as `<type>`, and 3–5 words from the title as a kebab-case slug, for example `docs/issue-1-vjass-build-workflow`. Never commit on `master`. If the switch fails because of local changes, stop and report.
 
+When implementation begins, set the issue's Status in the GitHub project `Forsaken Bastion's Fall` to `In Progress`, adding the issue to the project if it is missing. Use the `gh project` commands in `.github/TICKET-STANDARD.md` (section "Felder setzen und prüfen") or another available, authorized GitHub Projects v2 tool, then verify with `gh issue view <n> --json projectItems`. Never skip this silently. If no suitable tool is available or the update fails (for example, the token lacks the `project` scope), continue with the implementation and report the exact remaining action, for example: "Set issue #<n> in project `Forsaken Bastion's Fall` to `In Progress`."
+
 ## 4. Make the smallest sufficient change
 
-- Change only what the issue asks for. No refactors, renames, reformatting or comment rewrites outside the lines you need to touch. Record unrelated findings under "Noticed, not changed" in the PR instead.
+- Change only what the issue asks for. No refactors, renames, reformatting or comment rewrites outside the lines you need to touch. Record unrelated findings under "Bemerkt, nicht geändert" in the PR instead.
 - Follow `AGENTS.md`. Read the relevant architecture section of `CLAUDE.md` before a non-trivial gameplay change.
 - For any change under `src/`, follow the `safe-vjass-change` skill (`.agents/skills/safe-vjass-change/SKILL.md`) before and after editing.
 - Never edit `.w3x` files. Leave `documentation/` alone unless the issue asks for it.
@@ -54,7 +56,7 @@ Use `feature`, `fix`, `docs` or `chore` as `<type>`, and 3–5 words from the ti
 
 - Stage explicit paths only (`git add <path>...`), never `git add -A`, `git add .` or `git commit -a`. For `src/imports.j` with a local prefix, use the staging script from the `safe-vjass-change` skill.
 - Review `git diff --cached --stat` and `git diff --cached` before committing.
-- Subject: short and specific, naming the affected behavior or asset (see `AGENTS.md`). Body: what changed and why, then `Refs #<n>`. Add the attribution trailer your tool is configured to use, if any.
+- Write the commit message in simple German (see `AGENTS.md`, sections "Sprache" and "Commits und Pull Requests"). Subject: short and specific, starting with a verb and naming the affected behavior or asset, without a trailing period. Body: what changed and why, then `Refs #<n>`. Add the attribution trailer your tool is configured to use, if any.
 
 ## 7. Push
 
@@ -62,35 +64,35 @@ Use `feature`, `fix`, `docs` or `chore` as `<type>`, and 3–5 words from the ti
 
 ## 8. Open the pull request
 
-`gh pr create --base master --head <branch> --title "<subject>" --body-file <file>`, with this body:
+`gh pr create --base master --head <branch> --title "<subject>" --body-file <file>`. Write the title and body in simple German and keep technical identifiers unchanged. Use this body:
 
 ```markdown
 Closes #<n>
 
-## Summary
-- <what changed and why>
+## Zusammenfassung
+- <was sich geändert hat und warum>
 
-## Changes
-- `<path>`: <what>
+## Änderungen
+- `<path>`: <was>
 
-## Verification
-- [x] `git diff --check`: clean
-- [x] `check-vjass-change.sh`: <result, or "not applicable: no change under src/">
-- [ ] Map compiled in the World Editor (JassHelper + vJASS): not done, needs a human
-- [ ] Playtested in Warcraft III: not done, needs a human
+## Prüfung
+- [x] `git diff --check`: ohne Befund
+- [x] `check-vjass-change.sh`: <Ergebnis oder "nicht nötig: keine Änderung unter src/">
+- [ ] Map im World Editor gespeichert (JassHelper + vJASS): offen, braucht einen Menschen
+- [ ] Spieltest in Warcraft III: offen, braucht einen Menschen
 
-## Manual Warcraft III tests required
-- [ ] <faction, hero, ability and level, AI difficulty, game mode, what to watch for>
+## Nötige Spieltests in Warcraft III
+- [ ] <Fraktion, Held, Fähigkeit und Stufe, KI-Schwierigkeit, Spielmodus, worauf zu achten ist>
 
-## Object Editor changes required
-<exact rawcodes and fields, or "None">
+## Nötige Änderungen im Object Editor
+<genaue Rawcodes und Felder oder "Keine">
 
-## Noticed, not changed
+## Bemerkt, nicht geändert
 <optional>
 ```
 
-For a change without gameplay code, replace the two unchecked verification items with "Compile and playtest: not applicable, no gameplay code changed". Never tick compile or playtest boxes yourself. End the body with your tool's PR attribution line, if configured.
+For a change without gameplay code, replace the two unchecked verification items with "Build und Spieltest: nicht nötig, kein Spielcode geändert". Never tick compile or playtest boxes yourself. End the body with your tool's PR attribution line, if configured.
 
 ## 9. Stop and report
 
-Report the PR URL, the branch, the changed files, the checks you ran and their results, and the manual tests that are still open. Do not run `gh pr merge`, enable auto-merge, approve the PR or close the issue by hand; the merge closes it through `Closes #<n>`.
+Report in simple German: the PR URL, the branch, the changed files, the checks you ran and their results, the project status you set (or the exact remaining action), and the manual tests that are still open. Do not run `gh pr merge`, enable auto-merge, approve the PR or close the issue by hand; the merge closes it through `Closes #<n>`.
