@@ -95,14 +95,16 @@ Die Skills nutzen das Agent Skills Format (`SKILL.md`). Die maßgeblichen Dateie
 
 ## Commits und Pull Requests
 
-Commit-Nachrichten verwenden einfaches Deutsch. Beginne die kurze erste Zeile mit einem klaren Verb und beschreibe konkret die Änderung. Setze keinen Punkt ans Ende. Vermeide vage Betreffzeilen wie `Update`, `Changes`, `Fix stuff` oder `WIP`. Präfixe wie `feat:`, `fix:` oder `docs:` sind nicht nötig. Technische Bezeichner bleiben unverändert. Die Ticketnummer muss nicht im Commit-Betreff stehen.
+Commit-Nachrichten verwenden einfaches Deutsch. Gehört ein Commit zu einem Issue, beginnt die erste Zeile mit dem Präfix `[#<n>]` und einem Leerzeichen. `<n>` ist die Nummer des Issues. Das gilt für jeden Commit zum Issue, auch für spätere Korrektur- und Review-Commits. Nach dem Präfix folgt ein kurzer Betreff: Beginne ihn mit einem klaren Verb und beschreibe konkret die Änderung. Setze keinen Punkt ans Ende. Vermeide vage Betreffzeilen wie `Update`, `Changes`, `Fix stuff` oder `WIP`. Präfixe wie `feat:`, `fix:` oder `docs:` sind nicht nötig. Technische Bezeichner bleiben unverändert. `Refs #<n>` im Commit-Body bleibt; das Präfix ersetzt diese Verknüpfung nicht. Die Regel gilt für neue Commits. Bestehende Commits auf `master` werden nicht umgeschrieben.
 
 Gute Beispiele:
 
-- `Ergänze gemeinsamen Agent-Workflow`
-- `Dokumentiere Ticket-Standard`
-- `Behebe Zielauswahl der Archmage-KI`
-- `Prüfe Rawcodes der Turm-Upgrades`
+- `[#3] Ergänze gemeinsamen Agent-Workflow`
+- `[#3] Dokumentiere Ticket-Standard`
+- `[#21] Behebe Zielauswahl der Archmage-KI`
+- `[#22] Prüfe Rawcodes der Turm-Upgrades`
+
+Der Titel eines Pull Requests zu einem Issue beginnt mit demselben Präfix, zum Beispiel `[#10] Ergänze Ticketnummern in Commit-Betreffzeilen`. Die Beschreibung enthält weiterhin `Closes #<n>`. Erzeugt der Merge einen neuen Commit (Merge-Commit oder Squash), beginnt dessen Betreff ebenfalls mit `[#<n>]` und nicht mit dem GitHub-Standard `Merge pull request #...`. Ein Rebase-Merge erzeugt keinen neuen Commit. Dann tragen die einzelnen Commits das Präfix schon, und es entsteht kein zusätzlicher Commit nur für das Präfix.
 
 Fasse im Pull Request die Änderung zusammen. Nenne Ergebnisse für Build und Spieltest oder sage, dass sie noch offen sind. Verlinke das Issue. Bei sichtbaren Änderungen an Spiel oder Grafiken füge Screenshots oder einen kurzen Clip hinzu. Committe keine Editor Backups oder fremde erzeugte Map Dateien.
 

@@ -10,7 +10,7 @@ Diese Anleitung zeigt, wie ein GitHub Ticket mit Codex oder Claude Code umgesetz
 2. **Umsetzung starten:** Starte den Agent im Hauptverzeichnis und nenne die Issue Nummer.
    - Codex: `$implement-ticket Implement issue #12`
    - Claude Code: `/implement-ticket 12`
-3. **Branch und PR:** `implement-ticket` liest das Issue und seine Kommentare, erstellt einen Branch von `origin/master` und setzt das Issue im Project auf `In Progress`. Danach ändert es nur die nötigen Dateien, führt statische Prüfungen aus, committet, pusht und öffnet einen PR mit `Closes #12`. Ein Issue hat einen Branch und einen PR. Ohne neuen Auftrag geht es mit Schritt 4 weiter.
+3. **Branch und PR:** `implement-ticket` liest das Issue und seine Kommentare, erstellt einen Branch von `origin/master` und setzt das Issue im Project auf `In Progress`. Danach ändert es nur die nötigen Dateien, führt statische Prüfungen aus, committet, pusht und öffnet einen PR mit `Closes #12`. Jeder Commit zum Issue und der PR-Titel beginnen mit `[#12]`, etwa `[#12] Behebe Zielauswahl der Archmage-KI`. Ein Issue hat einen Branch und einen PR. Ohne neuen Auftrag geht es mit Schritt 4 weiter.
 4. **Review und Korrekturen:** `implement-ticket` prüft den PR nach den Regeln von `review-pr`: Issue, Code, Kommentare, Review Threads und CI. Jeder Befund bekommt genau einen Schweregrad: `BLOCKER`, `ERROR`, `MAJOR` oder `MINOR`. Die Bedeutung steht in `AGENTS.md`.
    - `BLOCKER`, `ERROR` und `MAJOR` behebt der Agent auf demselben Branch und pusht die Korrektur. Danach prüft er den ganzen neuen Stand erneut. Neue `BLOCKER`, `ERROR` oder `MAJOR` blockieren wieder.
    - Braucht ein Befund eine Entscheidung zu Design, Balance oder Umfang oder eine Handlung eines Menschen, stoppt der Agent und stellt eine konkrete Frage.
@@ -22,6 +22,7 @@ Diese Anleitung zeigt, wie ein GitHub Ticket mit Codex oder Claude Code umgesetz
    - Danach übernimmt `review-pr` den Merge: Codex mit `$review-pr <PR-Nummer>`, Claude Code mit `/review-pr <PR-Nummer>`.
    - Ändern spätere Commits wieder Dateien unter `src/`, ist der Test für den neuen Stand erneut nötig.
 6. **Merge:** Sind nur noch `MINOR` oder keine Befunde offen und alle nötigen Prüfungen erfüllt, merged der Agent den PR nach `master`.
+   - Erzeugt der Merge einen neuen Commit, setzt der Agent dessen Betreff auf `[#12] <Betreff>` statt auf `Merge pull request #...`. Ein Rebase-Merge übernimmt die schon benannten Commits ohne zusätzlichen Commit.
    - Lehnt GitHub die Freigabe nur ab, weil Autor und Reviewer derselbe Account sind, steht das Review als PR-Kommentar. Das allein blockiert den Merge nicht.
    - Eine Freigabe, die Branch Protection oder Repository-Regeln verlangen, bleibt Pflicht.
    - `review-pr` lässt sich auch einzeln aufrufen, etwa für PRs anderer Personen oder nach dem Spieltest. Dann gibt es Rückmeldung, ändert aber ohne ausdrücklichen Wunsch keine Dateien des PRs.
