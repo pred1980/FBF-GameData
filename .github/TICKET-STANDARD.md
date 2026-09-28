@@ -30,15 +30,31 @@ Nenne die nötigen statischen Prüfungen. Bei Änderungen am Spiel gehören das 
 
 ## GitHub-Metadaten
 
-Setze diese Werte als echte GitHub-Felder. Werte im Tickettext ersetzen die Felder nicht.
+Neue Tickets bekommen echte GitHub-Felder:
 
 - **Assignee:** `pred1980`
 - **Project:** `Forsaken Bastion's Fall`
-- **Project Status:** `Todo` bei einem neuen Ticket, `In Progress` bei Beginn der Umsetzung, `Done` nach dem erfolgreichen Merge
-- **Label:** ein passendes Typ-Label, wenn eines passt: `bug`, `feature`, `documentation` oder `maintenance`
-- **Milestone:** nur für ein echtes, geplantes Release
-- **Relationships:** nur für echte Abhängigkeiten
-- **Development:** Links entstehen durch den normalen Branch und PR Workflow
+- **Status:** `Todo` → bei Umsetzung `In Progress` → nach Merge `Done`
+- **Label:** passend `bug`, `feature`, `documentation` oder `maintenance`
+- **Milestone:** nur bei geplantem Release
+- **Relationships:** nur bei echten Abhängigkeiten
+
+Angaben im Tickettext ersetzen diese Felder nicht.
+
+Der Ersteller setzt alle Felder mit den verfügbaren GitHub-Werkzeugen. Kann
+ChatGPT `Project` oder `Status` nicht direkt setzen, ist das Ticket noch nicht
+vollständig angelegt. Dann müssen Codex oder Claude die fehlenden Felder über
+`gh` / GitHub Projects v2 setzen.
+
+Danach immer prüfen:
+
+`gh issue view <n> --json assignees,labels,milestone,projectItems`
+
+Erst wenn `projectItems` das Project `Forsaken Bastion's Fall` mit dem
+erwarteten Status zeigt, gilt das Ticket als vollständig angelegt.
+
+Für `gh project` muss einmalig der Scope `project` vorhanden sein:
+`gh auth refresh -s project`.
 
 ### Felder setzen und prüfen
 
