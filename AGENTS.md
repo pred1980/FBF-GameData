@@ -1,34 +1,47 @@
-# Repository Guidelines
+# Regeln für dieses Repository
 
-## Project Structure & Module Organization
+## Projektaufbau
 
-This repository contains the Warcraft III map *Forsaken Bastion's Fall*. The root `FBF_v0.4.9_dev.w3x` is the current development map and the one verified to open and run in the current World Editor. The root also holds a tracked copy, `FBF_v0.4.9_dev - Working copie.w3x`; `release/` holds older packaged `.w3x` versions. Gameplay source is primarily vJASS (`.vj`), organized by feature under `src/`: for example, `src/Heroes/<Hero>/` contains abilities, `src/AI-Systems/` contains hero and tower AI, and `src/Libraries/` contains shared vJASS code. `src/imports.j` is the compile manifest (see below). `documentation/` contains versioned artwork, project files, an archived website, and separate experimental test-map material. Keep new gameplay code with its related system rather than in `documentation/`.
+Dieses Repository enthält die Warcraft-III-Karte *Forsaken Bastion's Fall*. `FBF_v0.4.9_dev.w3x` im Hauptverzeichnis ist die aktuelle Entwicklungskarte. Sie wurde im aktuellen World Editor geöffnet und gespielt. Im Hauptverzeichnis liegt auch `FBF_v0.4.9_dev - Working copie.w3x`. `release/` enthält ältere `.w3x`-Versionen.
 
-## Build, Test, and Development Commands
+Der Spielcode liegt vor allem als vJASS (`.vj`) unter `src/`. Beispiele sind Fähigkeiten unter `src/Heroes/<Hero>/`, Helden- und Turm-KI unter `src/AI-Systems/` und gemeinsame Bibliotheken unter `src/Libraries/`. `src/imports.j` legt fest, welche Dateien in die Karte eingebunden werden. Unter `documentation/` liegen ältere Bilder, Projektdaten, eine archivierte Website und eine getrennte Testkarte. Neuer Spielcode gehört zum passenden System unter `src/`.
 
-There is no repository-wide CLI build and no automated gameplay test suite; do not introduce or suggest build or test commands that do not exist. The verified workflow is:
+## Sprache
 
-1. Edit the vJASS source in `src/`.
-2. Make sure every new `.vj` file is listed in `src/imports.j`. It is the compile manifest: a file that is not imported there is not compiled into the map.
-3. Open `FBF_v0.4.9_dev.w3x` in the current Warcraft III World Editor, which includes JassHelper and pJASS, with `Enable JassHelper` and `Enable vJASS` turned on, and save the map to compile it.
-4. Start the map from the editor and playtest the change in Warcraft III.
+Schreibe menschenlesbare Projektinhalte in einfachem Deutsch. Das gilt für Dokumentation, GitHub Issues, Pull-Request-Beschreibungen, Reviews, Commit-Nachrichten, Agent-Zusammenfassungen und Antworten. Maschinenlesbare Agent-Anweisungen und Prompts dürfen in klarem, strukturiertem Englisch bleiben, wenn das zuverlässiger ist. Übersetze keine technischen Bezeichner oder festen Warcraft-III-Werte. Dazu gehören Namen von Funktionen, Structs, Libraries, Variablen, Dateien und Pfaden, Rawcodes wie `'A07K'`, Order-Strings wie `"roar"`, Warcraft-III-Natives, API-Namen und Befehle. Ändere bestehenden Quellcode nicht allein, um Kommentare zu übersetzen. Schreibe neue oder bearbeitete Code-Kommentare möglichst in einfachem Deutsch.
 
-`src/imports.j` currently contains machine-specific absolute Windows paths to one checkout location, so it only compiles where the checkout sits at that path. On another machine, change the path prefix to your checkout before compiling, and keep that local path change out of unrelated commits. Do not convert the entries to relative paths or any other scheme unless that has been verified to compile in the current editor.
+## Bauen und Testen
 
-`git status --short` shows changed files before a commit; `git diff --check` catches whitespace errors. If working with layered artwork, run `git lfs pull` to fetch tracked `.psd` files.
+Für die Karte gibt es keinen geprüften Build-Befehl für die Kommandozeile und keine automatische Test-Suite für das Spiel. Erfinde keine solchen Befehle. Der geprüfte Ablauf ist:
 
-## Coding Style & Naming Conventions
+1. Bearbeite den vJASS-Code unter `src/`.
+2. Prüfe, ob jede neue `.vj`-Datei in `src/imports.j` steht. Ohne diesen Eintrag wird die Datei nicht in die Karte eingebunden.
+3. Öffne `FBF_v0.4.9_dev.w3x` im aktuellen Warcraft III World Editor. Er enthält JassHelper und pJASS. Aktiviere `Enable JassHelper` und `Enable vJASS` und speichere die Karte. Dabei wird sie kompiliert.
+4. Starte die Karte aus dem Editor und teste die Änderung in Warcraft III.
 
-Use `.vj` for vJASS modules and follow the surrounding file's indentation; existing code mixes tabs and spaces, so avoid reformatting unrelated lines. Match the established `scope`/`library`, `struct`, and `private` conventions. Use descriptive PascalCase module and ability filenames such as `HeroAIThreat.vj` or `Cleave.vj`; keep raw Warcraft object IDs and related constants close to the ability that uses them. No project-wide formatter or linter is configured.
+`src/imports.j` enthält absolute Windows-Pfade zu einem bestimmten Checkout. An einem anderen Ort müssen die Pfadpräfixe vor dem Kompilieren lokal angepasst werden. Nimm diese lokale Anpassung nicht in einen fremden Commit auf. Stelle die Einträge nicht auf relative Pfade oder ein anderes Verfahren um, solange dies nicht im aktuellen Editor geprüft wurde.
 
-Source files use CRLF line endings. Most are UTF-8 or ASCII, but some `.vj` files are Latin-1 (Windows-1252) with German umlauts in comments, for example `src/GameConfig/GameConfig.vj`; keep each file's existing encoding. Comments mix German and English; match the file you are editing.
+`git status --short` zeigt Änderungen vor einem Commit. `git diff --check` findet Fehler bei Leerzeichen. Die vorhandenen `.psd`-Dateien sind normale Git-Dateien; für sie ist `git lfs pull` nicht nötig. Die Regel in `.gitattributes` für `*.psd` gilt für neue oder geänderte PSD-Dateien.
 
-## Testing Guidelines
+## Schreibweise und Dateiformat
 
-There is no gameplay test suite or coverage target. For gameplay changes, compile the map and playtest the affected hero, system, or game mode; describe the scenario and result in the pull request. The archived website has a separate `documentation/FBF-Website/tests/phpunit.xml` for its PHP tests; it is not a test harness for the map.
+Verwende `.vj` für vJASS-Module und übernimm die Einrückung der jeweiligen Datei. Bestehender Code mischt Tabulatoren und Leerzeichen. Formatiere keine fremden Zeilen um. Halte dich an die vorhandenen Regeln für `scope`, `library`, `struct` und `private`. Verwende aussagekräftige Dateinamen wie `HeroAIThreat.vj` oder `Cleave.vj`. Belasse Warcraft-Objekt-IDs und zugehörige Konstanten bei der betreffenden Fähigkeit. Es gibt keinen Formatter oder Linter für das ganze Projekt.
 
-There is no verified way for an agent to compile or run the map, and static checks such as grep or `git diff --check` do not show that a change compiles or works. Never claim that a change compiles or behaves correctly in game unless a human saved the map in the editor or playtested it and reported the result. Otherwise, state explicitly that the change has not been compiled or playtested, and name the scenario a human should test.
+Git speichert die Textdateien durch `* text=auto` mit LF. Unter Windows kann `core.autocrlf=true` sie im Arbeitsverzeichnis als CRLF auschecken. Behalte beim Bearbeiten die vorhandenen Zeilenenden einer Datei bei und vermeide Änderungen allein an Zeilenenden. Mische LF und CRLF nicht. Die meisten Quelldateien sind UTF-8 oder ASCII. Einige `.vj`-Dateien enthalten deutsche Umlaute in Windows-1252, zum Beispiel `src/GameConfig/GameConfig.vj`. Behalte die Kodierung jeder Datei bei.
 
-## Commit & Pull Request Guidelines
+## Änderungen sicher prüfen
 
-Recent commits use short, descriptive subjects, often beginning with a verb such as “Configure,” “Integrate,” or “changed.” Write a specific subject that names the affected behavior or asset. In pull requests, summarize the change, list map compile and playtest results (or state that none were performed), link any relevant issue, and attach screenshots or a short clip for visible gameplay or artwork changes. Avoid committing editor backups or unrelated generated map files.
+- **Rawcodes und Order-Strings:** Objektdaten liegen nur in der `.w3x`. Bevor du einen Rawcode oder Order-String änderst, suche alle Verwendungen unter `src/`.
+- **Helden-KI:** Dateien unter `src/AI-Systems/HeroesAI/` wiederholen Werte aus Fähigkeiten unter `src/Heroes/`, etwa Spell-IDs, Order-Strings, Radien und Abklingzeiten. Passe beide Seiten gemeinsam an.
+- **Gemeinsame Bibliotheken:** Suche vor einer Änderung unter `src/Libraries/` nach allen Nutzern, auch nach `optional`-Abhängigkeiten, Modulen und Textmacros.
+- **Kartendateien:** Bearbeite, erzeuge oder speichere `.w3x`-Dateien nicht mit Agent-Werkzeugen. Nenne nötige Änderungen im Object Editor für einen Menschen.
+
+## Prüfung und Berichte
+
+Es gibt keine automatische Test-Suite für das Spiel und kein Ziel für Testabdeckung. Bei Änderungen am Spiel muss ein Mensch die Karte im Editor speichern und den betroffenen Helden, das System oder den Spielmodus in Warcraft III testen. Beschreibe Ablauf und Ergebnis im Pull Request. Die archivierte Website besitzt unter `documentation/FBF-Website/tests/phpunit.xml` eigene PHP-Tests; sie testen die Karte nicht.
+
+Agents können die Karte derzeit nicht nachweislich kompilieren oder im Spiel testen. Statische Prüfungen wie `git diff --check` beweisen weder das Kompilieren noch das Verhalten im Spiel. Behaupte beides nur, wenn ein Mensch das Speichern im Editor oder den Spieltest durchgeführt und das Ergebnis gemeldet hat. Sonst sage ausdrücklich, dass Kompilieren oder Spieltest noch fehlen, und nenne den genauen Testfall.
+
+## Commits und Pull Requests
+
+Schreibe kurze, genaue Commit-Nachrichten in einfachem Deutsch. Sie sollen die geänderte Funktion oder Datei benennen. Fasse im Pull Request die Änderung zusammen, nenne das Ergebnis von Kompilieren und Spieltest oder sage, dass beides noch fehlt, und verlinke das Issue. Füge bei sichtbaren Änderungen am Spiel oder an Bildern einen Screenshot oder kurzen Clip hinzu. Committe keine Editor-Backups und keine fremden erzeugten Kartendateien.

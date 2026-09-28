@@ -1,55 +1,55 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Diese Datei hilft Claude Code bei der Arbeit an diesem Repository.
 
 @AGENTS.md
 
-`AGENTS.md`, imported above, is the single source for the verified build and playtest workflow, the rules for reporting verification, and the coding and commit conventions. This file adds how the code fits together.
+`AGENTS.md` ist die zentrale Quelle für gemeinsame Regeln. Dort stehen der geprüfte Ablauf zum Bauen und Testen, die Regeln für Prüfberichte sowie die Vorgaben für Code und Commits. Diese Datei ergänzt nur Hinweise für Claude Code und den Aufbau des Spiels.
 
-## What this is
+## Das Spiel
 
-Forsaken Bastion's Fall (FBF) is a Warcraft III custom map that combines tower defense with AoS-style hero PvP between two factions: the **Forsaken** (Undead players) and the **Coalition** (Human, Orc and Night Elf players). Gameplay code lives in `src/`, primarily as vJASS (`.vj` files). The map `FBF_v0.4.9_dev.w3x` is a binary MPQ archive that holds the terrain, the regions (`gg_rct_*`) and all object data.
+*Forsaken Bastion's Fall* (FBF) ist eine Warcraft-III-Karte. Sie verbindet Tower Defense mit Kämpfen zwischen Helden der **Forsaken** (Untote) und der **Coalition** (Menschen, Orks und Nachtelfen). Der Spielcode liegt überwiegend als vJASS (`.vj`) unter `src/`. `FBF_v0.4.9_dev.w3x` ist ein binäres MPQ-Archiv. Es enthält Gelände, Regionen (`gg_rct_*`) und Objektdaten.
 
-## Compile model
+## Einbindung beim Kompilieren
 
-- `src/imports.j` lists every compiled file as `//! import "<absolute path>"`, grouped under section comments; add new entries in the same form under the matching section. JassHelper works out library order from `requires`/`needs`/`uses` (including `optional`), not from the position in `imports.j`.
-- Two `.vj` files are currently not imported and so are not part of the map: `Libraries/XE/BezierMissiles.vj`, a byte-identical copy of the imported `Libraries/BezierMissiles.vj`, and `Libraries/CheckImmunity.vj`, an unfinished stub with the invalid library name `SpellHelper.restoreMana`.
-- The `.w3x` files are binary. Never edit, regenerate or re-save them with tools.
+- `src/imports.j` bindet Dateien mit `//! import "<absolute path>"` ein. Abschnittskommentare ordnen die Einträge. Ergänze neue Dateien im passenden Abschnitt und in derselben Form. JassHelper ermittelt die Reihenfolge der Bibliotheken aus `requires`, `needs` und `uses`, auch mit `optional`. Die Position in `imports.j` bestimmt diese Reihenfolge nicht.
+- Zwei `.vj`-Dateien sind derzeit nicht eingebunden und gehören daher nicht zur Karte: `Libraries/XE/BezierMissiles.vj` ist eine bytegleiche Kopie von `Libraries/BezierMissiles.vj`. `Libraries/CheckImmunity.vj` ist ein unfertiger Entwurf mit dem ungültigen Library-Namen `SpellHelper.restoreMana`.
+- `.w3x`-Dateien sind binär. Bearbeite, erzeuge oder speichere sie nicht mit Agent-Werkzeugen.
 
-## Code and object data
+## Code und Objektdaten
 
-Object data (units, heroes, abilities, items, buffs) exists only inside the `.w3x`. Code refers to it through four-character raw codes (`'A07K'`, `'H00Y'`, `'u00R'`) and order strings (`"roar"`). These are declared as `private constant`s in each file's `globals` block. A raw code cannot be verified from the repo, so before changing one, grep for every other file that uses it. `src/TowerSystems/TowerIds.txt` maps tower raw codes to tower names. Design data (hero stats, skill descriptions, creep and tower tables) is in spreadsheets under `documentation/FBF-ProjectFiles/`.
+Objektdaten für Einheiten, Helden, Fähigkeiten, Gegenstände und Buffs liegen nur in der `.w3x`. Der Code nutzt vierstellige Rawcodes wie `'A07K'`, `'H00Y'` und `'u00R'` sowie Order-Strings wie `"roar"`. Oft stehen diese Werte als `private constant` im `globals`-Block einer Datei. Rawcodes lassen sich aus dem Repository allein nicht prüfen. Suche deshalb vor einer Änderung alle weiteren Verwendungen. `src/TowerSystems/TowerIds.txt` ordnet Turm-Rawcodes den Namen zu. Tabellen unter `documentation/FBF-ProjectFiles/` enthalten Entwurfsdaten zu Helden, Fähigkeiten, Creeps und Türmen.
 
-## Startup flow
+## Start des Spiels
 
-1. The `onInit` module in `GameConfig` calls `GetHost()`, `GoldIncome.initialize()` and `GameStart.initialize()`.
-2. `GameStart` shows the title and version texts (the `NAME`, `VERSION` and `RELEASE_DATE` constants live here), then calls `Game.initialize()`.
-3. `Game` (`GameConfig/Game.vj`) collects the players, marks computer slots in `Game.isBot[]`, sets alliances, registers the death, level-up and leave events, then opens the tutorial dialog.
-4. Once every player has answered the dialog (`DialogSystem/Dialog.vj`), `GameModule.initialize()` (`GameConfig/GameModules.vj`) starts every subsystem: multiboard, items, hero pick, towers, creep AI (`KI`), teleports, defense mode, camera and so on. **A new system is wired in here.**
-5. When a bot's hero is created in `HeroSystems/HeroPickMods.vj`, `RunHeroAI(hero)` attaches the hero AI.
+1. Das `onInit`-Modul in `GameConfig` ruft `GetHost()`, `GoldIncome.initialize()` und `GameStart.initialize()` auf.
+2. `GameStart` zeigt Titel und Version an. Die Konstanten `NAME`, `VERSION` und `RELEASE_DATE` stehen dort. Danach ruft es `Game.initialize()` auf.
+3. `Game` (`GameConfig/Game.vj`) erfasst Spieler, markiert Computerplätze in `Game.isBot[]`, setzt Bündnisse und registriert Ereignisse für Tod, Stufenaufstieg und Verlassen des Spiels. Danach öffnet es den Tutorial-Dialog.
+4. Sobald alle Spieler den Dialog beantwortet haben, startet `GameModule.initialize()` (`GameConfig/GameModules.vj`) die Systeme: Multiboard, Gegenstände, Heldenwahl, Türme, Creep-KI (`KI`), Teleports, Verteidigungsmodus, Kamera und weitere. **Neue Systeme werden hier eingebunden.**
+5. Wenn ein Bot seinen Helden erhält, verbindet `RunHeroAI(hero)` in `HeroSystems/HeroPickMods.vj` den Helden mit seiner KI.
 
-The creep players are Neutral Extra and Neutral Victim. They are allied with the Forsaken and with the Coalition respectively, and `Game.initialize` renames them "The Forsaken" and "The Coalition". Game modes, game types and defense modes are `struct … extends array` tables filled in `onInit` (`GameConfig/GameModes.vj`, `GameTypes.vj`, `DefenseModes.vj`). `IS_DEBUG_MODE` in `GameConfig/GameConfig.vj` turns on test shortcuts across systems, such as a fixed random hero, short hero-pick and round timers, and debug messages.
+Die Creep-Spieler heißen Neutral Extra und Neutral Victim. Sie sind mit den Forsaken beziehungsweise der Coalition verbündet. `Game.initialize` benennt sie in `"The Forsaken"` und `"The Coalition"` um. Spielmodi, Spieltypen und Verteidigungsmodi sind Tabellen mit `struct … extends array`. Sie werden in `onInit` gefüllt (`GameConfig/GameModes.vj`, `GameTypes.vj`, `DefenseModes.vj`). `IS_DEBUG_MODE` in `GameConfig/GameConfig.vj` aktiviert Testhilfen. Dazu gehören ein fest gewählter Zufallsheld, kurze Zeiten für Heldenwahl und Runden sowie Debug-Meldungen.
 
-## Hero abilities
+## Fähigkeiten der Helden
 
-Each ability is one scope in `src/Heroes/<Hero>/<Ability>.vj`, usually declared as `scope <Ability> initializer init`. It contains:
+Jede Fähigkeit hat meist einen eigenen `scope` unter `src/Heroes/<Hero>/<Ability>.vj`, oft mit `scope <Ability> initializer init`. Eine solche Datei enthält meist:
 
-- a header comment with a description and a dated changelog;
-- a `globals` block of `private constant` settings (`SPELL_ID`, `DUMMY_SPELL`, `ORDER_ID`, effect paths, radii);
-- `private constant function`s for level scaling;
-- a `private struct` that holds the state of one cast.
+- einen Kopfkommentar mit Beschreibung und datierten Änderungen;
+- einen `globals`-Block mit `private constant`-Werten wie `SPELL_ID`, `DUMMY_SPELL`, `ORDER_ID`, Effektpfaden und Radien;
+- `private constant function`-Funktionen für Werte je Fähigkeitsstufe;
+- einen `private struct` für den Zustand eines Einsatzes.
 
-Common building blocks are the xe libraries (`xedamage`, `xecast`, `xefx`, `xemissile`), `TimerUtils` (`NewTimer`/`ReleaseTimer`/`GetTimerData`), `RegisterPlayerUnitEvent`, `SpellHelper.isValidEnemy` and `ENUM_GROUP` from `GroupUtils`. Before an ability deals damage it sets the global `DamageType` (`PHYSICAL`/`SPELL`/`PHYSICAL_AND_SPELL`, defined in `Libraries/DamageEvent.vj`), and systems like `DamageOverTime` read it. Item abilities in `src/ItemAbilities/` follow the same pattern.
+Häufig genutzte Bausteine sind die xe-Bibliotheken (`xedamage`, `xecast`, `xefx`, `xemissile`), `TimerUtils` (`NewTimer`, `ReleaseTimer`, `GetTimerData`), `RegisterPlayerUnitEvent`, `SpellHelper.isValidEnemy` und `ENUM_GROUP` aus `GroupUtils`. Vor Schaden setzt eine Fähigkeit die globale Variable `DamageType` auf `PHYSICAL`, `SPELL` oder `PHYSICAL_AND_SPELL`. Diese Werte stehen in `Libraries/DamageEvent.vj`. Systeme wie `DamageOverTime` lesen sie. Fähigkeiten für Gegenstände unter `src/ItemAbilities/` folgen einem ähnlichen Aufbau.
 
-## Hero AI
+## Helden-KI
 
-`src/AI-Systems/HeroAI.vj` (library `HeroAI`) defines `module HeroAI`, a periodic state machine with the states engaged, go shop, run away, go teleport and idle. It tracks nearby allies and enemies, buys items and learns skills. `HeroAIPriority`, `HeroAIThreat` and `HeroAIEventResponse` are pulled in with `implement optional`. `HeroAILearnset.vj` and `HeroAIItem.vj` are textmacros expanded inside `HeroAI.vj`. `src/AI-Systems/README.md` documents the design in German.
+`src/AI-Systems/HeroAI.vj` (Library `HeroAI`) definiert `module HeroAI`. Die KI wechselt regelmäßig zwischen `STATE_ENGAGED` (Kampf), `STATE_GO_SHOP` (Einkauf), `STATE_RUN_AWAY` (Flucht), `STATE_GO_TELEPORT` (Teleport) und `STATE_IDLE` (Leerlauf). Sie erfasst nahe Verbündete und Gegner, kauft Gegenstände und lernt Fähigkeiten. `HeroAIPriority`, `HeroAIThreat` und `HeroAIEventResponse` werden mit `implement optional` eingebunden. Die Textmacros `HeroAILearnset.vj` und `HeroAIItem.vj` werden in `HeroAI.vj` eingesetzt. `src/AI-Systems/README.md` beschreibt die KI auf Deutsch.
 
-Each hero's AI lives in `src/AI-Systems/HeroesAI/<Hero>AI.vj`:
+Die KI eines Helden liegt unter `src/AI-Systems/HeroesAI/<Hero>AI.vj`:
 
-- It is a `scope <Hero>AI` containing a `private struct AI extends array`. The struct holds the ability-casting logic and fills the learnsets, itemsets and per-difficulty arrays in `onInit`. It ends with `implement HeroAI`.
-- After the struct comes `//! runtextmacro HeroAI_Register("HERO_ID")`. A hero with no registered AI falls back to `DefaultHeroAI`.
-- Difficulty arrays are indexed by `aiLevel`: 0 = easy, 1 = normal, 2 = insane. Cooldown arrays are indexed by ability level − 1.
-- The AI file repeats the ability's `SPELL_ID`, order string and radii. For example, `F_RADIUS` in the Archmage AI mirrors `RAIN_AOE` in `Fireworks.vj`. **If you change an ability's raw code, order string or area, change the matching `<Hero>AI.vj` too.** Several ability changelogs record order IDs being changed "for AI System".
+- Ein `scope <Hero>AI` enthält einen `private struct AI extends array`. Der Struct steuert Fähigkeiten und füllt in `onInit` die Listen für gelernte Fähigkeiten, Gegenstände und Schwierigkeitsgrade. Am Ende steht `implement HeroAI`.
+- Danach folgt `//! runtextmacro HeroAI_Register("HERO_ID")`. Ohne registrierte KI nutzt ein Held `DefaultHeroAI`.
+- Die Arrays für Schwierigkeitsgrade nutzen `aiLevel`: 0 = `easy` (leicht), 1 = `normal`, 2 = `insane` (sehr schwer). Die Arrays für Abklingzeiten nutzen die Fähigkeitsstufe minus 1 als Index.
+- Die KI-Datei wiederholt `SPELL_ID`, Order-String und Radien der Fähigkeit. Beispielsweise entspricht `F_RADIUS` in der Archmage-KI dem Wert `RAIN_AOE` in `Fireworks.vj`. **Wenn du Rawcode, Order-String oder Radius einer Fähigkeit änderst, passe auch die passende `<Hero>AI.vj` an.** Mehrere Änderungsprotokolle nennen Order-IDs, die für das KI-System geändert wurden.
 
-The tower-building AI is `AI-Systems/AI-TowerBuilder.vj` (`TowerBuildAI`, `TowerAIEventListener`). Its weighted build lists per AI level are in `TowerSystems/TowerConfig.vj`. The creep AI is `AI-Systems/AI-Creeps.vj` (`struct KI`).
+Die Turmbau-KI liegt in `AI-Systems/AI-TowerBuilder.vj` (`TowerBuildAI`, `TowerAIEventListener`). Die gewichteten Baulisten je Schwierigkeitsgrad stehen in `TowerSystems/TowerConfig.vj`. Die Creep-KI liegt in `AI-Systems/AI-Creeps.vj` (`struct KI`).
