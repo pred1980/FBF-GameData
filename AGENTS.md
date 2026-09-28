@@ -55,7 +55,7 @@ Nutze `.vj` für vJASS Module und übernimm die Einrückung der jeweiligen Datei
 
 **Encoding:** Die meisten Quelldateien sind UTF-8 oder ASCII. Einige `.vj` Dateien mit deutschen Umlauten sind Windows-1252, etwa `src/GameConfig/GameConfig.vj`. Erhalte das Encoding jeder Datei. Edit Tools, die solche Dateien als UTF-8 lesen, beschädigen die Umlaute. Bearbeite sie über eine UTF-8 Kopie, wie in `safe-vjass-change` beschrieben. Neue `.vj` Dateien enthalten nur ASCII.
 
-**Zeilenenden:** `* text=auto` speichert Textdateien im Repository mit LF. Windows Checkouts mit `core.autocrlf=true` erhalten CRLF. Shell Skripte (`*.sh`) haben immer LF. Erhalte die Zeilenenden einer Datei und mische LF und CRLF nicht.
+**Zeilenenden:** `* text=auto` speichert Textdateien im Repository mit LF. Windows Checkouts mit `core.autocrlf=true` erhalten CRLF. Shell Skripte (`*.sh`) und awk Skripte (`*.awk`) haben immer LF. Erhalte die Zeilenenden einer Datei und mische LF und CRLF nicht.
 
 ## Änderungen sicher durchführen
 

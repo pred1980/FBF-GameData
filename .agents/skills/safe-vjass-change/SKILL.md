@@ -53,7 +53,7 @@ bash .agents/skills/safe-vjass-change/scripts/stage-imports-with-head-prefix.sh
 git diff --cached -- src/imports.j   # must show only your added or removed import lines
 ```
 
-The script replaces only the index entry; the working copy keeps its local prefix. It stages nothing and leaves the index as it was when it cannot determine a safe result: when `HEAD` or the working copy mixes prefixes, when no prefix can be found, when `src/imports.j` has merge conflicts, or when the staged version would change anything other than import lines with the `HEAD` prefix (for example a line that still points at your checkout, or an edited comment). It then exits with 1 and lists the offending lines. If the working copy already uses the `HEAD` prefix, it stages nothing and tells you to use `git add src/imports.j`. Undo a successful run with `git restore --staged src/imports.j`. After that, stage your other files by name, never with `git add -A` or `git add src/imports.j`, because both would stage the local prefix.
+The script replaces only the index entry; the working copy keeps its local prefix. It resolves every import path structurally with `scripts/resolve-imports.awk`: the prefix is the part before the `\src\` after which the rest names an existing file, so a checkout under a path such as `C:\src\FBF` works. It then compares the result with `HEAD` line by line, without `git diff`, so `diff.algorithm` and other diff settings do not affect it. The index is written only after every check passed. The script stages nothing, leaves the index exactly as it was, exits with 1 and lists the offending lines when it cannot determine a safe result: when an import line resolves to no file or to several files under `src/`, when `HEAD` or the working copy mixes prefixes, when `src/imports.j` has merge conflicts, or when the staged version would differ from `HEAD` by anything other than added import lines that point at existing files and removed import lines (for example an edited comment, or moved or duplicated lines). If the working copy already uses the `HEAD` prefix, it stages nothing and tells you to use `git add src/imports.j`. Undo a successful run with `git restore --staged src/imports.j`. After that, stage your other files by name, never with `git add -A` or `git add src/imports.j`, because both would stage the local prefix.
 
 Do not convert the paths to relative paths or any other scheme: no alternative has been verified to work with JassHelper.
 
@@ -69,7 +69,7 @@ bash .agents/skills/safe-vjass-change/scripts/check-vjass-change.sh
 
 The script reports a FAIL or WARN for:
 
-- `.vj` files that are not in `src/imports.j`, and imports that point at missing files (the two knowingly unimported files are only noted);
+- `.vj` files that are not in `src/imports.j`, and imports that point at no file or ambiguously at several files (the two knowingly unimported files are only noted). Import paths are resolved with `scripts/resolve-imports.awk` like in the staging script, so a checkout path that contains `\src\` is no problem;
 - mixed import prefixes, a prefix that differs from `HEAD`, or a prefix that does not point at this checkout;
 - any changed, added or deleted `.w3x`;
 - changed or new files under `src/` whose encoding changed (Windows-1252 ↔ UTF-8), that gained a UTF-8 BOM, or that have mixed line endings;
