@@ -116,6 +116,8 @@ scope HeroPickMods
             local integer i = 0
             local real left = 0
             local integer randomIndex = 0
+            local integer attempts = 0
+            local boolean found = false
             
             set .timeGone = .timeGone + TIMER_UPDATE
             set left = PICK_DURATION - .timeGone
@@ -125,19 +127,31 @@ scope HeroPickMods
                     exitwhen i >= bj_MAX_PLAYERS
                     if not BaseMode.hasPicked[i] and Game.isPlayerInGame(i) then
                         if (IS_DEBUG_MODE) then
-								set randomIndex = 15//GetRandomInt(0,15)
-							else
-								set randomIndex = BaseMode.getRandomHero()
-							endif
-						loop
-                            exitwhen BaseMode.onEnterFilter(GET_HERO_PICK_UNIT(i), randomIndex)
-                            if (IS_DEBUG_MODE) then
-								set randomIndex = 15//GetRandomInt(0,15)
-							else
-								set randomIndex = BaseMode.getRandomHero()
-							endif
-                        endloop
-						call createRandomHero( Player(i), GET_HERO_PICK_UNIT(i), randomIndex )
+                            set randomIndex = 15
+                            set attempts = 0
+                            set found = false
+                            loop
+                                exitwhen found or attempts >= GET_MAX_HEROES()
+                                set found = BaseMode.onEnterFilter(GET_HERO_PICK_UNIT(i), randomIndex)
+                                set attempts = attempts + 1
+                                if not found then
+                                    set randomIndex = randomIndex + 1
+                                    if randomIndex >= GET_MAX_HEROES() then
+                                        set randomIndex = 0
+                                    endif
+                                endif
+                            endloop
+                            if found then
+                                call createRandomHero( Player(i), GET_HERO_PICK_UNIT(i), randomIndex )
+                            endif
+                        else
+                            set randomIndex = BaseMode.getRandomHero()
+                            loop
+                                exitwhen BaseMode.onEnterFilter(GET_HERO_PICK_UNIT(i), randomIndex)
+                                set randomIndex = BaseMode.getRandomHero()
+                            endloop
+                            call createRandomHero( Player(i), GET_HERO_PICK_UNIT(i), randomIndex )
+                        endif
 					endif
                     set i = i + 1
                 endloop
