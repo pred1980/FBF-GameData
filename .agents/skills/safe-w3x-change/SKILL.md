@@ -12,8 +12,8 @@ The permission covers every internal area of the map, for example object data (`
 ## Scope and protected files
 
 - Determine the development map from the repository: `ls FBF_v*_dev.w3x` must match exactly one file in the repository root. Never hard-code the version. If nothing or more than one file matches, stop and ask.
-- Maps in `release/` and a `Working copie` in the repository root stay untouched unless a separate ticket explicitly requires a change to that exact file.
-- Never commit backups, extracted internal files, intermediate maps or test maps. The only map that may be committed is the development map the ticket changes, staged by its explicit path.
+- Maps in `release/` and a `Working copie` in the repository root stay untouched unless a separate ticket explicitly requires a change to that exact file. If one does, every rule in this skill applies to that map as it does to the development map.
+- Never commit backups, extracted internal files, intermediate maps or test maps. The only map that may be committed is the map the ticket requires to change, staged by its explicit path.
 
 ## 1. Before the first write
 
@@ -56,7 +56,7 @@ Never claim that the map opens or saves in the World Editor or works in the game
 
 ```markdown
 ## Direkte Map-Änderung
-- Map: `FBF_v<Version>_dev.w3x`
+- Map: `<Pfad der Map, meist FBF_v<Version>_dev.w3x>`
 - SHA-256 vorher: `<hash>` (entspricht dem Stand in `<commit>`)
 - SHA-256 nachher: `<hash>`
 - Sicherung: lokal außerhalb des Repositorys, nicht committet

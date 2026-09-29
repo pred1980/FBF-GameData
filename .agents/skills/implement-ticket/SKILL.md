@@ -55,7 +55,7 @@ When implementation begins, set the issue's Status in the GitHub project `Forsak
 
 ## 6. Commit
 
-- Stage explicit paths only (`git add <path>...`), never `git add -A`, `git add .` or `git commit -a`. For `src/imports.j` with a local prefix, use the staging script from the `safe-vjass-change` skill. Stage a changed development map only when the issue requires the change, and never stage backups or temporary maps.
+- Stage explicit paths only (`git add <path>...`), never `git add -A`, `git add .` or `git commit -a`. For `src/imports.j` with a local prefix, use the staging script from the `safe-vjass-change` skill. Stage a changed map only when the issue requires that change, and never stage backups or temporary maps.
 - Review `git diff --cached --stat` and `git diff --cached` before committing.
 - Write the commit message in simple German (see `AGENTS.md`, sections "Sprache" and "Commits und Pull Requests"). Subject: the prefix `[#<n>]` and one space at the very start, then a short, specific text that starts with a verb and names the affected behavior or asset, without a trailing period, for example `[#10] Ergänze Ticketnummern in Commit-Betreffzeilen`. Every commit for the issue uses this prefix, including later fix and review commits. Body: what changed and why, then `Refs #<n>`; the prefix does not replace it. Add the attribution trailer your tool is configured to use, if any.
 

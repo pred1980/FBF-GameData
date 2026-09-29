@@ -106,7 +106,7 @@ Gute Beispiele:
 
 Der Titel eines Pull Requests zu einem Issue beginnt mit demselben Präfix, zum Beispiel `[#10] Ergänze Ticketnummern in Commit-Betreffzeilen`. Die Beschreibung enthält weiterhin `Closes #<n>`. Erzeugt der Merge einen neuen Commit (Merge-Commit oder Squash), beginnt dessen Betreff ebenfalls mit `[#<n>]` und nicht mit dem GitHub-Standard `Merge pull request #...`. Ein Rebase-Merge erzeugt keinen neuen Commit. Dann tragen die einzelnen Commits das Präfix schon, und es entsteht kein zusätzlicher Commit nur für das Präfix.
 
-Fasse im Pull Request die Änderung zusammen. Nenne Ergebnisse für Build und Spieltest oder sage, dass sie noch offen sind. Verlinke das Issue. Bei sichtbaren Änderungen an Spiel oder Grafiken füge Screenshots oder einen kurzen Clip hinzu. Committe keine Editor Backups, Sicherungskopien, temporären Maps oder fremde erzeugte Map Dateien. Verlangt das Ticket eine direkte Änderung der Entwicklungskarte, stage sie mit ihrem Pfad.
+Fasse im Pull Request die Änderung zusammen. Nenne Ergebnisse für Build und Spieltest oder sage, dass sie noch offen sind. Verlinke das Issue. Bei sichtbaren Änderungen an Spiel oder Grafiken füge Screenshots oder einen kurzen Clip hinzu. Committe keine Editor Backups, Sicherungskopien, temporären Maps oder fremde erzeugte Map Dateien. Verlangt das Ticket eine direkte Änderung einer Map, stage sie mit ihrem Pfad.
 
 ## Community und externe Quellen
 
