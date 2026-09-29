@@ -1,0 +1,77 @@
+scope DebugGoldChat
+
+    private function OnChat takes nothing returns nothing
+        local player p = GetTriggerPlayer()
+        local integer pid = GetPlayerId(p)
+        local string chat = GetEventPlayerChatString()
+        local string digitText = "0123456789"
+        local string character
+        local integer length = StringLength(chat)
+        local integer index = 6
+        local integer digit
+        local integer amount = 0
+        local integer maxAmount
+
+        if not Game.isPlayerInGame(pid) or not Game.isRealPlayer(pid) then
+            set p = null
+            return
+        endif
+
+        if length > 5 and SubString(chat, 5, 6) != " " then
+            set p = null
+            return
+        endif
+
+        set maxAmount = 2147483647 - Game.getPlayerGold(pid)
+        if length <= 6 or maxAmount <= 0 then
+            call DisplayTimedTextToPlayer(p, 0, 0, 5, "Ungültiger Betrag. Nutze -gold <positive Ganzzahl>.")
+            set p = null
+            return
+        endif
+
+        loop
+            exitwhen index >= length
+            set character = SubString(chat, index, index + 1)
+            set digit = 0
+            loop
+                exitwhen digit >= 10 or character == SubString(digitText, digit, digit + 1)
+                set digit = digit + 1
+            endloop
+            if digit >= 10 or digit > maxAmount or amount > (maxAmount - digit) / 10 then
+                call DisplayTimedTextToPlayer(p, 0, 0, 5, "Ungültiger oder zu großer Goldbetrag.")
+                set p = null
+                return
+            endif
+            set amount = amount * 10 + digit
+            set index = index + 1
+        endloop
+
+        if amount <= 0 then
+            call DisplayTimedTextToPlayer(p, 0, 0, 5, "Ungültiger Betrag. Nutze -gold <positive Ganzzahl>.")
+        else
+            call Game.playerAddGold(pid, amount)
+            call DisplayTimedTextToPlayer(p, 0, 0, 5, I2S(amount) + " Gold hinzugefügt.")
+        endif
+        set p = null
+    endfunction
+
+    struct DebugGoldChat
+        static method initialize takes nothing returns nothing
+            static if IS_DEBUG_MODE then
+                local trigger chatTrigger = CreateTrigger()
+                local integer pid = 0
+
+                loop
+                    exitwhen pid >= bj_MAX_PLAYERS
+                    if Game.isPlayerInGame(pid) and Game.isRealPlayer(pid) then
+                        call TriggerRegisterPlayerChatEvent(chatTrigger, Player(pid), "-gold", false)
+                    endif
+                    set pid = pid + 1
+                endloop
+                call TriggerAddAction(chatTrigger, function OnChat)
+                set chatTrigger = null
+            endif
+        endmethod
+    endstruct
+
+endscope

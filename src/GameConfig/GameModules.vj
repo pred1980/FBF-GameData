@@ -45,6 +45,9 @@ scope GameModules
 			//Gold System
 			call BonusGoldOnStreak.initialize()
 			
+			//Debug-Goldbefehl
+			call DebugGoldChat.initialize()
+
 			//Evaluation System
 			call Evaluation.initialize()
 			
