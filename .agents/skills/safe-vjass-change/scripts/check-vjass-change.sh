@@ -98,9 +98,9 @@ while IFS=' ' read -r kind path; do
 done <<< "$import_check"
 [ "$missing" -eq 0 ] && ok "every .vj file under src/ is imported and every import exists"
 
-# 3. binary maps are untouched
+# 3. binary maps change only when the ticket requires it (see safe-w3x-change)
 w3x=$(git status --porcelain -- '*.w3x' '*.W3X')
-if [ -n "$w3x" ]; then fail "a .w3x map file is modified, added or deleted:"; printf '        %s\n' "$w3x"
+if [ -n "$w3x" ]; then warn "a .w3x map file is modified, added or deleted; allowed only if the ticket explicitly requires a direct map change (.agents/skills/safe-w3x-change/SKILL.md):"; printf '        %s\n' "$w3x"
 else ok "no .w3x file changed"; fi
 
 # 4. encoding, BOM and line endings of changed source files

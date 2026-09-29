@@ -57,9 +57,9 @@ The script replaces only the index entry; the working copy keeps its local prefi
 
 Do not convert the paths to relative paths or any other scheme: no alternative has been verified to work with JassHelper.
 
-## 4. Never touch the map file
+## 4. The map file
 
-Do not edit, regenerate, re-save, rename, add or delete any `.w3x` with tools. If a change needs Object Editor data (a new ability, unit, rawcode, tooltip, cooldown or order string), implement only the code and list the exact Object Editor changes in the PR for a human.
+Change a `.w3x` only when the ticket explicitly requires a direct change of the current development map; then follow `.agents/skills/safe-w3x-change/SKILL.md`. Otherwise do not edit, regenerate, re-save, rename, add or delete any `.w3x` with tools. If a change needs Object Editor data (a new ability, unit, rawcode, tooltip, cooldown or order string), implement only the code and list the exact Object Editor changes in the PR for a human.
 
 ## 5. Static checks after editing
 
@@ -71,7 +71,7 @@ The script reports a FAIL or WARN for:
 
 - `.vj` files that are not in `src/imports.j`, and imports that point at no file or ambiguously at several files (the two knowingly unimported files are only noted). Import paths are resolved with `scripts/resolve-imports.awk` like in the staging script, so a checkout path that contains `\src\` is no problem;
 - mixed import prefixes, a prefix that differs from `HEAD`, or a prefix that does not point at this checkout;
-- any changed, added or deleted `.w3x`;
+- any changed, added or deleted `.w3x` (a WARN, because a ticket can require a direct map change; see section 4);
 - changed or new files under `src/` whose encoding changed (Windows-1252 ↔ UTF-8), that gained a UTF-8 BOM, or that have mixed line endings;
 - whitespace errors from `git diff --check`.
 

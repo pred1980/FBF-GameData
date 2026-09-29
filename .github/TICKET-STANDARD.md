@@ -28,6 +28,16 @@ Nenne bekannte Pfade, Abhängigkeiten oder Einschränkungen, falls sie für die 
 
 Nenne die nötigen statischen Prüfungen. Bei Änderungen am Spiel gehören das Speichern im Warcraft III World Editor mit JassHelper und vJASS sowie ein konkreter Spieltest dazu. Ein Agent darf diese manuelle Prüfung nur als erledigt melden, wenn ein Mensch das Ergebnis bestätigt hat.
 
+### Direkte Map-Änderung (nur bei Bedarf)
+
+Soll ein Agent die Entwicklungskarte `FBF_v<Version>_dev.w3x` direkt ändern, sagt das Ticket das ausdrücklich. Ohne diese Aussage ändert kein Agent eine `.w3x`. Das Ticket nennt dann:
+
+- die betroffenen internen Bereiche oder Dateien der Map, zum Beispiel `war3map.w3a`;
+- jede Änderung genau, bei Object Data mit Rawcode, Feld und Level, dazu den erwarteten aktuellen Wert, den Zielwert und die Quelle des Zielwerts;
+- den manuellen Test: die Map im World Editor öffnen, mit `Enable JassHelper` und `Enable vJASS` speichern, danach prüfen, dass die genannten Daten erhalten sind, und einen konkreten Spieltest in Warcraft III.
+
+Maps in `release/` und eine `Working copie` brauchen für eine Änderung ein eigenes Ticket. Den Ablauf für Agents beschreibt der Skill `safe-w3x-change`.
+
 ## GitHub-Metadaten
 
 Neue Tickets bekommen echte GitHub-Felder:
