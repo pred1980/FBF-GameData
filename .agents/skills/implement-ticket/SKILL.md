@@ -81,6 +81,7 @@ Closes #<n>
 - [x] `check-vjass-change.sh`: <Ergebnis oder "nicht nötig: keine Änderung unter src/">
 - [ ] Map im World Editor gespeichert (JassHelper + vJASS): offen, braucht einen Menschen
 - [ ] Spieltest in Warcraft III: offen, braucht einen Menschen
+- [ ] Falls der World-Editor-Build die Entwicklungskarte ändert: getestete Datei in diesen PR übernommen
 
 ## Nötige Spieltests in Warcraft III
 - [ ] <Fraktion, Held, Fähigkeit und Stufe, KI-Schwierigkeit, Spielmodus, worauf zu achten ist>
@@ -92,7 +93,7 @@ Closes #<n>
 <optional>
 ```
 
-For a PR that changes neither a file under `src/` nor a `.w3x`, replace the two unchecked verification items with "Build und Spieltest: nicht nötig, weder `src/` noch eine `.w3x` geändert". For a PR that changes a `.w3x`, add the section "Direkte Map-Änderung" from `safe-w3x-change`, and list under "Nötige Spieltests in Warcraft III" the check that the intended map data is still present after saving in the World Editor. Never tick compile or playtest boxes yourself. End the body with your tool's PR attribution line, if configured.
+For a PR that changes neither a file under `src/` nor a `.w3x`, replace the three unchecked verification items with "Build und Spieltest: nicht nötig, weder `src/` noch eine `.w3x` geändert". For a direct agent change to a `.w3x`, add the section "Direkte Map-Änderung" from `safe-w3x-change`, and list under "Nötige Spieltests in Warcraft III" the check that the intended map data is still present after saving in the World Editor. Mark the Editor-map item as not applicable when saving did not change the tracked map. Never tick compile or playtest boxes yourself. End the body with your tool's PR attribution line, if configured.
 
 ## 9. Review, fix and merge
 
@@ -104,7 +105,7 @@ Do not stop after opening the PR. Continue in the same run:
    - a finding needs a human decision about design, balance or scope; ask the decision as a concrete question;
    - a gate needs a human action you cannot perform, for example missing permissions, an independent approval required by branch protection or a ruleset, or a check that fails for reasons outside this repository;
    - a fix round fixes nothing or the same finding comes back; describe what you tried.
-4. **Changes under `src/` or to a `.w3x`.** If the PR changes at least one file under `src/` or a `.w3x`, stop before the merge as soon as the missing human verification is the only open `BLOCKER`, `ERROR` or `MAJOR`. Go to step 10 and name the head SHA to test, the World Editor build (JassHelper and vJASS enabled), for a changed `.w3x` the map data to check after saving, and the exact Warcraft III scenario. After a human reports the result on the PR, the merge continues with `review-pr`. If a later commit changes files under `src/` or a `.w3x`, the human verification is required again for the new head.
+4. **Changes under `src/` or to a `.w3x`.** If the PR changes at least one file under `src/` or a `.w3x`, stop before the merge as soon as the missing human verification is the only open `BLOCKER`, `ERROR` or `MAJOR`. Go to step 10 and name the head SHA to test, the World Editor build (JassHelper and vJASS enabled), for a changed `.w3x` the map data to check after saving, and the exact Warcraft III scenario. After a human reports the result on the PR, continue with `review-pr`, including its step for the World Editor build artifact. Commit and push a changed, verified development map to the same PR before merging. The map must be the exact file the human tested; committing those same bytes alone does not require another playtest. A later gameplay-code change or change to the tested map bytes does require renewed verification.
 5. **Merge.** If the PR changes neither a file under `src/` nor a `.w3x`, no `BLOCKER`, `ERROR` or `MAJOR` is open and every other gate passes, finish the PR as `review-pr` describes in "Finish the review" and "After the merge". That covers the approval or the documented self-review, the merge into `master`, the issue, the project status `Done`, the branch cleanup and the fast-forward of the local `master`.
 
 ## 10. Report
