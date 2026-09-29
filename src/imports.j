@@ -80,6 +80,7 @@
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\GameStart.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\Game.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\GameModules.vj"
+//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\DebugGoldChat.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\GameModes.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\GameTypes.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\GameSounds.vj"
