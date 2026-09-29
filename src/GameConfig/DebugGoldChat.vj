@@ -24,7 +24,7 @@ scope DebugGoldChat
 
         set maxAmount = 2147483647 - Game.getPlayerGold(pid)
         if length <= 6 or maxAmount <= 0 then
-            call DisplayTimedTextToPlayer(p, 0, 0, 5, "Ungueltiger Betrag. Nutze -gold <positive Ganzzahl>.")
+            call DisplayTimedTextToPlayer(p, 0, 0, 5, "Ungültiger Betrag. Nutze -gold <positive Ganzzahl>.")
             set p = null
             return
         endif
@@ -38,7 +38,7 @@ scope DebugGoldChat
                 set digit = digit + 1
             endloop
             if digit >= 10 or digit > maxAmount or amount > (maxAmount - digit) / 10 then
-                call DisplayTimedTextToPlayer(p, 0, 0, 5, "Ungueltiger oder zu grosser Goldbetrag.")
+                call DisplayTimedTextToPlayer(p, 0, 0, 5, "Ungültiger oder zu großer Goldbetrag.")
                 set p = null
                 return
             endif
@@ -47,10 +47,10 @@ scope DebugGoldChat
         endloop
 
         if amount <= 0 then
-            call DisplayTimedTextToPlayer(p, 0, 0, 5, "Ungueltiger Betrag. Nutze -gold <positive Ganzzahl>.")
+            call DisplayTimedTextToPlayer(p, 0, 0, 5, "Ungültiger Betrag. Nutze -gold <positive Ganzzahl>.")
         else
             call Game.playerAddGold(pid, amount)
-            call DisplayTimedTextToPlayer(p, 0, 0, 5, I2S(amount) + " Gold hinzugefuegt.")
+            call DisplayTimedTextToPlayer(p, 0, 0, 5, I2S(amount) + " Gold hinzugefügt.")
         endif
         set p = null
     endfunction
