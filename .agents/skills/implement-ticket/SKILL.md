@@ -1,6 +1,6 @@
 ---
 name: implement-ticket
-description: Implements one development ticket (a GitHub issue) end-to-end in this repository. Reads the ticket or issue and all its comments, creates a dedicated branch, makes the smallest sufficient change, verifies it with static checks, commits, pushes and opens a pull request that closes the issue. Then continues with the review-pr flow - reviews the PR, fixes BLOCKER, ERROR and MAJOR findings, re-reviews and merges when no file under src/ changed; with changes under src/ it stops before the merge until a human confirms the World Editor build and Warcraft III playtest. Use when asked to work on, implement, fix or resolve a ticket or a GitHub issue (for example "implement ticket 12" or "fix issue 12").
+description: Implements one development ticket (a GitHub issue) end-to-end in this repository. Reads the ticket or issue and all its comments, creates a dedicated branch, makes the smallest sufficient change, verifies it with static checks, commits, pushes and opens a pull request that closes the issue. Then continues with the review-pr flow - reviews the PR, fixes BLOCKER, ERROR and MAJOR findings, re-reviews and merges when neither a file under src/ nor a .w3x changed; with such changes it stops before the merge until a human confirms the World Editor build and Warcraft III playtest. Use when asked to work on, implement, fix or resolve a ticket or a GitHub issue (for example "implement ticket 12" or "fix issue 12").
 ---
 
 # Implement a GitHub issue
@@ -17,7 +17,7 @@ Input: the issue number. If none was given, ask for it.
 - Read issues and PRs that the issue links to.
 - Check for existing work: `gh pr list --state all --search "<n>"` and `git branch -a --list "*issue-<n>-*"`. If a branch or PR already exists, ask whether to continue it instead of starting over.
 - Work out the acceptance criteria. Ask before writing code if the issue is ambiguous, contradicts `AGENTS.md`, or needs a decision that belongs to a human (balance values, design, scope).
-- If the issue needs Object Editor changes inside the `.w3x`, say up front that you can only prepare the code and a list of the editor changes.
+- If the issue needs changes inside a `.w3x`: when it explicitly requires a direct change of the current development map, follow `.agents/skills/safe-w3x-change/SKILL.md`; otherwise say up front that you only prepare the code and a list of the editor changes for a human.
 
 ## 2. Inspect the repository state
 
@@ -44,17 +44,18 @@ When implementation begins, set the issue's Status in the GitHub project `Forsak
 - Change only what the issue asks for. No refactors, renames, reformatting or comment rewrites outside the lines you need to touch. Record unrelated findings under "Bemerkt, nicht geändert" in the PR instead.
 - Follow `AGENTS.md`. Read the relevant architecture section of `CLAUDE.md` before a non-trivial gameplay change.
 - For any change under `src/`, follow the `safe-vjass-change` skill (`.agents/skills/safe-vjass-change/SKILL.md`) before and after editing.
-- Never edit `.w3x` files. Leave `documentation/` alone unless the issue asks for it.
+- Change a `.w3x` only when the issue explicitly requires a direct change of the current development map, and then follow `.agents/skills/safe-w3x-change/SKILL.md` before and after the change. Never change maps in `release/` or a `Working copie` without a separate issue that requires it. Leave `documentation/` alone unless the issue asks for it.
 
 ## 5. Run the static checks
 
 - Always run `git diff --check` and `git status --short`, and confirm that only the intended files changed.
 - After a change under `src/`, run `bash .agents/skills/safe-vjass-change/scripts/check-vjass-change.sh` and fix every FAIL.
+- After a direct map change, run the checks in section 3 of `safe-w3x-change`. Do not commit a map with an unexplained internal change.
 - There is no build or test command for the map. Do not invent one. Compiling and playtesting stay pending for a human.
 
 ## 6. Commit
 
-- Stage explicit paths only (`git add <path>...`), never `git add -A`, `git add .` or `git commit -a`. For `src/imports.j` with a local prefix, use the staging script from the `safe-vjass-change` skill.
+- Stage explicit paths only (`git add <path>...`), never `git add -A`, `git add .` or `git commit -a`. For `src/imports.j` with a local prefix, use the staging script from the `safe-vjass-change` skill. Stage a changed development map only when the issue requires the change, and never stage backups or temporary maps.
 - Review `git diff --cached --stat` and `git diff --cached` before committing.
 - Write the commit message in simple German (see `AGENTS.md`, sections "Sprache" and "Commits und Pull Requests"). Subject: the prefix `[#<n>]` and one space at the very start, then a short, specific text that starts with a verb and names the affected behavior or asset, without a trailing period, for example `[#10] Ergänze Ticketnummern in Commit-Betreffzeilen`. Every commit for the issue uses this prefix, including later fix and review commits. Body: what changed and why, then `Refs #<n>`; the prefix does not replace it. Add the attribution trailer your tool is configured to use, if any.
 
@@ -91,7 +92,7 @@ Closes #<n>
 <optional>
 ```
 
-For a PR that changes no file under `src/`, replace the two unchecked verification items with "Build und Spieltest: nicht nötig, keine Datei unter `src/` geändert". Never tick compile or playtest boxes yourself. End the body with your tool's PR attribution line, if configured.
+For a PR that changes neither a file under `src/` nor a `.w3x`, replace the two unchecked verification items with "Build und Spieltest: nicht nötig, weder `src/` noch eine `.w3x` geändert". For a PR that changes a `.w3x`, add the section "Direkte Map-Änderung" from `safe-w3x-change`, and list under "Nötige Spieltests in Warcraft III" the check that the intended map data is still present after saving in the World Editor. Never tick compile or playtest boxes yourself. End the body with your tool's PR attribution line, if configured.
 
 ## 9. Review, fix and merge
 
@@ -103,8 +104,8 @@ Do not stop after opening the PR. Continue in the same run:
    - a finding needs a human decision about design, balance or scope; ask the decision as a concrete question;
    - a gate needs a human action you cannot perform, for example missing permissions, an independent approval required by branch protection or a ruleset, or a check that fails for reasons outside this repository;
    - a fix round fixes nothing or the same finding comes back; describe what you tried.
-4. **Changes under `src/`.** If the PR changes at least one file under `src/`, stop before the merge as soon as the missing human verification is the only open `BLOCKER`, `ERROR` or `MAJOR`. Go to step 10 and name the head SHA to test, the World Editor build (JassHelper and vJASS enabled) and the exact Warcraft III scenario. After a human reports the result on the PR, the merge continues with `review-pr`. If a later commit changes files under `src/`, the human verification is required again for the new head.
-5. **Merge.** If the PR changes no file under `src/`, no `BLOCKER`, `ERROR` or `MAJOR` is open and every other gate passes, finish the PR as `review-pr` describes in "Finish the review" and "After the merge". That covers the approval or the documented self-review, the merge into `master`, the issue, the project status `Done`, the branch cleanup and the fast-forward of the local `master`.
+4. **Changes under `src/` or to a `.w3x`.** If the PR changes at least one file under `src/` or a `.w3x`, stop before the merge as soon as the missing human verification is the only open `BLOCKER`, `ERROR` or `MAJOR`. Go to step 10 and name the head SHA to test, the World Editor build (JassHelper and vJASS enabled), for a changed `.w3x` the map data to check after saving, and the exact Warcraft III scenario. After a human reports the result on the PR, the merge continues with `review-pr`. If a later commit changes files under `src/` or a `.w3x`, the human verification is required again for the new head.
+5. **Merge.** If the PR changes neither a file under `src/` nor a `.w3x`, no `BLOCKER`, `ERROR` or `MAJOR` is open and every other gate passes, finish the PR as `review-pr` describes in "Finish the review" and "After the merge". That covers the approval or the documented self-review, the merge into `master`, the issue, the project status `Done`, the branch cleanup and the fast-forward of the local `master`.
 
 ## 10. Report
 

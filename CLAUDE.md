@@ -8,7 +8,7 @@ Diese Datei hilft Claude Code bei der Arbeit in diesem Repository.
 
 ## Hinweise für Claude Code
 
-- `/implement-ticket <n>`, `/review-pr <n>` und `/safe-vjass-change` sind Wrapper unter `.claude/skills/`. Die maßgeblichen Skills liegen unter `.agents/skills/`. Bearbeite die maßgeblichen Dateien, nicht die Wrapper.
+- `/implement-ticket <n>`, `/review-pr <n>`, `/safe-vjass-change` und `/safe-w3x-change` sind Wrapper unter `.claude/skills/`. Die maßgeblichen Skills liegen unter `.agents/skills/`. Bearbeite die maßgeblichen Dateien, nicht die Wrapper.
 - Die Tools Edit und Write lesen Dateien als UTF-8. Bei Windows-1252 ersetzen sie Umlaute durch U+FFFD und speichern danach UTF-8. Das wurde mit `src/GameConfig/GameConfig.vj` geprüft. Nutze für solche Dateien den `iconv` Ablauf aus `safe-vjass-change`. Das Edit Tool erhält CRLF Zeilenenden.
 
 ## Das Projekt
