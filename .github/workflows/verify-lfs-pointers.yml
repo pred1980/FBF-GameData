@@ -1,0 +1,19 @@
+name: Git-LFS-Pointer prüfen
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  lfs-pointers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - name: PSD-Dateien als LFS-Pointer prüfen
+        run: git lfs fsck --pointers HEAD
