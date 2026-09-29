@@ -4,7 +4,7 @@ Diese Anleitung zeigt, wie ein GitHub Ticket mit Codex oder Claude Code umgesetz
 
 **Ablauf ohne Änderung unter `src/` und ohne `.w3x`:** Ticket -> Branch -> PR -> Review -> Korrekturen -> erneutes Review -> Merge -> Branch cleanup -> Done
 
-**Ablauf mit Änderung unter `src/` oder an einer `.w3x`:** Ticket -> Branch -> PR -> Review -> Korrekturen -> erneutes Review -> Stopp vor dem Merge -> Build und Spieltest durch einen Menschen -> Merge -> Branch cleanup -> Done
+**Ablauf mit Änderung unter `src/` oder an einer `.w3x`:** Ticket -> Branch -> PR -> Review -> Korrekturen -> erneutes Review -> Stopp vor dem Merge -> Build und Spieltest durch einen Menschen -> gespeicherte Map prüfen und gegebenenfalls in denselben PR committen und pushen -> Review -> Merge -> Branch cleanup -> Done
 
 1. **Ticket schreiben:** Ziel, Umfang, Grenzen, Akzeptanzkriterien und Prüfung müssen ohne zusätzlichen Chat verständlich sein. Entscheidungen zu Balance und Design gehören ins Ticket. Assignee, Label, Project und Project Status (`Todo`) werden als echte GitHub-Felder gesetzt.
 2. **Umsetzung starten:** Starte den Agent im Hauptverzeichnis und nenne die Issue Nummer.
@@ -18,10 +18,13 @@ Diese Anleitung zeigt, wie ein GitHub Ticket mit Codex oder Claude Code umgesetz
 5. **Änderungen am Spiel prüfen:** Dieser Schritt gilt nur, wenn der PR mindestens eine Datei unter `src/` oder eine `.w3x` ändert. Dann stoppt der Agent vor dem Merge und nennt den zu testenden Commit, den Build und die Testszenarien.
    - Ein Mensch checkt den Branch aus, passt bei Bedarf das lokale Präfix in `src/imports.j` an und committet diese Anpassung nicht.
    - Er öffnet die aktuelle Entwicklungskarte `FBF_v<Version>_dev.w3x` im Warcraft III World Editor mit `Enable JassHelper` und `Enable vJASS`, speichert die Map und testet die genannten Szenarien im Spiel.
+   - Wurden für den Test lokale Schalter wie `IS_DEBUG_MODE` geändert, stellt er sie für den endgültigen Build auf den vorgesehenen Wert zurück, speichert die Map erneut und prüft den betroffenen normalen Ablauf. Die lokale Umschaltung wird nicht committet.
    - Hat der PR die `.w3x` geändert, prüft er nach dem Speichern, dass die beabsichtigten Map-Daten erhalten sind.
    - Er hält Ergebnis und getesteten Commit im PR fest. Agents können Build und Spieltest nicht selbst bestätigen.
+   - Hat das Speichern die aktuelle Entwicklungskarte geändert, prüft `review-pr`, ob sie die abgenommene Map ist. Der Agent erfasst ihren SHA-256, prüft den lokalen Status und den Map-Diff auf fremde Änderungen, stagt ausschließlich ihren Pfad, committet und pusht sie auf denselben Issue-Branch. Die PR-Beschreibung nennt den getesteten Quellcode-Commit, den Map-SHA-256 und das Testergebnis. Editor-Backups, `src/imports.j`, lokale Testschalter und andere fremde Dateien bleiben uncommittet.
+   - Der Agent prüft den neuen PR-Head erneut. Stimmen die committeten Map-Bytes mit der getesteten Datei überein und wurde der Spielcode seit dem Test nicht geändert, gilt die Abnahme weiter. Andernfalls ist ein neuer Build und Spieltest nötig.
    - Danach übernimmt `review-pr` den Merge: Codex mit `$review-pr <PR-Nummer>`, Claude Code mit `/review-pr <PR-Nummer>`.
-   - Ändern spätere Commits wieder Dateien unter `src/` oder eine `.w3x`, ist der Test für den neuen Stand erneut nötig.
+   - Ändern spätere Commits den Spielcode oder die getesteten Map-Bytes, ist der Test für den neuen Stand erneut nötig.
 6. **Merge:** Sind nur noch `MINOR` oder keine Befunde offen und alle nötigen Prüfungen erfüllt, merged der Agent den PR nach `master`.
    - Erzeugt der Merge einen neuen Commit, setzt der Agent dessen Betreff auf `[#12] <Betreff>` statt auf `Merge pull request #...`. Ein Rebase-Merge übernimmt die schon benannten Commits ohne zusätzlichen Commit.
    - Lehnt GitHub die Freigabe nur ab, weil Autor und Reviewer derselbe Account sind, steht das Review als PR-Kommentar. Das allein blockiert den Merge nicht.
@@ -29,7 +32,7 @@ Diese Anleitung zeigt, wie ein GitHub Ticket mit Codex oder Claude Code umgesetz
    - `review-pr` lässt sich auch einzeln aufrufen, etwa für PRs anderer Personen oder nach dem Spieltest. Dann gibt es Rückmeldung, ändert aber ohne ausdrücklichen Wunsch keine Dateien des PRs.
 7. **Branch cleanup und Done:** Nach dem Merge setzt `review-pr` das Issue im Project auf `Done`. Es löscht den Branch des PRs auf GitHub und lokal, wenn das sicher ist, entfernt eigene temporäre Worktrees und aktualisiert das lokale `master` nur per Fast-Forward. `master` wird nie gelöscht, und lokale Änderungen werden nie verworfen. Was es nicht sicher aufräumen kann, lässt es stehen und nennt den Grund.
 
-Agents ändern die Entwicklungskarte `FBF_v<Version>_dev.w3x` nur, wenn das Ticket eine direkte Map-Änderung ausdrücklich verlangt. Dann folgen sie `safe-w3x-change`. Sonst stehen nötige Änderungen im Editor im PR für einen Menschen. Maps in `release/` und eine `Working copie` bleiben ohne eigenes Ticket unverändert. Kein Workflow pusht auf `master` oder aktiviert Auto-Merge.
+Agents bearbeiten die Entwicklungskarte `FBF_v<Version>_dev.w3x` direkt nur, wenn das Ticket eine direkte Map-Änderung ausdrücklich verlangt. Dann folgen sie `safe-w3x-change`. Eine bereits vom Menschen im World Editor gespeicherte und getestete Karte dürfen sie als Build-Ergebnis unverändert in den Issue-PR übernehmen. Maps in `release/` und eine `Working copie` bleiben ohne eigenes Ticket unverändert. Kein Workflow pusht auf `master` oder aktiviert Auto-Merge.
 
 ## Dateien und Skills
 
