@@ -77,6 +77,7 @@ scope StandardDefenseMode
 			local integer damage = 0
 			local integer rnd1 = 0
 			local integer rnd2 = GetRandomInt(0, MAX_SPAWN_AREAS - 1)
+			local integer checkedAreas = 0
 			local boolean b = false
 			local real x = 0.00
 			local real y = 0.00
@@ -91,13 +92,20 @@ scope StandardDefenseMode
 			endif
 			
 			loop
-				exitwhen b
+				exitwhen b or checkedAreas >= MAX_SPAWN_AREAS
 				if SPAWN_RECTS[rnd1][rnd2] != null then
 					set b = true
 				else
-					set rnd2 = GetRandomInt(0, MAX_SPAWN_AREAS - 1)
+					set rnd2 = rnd2 + 1
+					if rnd2 == MAX_SPAWN_AREAS then
+						set rnd2 = 0
+					endif
 				endif
+				set checkedAreas = checkedAreas + 1
 			endloop
+			if not b then
+				return
+			endif
 			
 			//Zufalls x/y postion ermitteln
 			set x = GetRandomReal(GetRectMinX(SPAWN_RECTS[rnd1][rnd2]), GetRectMaxX(SPAWN_RECTS[rnd1][rnd2]))
@@ -1166,10 +1174,10 @@ scope StandardDefenseMode
             set SPAWN_RECTS[5][3] = null
 			
 			//7 area (at the end)
-            set SPAWN_RECTS[5][0] = gg_rct_spawnRect19
-            set SPAWN_RECTS[5][1] = gg_rct_spawnRect20
-            set SPAWN_RECTS[5][2] = gg_rct_spawnRect21
-            set SPAWN_RECTS[5][3] = null
+            set SPAWN_RECTS[6][0] = gg_rct_spawnRect19
+            set SPAWN_RECTS[6][1] = gg_rct_spawnRect20
+            set SPAWN_RECTS[6][2] = gg_rct_spawnRect21
+            set SPAWN_RECTS[6][3] = null
             
         endmethod
         

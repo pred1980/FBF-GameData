@@ -36,6 +36,7 @@ scope GravestoneSystem
         private constant real DAMAGE_FACTOR = 0.20
         
 		private integer counter = 0
+		private hashtable TRIGGER_DATA = InitHashtable()
 	endglobals
 
     private function MainSetup takes nothing returns nothing
@@ -67,12 +68,12 @@ scope GravestoneSystem
     
     struct Gravestone
         boolean removed = false
-        static thistype tempthis
+        trigger deathTrigger
+        triggeraction deathAction
         static integer counter = 0
         
         static method create takes integer i returns thistype
             local thistype this = thistype.allocate()
-			local trigger t = CreateTrigger()
             local real x = GetRandomReal(GetRectMinX(GRAVESTONE_SPAWN_RECTS[i]), GetRectMaxX(GRAVESTONE_SPAWN_RECTS[i]))
             local real y = GetRandomReal(GetRectMinY(GRAVESTONE_SPAWN_RECTS[i]), GetRectMaxY(GRAVESTONE_SPAWN_RECTS[i]))
             local integer rnd = 0
@@ -88,18 +89,20 @@ scope GravestoneSystem
             set g = CreateDestructable(GRAVESTONE_TYPES[rnd], x, y, bj_UNIT_FACING, 1.0, GetRandomInt(0,359))
             call SetDestructableMaxLife(g, I2R(GRAVESTONE_START_HP[rnd] + ( RoundSystem.actualRound * INCREASED_GRAVESTONE_HP_PER_ROUND)))
             
-            call TriggerRegisterDeathEvent(t, g )
-            call TriggerAddAction(t, function thistype.onGravestoneDeath )
+            set .deathTrigger = CreateTrigger()
+            call TriggerRegisterDeathEvent(.deathTrigger, g )
+            set .deathAction = TriggerAddAction(.deathTrigger, function thistype.onGravestoneDeath )
+            call SaveInteger(TRIGGER_DATA, GetHandleId(.deathTrigger), 0, this)
             
             set .counter = .counter + 1
-            set .tempthis = this
             
-            set t = null
             set g = null
             return this
         endmethod
         
         static method onGravestoneDeath takes nothing returns nothing
+            local trigger t = GetTriggeringTrigger()
+            local thistype this = LoadInteger(TRIGGER_DATA, GetHandleId(t), 0)
             local destructable d = GetDyingDestructable() 
             local integer id = GetDestructableTypeId(d)
             local unit zombie
@@ -112,7 +115,8 @@ scope GravestoneSystem
             local integer incHp = 0
             local integer incDmg = 0
             
-            if not .tempthis.removed then
+            if this != 0 and not this.removed then
+                set this.removed = true
                 loop
                     exitwhen i >= MAX_GRAVESTONE_TYPES
                     if id == GRAVESTONE_TYPES[i] then
@@ -139,13 +143,18 @@ scope GravestoneSystem
                 if .counter > 0 then
                     set .counter = .counter - 1
                 endif
-                set .tempthis.removed = true
                 call RemoveDestructable(d)
-                set .tempthis.removed = false
+                call TriggerRemoveAction(t, this.deathAction)
+                call FlushChildHashtable(TRIGGER_DATA, GetHandleId(t))
+                call DestroyTrigger(t)
+                set this.deathTrigger = null
+                set this.deathAction = null
+                call this.destroy()
             endif
-			
-			set d = null
+
+            set d = null
             set zombie = null
+			set t = null
 		endmethod
         
         static method getCounter takes nothing returns integer
