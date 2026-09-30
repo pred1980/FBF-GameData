@@ -109,6 +109,7 @@ library AnaMoveSys initializer init
         private hashtable UNIT_DATA = InitHashtable()
         private group MOVING_UNITS = CreateGroup()
         private group CHECK_UNITS = CreateGroup()
+        private boolean LANE_PAUSED = false
         private boolean PERF_ENABLED = false
         private integer PERF_CHECKS = 0
         private integer PERF_NEXT = 0
@@ -156,6 +157,36 @@ library AnaMoveSys initializer init
         return result
     endfunction
 
+    private function stopLaneUnit takes nothing returns nothing
+        local unit u = GetEnumUnit()
+        call IssueImmediateOrder(u, ORDER_STOP)
+        set u = null
+    endfunction
+
+    private function resumeLaneUnit takes nothing returns nothing
+        local unit u = GetEnumUnit()
+        local integer unitID = GetHandleId(u)
+        local integer wayID = LoadInteger(UNIT_DATA, unitID, KEY_WAY)
+        local integer curPos = LoadInteger(UNIT_DATA, unitID, KEY_CURPOS)
+        call Way.instances[wayID].moveUnit(u, curPos)
+        set u = null
+    endfunction
+
+    public function profileSetLanePaused takes boolean paused returns nothing
+        if LANE_PAUSED == paused then
+            return
+        endif
+        set LANE_PAUSED = paused
+        if paused then
+            call ForGroup(MOVING_UNITS, function stopLaneUnit)
+        else
+            call ForGroup(MOVING_UNITS, function resumeLaneUnit)
+        endif
+    endfunction
+
+    public function profileLanePaused takes nothing returns boolean
+        return LANE_PAUSED
+    endfunction
     public function globalCheck takes nothing returns boolean
         return LoadWidgetHandle(UNIT_DATA, GetHandleId(GetTriggerUnit()), KEY_UNIT) != null
     endfunction
@@ -185,7 +216,7 @@ library AnaMoveSys initializer init
         local integer wayID = 0
         local integer curPos = 0
         
-        if IsUnitInGroup(GetTriggerUnit(), MOVING_UNITS) then
+        if not LANE_PAUSED and IsUnitInGroup(GetTriggerUnit(), MOVING_UNITS) then
             set unitID = GetHandleId(GetTriggerUnit())
             set wayID = LoadInteger(UNIT_DATA, unitID, KEY_WAY)
             set curPos = LoadInteger(UNIT_DATA, unitID, KEY_CURPOS)
@@ -319,7 +350,9 @@ library AnaMoveSys initializer init
                 call GroupAddUnit(.units, u)
                 call GroupAddUnit(MOVING_UNITS, u)
                 
-                call .moveUnit(u, curPos)
+                if not LANE_PAUSED then
+                    call .moveUnit(u, curPos)
+                endif
             else
                 static if SHOW_DEBUG_MSG then
                     debug call BJDebugMsg("!AoSMoveSys] |ERROR| <Way[" + I2S(.ID) + "]> <addUnit: UNIT ALREADY REGISTERED!>")
@@ -427,7 +460,7 @@ library AnaMoveSys initializer init
             local real dy = 0.
             local real dist = 0.
             
-            if FirstOfGroup(MOVING_UNITS) == null then
+            if LANE_PAUSED or FirstOfGroup(MOVING_UNITS) == null then
                 return
             endif
             set g = CHECK_UNITS

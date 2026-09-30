@@ -4,11 +4,12 @@ library PerformanceLog initializer init requires AnaMoveSys, CreepRoundSystem, C
         private constant integer SAMPLE_SECONDS = 10
         private constant integer SAMPLES_PER_FILE = 60
         private constant integer SAMPLES_PER_FLUSH = 6
-        private constant string HEADER = "seconds;round;creeps_alive;defenders_registered;defender_wander_paused;wave_created;defense_created;way_registered;way_seen;way_inactive;way_checks;way_next;way_events;camera_x;camera_y"
+        private constant string HEADER = "seconds;round;creeps_alive;defenders_registered;defender_wander_paused;lane_paused;wave_created;defense_created;way_registered;way_seen;way_inactive;way_checks;way_next;way_events;camera_x;camera_y"
 
         private timer SAMPLE_TIMER = CreateTimer()
         private trigger CHAT_TRIGGER = CreateTrigger()
         private trigger WANDER_TRIGGER = CreateTrigger()
+        private trigger LANE_TRIGGER = CreateTrigger()
         private boolean array ENABLED
         private integer ENABLED_COUNT = 0
         private integer SECONDS = 0
@@ -43,13 +44,17 @@ library PerformanceLog initializer init requires AnaMoveSys, CreepRoundSystem, C
         local string way = ""
         local string row = ""
         local integer wanderPaused = 0
+        local integer lanePaused = 0
 
         set SECONDS = SECONDS + SAMPLE_SECONDS
         set way = AnaMoveSys_profileSample()
         if ForsakenUnits.wanderPaused then
             set wanderPaused = 1
         endif
-        set row = I2S(SECONDS) + ";" + I2S(RoundSystem.actualRound) + ";" + I2S(RoundSystem.creepCount) + ";" + I2S(ForsakenUnits.getCount()) + ";" + I2S(wanderPaused) + ";" + I2S(UnitSpawn.perfSpawned) + ";" + I2S(ForsakenUnits.perfSpawned) + ";" + way
+        if AnaMoveSys_profileLanePaused() then
+            set lanePaused = 1
+        endif
+        set row = I2S(SECONDS) + ";" + I2S(RoundSystem.actualRound) + ";" + I2S(RoundSystem.creepCount) + ";" + I2S(ForsakenUnits.getCount()) + ";" + I2S(wanderPaused) + ";" + I2S(lanePaused) + ";" + I2S(UnitSpawn.perfSpawned) + ";" + I2S(ForsakenUnits.perfSpawned) + ";" + way
         set UnitSpawn.perfSpawned = 0
         set ForsakenUnits.perfSpawned = 0
 
@@ -124,6 +129,18 @@ library PerformanceLog initializer init requires AnaMoveSys, CreepRoundSystem, C
         set p = null
     endfunction
 
+    private function onLaneChat takes nothing returns nothing
+        local player p = GetTriggerPlayer()
+
+        call AnaMoveSys_profileSetLanePaused(not AnaMoveSys_profileLanePaused())
+        if AnaMoveSys_profileLanePaused() then
+            call DisplayTimedTextToPlayer(p, 0, 0, 5.0, "Lane-Bewegung angehalten. Mit -perflane fortsetzen.")
+        else
+            call DisplayTimedTextToPlayer(p, 0, 0, 5.0, "Lane-Bewegung aktiv.")
+        endif
+        set p = null
+    endfunction
+
     private function init takes nothing returns nothing
         local integer i = 0
 
@@ -131,10 +148,12 @@ library PerformanceLog initializer init requires AnaMoveSys, CreepRoundSystem, C
             exitwhen i >= bj_MAX_PLAYERS
             call TriggerRegisterPlayerChatEvent(CHAT_TRIGGER, Player(i), "-perflog", true)
             call TriggerRegisterPlayerChatEvent(WANDER_TRIGGER, Player(i), "-perfwander", true)
+            call TriggerRegisterPlayerChatEvent(LANE_TRIGGER, Player(i), "-perflane", true)
             set i = i + 1
         endloop
         call TriggerAddAction(CHAT_TRIGGER, function onChat)
         call TriggerAddAction(WANDER_TRIGGER, function onWanderChat)
+        call TriggerAddAction(LANE_TRIGGER, function onLaneChat)
     endfunction
 
 endlibrary
