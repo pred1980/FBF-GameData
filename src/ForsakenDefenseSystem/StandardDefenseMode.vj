@@ -103,6 +103,7 @@ scope StandardDefenseMode
 			set x = GetRandomReal(GetRectMinX(SPAWN_RECTS[rnd1][rnd2]), GetRectMaxX(SPAWN_RECTS[rnd1][rnd2]))
 			set y = GetRandomReal(GetRectMinY(SPAWN_RECTS[rnd1][rnd2]), GetRectMaxY(SPAWN_RECTS[rnd1][rnd2]))
 			set u = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), id, x, y, 0)
+            set ForsakenUnits.perfSpawned = ForsakenUnits.perfSpawned + 1
 			set unitLife = S2I(getDataFromString(LoadStr(UNIT_DATA, RoundSystem.actualRound, index), 0))
 			set damage = S2I(getDataFromString(LoadStr(UNIT_DATA, RoundSystem.actualRound, index), 1))
 			call DestroyEffect(AddSpecialEffect(SPAWN_EFFECT, GetUnitX(u), GetUnitY(u)))
@@ -152,6 +153,7 @@ scope StandardDefenseMode
 	endstruct
     
     struct ForsakenUnits
+        static integer perfSpawned = 0
         static group g
         static boolean removeCreeps = REMOVE_CREEPS
         

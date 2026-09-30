@@ -309,6 +309,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
     endstruct
     
     struct UnitSpawn extends SharedObjects
+        static integer perfSpawned = 0
         integer ID = 0
         
         integer unitID = '0000'
@@ -360,6 +361,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
             loop
 				exitwhen i >= .amount
 				set u = CreateUnit(p, .unitID, posX, posY, 270)
+                set thistype.perfSpawned = thistype.perfSpawned + 1
 				
 				call setUnitData(.pID, u, unitIndex, posX, posY)
 				

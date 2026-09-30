@@ -214,6 +214,9 @@
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\WaypointSystem\AnaMoveSys.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\WaypointSystem\WayPointSystem.vj"
 
+/* Performance Log */
+//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\PerformanceSystem\PerformanceLog.vj"
+
 /* Kill Streak System */
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\KillStreakSystem\KillStreakSystem.vj"
 
