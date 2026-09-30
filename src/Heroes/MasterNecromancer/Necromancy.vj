@@ -77,7 +77,7 @@ scope Necromancy initializer init
 			call DestroyEffect(AddSpecialEffect(EFFECT, GetUnitX(s), GetUnitY(s)))
 			call SetUnitMaxState(s, UNIT_STATE_MAX_LIFE, UNIT_HPS[level]/amount)
 			call SetUnitState(s, UNIT_STATE_LIFE, GetUnitState(s, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-			call TDS.addDamage(s, R2I(UNIT_DMG[level]/amount))
+			call BaseDamage.addDamage(s, R2I(UNIT_DMG[level]/amount))
 			call UnitApplyTimedLife(s, 'BTLF', UNIT_DUR[level])
 			
 			set count = count + 1

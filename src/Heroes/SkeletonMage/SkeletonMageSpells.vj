@@ -190,7 +190,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                 set zombie = CreateUnit(p, ZOMBIE_ID[lvl], x, y, GetRandomReal(0.00, 360.00))
                 call SetUnitMaxState(zombie, UNIT_STATE_MAX_LIFE, ZOMBIE_HP[lvl])
 				call SetUnitState(zombie, UNIT_STATE_LIFE, GetUnitState(zombie, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-				call TDS.addDamage(zombie, ZOMBIE_DAMAGE[lvl])
+				call BaseDamage.addDamage(zombie, ZOMBIE_DAMAGE[lvl])
 				call UnitApplyTimedLife(zombie, ZOMBIE_TIMED_LIFE_BUFF, ZOMBIE_DURATION[lvl])
                 call UnitAddAbility(zombie, ZOMBIE_AURA_ABILITY)
                 call UnitAddAbility(zombie, ZOMBIE_AURA_EFFECT)

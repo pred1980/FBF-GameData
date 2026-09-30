@@ -131,7 +131,7 @@ scope SpikeTrap
         set archnathid = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), ARCHNATHID_ID, x, y, GetRandomInt(0,359))
         call SetUnitMaxState(archnathid, UNIT_STATE_MAX_LIFE, hp)
         call SetUnitState(archnathid, UNIT_STATE_LIFE, GetUnitState(archnathid, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-        call TDS.addDamage(archnathid, dmg)
+        call BaseDamage.addDamage(archnathid, dmg)
         call UnitAddAbility(archnathid, SPELL_ID)
         call SetUnitAbilityLevel(archnathid, SPELL_ID, 1)
         call IssueImmediateOrder(archnathid, "burrow")

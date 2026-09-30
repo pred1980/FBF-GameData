@@ -70,7 +70,7 @@ scope Adolescence initializer init
                 set this.size = this.size + 0.01
                 call SetUnitScale(this.child, (START_SIZE + this.size), (START_SIZE + this.size), (START_SIZE + this.size))
                 call AddUnitMaxState(this.child, UNIT_STATE_MAX_LIFE, HP_PER_SECONDS[this.level])
-                call TDS.addDamage(this.child, DAMAGE_PER_SECOND[this.level])
+                call BaseDamage.addDamage(this.child, DAMAGE_PER_SECOND[this.level])
             else
 				//Release Timer
 				call ReleaseTimer(GetExpiredTimer())

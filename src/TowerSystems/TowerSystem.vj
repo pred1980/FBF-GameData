@@ -637,7 +637,7 @@ scope TowerSystem
             call UnitRemoveAbility(t,'ARal')
 			
             call GroupRemoveUnit(BEING_UPGRADE_UNITS, t)
-			call TDS.addDamage(t, damage)
+			call BaseDamage.addDamage(t, damage)
             
 			if abi != -1 then
                 call UnitAddAbility(t, abi)

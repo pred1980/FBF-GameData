@@ -347,7 +347,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
 			
 			//add HP, Mana and Damage
 			call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, I2R(.getUnitMaxLife(unitIndex, false)))
-			call TDS.addDamage(u, .getUnitDamage(unitIndex))
+			call BaseDamage.addDamage(u, .getUnitDamage(unitIndex))
 			
 			//add Unit to the WayPointSystem ( TD Part )
 			call WayPointSystem.addUnit(PLAYER__X__WAYPOINT[pid], u)

@@ -101,8 +101,8 @@ scope BroodMotherSystem initializer init
 				set .hp = GetDynamicRatioValue(HP, HP_FACTOR)
                 set .dmg = GetDynamicRatioValue(DAMAGE, DAMAGE_FACTOR)
                 call SetUnitMaxState(.broodMother, UNIT_STATE_MAX_LIFE, .hp)
-                call TDS.resetDamage(.broodMother)
-				call TDS.addDamage(.broodMother, .dmg)
+                call BaseDamage.resetDamage(.broodMother)
+				call BaseDamage.addDamage(.broodMother, .dmg)
             endif
         endmethod
 
@@ -191,7 +191,7 @@ scope BroodMotherSystem initializer init
             set .broodMother = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), SPIDER_ID, X, Y, FACING)
             call SetUnitMaxState(.broodMother, UNIT_STATE_MAX_LIFE, .hp)
             call SetUnitState(.broodMother, UNIT_STATE_LIFE, GetUnitState(.broodMother, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-            call TDS.addDamage(.broodMother, .dmg)
+            call BaseDamage.addDamage(.broodMother, .dmg)
             
             set .t = NewTimer()
             call SetTimerData(.t, this )
@@ -274,16 +274,16 @@ scope BroodMotherSystem initializer init
                         set .male_hp = GetDynamicRatioValue(MALE_HP, HP_FACTOR)
                         set .male_dmg = GetDynamicRatioValue(MALE_DAMAGE, DAMAGE_FACTOR)
                         call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, .male_hp)
-						call TDS.resetDamage(u)
-						call TDS.addDamage(u, .male_dmg)
+						call BaseDamage.resetDamage(u)
+						call BaseDamage.addDamage(u, .male_dmg)
                     endif
                     //Female
                     if GetUnitTypeId(u) == 'n00H' then
                         set .female_hp = GetDynamicRatioValue(MALE_HP, HP_FACTOR)
                         set .female_dmg = GetDynamicRatioValue(MALE_DAMAGE, DAMAGE_FACTOR)
                         call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, .female_hp)
-						call TDS.resetDamage(u)
-						call TDS.addDamage(u, .female_dmg)
+						call BaseDamage.resetDamage(u)
+						call BaseDamage.addDamage(u, .female_dmg)
                     endif
 					call SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
                 endif
@@ -328,11 +328,11 @@ scope BroodMotherSystem initializer init
                 set .child = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), MALE_ID, this.x, this.y, 375.0 )
                 call SetUnitVertexColor( .child, PercentTo255(0.00), PercentTo255(0.00), PercentTo255(100.0), PercentTo255(100))
                 call SetUnitMaxState(.child, UNIT_STATE_MAX_LIFE, male_hp)
-                call TDS.addDamage(.child,  male_dmg)
+                call BaseDamage.addDamage(.child,  male_dmg)
             else
                 set .child = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), FEMALE_ID, this.x, this.y, 375.0 )
                 call SetUnitMaxState(.child, UNIT_STATE_MAX_LIFE, female_hp)
-                call TDS.addDamage(.child, female_dmg)
+                call BaseDamage.addDamage(.child, female_dmg)
             endif
 			call Sound.runSoundAtPoint(SOUND_2, GetUnitX(.child), GetUnitY(.child), .0)
             call SetUnitState(.child, UNIT_STATE_LIFE, GetUnitState(.child, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)

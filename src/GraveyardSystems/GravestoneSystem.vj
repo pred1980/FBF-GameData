@@ -132,7 +132,7 @@ scope GravestoneSystem
                 set incDmg = GetDynamicRatioValue(INCREASED_ZOMBIE_DAMAGE_PER_ROUND, DAMAGE_FACTOR)
 
                 call SetUnitMaxState(zombie, UNIT_STATE_MAX_LIFE, hp + ( RoundSystem.actualRound * incHp))
-                call TDS.addDamage(zombie, dmg + ( RoundSystem.actualRound * incDmg))
+                call BaseDamage.addDamage(zombie, dmg + ( RoundSystem.actualRound * incDmg))
                 call DestroyEffect(AddSpecialEffect(ZOMBIE_SPAWN_EFFECT, x, y))
                 call UnitApplyTimedLife(zombie, 'BTLF', LIFE_TIME )
             

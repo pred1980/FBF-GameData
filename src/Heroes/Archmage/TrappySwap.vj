@@ -159,7 +159,7 @@ scope TrappySwap initializer init
             //Add Damage + HP
             call SetUnitMaxState(this.dummy, UNIT_STATE_MAX_LIFE, START_HP + ( RoundSystem.actualRound * INCREASED_HP_PER_ROUND))
             call SetUnitState(this.dummy, UNIT_STATE_LIFE, GetUnitState(this.dummy, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-            call TDS.addDamage(this.dummy, START_DAMAGE + ( RoundSystem.actualRound * INCREASED_DAMAGE_PER_ROUND))
+            call BaseDamage.addDamage(this.dummy, START_DAMAGE + ( RoundSystem.actualRound * INCREASED_DAMAGE_PER_ROUND))
             
 			// add to Escort System (only for Bots)
 			if (Game.isBot[pid]) then

@@ -120,7 +120,7 @@ scope StandardDefenseMode
 			call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, unitLife)
 			call SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
 			//set Damage
-			call TDS.addDamage(u, damage)
+			call BaseDamage.addDamage(u, damage)
 		endmethod
 	
 		static method countFactorForUnit takes unit creepUnit returns nothing

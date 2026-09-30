@@ -167,8 +167,8 @@
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\ItemAbilities\HealingPotion.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\ItemAbilities\ManaPotion.vj"
 
-/* Tome Damage System */
-//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\TomeDamageSystem\TomeDamageSystem.vj"
+/* Base Damage System */
+//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\BaseDamageSystem\BaseDamageSystem.vj"
 
 /* Meteor System */
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\MeteorSystem\MeteorSystem.vj"

@@ -1,4 +1,4 @@
-scope TomeDamageSystem
+scope BaseDamageSystem
 
     globals
         // BlzGetUnitBaseDamage verwendet 0 fuer den ersten Angriff.
@@ -6,7 +6,7 @@ scope TomeDamageSystem
         private hashtable DAMAGE_VALUES = InitHashtable()
     endglobals
 
-    struct TDS
+    struct BaseDamage
 
         static method setDamage takes unit target, integer damage, boolean isBonus returns nothing
             if not isBonus then

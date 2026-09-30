@@ -31,8 +31,8 @@ scope KingMithasMode
 				set hp = GetGameStartRatioValue(HEART_HP, HP_FACTOR)
                 set dmg = GetGameStartRatioValue(HEART_DMG, DAMAGE_FACTOR)
                 call SetUnitMaxState(thistype.heart, UNIT_STATE_MAX_LIFE, hp)
-                call TDS.resetDamage(thistype.heart)
-				call TDS.addDamage(thistype.heart, dmg)
+                call BaseDamage.resetDamage(thistype.heart)
+				call BaseDamage.addDamage(thistype.heart, dmg)
             endif
         endmethod
         
@@ -50,7 +50,7 @@ scope KingMithasMode
 			set thistype.heart = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), HEART_ID, X, Y, GetRandomReal(0., 359.))
 			call SetUnitMaxState(thistype.heart, UNIT_STATE_MAX_LIFE, hp)
             call SetUnitState(thistype.heart, UNIT_STATE_LIFE, GetUnitState(thistype.heart, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-            call TDS.addDamage(thistype.heart, dmg)
+            call BaseDamage.addDamage(thistype.heart, dmg)
 			call SetHeroLevel(thistype.heart, HEART_LEVEL, false)
 			//call SelectHeroSkill(thistype.heart, SPELL_ID) //Aura vorerst deakt. da sie zu Rucklern fuehrt
             
@@ -108,8 +108,8 @@ scope KingMithasMode
 				set .hp = GetDynamicRatioValue(kingHP[.index], HP_FACTOR)
                 set .dmg = GetDynamicRatioValue(kingDMG[.index], DAMAGE_FACTOR)
                 call SetUnitMaxState(.king, UNIT_STATE_MAX_LIFE, .hp)
-                call TDS.resetDamage(.king)
-				call TDS.addDamage(.king, .dmg)
+                call BaseDamage.resetDamage(.king)
+				call BaseDamage.addDamage(.king, .dmg)
             endif
         endmethod
 		
@@ -205,7 +205,7 @@ scope KingMithasMode
 			call SetHeroLevelBJ(.king, kingLevel[.index], false)
 			call SetUnitMaxState(.king, UNIT_STATE_MAX_LIFE, .hp)
             call SetUnitState(.king, UNIT_STATE_LIFE, GetUnitState(.king, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-            call TDS.addDamage(.king, .dmg)
+            call BaseDamage.addDamage(.king, .dmg)
 			
 			call SetUnitInvulnerable(.king, true)
 		
