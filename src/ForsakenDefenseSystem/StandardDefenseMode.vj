@@ -120,6 +120,7 @@ scope StandardDefenseMode
 			set wander = Wander.create(u, 500, GetRandomReal(1., 5.))
 			set wander.random = GetRandomReal(1., 5.)
 			set wander.order = "attack"
+			set wander.ordersEnabled = not ForsakenUnits.wanderPaused
 			
 			static if REMOVE_CREEPS then
 				call ForsakenUnits.add(u)
@@ -164,6 +165,28 @@ scope StandardDefenseMode
         static integer perfSpawned = 0
         static group g
         static boolean removeCreeps = REMOVE_CREEPS
+        static boolean wanderPaused = false
+
+        private static method applyWanderMode takes nothing returns nothing
+            local unit u = GetEnumUnit()
+            local Wander wander = Wander[u]
+
+            if wander.exists then
+                set wander.ordersEnabled = not thistype.wanderPaused
+                if thistype.wanderPaused then
+                    call IssueImmediateOrder(u, "stop")
+                endif
+            endif
+            set u = null
+        endmethod
+
+        static method setWanderPaused takes boolean paused returns nothing
+            if .wanderPaused == paused then
+                return
+            endif
+            set .wanderPaused = paused
+            call ForGroup(.g, function thistype.applyWanderMode)
+        endmethod
         
         static method removeAll takes nothing returns nothing
             call ForGroup(.g, function thistype.onRemoveAll )

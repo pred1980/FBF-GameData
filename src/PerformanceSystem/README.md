@@ -2,6 +2,8 @@
 
 Der Logger ist normalerweise aus. Im Spiel schaltet `-perflog` ihn für den eigenen Spieler ein; derselbe Befehl stoppt ihn und schreibt die letzten Messwerte. Alle 10 Spielsekunden entsteht eine Zeile. Nach jeweils sechs Zeilen wird die aktuelle Datei neu geschrieben. Nach 60 Messzeilen beginnt eine neue Datei, damit das Schreiben nicht mit der Spiellänge immer teurer wird.
 
+Für einen Vergleichstest schaltet `-perfwander` die Wander-Befehle der Forsaken-Verteidiger aus und mit demselben Befehl wieder ein. Bereits laufende Wander-Befehle werden beim Ausschalten gestoppt. Die Timer laufen weiter und räumen tote Einheiten weiterhin auf. Lane-Creeps und ihre Wegpunkte bleiben davon unberührt.
+
 Warcraft III speichert die Dateien lokal unter `Dokumente\Warcraft III\CustomMapData` als `FBF-performance-p<Spielernummer>-<Dateinummer>.txt`. Bei einem neuen Spiel können Dateien mit gleichem Namen überschrieben werden. Für einen Vergleich die Dateien daher nach dem Test sichern. Die erzeugte Textdatei enthält auch JASS-Rahmentext; die Messzeilen stehen darin als `call Preload("...")`.
 
 Die Spalten sind durch Semikolon getrennt:
@@ -12,6 +14,7 @@ Die Spalten sind durch Semikolon getrennt:
 | `round` | aktuelle Creep-Runde |
 | `creeps_alive` | lebende Creeps aus der vorhandenen Rundenzählung |
 | `defenders_registered` | Einheiten in der Gruppe der Forsaken-Verteidiger |
+| `defender_wander_paused` | `1`, wenn `-perfwander` die Wander-Befehle der Verteidiger anhält; sonst `0` |
 | `wave_created` | neu erzeugte Creep-Welleneinheiten seit der letzten Zeile |
 | `defense_created` | neu erzeugte Forsaken-Verteidiger seit der letzten Zeile |
 | `way_registered` | Einheiten in der Gruppe des Wegpunktsystems |
