@@ -97,7 +97,7 @@ scope FBFMultiboard
 				exitwhen row >= bj_MAX_PLAYERS
 				if Game.isPlayerInGame(row) then
 					loop
-						exitwhen column > 15 
+						exitwhen column >= COLUMNS
 						call board[PLAYER_IDS_2_ROW[row]][column].setStyle(false, true)
 						set board[PLAYER_IDS_2_ROW[row]][column].icon = "EmptyItemIcon.blp"
 						set column = column + 1

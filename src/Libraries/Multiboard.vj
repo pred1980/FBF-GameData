@@ -121,11 +121,14 @@ library Multiboard /* v2.0.0.1
     private keyword clearItems
     struct Multiboard extends array
         method getItems takes nothing returns nothing
-            local integer row = rc[this]
+            local integer row = rc[this] - 1
             local integer column
             local multiboarditem mb
+            if rc[this] <= 0 or cc[this] <= 0 then
+                return
+            endif
             loop
-                set column = cc[this]
+                set column = cc[this] - 1
                 loop
                     set mb = MultiboardGetItem(boardp[this], row, column)
                     set table.multiboarditem[(this*500+row)*500+column] = mb
@@ -139,10 +142,13 @@ library Multiboard /* v2.0.0.1
             set mb = null
         endmethod
         method clearItems takes nothing returns nothing
-            local integer row = rc[this]
+            local integer row = rc[this] - 1
             local integer column
+            if rc[this] <= 0 or cc[this] <= 0 then
+                return
+            endif
             loop
-                set column = cc[this]
+                set column = cc[this] - 1
                 loop
                     call MultiboardReleaseItem(table.multiboarditem[(this*500+row)*500+column])
                     call table.handle.remove((this*500+row)*500+column)
