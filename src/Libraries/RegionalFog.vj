@@ -99,6 +99,8 @@ library RegionalFog requires ListModule
         readonly static real dawnEnd
         readonly static real duskStart
         readonly static real duskEnd
+        private static real lastCameraDistance = -1
+        private static boolean noRegionalFogLastTick = false
         
         fogData dayData
         fogData nightData = 0
@@ -164,15 +166,25 @@ library RegionalFog requires ListModule
         
         static method sample takes nothing returns nothing
             local fog f = .first
-            local real time = GetFloatGameState(GAME_STATE_TIME_OF_DAY)
+            local real time
             local real cameraDistance = GetCameraField(CAMERA_FIELD_TARGET_DISTANCE)
-            local real x = GetCameraTargetPositionX()
-            local real y = GetCameraTargetPositionY()
+            local real x
+            local real y
             local real dx
             local real dy
             local real dayratio
             local real d
             local real r = 0
+
+            // Ohne regionale Zonen aendert nur die Kameradistanz den Standardnebel.
+            if f == 0 and .noRegionalFogLastTick and cameraDistance == .lastCameraDistance then
+                return
+            endif
+            set .noRegionalFogLastTick = f == 0
+            set .lastCameraDistance = cameraDistance
+            set time = GetFloatGameState(GAME_STATE_TIME_OF_DAY)
+            set x = GetCameraTargetPositionX()
+            set y = GetCameraTargetPositionY()
 
             // Sanftere Skalierung
             set .defaultData.zStart = cameraDistance * 0.2
