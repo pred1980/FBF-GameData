@@ -200,7 +200,7 @@ library AnaMoveSys initializer init
     endfunction
     
     public function checkUnregister takes nothing returns boolean
-        return GetOwningPlayer(GetTriggerUnit()) == Player(0)
+        return globalCheck()
     endfunction
     
     public function unregisterUnit takes nothing returns nothing
