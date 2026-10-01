@@ -65,8 +65,7 @@ scope Cleave initializer init
     private struct Cleave
         private unit caster
         private integer level = 0
-        private static thistype tempthis = 0
-		private static unit primaryTarget = null
+		private group targets
 		private static integer buffType = 0
 		private dbuff buff = 0
 		
@@ -74,6 +73,8 @@ scope Cleave initializer init
 			if cleaveCaster[GetUnitId(.caster)] == this then
 				set cleaveCaster[GetUnitId(.caster)] = 0
 			endif
+			call DestroyGroup(.targets)
+			set .targets = null
 			set .caster = null
 		endmethod
 		
@@ -81,90 +82,91 @@ scope Cleave initializer init
 			return cleaveCaster[GetUnitId(u)]
 		endmethod
         
-        private  static method group_filter_callback takes nothing returns boolean
-			local unit u = GetFilterUnit()
-			local boolean b = false
-			
-			if (SpellHelper.isValidEnemy(u, .tempthis.caster) and /*
-			*/	IsUnitType(u, UNIT_TYPE_GROUND) and u != .primaryTarget) then
-				set b = true
-			endif
-			
-			set u = null
-			
-            return b
-        endmethod
-		
 		method onAttack takes unit damageSource, unit damagedUnit, real damage returns nothing
 			local unit target
 			local real x
-            local real y
-            local real ang
-            local real propDmg = (damage * DAMAGE[.level]) / 100 
-            local real lifeBefore = 0.0
-            local real lifeLost = 0.0
-            local integer neighborCount = 0
-            local real nearest = 100000.0
-            local real distanceToTarget = 0.0
-            local real dx = 0.0
-            local real dy = 0.0
-			
-			set .tempthis = this
-			set .primaryTarget = damagedUnit
-			call GroupClear(ENUM_GROUP)
-			call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(damagedUnit), GetUnitY(damagedUnit), RADIUS, function thistype.group_filter_callback)
-			set .primaryTarget = null
-            
-			loop
-				set target = FirstOfGroup(ENUM_GROUP)
-				exitwhen (target == null)
-				if target != damagedUnit then
-					set neighborCount = neighborCount + 1
-					set lifeBefore = GetWidgetLife(target)
-				endif
-				
-				// Damage
-				if (GetUnitState(target, UNIT_STATE_LIFE) > propDmg) then
-					set DamageType = SPELL
-					call SpellHelper.damageTarget(.caster, target, propDmg, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
-				else
-					call SetUnitExploded(target, true)
-					call KillUnit(target) 
-				endif
-				
-				if target != damagedUnit then
-					set lifeLost = lifeBefore - GetWidgetLife(target)
-					if lifeLost > 0.0 then
-						call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave Nachbar " + GetUnitName(target) + ": -" + R2S(lifeLost) + " Lebenspunkte")
-					else
-						call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave Nachbar " + GetUnitName(target) + ": kein Lebenspunktverlust")
-					endif
-				endif
+			local real y
+			local real ang
+			local real propDmg = (damage * DAMAGE[.level]) / 100
+			local real lifeBefore
+			local real lifeLost
+			local real nearest = 100000.0
+			local real distanceToTarget
+			local real dx
+			local real dy
+			local integer neighborCount = 0
+			local integer otherCount = 0
+			local integer rejectedCount = 0
+			local string rejectedReason = ""
 
-				//Weak Unit?
-				if (GetUnitLifePercent(target) <= WEAKNESS_FACTOR and not SpellHelper.isUnitDead(target)) then
-					if (GetRandomInt(1, 100) <= CHANCE[.level]) then
-						if (GetRandomInt(0, 1) == 0) then
-							//Stun
-							call Stun_UnitEx(target, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
+			call GroupClear(.targets)
+			call GroupEnumUnitsInRange(.targets, GetUnitX(damagedUnit), GetUnitY(damagedUnit), RADIUS, null)
+			loop
+				set target = FirstOfGroup(.targets)
+				exitwhen target == null
+				call GroupRemoveUnit(.targets, target)
+				if target != damagedUnit then
+					if SpellHelper.isValidEnemy(target, .caster) and IsUnitType(target, UNIT_TYPE_GROUND) then
+						set neighborCount = neighborCount + 1
+						set lifeBefore = GetWidgetLife(target)
+
+						if GetUnitState(target, UNIT_STATE_LIFE) > propDmg then
+							set DamageType = SPELL
+							call SpellHelper.damageTarget(.caster, target, propDmg, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
 						else
-							//Knockback
-							set x = GetUnitX(.caster) - GetUnitX(target)
-							set y = GetUnitY(.caster) - GetUnitY(target)
-							set ang = Atan2(y, x) - bj_PI
-							call Knockback.create(.caster, target, DISTANCE, KB_TIME, ang, 0, "", "")
+							call SetUnitExploded(target, true)
+							call KillUnit(target)
 						endif
+
+						set lifeLost = lifeBefore - GetWidgetLife(target)
+						if lifeLost > 0.0 then
+							call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave Nachbar " + GetUnitName(target) + ": -" + R2S(lifeLost) + " Lebenspunkte")
+						else
+							call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave Nachbar " + GetUnitName(target) + ": kein Lebenspunktverlust")
+						endif
+
+						if GetUnitLifePercent(target) <= WEAKNESS_FACTOR and not SpellHelper.isUnitDead(target) then
+							if GetRandomInt(1, 100) <= CHANCE[.level] then
+								if GetRandomInt(0, 1) == 0 then
+									call Stun_UnitEx(target, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
+								else
+									set x = GetUnitX(.caster) - GetUnitX(target)
+									set y = GetUnitY(.caster) - GetUnitY(target)
+									set ang = Atan2(y, x) - bj_PI
+									call Knockback.create(.caster, target, DISTANCE, KB_TIME, ang, 0, "", "")
+								endif
+							endif
+						endif
+					elseif IsUnitEnemy(target, GetOwningPlayer(.caster)) then
+						set rejectedCount = rejectedCount + 1
+						if rejectedReason == "" then
+							if SpellHelper.isUnitDead(target) then
+								set rejectedReason = "tot"
+							elseif IsUnitType(target, UNIT_TYPE_STRUCTURE) then
+								set rejectedReason = "Gebaeude"
+							elseif IsUnitType(target, UNIT_TYPE_MECHANICAL) then
+								set rejectedReason = "mechanisch"
+							elseif IsUnitInvulnerable(target) then
+								set rejectedReason = "unverwundbar"
+							elseif not IsUnitType(target, UNIT_TYPE_GROUND) then
+								set rejectedReason = "nicht am Boden"
+							else
+								set rejectedReason = "anderer Filter"
+							endif
+						endif
+					else
+						set otherCount = otherCount + 1
 					endif
 				endif
-				
-				call GroupRemoveUnit(ENUM_GROUP, target)
 			endloop
-			
+
 			if neighborCount == 0 then
-				call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(damagedUnit), GetUnitY(damagedUnit), 500.0, null)
+				call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Ziele in 175: nicht feindlich " + I2S(otherCount) + ", ungeeignete Feinde " + I2S(rejectedCount) + " " + rejectedReason)
+				call GroupEnumUnitsInRange(.targets, GetUnitX(damagedUnit), GetUnitY(damagedUnit), 500.0, null)
 				loop
-					set target = FirstOfGroup(ENUM_GROUP)
+					set target = FirstOfGroup(.targets)
 					exitwhen target == null
+					call GroupRemoveUnit(.targets, target)
 					if target != damagedUnit and SpellHelper.isValidEnemy(target, .caster) and IsUnitType(target, UNIT_TYPE_GROUND) then
 						set dx = GetUnitX(target) - GetUnitX(damagedUnit)
 						set dy = GetUnitY(target) - GetUnitY(damagedUnit)
@@ -173,24 +175,21 @@ scope Cleave initializer init
 							set nearest = distanceToTarget
 						endif
 					endif
-					call GroupRemoveUnit(ENUM_GROUP, target)
 				endloop
 				if nearest < 100000.0 then
-					call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave: kein Nachbar in 175; naechster Gegner " + I2S(R2I(nearest)) + " entfernt")
+					call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 naechster geeigneter Gegner: " + I2S(R2I(nearest)) + " entfernt")
 				else
-					call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave: kein geeigneter Gegner in 500 um das Angriffsziel")
+					call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 kein geeigneter Gegner in 500 um das Angriffsziel")
 				endif
 			endif
-
 			set target = null
 		endmethod
-		
 		static method create takes unit attacker returns thistype
             local thistype this = thistype.allocate()
             
             set .caster = attacker
+			set .targets = CreateGroup()
             set .level = GetUnitAbilityLevel(.caster, SPELL_ID)
-            set .tempthis = this
 			set cleaveCaster[GetUnitId(.caster)] = this
 			
 			set UnitAddBuff(.caster, .caster, .buffType, DURATION, .level).data = this
