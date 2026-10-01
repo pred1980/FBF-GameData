@@ -53,8 +53,6 @@ scope Fireblast initializer Init
     //**********************************************************************************
     globals
         private SpellDamage damageOptions
-        private constant string DEBUG_COMMAND = "-fbdebug"
-        private boolean array showDamage
     endglobals
 
     //==================================================================================
@@ -94,22 +92,8 @@ scope Fireblast initializer Init
         // In this case, we use it to deal damage to the targeted unit.
         //
         method onHit takes nothing returns nothing
-            local real lifeBefore = GetWidgetLife(.targetUnit)
-            local real lifeLost
-            local player owner = GetOwningPlayer(.caster)
-
             set DamageType = SPELL
             call damageOptions.damageTarget(.caster, .targetUnit, Damage(.level))
-            set lifeLost = lifeBefore - GetWidgetLife(.targetUnit)
-            if showDamage[GetPlayerId(owner)] then
-                if lifeLost > 0.0 then
-                    call DisplayTimedTextToPlayer(owner, 0, 0, 8, "G2 Fireblast trifft " + GetUnitName(.targetUnit) + ": -" + R2S(lifeLost) + " Lebenspunkte")
-                else
-                    call DisplayTimedTextToPlayer(owner, 0, 0, 8, "G2 Fireblast trifft " + GetUnitName(.targetUnit) + ": kein Lebenspunktverlust")
-                endif
-            endif
-
-            set owner = null
         endmethod
     endstruct
 
@@ -225,28 +209,11 @@ scope Fireblast initializer Init
 
     
 
-    private function ToggleDebug takes nothing returns nothing
-        local player p = GetTriggerPlayer()
-        local integer pid = GetPlayerId(p)
-
-        set showDamage[pid] = not showDamage[pid]
-        if showDamage[pid] then
-            call DisplayTimedTextToPlayer(p, 0, 0, 8, "G2 Fireblast-Diagnose an")
-        else
-            call DisplayTimedTextToPlayer(p, 0, 0, 8, "G2 Fireblast-Diagnose aus")
-        endif
-
-        set p = null
-    endfunction
-
     private function Actions takes nothing returns nothing
         local unit hero = GetTriggerUnit()
         local integer level = GetUnitAbilityLevel(hero, SPELL_ID)
 
         call FireblastMain.create(hero, level, GetSpellTargetX(), GetSpellTargetY())
-        if showDamage[GetPlayerId(GetOwningPlayer(hero))] then
-            call DisplayTimedTextToPlayer(GetOwningPlayer(hero), 0, 0, 8, "G2 Fireblast gewirkt; warte auf Treffer")
-        endif
 
         set hero = null // it is good to null handle variables at the end of a function...
     endfunction
@@ -256,21 +223,11 @@ scope Fireblast initializer Init
     endfunction
 	
    private function Init takes nothing returns nothing
-        local trigger chatTrigger = CreateTrigger()
-        local integer pid = 0
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 		
 		// Initializing the damage options:
         set damageOptions=SpellDamage.create()    // first instanciate a xeobject.
         call setupDamageOptions(damageOptions) // now call the function we saw before.
-
-        loop
-            exitwhen pid >= bj_MAX_PLAYERS
-            call TriggerRegisterPlayerChatEvent(chatTrigger, Player(pid), DEBUG_COMMAND, true)
-            set pid = pid + 1
-        endloop
-        call TriggerAddAction(chatTrigger, function ToggleDebug)
-        set chatTrigger = null
 
         call Preload(MAIN_MODEL)
     endfunction
