@@ -132,7 +132,7 @@ scope HeroPickSystem
         endmethod
         
         static method onUpdateMultiboard takes integer pid returns nothing
-            if ( Game.isPlayerInGame(pid) ) then
+            if ( SYSTEM_MULTIBOARD and Game.isPlayerInGame(pid) ) then
 				call FBFMultiboard.onUpdateHeroIcon(pid)
                 call FBFMultiboard.onUpdatePlayerName(pid)
                 call FBFMultiboard.onUpdateHeroLevel(pid, pickedHero[pid])

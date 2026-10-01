@@ -159,8 +159,13 @@ scope AuraOfRedemption initializer Init
     //==================================================================================================================
     
     private function Init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        local trigger d = CreateTrigger()
+        local trigger t = null
+        local trigger d = null
+        if (not SYSTEM_ITEMS) then
+            return
+        endif
+        set t = CreateTrigger()
+        set d = CreateTrigger()
         call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_PICKUP_ITEM )
         call TriggerRegisterAnyUnitEventBJ( d, EVENT_PLAYER_UNIT_DROP_ITEM )
         call TriggerAddCondition( t , Condition(function Conditions ))

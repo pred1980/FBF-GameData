@@ -312,9 +312,12 @@ scope DiabolicCountdown
         endmethod
         
         static method onInit takes nothing returns nothing
-            local trigger t = CreateTrigger()
-            call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_EFFECT)
-            call TriggerAddCondition(t,Condition(function thistype.spellActions))
+            local trigger t = null
+            if (SYSTEM_FINAL_MODE) then
+                set t = CreateTrigger()
+                call TriggerRegisterAnyUnitEventBJ(t,EVENT_PLAYER_UNIT_SPELL_EFFECT)
+                call TriggerAddCondition(t,Condition(function thistype.spellActions))
+            endif
             set e = Filter(function thistype.groupActions)
             
             static if not LIBRARY_GroupUtils then

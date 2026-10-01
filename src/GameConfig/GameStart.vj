@@ -8,7 +8,7 @@ scope GameStart
         public constant string AUTHOR = "pred1980"
         public constant string VERSION = "1.0.0"
         public constant string RELEASE_DATE = "xx-xx-2025"
-        private constant string DEV_TEST_STAND = "DEV #39 T02"
+        private constant string DEV_TEST_STAND = "DEV #40 T03"
 		
 		private string SOUND_1 = "Sound\\Interface\\Rescue.wav"
         private string SOUND_2 = "Sound\\Interface\\ClanInvitation.wav"
@@ -29,6 +29,9 @@ scope GameStart
             call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, PRESENTATION_TEXT_DURATION, "\n|cffffcc00Release Date: |r" + RELEASE_DATE)
             call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, PRESENTATION_TEXT_DURATION, "|cffffcc00Version: |r" + VERSION)
             call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, PRESENTATION_TEXT_DURATION, DEV_TEST_STAND)
+            if (SYSTEM_ISOLATION_TEST) then
+                call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.00, 0.00, PRESENTATION_TEXT_DURATION, "PERFORMANCE-ISOLATION: kein normaler Spielbetrieb")
+            endif
             call TimerStart(NewTimer(), PRESENTATION_TEXT_DURATION, false, function thistype.onEnd)
 		endmethod
 

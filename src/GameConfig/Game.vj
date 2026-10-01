@@ -259,9 +259,13 @@ scope Game
          * This function initializes misc Systems (ex.: Gold-Income)
          */
         static method initMiscSystem takes nothing returns nothing
-            call RoundSystem.startSystem()
-            call GoldIncome.create(true) //activate Forsaken Gold Income
-            call GoldIncome.create(false) //activate Coalition Gold Income
+            if (SYSTEM_ROUNDS) then
+                call RoundSystem.startSystem()
+            endif
+            if (SYSTEM_GOLD_INCOME) then
+                call GoldIncome.create(true) //activate Forsaken Gold Income
+                call GoldIncome.create(false) //activate Coalition Gold Income
+            endif
         endmethod
         
 		//init player state
@@ -340,21 +344,29 @@ scope Game
             
             call updatePlayerCount()
             //Update Multiboard
-            call FBFMultiboard.onPlayerLeftGame(id)
+            if (SYSTEM_MULTIBOARD) then
+                call FBFMultiboard.onPlayerLeftGame(id)
+            endif
             //Update Brood Mother HP+Damage
-            call BroodMother.onUpdate()
+            if (SYSTEM_BROOD) then
+                call BroodMother.onUpdate()
             //Update the Offspring the Brood Mother
-            call Egg.onUpdate()
+                call Egg.onUpdate()
+            endif
             //Update Titan Devourer HP+Damage
-            call Titan.onUpdate()
+            if (SYSTEM_TITAN) then
+                call Titan.onUpdate()
+            endif
             //Remove Hero from battlefield
             call BaseMode.removeHero(id)
 			//Update King Mithas HP+Damage
-            call KingMithasCore.onUpdate()
+            if (SYSTEM_FINAL_MODE) then
+                call KingMithasCore.onUpdate()
 			//Update Forsaken Heart HP+Damage
-			call KingMod.onUpdate()
+                call KingMod.onUpdate()
+            endif
             //if Forsaken Player? --> Remove all Towers and the acolyt of this player
-            if (GetPlayerRace(p) == RACE_UNDEAD) then
+            if (SYSTEM_TOWERS and GetPlayerRace(p) == RACE_UNDEAD) then
                 call TowerSystem.removeTowersAndBuilder(p)
             endif
         endmethod
@@ -460,7 +472,9 @@ scope Game
 			call ReleaseTimer(GetExpiredTimer())
 			
 			//on Death Event
-            call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, null, function thistype.onUnitDeath)
+            if (SYSTEM_SUPPORT) then
+                call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, null, function thistype.onUnitDeath)
+            endif
             
             //Setting Player Datas
             loop
@@ -479,7 +493,9 @@ scope Game
 						set .isBot[i] = true
 					endif
 					//Adding Hero LevelUp Event
-					call RegisterPlayerUnitEventForPlayer(EVENT_PLAYER_HERO_LEVEL, null, function thistype.onHeroLevelUp, .players[i])
+                    if (SYSTEM_SUPPORT) then
+                        call RegisterPlayerUnitEventForPlayer(EVENT_PLAYER_HERO_LEVEL, null, function thistype.onHeroLevelUp, .players[i])
+                    endif
                     
                     if GetPlayerRace(Player(i)) == RACE_UNDEAD then
                         //Spieler Neutral-Extra ist Verbuendeter mit den Untoten
@@ -513,7 +529,9 @@ scope Game
             call SuspendTimeOfDay( false )
             
 			//Wechsel den Besitzer der Forsaken Fountain, damit nur Undead dort sich heilen können
-            call CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), FORSAKEN_FOUNTAIN_ID, GetRectCenterX(gg_rct_UndeadFountain), GetRectCenterY(gg_rct_UndeadFountain), bj_UNIT_FACING)
+            if (SYSTEM_DEFENSE) then
+                call CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), FORSAKEN_FOUNTAIN_ID, GetRectCenterX(gg_rct_UndeadFountain), GetRectCenterY(gg_rct_UndeadFountain), bj_UNIT_FACING)
+            endif
 			
 			//activate user control for all players
             call SetUserControlForceOn(GetPlayersAll())

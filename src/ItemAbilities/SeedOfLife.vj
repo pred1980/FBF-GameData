@@ -189,6 +189,9 @@ library SeedOfLife initializer Init uses GroupUtils, DamageModifiers, SpellEvent
     endfunction
     
     private function Init takes nothing returns nothing
+        if (not SYSTEM_ITEMS) then
+            return
+        endif
         call RegisterSpellEffectResponse(AID, CastResponse)
         
         set BuffType=DefineBuffType(BUFF_PLACER_AID, BID, 0, false, true, 0,0,Data.BuffRemoved)

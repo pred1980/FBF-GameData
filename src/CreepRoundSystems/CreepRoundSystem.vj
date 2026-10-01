@@ -212,7 +212,9 @@ library CreepRoundSystem /* v 1.1.0.0
     
     private module Inits 
         private static method onInit takes nothing returns nothing 
-            call PlayerStats.updateResourceLog()
+            if (SYSTEM_ROUNDS) then
+                call PlayerStats.updateResourceLog()
+            endif
             call Sound.preload(SOUND_1)
 			call Sound.preload(SOUND_2)
         endmethod 

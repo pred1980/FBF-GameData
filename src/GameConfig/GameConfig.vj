@@ -12,7 +12,9 @@ scope GameConfig
 			 * Module, die vor dem eigentlichen GameStart geladen werden müssen 
 			 */
 			call GetHost()
-			call GoldIncome.initialize()
+			if (SYSTEM_GOLD_INCOME) then
+                call GoldIncome.initialize()
+            endif
 			
 			//GAME START
 			call GameStart.initialize()

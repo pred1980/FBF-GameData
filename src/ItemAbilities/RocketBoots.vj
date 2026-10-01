@@ -112,8 +112,13 @@ scope RocketBoots initializer init
     endfunction
     
     private function init takes nothing returns nothing
-        local trigger orderTrig = CreateTrigger()
-        local trigger t = CreateTrigger()
+        local trigger orderTrig = null
+        local trigger t = null
+        if (not SYSTEM_ITEMS) then
+            return
+        endif
+        set orderTrig = CreateTrigger()
+        set t = CreateTrigger()
         
         call TriggerRegisterAnyUnitEventBJ(orderTrig,EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER)
         call TriggerAddCondition(orderTrig,Condition(function Order_Conditions))

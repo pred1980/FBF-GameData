@@ -304,8 +304,11 @@ library RegionalFog requires ListModule
         endmethod
         
         static method onInit takes nothing returns nothing
-            local timer t = CreateTimer()
-            
+            local timer t = null
+            if (not SYSTEM_REGIONAL_FOG) then
+                return
+            endif
+            set t = CreateTimer()
             set .defaultData = fogData.create()
             set .currentData = fogData.create()
             set .dawnStart = 6 - fogData.TRANSITION_DURATION/2

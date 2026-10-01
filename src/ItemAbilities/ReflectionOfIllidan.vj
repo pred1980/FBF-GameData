@@ -235,6 +235,9 @@ scope ReflectionOfIllidan initializer Init
     endfunction
     
     private function Init takes nothing returns nothing
+        if (not SYSTEM_ITEMS) then
+            return
+        endif
 		call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         
 		// Preloading effects

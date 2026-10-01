@@ -7,7 +7,9 @@ scope DomeAura initializer Init
 	endglobals
 
 	private function Init takes nothing returns nothing
-		call CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), DUMMY_ID, X, Y, 0.00)
+        if (SYSTEM_DEFENSE) then
+            call CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), DUMMY_ID, X, Y, 0.00)
+        endif
 	endfunction
 
 endscope

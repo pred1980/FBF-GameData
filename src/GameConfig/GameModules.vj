@@ -4,100 +4,168 @@ scope GameModules
 	
 		static method initialize takes nothing returns nothing
 			//Multiboard
-            call FBFMultiboard.create()
+            if (SYSTEM_MULTIBOARD) then
+                call FBFMultiboard.create()
+            endif
 			
 			//Item System
-			call UnitInventory.initialize()
-			call ItemShops.initialize()
-			call Item.initialize()
-			call Items.initialize()
+			if (SYSTEM_ITEMS) then
+                call UnitInventory.initialize()
+            endif
+			if (SYSTEM_ITEMS) then
+                call ItemShops.initialize()
+            endif
+			if (SYSTEM_ITEMS) then
+                call Item.initialize()
+            endif
+			if (SYSTEM_ITEMS) then
+                call Items.initialize()
+            endif
 						
 			//Hero Pick Systems
-			call HeroPickInit.initialize()
-			call HeroPickSystem.initialize()
-			call HeroPickMode.initialize()
+			if (SYSTEM_HERO_PICK) then
+                call HeroPickInit.initialize()
+            endif
+			if (SYSTEM_HERO_PICK) then
+                call HeroPickSystem.initialize()
+            endif
+			if (SYSTEM_HERO_PICK) then
+                call HeroPickMode.initialize()
+            endif
 			
 			//Hero Repick
-			call Repick.initialize()
+			if (SYSTEM_HERO_PICK) then
+                call Repick.initialize()
+            endif
 			
 			//Hero Stats
-			call HeroData.initialize()
-			call HeroStats.initialize()
+			if (SYSTEM_HERO_PICK) then
+                call HeroData.initialize()
+            endif
+			if (SYSTEM_HERO_PICK) then
+                call HeroStats.initialize()
+            endif
 			
 			//Tome Damage System System
-			call TDS.initialize()
+			if (SYSTEM_SUPPORT) then
+                call TDS.initialize()
+            endif
 			
 			//Kill Streak System
-			call KillStreakSystem.initialize()
+			if (SYSTEM_SUPPORT) then
+                call KillStreakSystem.initialize()
+            endif
 			
 			//Assist System
-			call AssistSystem.initialize()
+			if (SYSTEM_SUPPORT) then
+                call AssistSystem.initialize()
+            endif
 			
 			//XP System
-			call XPSystem.initialize()
+			if (SYSTEM_SUPPORT) then
+                call XPSystem.initialize()
+            endif
 			
 			//Tower System
-			call TowerSystem.initialize()
+			if (SYSTEM_TOWERS) then
+                call TowerSystem.initialize()
+            endif
 			
 			//Unit System
-			call UnitSystem.initialize()
+			if (SYSTEM_UNITS) then
+                call UnitSystem.initialize()
+            endif
 			
 			//Gold System
-			call BonusGoldOnStreak.initialize()
+			if (SYSTEM_GOLD_INCOME) then
+                call BonusGoldOnStreak.initialize()
+            endif
 			
 			//Debug-Goldbefehl
-			call DebugGoldChat.initialize()
+			if (SYSTEM_SUPPORT) then
+                call DebugGoldChat.initialize()
+            endif
 
 			//Evaluation System
-			call Evaluation.initialize()
+			if (SYSTEM_SUPPORT) then
+                call Evaluation.initialize()
+            endif
 			
 			//Web System
-			call WebSystem.initialize()
+			if (SYSTEM_SUPPORT) then
+                call WebSystem.initialize()
+            endif
 			
 			//Graveyard Systems
-			call SpikeTrap.initialize()
-			call SkeletonSystem.initialize()
-			call GravestoneSystem.initialize()
+			if (SYSTEM_SPIKE_TRAPS) then
+                call SpikeTrap.initialize()
+            endif
+			if (SYSTEM_SKELETONS) then
+                call SkeletonSystem.initialize()
+            endif
+			if (SYSTEM_GRAVESTONES) then
+                call GravestoneSystem.initialize()
+            endif
 			
 			//Usability System
-			call Usability.initialize()
+			if (SYSTEM_HERO_PICK) then
+                call Usability.initialize()
+            endif
 			
 			//KI Systems
-			call KI.initialize()
+			if (SYSTEM_AI) then
+                call KI.initialize()
+            endif
 			
 			//create Brood Mother
-            call BroodMother.create()
+            if (SYSTEM_BROOD) then
+                call BroodMother.create()
+            endif
 			
             //create EggSystem
-            call EggSystem.create()
+            if (SYSTEM_BROOD) then
+                call EggSystem.create()
+            endif
 			
             //Create Titan Devourer
-            call Titan.create()
+            if (SYSTEM_TITAN) then
+                call Titan.create()
+            endif
 			
             //Create Coalition Unit Shops
-            call UnitShopSystem.initialize()
+            if (SYSTEM_UNITS) then
+                call UnitShopSystem.initialize()
+            endif
 			
             //init Final Mode
-            call FinalMode.initialize()
+            if (SYSTEM_FINAL_MODE) then
+                call FinalMode.initialize()
+            endif
 			
             //create first Coalition Teleporter in the AOS
-            if (Game.getCoalitionPlayers() > 0) then
-				call CoalitionTeleport.initialize()
-			endif
+            if (SYSTEM_TELEPORT and Game.getCoalitionPlayers() > 0) then
+                call CoalitionTeleport.initialize()
+            endif
 
             //create first Forsaken Teleporter in the AOS
-			if (Game.getForsakenPlayers() > 0) then
-				call ForsakenTeleport.initialize()
-			endif
+            if (SYSTEM_TELEPORT and Game.getForsakenPlayers() > 0) then
+                call ForsakenTeleport.initialize()
+            endif
 
 			//init Defense Mode
-			call StandardDefenseInit.initialize()
+			if (SYSTEM_DEFENSE) then
+                call StandardDefenseInit.initialize()
+            endif
 			
 			//Test: Send Unit System
-			call CustomCreepSystem.initialize()
+			if (SYSTEM_ROUNDS) then
+                call CustomCreepSystem.initialize()
+            endif
 			
 			// Camera System (only zoom)v
-			call CameraSystem.initialize()
+			if (SYSTEM_HERO_PICK) then
+                call CameraSystem.initialize()
+            endif
 		endmethod
 	
 	endstruct
