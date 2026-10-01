@@ -176,9 +176,7 @@ library CreepRoundSystem /* v 1.1.0.0
             //Los gehts :)
             call OnRoundStart()
             call TimerStart(.creepCountTimer, 1.0, true, function thistype.countCreeps)
-            if (SYSTEM_ROUNDS) then
-                call PlayerStats.updateResourceLog()
-            endif
+            call PlayerStats.updateResourceLog()
             
             call DestroyTimerDialog(.tiDialog)
             set .tiDialog = null
