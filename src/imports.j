@@ -3,7 +3,7 @@
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\XE\xebasic.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\XE\xecast.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\XE\xefx.vj"
-//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\XE\xedamage.vj"
+//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\SpellDamage.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\XE\xecollider.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\XE\xemissile.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\XE\xedummy.vj"

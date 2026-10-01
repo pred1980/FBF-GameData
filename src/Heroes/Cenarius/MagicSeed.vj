@@ -53,7 +53,7 @@ scope MagicSeed initializer init
         integer lvl = 0
         
         static thistype temp = 0
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         static boolexpr explosionFilter = null
             
         static method create takes unit from, unit to, integer lv returns thistype
@@ -104,7 +104,7 @@ scope MagicSeed initializer init
         
         static method onInit takes nothing returns nothing
             set explosionFilter = Condition(function thistype.explosionFilterEnum)
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set dtype = DAMAGE_TYPE
             set atype = ATTACK_TYPE
 			set wtype = WEAPON_TYPE

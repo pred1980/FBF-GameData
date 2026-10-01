@@ -27,7 +27,7 @@ scope NetherCharge initializer init
         private constant integer CHANCE = 10
     endglobals
     
-    private function setupDamageOptions takes xedamage d returns nothing
+    private function setupDamageOptions takes SpellDamage d returns nothing
         //setup of the damage options
         set d.dtype = DAMAGE_TYPE_MAGIC    //deals magic damage
         set d.atype = ATTACK_TYPE_NORMAL   //normal attack type
@@ -42,7 +42,7 @@ scope NetherCharge initializer init
     endfunction
 
     globals
-        private xedamage damageOptions
+        private SpellDamage damageOptions
         private group unitGrp
         private group EG
         private boolexpr b
@@ -218,7 +218,7 @@ scope NetherCharge initializer init
         call Preload(dmgEffect)
         call Preload(lightSfx)
         call RegisterDamageResponse( Actions )
-        set damageOptions = xedamage.create()
+        set damageOptions = SpellDamage.create()
         call setupDamageOptions(damageOptions)
         set unitGrp = CreateGroup()
         set EG = CreateGroup()

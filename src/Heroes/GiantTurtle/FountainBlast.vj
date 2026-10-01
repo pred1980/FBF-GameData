@@ -127,7 +127,7 @@ scope FountainBlast initializer init
         static constant real totalTime = (EXPLOSION_START_SPEED / RAbsBJ(EXPLOSION_ACCELERATION)) * 2
         static HandleTable t = 0
         static timer ticker = null
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         static integer buffType = 0
         
         implement List
@@ -210,7 +210,7 @@ scope FountainBlast initializer init
         static method onInit takes nothing returns nothing
             set t = HandleTable.create()
             set ticker = CreateTimer()
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set dtype = DAMAGE_TYPE
             set atype = ATTACK_TYPE
 			set wtype = WEAPON_TYPE

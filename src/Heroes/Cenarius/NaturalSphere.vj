@@ -112,7 +112,7 @@ scope NaturalSphere initializer init
         group targets = null
         real moved = 0.00
         
-        static delegate xedamage damage = 0
+        static delegate SpellDamage damage = 0
         
         method onDestroy takes nothing returns nothing
             call ReleaseGroup(targets)
@@ -170,7 +170,7 @@ scope NaturalSphere initializer init
         endmethod
             
          private static method onInit takes nothing returns nothing
-            set damage = xedamage.create()
+            set damage = SpellDamage.create()
             set dtype = DAMAGE_TYPE
             set atype = ATTACK_TYPE
         endmethod

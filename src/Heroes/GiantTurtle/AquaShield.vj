@@ -46,7 +46,7 @@ scope AquaShield initializer init
 
     private struct AquaShield
 
-    static delegate xedamage dmg = 0
+    static delegate SpellDamage dmg = 0
     static thistype temp = 0
     static integer buffType = 0
     static boolean array registred
@@ -137,7 +137,7 @@ scope AquaShield initializer init
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_CAST, function thistype.onSpellCast, null)
 
         set buffType = DefineBuffType(AQUA_SHIELD_BUFF_PLACER_ID, AQUA_SHIELD_BUFF_ID, 0, false, false, thistype.onBuffAdd, 0, thistype.onBuffEnd)
-        set dmg = xedamage.create()
+        set dmg = SpellDamage.create()
         set dtype = DAMAGE_TYPE
         set atype = ATTACK_TYPE
 		set wtype = WEAPON_TYPE

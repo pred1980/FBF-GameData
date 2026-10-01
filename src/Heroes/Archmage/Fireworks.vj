@@ -24,7 +24,7 @@ scope Fireworks initializer init
         private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_UNIVERSAL
         private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
 		
-		private xedamage xed
+		private SpellDamage xed
         private xecast cast
     endglobals
 
@@ -33,7 +33,7 @@ scope Fireworks initializer init
     endfunction
     
     //damage filter
-    private function DamageOptions takes xedamage spellDamage returns nothing
+    private function DamageOptions takes SpellDamage spellDamage returns nothing
         set spellDamage.dtype = DAMAGE_TYPE
         set spellDamage.atype = ATTACK_TYPE
 		set spellDamage.wtype = WEAPON_TYPE
@@ -136,8 +136,8 @@ scope Fireworks initializer init
     private function init takes nothing returns nothing
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 		
-        //init xedamage
-        set xed = xedamage.create()
+        //init SpellDamage
+        set xed = SpellDamage.create()
         call DamageOptions(xed)
         
         //init xecast

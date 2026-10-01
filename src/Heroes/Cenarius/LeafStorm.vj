@@ -53,7 +53,7 @@ scope LeafStorm initializer init
         xefx storm = 0
         
         static timer ticker = null
-        static delegate xedamage damage = 0
+        static delegate SpellDamage damage = 0
         static boolexpr filter = null
         static thistype temp = 0
         static HandleTable t = 0
@@ -153,7 +153,7 @@ scope LeafStorm initializer init
             set filter = Condition(function thistype.targetFilter)
             set t = HandleTable.create()
             
-            set damage = xedamage.create()
+            set damage = SpellDamage.create()
             set dtype = DAMAGE_TYPE
             set atype = ATTACK_TYPE
 			set wtype = WEAPON_TYPE

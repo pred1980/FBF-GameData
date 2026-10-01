@@ -29,10 +29,10 @@ scope IceShard initializer Init
         private constant real SLOW_MULTIPLIER_LEVEL2 = .12
         private constant real SLOW_MULTIPLIER_LEVEL3 = .16
         
-        private xedamage damageOptions
+        private SpellDamage damageOptions
     endglobals
     
-    private function setupDamageOptions takes xedamage d returns nothing
+    private function setupDamageOptions takes SpellDamage d returns nothing
         set d.dtype = DAMAGE_TYPE_COLD   
         set d.atype = ATTACK_TYPE_NORMAL 
         
@@ -199,7 +199,7 @@ scope IceShard initializer Init
     private function Init takes nothing returns nothing
         call RegisterDamageResponse( Actions )
 		
-        set damageOptions = xedamage.create()
+        set damageOptions = SpellDamage.create()
         call setupDamageOptions(damageOptions)
 		
         //Init Towers

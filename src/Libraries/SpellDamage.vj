@@ -1,6 +1,7 @@
-library xedamage initializer init requires xebasic
+library SpellDamage initializer init requires xebasic, SpellHelper
 //************************************************************************
-// xedamage 0.8
+// FBF-API fuer Zielauswahl und ausgeloesten Schaden.
+// Basiert auf dem bereits eingebundenen XE xedamage 0.8; Filter und Faktoren bleiben erhalten.
 // --------
 //  For all your damage and targetting needs.
 //
@@ -17,7 +18,7 @@ library xedamage initializer init requires xebasic
         // (Yes, you read it correctly, 20 ...
         //
         // If you use such a large value, there may be conflicts with some things relying on damage
-        // (ie they are not away of the isDummyDamage tag that xedamage posseses.) which may be quite bad if you think about it...
+        // (ie they are not away of the isDummyDamage tag that SpellDamage posseses.) which may be quite bad if you think about it...
         // then maybe it is better to change it to 0.01 ... then will work fine, just fine - but it will generally ignore armor - 
         // I am leaving it as 0.01 by default, because honestly, I'd rather make it ignore armor than have a lot of people sending me
         // rants about how they detect 20.0 damage where none is visible...
@@ -28,21 +29,21 @@ library xedamage initializer init requires xebasic
         //=======================================================
         private constant real      EPSILON = 0.000000001
         private unit     dmger
-        private constant integer   MAX_SPACE = 8190 // MAX_SPACE/MAX_SUB_OPTIONS is the instance limit for xedamage, usually big enough...
+        private constant integer   MAX_SPACE = 8190 // MAX_SPACE/MAX_SUB_OPTIONS is the instance limit for SpellDamage, usually big enough...
     endglobals
 
     private keyword structInit
 
-    struct xedamage[MAX_SPACE]
+    struct SpellDamage[MAX_SPACE]
 
         //----
-        // fields and methods for a xedamage object, they aid determining valid targets and special
+        // fields and methods for a SpellDamage object, they aid determining valid targets and special
         // damage factor conditions.
         //
         // Notice the default values.
         //
         boolean damageSelf    = false  // the damage and factor methods  usually have a source unit parameter
-                                       // xedamage would consider this unit as immune unless you set damageSelf to true
+                                       // SpellDamage would consider this unit as immune unless you set damageSelf to true
 
         boolean damageAllies  = false  // Alliance dependent target options.
         boolean damageEnemies = true   // *
@@ -51,12 +52,12 @@ library xedamage initializer init requires xebasic
                                        // true by default, you may not really need to modify this.
 
         boolean visibleOnly   = false  // Should only units that are visible for source unit's owner be affected?
-        boolean deadOnly      = false  // Should only corpses be affected by "the damage"? (useful when using xedamage as a target selector)
+        boolean deadOnly      = false  // Should only corpses be affected by "the damage"? (useful when using SpellDamage as a target selector)
         boolean alsoDead      = false  // Should even corpses and alive units be considered?
 
         boolean damageTrees   = false  //Also damage destructables? Notice this is used only in certain methods.
                                        //AOE for example targets a circle, so it can affect the destructables
-                                       //in that circle, a custom spell using xedamage for targetting configuration
+                                       //in that circle, a custom spell using SpellDamage for targetting configuration
                                        //could also have an if-then-else implemented so it can verify if it is true
                                        //then affect trees manually.
 
@@ -73,15 +74,15 @@ library xedamage initializer init requires xebasic
         weapontype wtype  = WEAPON_TYPE_WHOKNOWS
 
         //
-        // Damage type 'tag' people might use xedamage.isInUse() to detect xedamage usage, there are other static
-        //  variables like xedamage.CurrentDamageType and xedamage.CurrentDamageTag. The tag allows you to specify
+        // Damage type 'tag' people might use SpellDamage.isInUse() to detect SpellDamage usage, there are other static
+        //  variables like SpellDamage.CurrentDamageType and SpellDamage.CurrentDamageTag. The tag allows you to specify
         //  a custom id for the damage type ** Notice the tag would aid you for some spell stuff, for example,
         //  you can use it in a way similar to Rising_Dusk's damage system.
         //
         integer    tag    = 0
 
         //
-        // if true, forceDamage will make xedamage ignore dtype and atype and try as hard as possible to deal 100%
+        // if true, forceDamage will make SpellDamage ignore dtype and atype and try as hard as possible to deal 100%
         // damage.
         boolean    forceDamage = false
 
@@ -125,11 +126,11 @@ library xedamage initializer init requires xebasic
         //
         // method .factor(SOME_UNIT_TYPE, factor)
         //  You might call factor() if you wish to specify a special damage factor for a certain classification,
-        // for example call d.factor(UNIT_TYPE_STRUCTURE, 0.5) makes xedamage do half damage to structures.
+        // for example call d.factor(UNIT_TYPE_STRUCTURE, 0.5) makes SpellDamage do half damage to structures.
         //
         method factor takes unittype ut, real fc returns nothing
             if(this.fcn==MAX_SUB_OPTIONS) then
-                debug call BJDebugMsg("In one instance of xedamage, you are doing too much calls to factor(), please increase MAX_SUB_OPTIONS to allow more, or cut the number of factor() calls")
+                debug call BJDebugMsg("In one instance of SpellDamage, you are doing too much calls to factor(), please increase MAX_SUB_OPTIONS to allow more, or cut the number of factor() calls")
                 return
             endif
             set this.fct[this.fcn] = ut
@@ -151,7 +152,7 @@ library xedamage initializer init requires xebasic
         
         method abilityFactor takes integer abilityId, real fc returns nothing
             if(this.abifcn==MAX_SUB_OPTIONS) then
-                debug call BJDebugMsg("In one instance of xedamage, you are doing too much calls to abilityFactor(), please increase MAX_SUB_OPTIONS to allow more, or cut the number of abilityFactor() calls")
+                debug call BJDebugMsg("In one instance of SpellDamage, you are doing too much calls to abilityFactor(), please increase MAX_SUB_OPTIONS to allow more, or cut the number of abilityFactor() calls")
                 return
             endif
             set this.abifct[this.abifcn] = abilityId
@@ -179,8 +180,8 @@ library xedamage initializer init requires xebasic
         //*
 
         //================================================================================
-        // static method xedamage.isInUse()  will return true during a unit damaged
-        // event in case this damage was caused by xedamage, in this case, you can
+        // static method SpellDamage.isInUse()  will return true during a unit damaged
+        // event in case this damage was caused by SpellDamage, in this case, you can
         // read variables like CurrentDamageType, CurrentAttackType and CurrentDamageTag
         // to be able to recognize what sort of damage was done.
         //
@@ -197,7 +198,7 @@ library xedamage initializer init requires xebasic
 
         //========================================================================================================
         // This function calculates the damage factor caused by a certain attack and damage
-        // type, it is static : xedamage.getDamageTypeFactor(someunit, ATTAcK_TYPE_NORMAL, DAMAGE_TYPE_FIRE, 100)
+        // type, it is static : SpellDamage.getDamageTypeFactor(someunit, ATTAcK_TYPE_NORMAL, DAMAGE_TYPE_FIRE, 100)
         //
         static method getDamageTypeFactor takes unit u, attacktype a, damagetype d returns real
          local real hp=GetWidgetLife(u)
@@ -220,7 +221,7 @@ library xedamage initializer init requires xebasic
 			call UnitDamageTarget(dmger,u, fc ,false,false,a,d,null)
             static if IS_DEBUG_MODE then
                 if IsUnitType(u, UNIT_TYPE_DEAD) and (hp>0.405) then
-                    call BJDebugMsg("xedamage: For some reason, the unit being tested by getDamageTypeFactor has died. Verify MAX_DAMAGE_FACTOR is set to a correct value. ") 
+                    call BJDebugMsg("SpellDamage: For some reason, the unit being tested by getDamageTypeFactor has died. Verify MAX_DAMAGE_FACTOR is set to a correct value. ")
                 endif
             endif
             
@@ -320,7 +321,7 @@ library xedamage initializer init requires xebasic
             if( this.forceDamage or not usetypes ) then
                 return f
             endif
-            set f=f*xedamage.getDamageTypeFactor(target,this.atype,this.dtype)
+            set f=f*SpellDamage.getDamageTypeFactor(target,this.atype,this.dtype)
 
             if ( f<EPSILON) and (f>-EPSILON) then
                 return 0.0
@@ -444,7 +445,7 @@ library xedamage initializer init requires xebasic
          return count
         endmethod
 
-        private static xedamage instance
+        private static SpellDamage instance
         private integer countAOE
         private unit    sourceAOE
         private real    AOEx
@@ -458,7 +459,7 @@ library xedamage initializer init requires xebasic
 
         private static method damageAOE_Enum takes nothing returns boolean
             local unit target = GetFilterUnit()
-            local xedamage this = .instance //adopting a instance.
+            local SpellDamage this = .instance //adopting a instance.
             local real f
             local real hp
          
@@ -487,7 +488,7 @@ library xedamage initializer init requires xebasic
 
         private static method damageAOE_DestructablesEnum takes nothing returns boolean
 			local destructable target = GetFilterDestructable()
-			local xedamage this = .instance //adopting a instance.
+			local SpellDamage this = .instance //adopting a instance.
 			local real dx = .AOEx - GetDestructableX(target)
 			local real dy = .AOEy - GetDestructableY(target)
 
@@ -569,8 +570,8 @@ library xedamage initializer init requires xebasic
         //'friend' with the library init
         static method structInit takes nothing returns nothing
             set .AOERect= Rect(0,0,0,0)
-            set .filterAOE= Condition(function xedamage.damageAOE_Enum)
-            set .filterDestAOE = Condition( function xedamage.damageAOE_DestructablesEnum)
+            set .filterAOE= Condition(function SpellDamage.damageAOE_Enum)
+            set .filterDestAOE = Condition( function SpellDamage.damageAOE_DestructablesEnum)
             set .enumgroup = CreateGroup()
         endmethod
     endstruct
@@ -578,7 +579,7 @@ library xedamage initializer init requires xebasic
     private function init takes nothing returns nothing
         set dmger = CreateUnit(Player(15), XE_DUMMY_UNITID , 0.,0.,0.)
         call UnitAddAbility(dmger,'Aloc')
-        call xedamage.structInit()
+        call SpellDamage.structInit()
     endfunction
 
 endlibrary
