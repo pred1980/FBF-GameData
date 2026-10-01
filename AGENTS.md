@@ -74,6 +74,8 @@ Es gibt keine automatischen Spieltests und kein Coverage Ziel. Ändert ein PR mi
 
 Agents können die Map nicht nachweislich kompilieren oder starten. `git diff --check`, Suchen im Code und die Skripte aus `safe-vjass-change` beweisen weder einen erfolgreichen Build noch korrektes Verhalten im Spiel. Behaupte das nur, wenn ein Mensch das Speichern oder den Spieltest durchgeführt und das Ergebnis gemeldet hat. Sonst sage ausdrücklich, dass beides offen ist, und nenne das nötige Testszenario.
 
+Für jeden angeforderten menschlichen Spieltest steht die sichtbare Kennung einmalig in `src/GameConfig/GameStart.vj` als `DEV_TEST_STAND` im Format `DEV #<issue> T<nn>`. Das Issue beginnt bei `T01`. Erhöhe die Nummer erst, wenn nach einem bereits angeforderten Teststand eine neue Änderung einen erneuten Build und Spieltest erfordert. Dokumentation, Kommentare und andere Änderungen ohne Einfluss auf den bestätigten Spieltest erhöhen sie nicht. Committe den zu testenden Quellcode einschließlich Kennung vor der Testaufforderung. Lies die Kennung aus `GameStart.vj` im zu testenden Commit und nenne sie zusammen mit dessen SHA; leite sie nicht aus Erinnerung oder einer zweiten Definition ab. Im Spiel muss dieselbe Zeile exakt erscheinen. Eine Meldung mit anderer oder älterer Kennung bestätigt den angeforderten Stand nicht. Der Mensch nennt die sichtbare Kennung und den getesteten Commit im PR.
+
 ## Tickets und Agent-Workflow
 
 - Jedes neue GitHub Ticket muss `.github/TICKET-STANDARD.md` folgen.
