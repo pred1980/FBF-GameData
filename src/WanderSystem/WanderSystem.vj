@@ -37,6 +37,7 @@ library Wander uses Table optional TimerUtils
 //                 real   timeout ( The timer timeout )
 //                 real   random  ( Optionally adds a random interval to the timer timeout )
 //                 string order   ( Either "move" or "attack" are recommended )
+//                 boolean ordersEnabled ( Disable wandering orders without pausing cleanup )
 //
 //==================================================================
 // User settings:
@@ -75,6 +76,7 @@ library Wander uses Table optional TimerUtils
                  real   timeout
                  real   random
                  string order
+                 boolean ordersEnabled
                  
         private  timer  tmr
        
@@ -134,7 +136,9 @@ library Wander uses Table optional TimerUtils
             if UnitAlive(source) then
                    // There are a few order ids, which eventually mess with the following unit order comparison.
                    // For example order id 851974. An endless going, undocumented order serving no obvious purpose.
-                if GetUnitCurrentOrder(source) == 0 and issueWander() then
+                if not ordersEnabled then
+                    call TimerStart(tmr, DEFAULT_TIMER_TIMEOUT, true, function thistype.onPeriodic)
+                elseif GetUnitCurrentOrder(source) == 0 and issueWander() then
                     call TimerStart(tmr, timeout + random*Random(), true, function thistype.onPeriodic)
                 else
                     // Update in short intervals until a wander order is issued.
@@ -152,6 +156,7 @@ library Wander uses Table optional TimerUtils
                 set this   = thistype.allocate()
                 set source = whichUnit
                 set order  = DEFAULT_ORDER_STRING
+                set ordersEnabled = true
                 set table[GetHandleId(whichUnit)] = this
                
                 static if not LIBRARY_TimerUtils then

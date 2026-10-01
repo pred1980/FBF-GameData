@@ -259,7 +259,7 @@ scope UnitSystem initializer init
                 call SetUnitState(u, UNIT_STATE_MANA, GetUnitState(u, UNIT_STATE_MAX_MANA) * RMaxBJ(0,100) * 0.01)
             endif
             //set Damage
-            call TDS.addDamage(u, damage)
+            call BaseDamage.addDamage(u, damage)
             //set Armor
             call AddUnitBonus(u, BONUS_ARMOR, armor)
         endmethod

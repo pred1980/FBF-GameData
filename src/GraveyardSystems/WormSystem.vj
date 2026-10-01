@@ -28,6 +28,7 @@ scope WormSystem initializer onInit
         private constant integer WORM_COUNT = 5
         private constant real SPAWN_INTERVAL_MIN = 10.0
         private constant real SPAWN_INTERVAL_MAX = 30.0
+        private constant integer MAX_SPAWN_ATTEMPTS = 128
         private constant integer ATTACK_COUNT = 1
         private constant real KILL_FACTOR = 75.00 // <=75% HP
         
@@ -108,6 +109,13 @@ scope WormSystem initializer onInit
                     set this.target = null
                     set this.last   = null
                     set this.tick   = this.tick + 1
+                    if this.tick >= this.max then
+                        call RemoveUnit(this.worm)
+                        call ReleaseTimer(t)
+                        call this.destroy()
+                    else
+                        call TimerStart(t, WAIT_TIME, false, function thistype.callback)
+                    endif
                     return
                 endif
                 set this.last = this.target
@@ -154,27 +162,35 @@ scope WormSystem initializer onInit
                 endif
                 
                 call PauseTimer(t)
-                call TimerStart(t, x, true, function thistype.callback)
+                call TimerStart(t, x, false, function thistype.callback)
                     
             endif
             
         endmethod
         
         static method create takes nothing returns thistype
-            local thistype this = thistype.allocate()
-            local timer tmr = NewTimer()
+            local thistype this = 0
+            local timer tmr = null
             local real x
             local real y
+            local real spawnX = GetRandomReal(GetRectMinX(gg_rct_WormSpawnArea), GetRectMaxX(gg_rct_WormSpawnArea))
+            local real spawnY = GetRandomReal(GetRectMinY(gg_rct_WormSpawnArea), GetRectMaxY(gg_rct_WormSpawnArea))
             local integer i = 0
-            
-            set .wormX = GetRandomReal(GetRectMinX(gg_rct_WormSpawnArea), GetRectMaxX(gg_rct_WormSpawnArea))
-            set .wormY = GetRandomReal(GetRectMinY(gg_rct_WormSpawnArea), GetRectMaxY(gg_rct_WormSpawnArea))
+            local integer attempts = 0
             
             loop
-                exitwhen IsTerrainWalkable(.wormX, .wormY)
-                set .wormX = GetRandomReal(GetRectMinX(gg_rct_WormSpawnArea), GetRectMaxX(gg_rct_WormSpawnArea))
-                set .wormY = GetRandomReal(GetRectMinY(gg_rct_WormSpawnArea), GetRectMaxY(gg_rct_WormSpawnArea))
+                exitwhen IsTerrainWalkable(spawnX, spawnY)
+                set attempts = attempts + 1
+                if attempts >= MAX_SPAWN_ATTEMPTS then
+                    return 0
+                endif
+                set spawnX = GetRandomReal(GetRectMinX(gg_rct_WormSpawnArea), GetRectMaxX(gg_rct_WormSpawnArea))
+                set spawnY = GetRandomReal(GetRectMinY(gg_rct_WormSpawnArea), GetRectMaxY(gg_rct_WormSpawnArea))
             endloop
+            set this = thistype.allocate()
+            set tmr = NewTimer()
+            set .wormX = spawnX
+            set .wormY = spawnY
                         
             set .worm = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), WORM_DUMMY, .wormX, .wormY, 0)
             set .aoe = GetAOE()
@@ -193,7 +209,7 @@ scope WormSystem initializer onInit
             
             call UnitAddAbility(.worm, LOCUST_ID)
             call SetTimerData(tmr, this)
-            call TimerStart(tmr, 0, true, function thistype.callback)
+            call TimerStart(tmr, 0, false, function thistype.callback)
             
             return this
         endmethod

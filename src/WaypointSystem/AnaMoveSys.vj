@@ -108,6 +108,14 @@ library AnaMoveSys initializer init
         //: %Saving%
         private hashtable UNIT_DATA = InitHashtable()
         private group MOVING_UNITS = CreateGroup()
+        private group CHECK_UNITS = CreateGroup()
+        private boolean LANE_PAUSED = false
+        private boolean PERF_ENABLED = false
+        private integer PERF_CHECKS = 0
+        private integer PERF_NEXT = 0
+        private integer PERF_EVENTS = 0
+        private integer PERF_SEEN = 0
+        private integer PERF_INACTIVE = 0
         
         //Show Debug Messages
         private constant boolean SHOW_DEBUG_MSG = false
@@ -117,6 +125,68 @@ library AnaMoveSys initializer init
     //: Here you can define the conditions,
     //: such as owner controlling and other
     //: useful filters.
+    private function profileCountUnit takes nothing returns nothing
+        local unit u = GetEnumUnit()
+        set PERF_SEEN = PERF_SEEN + 1
+        if GetUnitTypeId(u) == 0 or GetWidgetLife(u) <= 0.405 or IsUnitType(u, UNIT_TYPE_DEAD) then
+            set PERF_INACTIVE = PERF_INACTIVE + 1
+        endif
+        set u = null
+    endfunction
+
+    public function profileStart takes nothing returns nothing
+        set PERF_ENABLED = true
+        set PERF_CHECKS = 0
+        set PERF_NEXT = 0
+        set PERF_EVENTS = 0
+    endfunction
+
+    public function profileStop takes nothing returns nothing
+        set PERF_ENABLED = false
+    endfunction
+
+    public function profileSample takes nothing returns string
+        local string result = ""
+        set PERF_SEEN = 0
+        set PERF_INACTIVE = 0
+        call ForGroup(MOVING_UNITS, function profileCountUnit)
+        set result = I2S(CountUnitsInGroup(MOVING_UNITS)) + ";" + I2S(PERF_SEEN) + ";" + I2S(PERF_INACTIVE) + ";" + I2S(PERF_CHECKS) + ";" + I2S(PERF_NEXT) + ";" + I2S(PERF_EVENTS)
+        set PERF_CHECKS = 0
+        set PERF_NEXT = 0
+        set PERF_EVENTS = 0
+        return result
+    endfunction
+
+    private function stopLaneUnit takes nothing returns nothing
+        local unit u = GetEnumUnit()
+        call IssueImmediateOrder(u, ORDER_STOP)
+        set u = null
+    endfunction
+
+    private function resumeLaneUnit takes nothing returns nothing
+        local unit u = GetEnumUnit()
+        local integer unitID = GetHandleId(u)
+        local integer wayID = LoadInteger(UNIT_DATA, unitID, KEY_WAY)
+        local integer curPos = LoadInteger(UNIT_DATA, unitID, KEY_CURPOS)
+        call Way.instances[wayID].moveUnit(u, curPos)
+        set u = null
+    endfunction
+
+    public function profileSetLanePaused takes boolean paused returns nothing
+        if LANE_PAUSED == paused then
+            return
+        endif
+        set LANE_PAUSED = paused
+        if paused then
+            call ForGroup(MOVING_UNITS, function stopLaneUnit)
+        else
+            call ForGroup(MOVING_UNITS, function resumeLaneUnit)
+        endif
+    endfunction
+
+    public function profileLanePaused takes nothing returns boolean
+        return LANE_PAUSED
+    endfunction
     public function globalCheck takes nothing returns boolean
         return LoadWidgetHandle(UNIT_DATA, GetHandleId(GetTriggerUnit()), KEY_UNIT) != null
     endfunction
@@ -146,19 +216,22 @@ library AnaMoveSys initializer init
         local integer wayID = 0
         local integer curPos = 0
         
-        if IsUnitInGroup(GetTriggerUnit(), MOVING_UNITS) then
+        if not LANE_PAUSED and IsUnitInGroup(GetTriggerUnit(), MOVING_UNITS) then
             set unitID = GetHandleId(GetTriggerUnit())
             set wayID = LoadInteger(UNIT_DATA, unitID, KEY_WAY)
             set curPos = LoadInteger(UNIT_DATA, unitID, KEY_CURPOS)
             static if SHOW_DEBUG_MSG then
                 debug call BJDebugMsg("!AoSMoveSys] |NOTICE| <Way[" + I2S(wayID) + "]> <Reorder unit " + I2S(unitID) + ">")
             endif
+            if PERF_ENABLED then
+                set PERF_EVENTS = PERF_EVENTS + 1
+            endif
             call Way.instances[wayID].moveUnit(GetTriggerUnit(), curPos)
         endif
     endfunction
     
     public function checkUnregister takes nothing returns boolean
-        return GetOwningPlayer(GetTriggerUnit()) == Player(0)
+        return globalCheck()
     endfunction
     
     public function unregisterUnit takes nothing returns nothing
@@ -277,7 +350,9 @@ library AnaMoveSys initializer init
                 call GroupAddUnit(.units, u)
                 call GroupAddUnit(MOVING_UNITS, u)
                 
-                call .moveUnit(u, curPos)
+                if not LANE_PAUSED then
+                    call .moveUnit(u, curPos)
+                endif
             else
                 static if SHOW_DEBUG_MSG then
                     debug call BJDebugMsg("!AoSMoveSys] |ERROR| <Way[" + I2S(.ID) + "]> <addUnit: UNIT ALREADY REGISTERED!>")
@@ -377,7 +452,7 @@ library AnaMoveSys initializer init
             local integer i = 0
             
             local unit u = null
-            local group g = CreateGroup()
+            local group g = null
             local integer unitID = 0
             local integer wpID = 0
             
@@ -385,53 +460,55 @@ library AnaMoveSys initializer init
             local real dy = 0.
             local real dist = 0.
             
+            if LANE_PAUSED or FirstOfGroup(MOVING_UNITS) == null then
+                return
+            endif
+            set g = CHECK_UNITS
+
             loop
                 exitwhen i >= Way.index
                 
-                //----------------
-                //: %Reset Data%
-                //----------------
-                set u = null
-                call GroupClear(g)
-                set wy = 0
-                set wp = 0
-                set unitID = 0
-                //----------------
-                
                 set wy = Way.instances[i]
-                call GroupAddGroup(wy.units, g)
-                
-                loop
-                    set u = FirstOfGroup(g)
-                    exitwhen u == null
-                    
-                    //-----------------------
-                    // %Get unit data%
-                    //-----------------------
-                    set unitID = GetHandleId(u)
-                    set wpID = LoadInteger(UNIT_DATA, unitID, KEY_CURPOS)
-                    set wp = wy.wayPoints[wpID]
-                    
-                    //: Check whether the unit is in the range of
-                    //: her checkpoint
-                    set dx = GetUnitX(u) - wp.targX
-                    set dy = GetUnitY(u) - wp.targY
-                    set dist = SquareRoot(dx * dx + dy * dy)
-                    if dist <= wp.targRadius or GetUnitCurrentOrder(u) == 0 then
-                        call wy.moveNext(u, wpID)
-                        static if SHOW_DEBUG_MSG then
-                            debug call BJDebugMsg("!AoSMoveSys] |NOTICE| <Way[" + I2S(wy.ID) + "]> <Unit " + I2S(GetHandleId(u)) + " reached target>")
+                if FirstOfGroup(wy.units) != null then
+                    call GroupClear(g)
+                    call GroupAddGroup(wy.units, g)
+
+                    loop
+                        set u = FirstOfGroup(g)
+                        exitwhen u == null
+                        if PERF_ENABLED then
+                            set PERF_CHECKS = PERF_CHECKS + 1
                         endif
-                    endif
-                    
-                    call GroupRemoveUnit(g, u)
-                endloop 
-                
+
+                        //-----------------------
+                        // %Get unit data%
+                        //-----------------------
+                        set unitID = GetHandleId(u)
+                        set wpID = LoadInteger(UNIT_DATA, unitID, KEY_CURPOS)
+                        set wp = wy.wayPoints[wpID]
+
+                        //: Check whether the unit is in the range of
+                        //: her checkpoint
+                        set dx = GetUnitX(u) - wp.targX
+                        set dy = GetUnitY(u) - wp.targY
+                        set dist = SquareRoot(dx * dx + dy * dy)
+                        if dist <= wp.targRadius or GetUnitCurrentOrder(u) == 0 then
+                            if PERF_ENABLED then
+                                set PERF_NEXT = PERF_NEXT + 1
+                            endif
+                            call wy.moveNext(u, wpID)
+                            static if SHOW_DEBUG_MSG then
+                                debug call BJDebugMsg("!AoSMoveSys] |NOTICE| <Way[" + I2S(wy.ID) + "]> <Unit " + I2S(GetHandleId(u)) + " reached target>")
+                            endif
+                        endif
+
+                        call GroupRemoveUnit(g, u)
+                    endloop
+                endif
                 set i = i + 1
             endloop
             
             call GroupClear(g)
-            call DestroyGroup(g)
             set u = null
             set g = null
         endmethod

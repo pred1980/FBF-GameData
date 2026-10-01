@@ -1,0 +1,159 @@
+library PerformanceLog initializer init requires AnaMoveSys, CreepRoundSystem, CreepSystemCore
+
+    globals
+        private constant integer SAMPLE_SECONDS = 10
+        private constant integer SAMPLES_PER_FILE = 60
+        private constant integer SAMPLES_PER_FLUSH = 6
+        private constant string HEADER = "seconds;round;creeps_alive;defenders_registered;defender_wander_paused;lane_paused;wave_created;defense_created;way_registered;way_seen;way_inactive;way_checks;way_next;way_events;camera_x;camera_y"
+
+        private timer SAMPLE_TIMER = CreateTimer()
+        private trigger CHAT_TRIGGER = CreateTrigger()
+        private trigger WANDER_TRIGGER = CreateTrigger()
+        private trigger LANE_TRIGGER = CreateTrigger()
+        private boolean array ENABLED
+        private integer ENABLED_COUNT = 0
+        private integer SECONDS = 0
+
+        // Diese Daten werden nur auf dem jeweiligen lokalen Client benutzt.
+        private string array LINES
+        private integer LINE_COUNT = 0
+        private integer FILE_INDEX = 1
+        private integer SAMPLES_SINCE_FLUSH = 0
+    endglobals
+
+    private function flush takes nothing returns nothing
+        local integer i = 0
+
+        if LINE_COUNT <= 1 then
+            return
+        endif
+
+        call PreloadGenClear()
+        call PreloadGenStart()
+        loop
+            exitwhen i >= LINE_COUNT
+            call Preload(LINES[i])
+            set i = i + 1
+        endloop
+        call PreloadGenEnd("FBF-performance-p" + I2S(GetPlayerId(GetLocalPlayer()) + 1) + "-" + I2S(FILE_INDEX) + ".txt")
+        set SAMPLES_SINCE_FLUSH = 0
+    endfunction
+
+    private function sample takes nothing returns nothing
+        local integer i = 0
+        local string way = ""
+        local string row = ""
+        local integer wanderPaused = 0
+        local integer lanePaused = 0
+
+        set SECONDS = SECONDS + SAMPLE_SECONDS
+        set way = AnaMoveSys_profileSample()
+        if ForsakenUnits.wanderPaused then
+            set wanderPaused = 1
+        endif
+        if AnaMoveSys_profileLanePaused() then
+            set lanePaused = 1
+        endif
+        set row = I2S(SECONDS) + ";" + I2S(RoundSystem.actualRound) + ";" + I2S(RoundSystem.creepCount) + ";" + I2S(ForsakenUnits.getCount()) + ";" + I2S(wanderPaused) + ";" + I2S(lanePaused) + ";" + I2S(UnitSpawn.perfSpawned) + ";" + I2S(ForsakenUnits.perfSpawned) + ";" + way
+        set UnitSpawn.perfSpawned = 0
+        set ForsakenUnits.perfSpawned = 0
+
+        loop
+            exitwhen i >= bj_MAX_PLAYERS
+            if ENABLED[i] and GetLocalPlayer() == Player(i) then
+                set LINES[LINE_COUNT] = row + ";" + I2S(R2I(GetCameraTargetPositionX())) + ";" + I2S(R2I(GetCameraTargetPositionY()))
+                set LINE_COUNT = LINE_COUNT + 1
+                set SAMPLES_SINCE_FLUSH = SAMPLES_SINCE_FLUSH + 1
+
+                if LINE_COUNT > SAMPLES_PER_FILE then
+                    call flush()
+                    set FILE_INDEX = FILE_INDEX + 1
+                    set LINES[0] = HEADER
+                    set LINE_COUNT = 1
+                elseif SAMPLES_SINCE_FLUSH >= SAMPLES_PER_FLUSH then
+                    call flush()
+                endif
+            endif
+            set i = i + 1
+        endloop
+    endfunction
+
+    private function onChat takes nothing returns nothing
+        local player p = GetTriggerPlayer()
+        local integer pid = GetPlayerId(p)
+
+        if ENABLED[pid] then
+            if GetLocalPlayer() == p then
+                if LINE_COUNT > 1 then
+                    call flush()
+                    set FILE_INDEX = FILE_INDEX + 1
+                endif
+                call DisplayTimedTextToPlayer(p, 0, 0, 5.0, "Performance-Log gestoppt.")
+            endif
+            set ENABLED[pid] = false
+            set ENABLED_COUNT = ENABLED_COUNT - 1
+            if ENABLED_COUNT == 0 then
+                call PauseTimer(SAMPLE_TIMER)
+                call AnaMoveSys_profileStop()
+            endif
+        else
+            if GetLocalPlayer() == p then
+                set LINE_COUNT = 1
+                set LINES[0] = HEADER
+                set SAMPLES_SINCE_FLUSH = 0
+                call DisplayTimedTextToPlayer(p, 0, 0, 5.0, "Performance-Log aktiv. Mit -perflog stoppen.")
+            endif
+            set ENABLED[pid] = true
+            set ENABLED_COUNT = ENABLED_COUNT + 1
+            if ENABLED_COUNT == 1 then
+                set SECONDS = 0
+                set UnitSpawn.perfSpawned = 0
+                set ForsakenUnits.perfSpawned = 0
+                call AnaMoveSys_profileStart()
+                call TimerStart(SAMPLE_TIMER, I2R(SAMPLE_SECONDS), true, function sample)
+            endif
+        endif
+
+        set p = null
+    endfunction
+
+    private function onWanderChat takes nothing returns nothing
+        local player p = GetTriggerPlayer()
+
+        call ForsakenUnits.setWanderPaused(not ForsakenUnits.wanderPaused)
+        if ForsakenUnits.wanderPaused then
+            call DisplayTimedTextToPlayer(p, 0, 0, 5.0, "Verteidiger-Wander gestoppt. Mit -perfwander fortsetzen.")
+        else
+            call DisplayTimedTextToPlayer(p, 0, 0, 5.0, "Verteidiger-Wander aktiv.")
+        endif
+        set p = null
+    endfunction
+
+    private function onLaneChat takes nothing returns nothing
+        local player p = GetTriggerPlayer()
+
+        call AnaMoveSys_profileSetLanePaused(not AnaMoveSys_profileLanePaused())
+        if AnaMoveSys_profileLanePaused() then
+            call DisplayTimedTextToPlayer(p, 0, 0, 5.0, "Lane-Bewegung angehalten. Mit -perflane fortsetzen.")
+        else
+            call DisplayTimedTextToPlayer(p, 0, 0, 5.0, "Lane-Bewegung aktiv.")
+        endif
+        set p = null
+    endfunction
+
+    private function init takes nothing returns nothing
+        local integer i = 0
+
+        loop
+            exitwhen i >= bj_MAX_PLAYERS
+            call TriggerRegisterPlayerChatEvent(CHAT_TRIGGER, Player(i), "-perflog", true)
+            call TriggerRegisterPlayerChatEvent(WANDER_TRIGGER, Player(i), "-perfwander", true)
+            call TriggerRegisterPlayerChatEvent(LANE_TRIGGER, Player(i), "-perflane", true)
+            set i = i + 1
+        endloop
+        call TriggerAddAction(CHAT_TRIGGER, function onChat)
+        call TriggerAddAction(WANDER_TRIGGER, function onWanderChat)
+        call TriggerAddAction(LANE_TRIGGER, function onLaneChat)
+    endfunction
+
+endlibrary

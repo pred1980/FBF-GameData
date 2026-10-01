@@ -48,7 +48,7 @@ scope SkullRod initializer init
 			set skeleton = CreateUnit(p, SKELETONS[i], GetUnitX(caster), GetUnitY(caster), GetRandomInt(0,359))
 			call SetUnitMaxState(skeleton, UNIT_STATE_MAX_LIFE, hp + ( round * incHp))
 			call SetUnitState(skeleton, UNIT_STATE_LIFE, GetUnitState(skeleton, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-			call TDS.addDamage(skeleton, dmg + (round * incDmg))
+			call BaseDamage.addDamage(skeleton, dmg + (round * incDmg))
 			call DestroyEffect(AddSpecialEffect(SPAWN_EFFECT, GetUnitX(skeleton), GetUnitY(skeleton)))
 			call UnitApplyTimedLife(skeleton, 'BTLF', LIFE_TIME)
 		

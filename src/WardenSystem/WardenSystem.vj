@@ -64,7 +64,7 @@ scope WardenSystem initializer init
 			call UnitApplyTimedLife(.warden, 'BTLF', LIFE_TIME + ARGB_DURATION )
             call SetUnitMaxState(.warden, UNIT_STATE_MAX_LIFE, .hp + ( RoundSystem.actualRound * .incHp))
             call SetUnitState(.warden, UNIT_STATE_LIFE, GetUnitState(.warden, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-            call TDS.addDamage(.warden, .dmg + (RoundSystem.actualRound * .incDmg))
+            call BaseDamage.addDamage(.warden, .dmg + (RoundSystem.actualRound * .incDmg))
             call FadeUnitStart(.warden, 0x00000000, 0xFFFFFFFF, ARGB_DURATION)
             
 			set .t = NewTimer()

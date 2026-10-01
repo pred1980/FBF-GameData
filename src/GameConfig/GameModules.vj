@@ -24,9 +24,6 @@ scope GameModules
 			call HeroData.initialize()
 			call HeroStats.initialize()
 			
-			//Tome Damage System System
-			call TDS.initialize()
-			
 			//Kill Streak System
 			call KillStreakSystem.initialize()
 			

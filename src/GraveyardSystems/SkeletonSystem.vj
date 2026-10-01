@@ -98,7 +98,7 @@ scope SkeletonSystem
         set skeleton = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), SKELETONS[skeletonIndex], x, y, GetRandomInt(0,359))
         call SetUnitMaxState(skeleton, UNIT_STATE_MAX_LIFE, hp + ( RoundSystem.actualRound * incHp))
         call SetUnitState(skeleton, UNIT_STATE_LIFE, GetUnitState(skeleton, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-        call TDS.addDamage(skeleton, dmg + (RoundSystem.actualRound * incDmg))
+        call BaseDamage.addDamage(skeleton, dmg + (RoundSystem.actualRound * incDmg))
         call DestroyEffect(AddSpecialEffect(SPAWN_EFFECT, GetUnitX(skeleton), GetUnitY(skeleton)))
         call UnitApplyTimedLife(skeleton, 'BTLF', LIFE_TIME)
 		

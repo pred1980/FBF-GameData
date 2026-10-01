@@ -64,8 +64,8 @@ scope TitanDevourer
                     set .hp = GetDynamicRatioValue(HP, HP_FACTOR)
                     set .dmg = GetDynamicRatioValue(DAMAGE, DAMAGE_FACTOR)
                     call SetUnitMaxState(.titan, UNIT_STATE_MAX_LIFE, .hp)
-                    call TDS.resetDamage(.titan)
-					call TDS.addDamage(.titan, .dmg)
+                    call BaseDamage.resetDamage(.titan)
+					call BaseDamage.addDamage(.titan, .dmg)
                 endif
             endmethod
 			
@@ -124,7 +124,7 @@ scope TitanDevourer
                 
                 call SetUnitMaxState(.titan, UNIT_STATE_MAX_LIFE, .hp)
                 call SetUnitState(.titan, UNIT_STATE_LIFE, GetUnitState(.titan, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-                call TDS.addDamage(.titan, .dmg)
+                call BaseDamage.addDamage(.titan, .dmg)
                 
                 call TriggerRegisterUnitInRangeSimple( t, RADIUS, .titan)
 				call TriggerAddCondition(t, Condition(function thistype.onDevourCond))

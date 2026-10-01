@@ -1,0 +1,48 @@
+scope BaseDamageSystem
+
+    globals
+        // BlzGetUnitBaseDamage verwendet 0 fuer den ersten Angriff.
+        private constant integer DAMAGE_WEAPON_INDEX = 0
+        private hashtable DAMAGE_VALUES = InitHashtable()
+    endglobals
+
+    struct BaseDamage
+
+        static method setDamage takes unit target, integer damage, boolean isBonus returns nothing
+            if not isBonus then
+                set damage = -damage
+            endif
+            call BlzSetUnitBaseDamage(target, BlzGetUnitBaseDamage(target, DAMAGE_WEAPON_INDEX) + damage, DAMAGE_WEAPON_INDEX)
+        endmethod
+
+        static method resetDamage takes unit target returns nothing
+            local integer id = GetUnitId(target)
+
+            call setDamage(target, LoadInteger(DAMAGE_VALUES, 0, id), false)
+            call SaveInteger(DAMAGE_VALUES, 0, id, 0)
+        endmethod
+
+        static method addDamage takes unit target, integer damage returns nothing
+            local integer id = GetUnitId(target)
+            local integer savedDamage = LoadInteger(DAMAGE_VALUES, 0, id) + damage
+
+            call SaveInteger(DAMAGE_VALUES, 0, id, savedDamage)
+            call setDamage(target, damage, true)
+        endmethod
+
+        static method removeDamage takes unit target, integer damage returns nothing
+            local integer id = GetUnitId(target)
+            local integer savedDamage = LoadInteger(DAMAGE_VALUES, 0, id)
+
+            if savedDamage >= damage then
+                call SaveInteger(DAMAGE_VALUES, 0, id, savedDamage - damage)
+                call setDamage(target, damage, false)
+            elseif savedDamage > 0 then
+                call SaveInteger(DAMAGE_VALUES, 0, id, 0)
+                call setDamage(target, savedDamage, false)
+            endif
+        endmethod
+
+    endstruct
+
+endscope

@@ -309,6 +309,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
     endstruct
     
     struct UnitSpawn extends SharedObjects
+        static integer perfSpawned = 0
         integer ID = 0
         
         integer unitID = '0000'
@@ -347,7 +348,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
 			
 			//add HP, Mana and Damage
 			call SetUnitMaxState(u, UNIT_STATE_MAX_LIFE, I2R(.getUnitMaxLife(unitIndex, false)))
-			call TDS.addDamage(u, .getUnitDamage(unitIndex))
+			call BaseDamage.addDamage(u, .getUnitDamage(unitIndex))
 			
 			//add Unit to the WayPointSystem ( TD Part )
 			call WayPointSystem.addUnit(PLAYER__X__WAYPOINT[pid], u)
@@ -360,6 +361,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
             loop
 				exitwhen i >= .amount
 				set u = CreateUnit(p, .unitID, posX, posY, 270)
+                set thistype.perfSpawned = thistype.perfSpawned + 1
 				
 				call setUnitData(.pID, u, unitIndex, posX, posY)
 				
@@ -432,6 +434,8 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
             set this.us = UnitSpawn.create(this.pid, this.id, this.count, 0, "")
             
             call this.us.spawn(this.owner, this.unitIndex, START_LOC_X[this.pid], START_LOC_Y[this.pid])
+            call this.us.destroy()
+            set this.us = 0
             
             if this.k < this.amount then
                 set this.k = this.k + 1
@@ -440,6 +444,7 @@ library CreepSystemCore initializer init requires CreepSystemUnits, TimerUtils, 
                 set this.i = this.i + 1
                 if this.i == this.iterator then
                     call ReleaseTimer(GetExpiredTimer())
+                    call this.destroy()
                 endif
             endif
         endmethod

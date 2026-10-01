@@ -25,7 +25,7 @@ scope FireTotem initializer init
 		local unit totem = CreateUnit( GetOwningPlayer(caster), TOTEM_ID, targetX, targetY, 0)
 		
 		call Sound.runSoundOnUnit(SOUND, totem)
-		call TDS.addDamage(totem, BASE_DAMAGE + (DAMAGE_PER_LEVEL * level))
+		call BaseDamage.addDamage(totem, BASE_DAMAGE + (DAMAGE_PER_LEVEL * level))
 		call UnitApplyTimedLife(totem, 'BTLF', DURATION)
 		
 		set caster = null

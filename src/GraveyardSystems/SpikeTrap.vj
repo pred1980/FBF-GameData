@@ -7,7 +7,7 @@ scope SpikeTrap
         private constant string TRAP_EFFECT = "Abilities\\Spells\\Orc\\SpikeBarrier\\SpikeBarrier.mdl"
         private constant string ATTACK_EFFECT = "Abilities\\Spells\\Undead\\AnimateDead\\AnimateDeadTarget.mdl"
         private constant real RADIUS = 45.
-        private constant real INTERVAL = .01
+        private constant real INTERVAL = .10
         private constant integer MAX_ARCHNATHID = 8
         
         private rect array GRAVESTONE_SPAWN_RECTS
@@ -35,10 +35,11 @@ scope SpikeTrap
         private integer Count = 0
         private group G = CreateGroup()
         private timer T = CreateTimer()
+        private player TRAP_OWNER = null
     endglobals
     
     private function Filters takes nothing returns boolean
-        return IsUnitType(GetFilterUnit(), UNIT_TYPE_FLYING) != true and not IsUnitDead(GetFilterUnit())
+        return IsUnitType(GetFilterUnit(), UNIT_TYPE_FLYING) != true and not IsUnitDead(GetFilterUnit()) and IsUnitEnemy(GetFilterUnit(), TRAP_OWNER)
     endfunction
     
     private struct Data
@@ -49,6 +50,15 @@ scope SpikeTrap
         real x
         real y
         real dmg
+
+        method onDestroy takes nothing returns nothing
+            call DestroyEffect(e)
+            call RemoveUnit(trap)
+            set caster = null
+            set victim = null
+            set trap = null
+            set e = null
+        endmethod
         
         static method create takes unit u, integer lvl returns Data
             local Data d = Data.allocate()
@@ -69,26 +79,31 @@ scope SpikeTrap
             loop
                 exitwhen i == 0
                 set d = Index[i]
-                
-                call GroupEnumUnitsInRange(G, d.x, d.y, RADIUS, Condition(function Filters))
-                set d.victim = FirstOfGroup(G)
-                if(d.victim != null and IsUnitEnemy(d.victim, GetOwningPlayer(d.caster))) then
-                    call DestroyEffect(d.e)
-                    call DestroyEffect(AddSpecialEffect(ATTACK_EFFECT, GetUnitX(d.victim), GetUnitY(d.victim)))
-                    call ShowUnit(d.caster, true)
-                    call SetUnitX(d.caster, GetUnitX(d.victim) + 100 * Cos((GetUnitFacing(d.victim) - 180) * bj_DEGTORAD))
-                    call SetUnitY(d.caster, GetUnitY(d.victim) + 100 * Sin((GetUnitFacing(d.victim) - 180) * bj_DEGTORAD))
-                    call SetUnitAnimation(d.caster, "attack")
-                    set DamageType = SPELL
-                    call UnitDamageTarget(d.caster, d.victim, d.dmg, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                if GetUnitTypeId(d.caster) == 0 or IsUnitDead(d.caster) then
                     call d.destroy()
                     set Index[i] = Index[Count]
                     set Count = Count - 1
+                else
+                    set TRAP_OWNER = GetOwningPlayer(d.caster)
+                    call GroupEnumUnitsInRange(G, d.x, d.y, RADIUS, Condition(function Filters))
+                    set d.victim = FirstOfGroup(G)
+                    if d.victim != null then
+                        call DestroyEffect(AddSpecialEffect(ATTACK_EFFECT, GetUnitX(d.victim), GetUnitY(d.victim)))
+                        call ShowUnit(d.caster, true)
+                        call SetUnitX(d.caster, GetUnitX(d.victim) + 100 * Cos((GetUnitFacing(d.victim) - 180) * bj_DEGTORAD))
+                        call SetUnitY(d.caster, GetUnitY(d.victim) + 100 * Sin((GetUnitFacing(d.victim) - 180) * bj_DEGTORAD))
+                        call SetUnitAnimation(d.caster, "attack")
+                        set DamageType = SPELL
+                        call UnitDamageTarget(d.caster, d.victim, d.dmg, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                        call d.destroy()
+                        set Index[i] = Index[Count]
+                        set Count = Count - 1
+                    endif
                 endif
                 call GroupClear(G)
                 set i = i - 1
             endloop
-            if(d == 0) then
+            if Count == 0 then
                 call PauseTimer(T)
             endif
         endmethod
@@ -131,7 +146,7 @@ scope SpikeTrap
         set archnathid = CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), ARCHNATHID_ID, x, y, GetRandomInt(0,359))
         call SetUnitMaxState(archnathid, UNIT_STATE_MAX_LIFE, hp)
         call SetUnitState(archnathid, UNIT_STATE_LIFE, GetUnitState(archnathid, UNIT_STATE_MAX_LIFE) * RMaxBJ(0,100.0) * 0.01)
-        call TDS.addDamage(archnathid, dmg)
+        call BaseDamage.addDamage(archnathid, dmg)
         call UnitAddAbility(archnathid, SPELL_ID)
         call SetUnitAbilityLevel(archnathid, SPELL_ID, 1)
         call IssueImmediateOrder(archnathid, "burrow")
