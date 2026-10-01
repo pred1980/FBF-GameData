@@ -104,6 +104,10 @@ scope Cleave initializer init
             local real lifeBefore = 0.0
             local real lifeLost = 0.0
             local integer neighborCount = 0
+            local real nearest = 100000.0
+            local real distanceToTarget = 0.0
+            local real dx = 0.0
+            local real dy = 0.0
 			
 			set .tempthis = this
 			set .primaryTarget = damagedUnit
@@ -157,7 +161,25 @@ scope Cleave initializer init
 			endloop
 			
 			if neighborCount == 0 then
-				call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave: kein geeignetes Nachbarziel im Umkreis")
+				call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(damagedUnit), GetUnitY(damagedUnit), 500.0, null)
+				loop
+					set target = FirstOfGroup(ENUM_GROUP)
+					exitwhen target == null
+					if target != damagedUnit and SpellHelper.isValidEnemy(target, .caster) and IsUnitType(target, UNIT_TYPE_GROUND) then
+						set dx = GetUnitX(target) - GetUnitX(damagedUnit)
+						set dy = GetUnitY(target) - GetUnitY(damagedUnit)
+						set distanceToTarget = SquareRoot(dx * dx + dy * dy)
+						if distanceToTarget < nearest then
+							set nearest = distanceToTarget
+						endif
+					endif
+					call GroupRemoveUnit(ENUM_GROUP, target)
+				endloop
+				if nearest < 100000.0 then
+					call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave: kein Nachbar in 175; naechster Gegner " + I2S(R2I(nearest)) + " entfernt")
+				else
+					call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave: kein geeigneter Gegner in 500 um das Angriffsziel")
+				endif
 			endif
 
 			set target = null
