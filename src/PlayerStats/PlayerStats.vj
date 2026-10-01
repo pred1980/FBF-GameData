@@ -146,8 +146,8 @@ library PlayerStats/* v 1.0.0.0
         
         private static method onInit takes nothing returns nothing
             local integer i = 0
-            local trigger t1 = CreateTrigger()
-            local trigger t2 = CreateTrigger()
+            local trigger t1 = null
+            local trigger t2 = null
             //local trigger t3 = CreateTrigger()
             //local trigger t4 = CreateTrigger()
             local code c1 = function thistype.onSell
@@ -156,6 +156,11 @@ library PlayerStats/* v 1.0.0.0
             //local code c4 = function thistype.onWoodChange
             
             set h = InitHashtable()
+            if (not SYSTEM_ITEMS) then
+                return
+            endif
+            set t1 = CreateTrigger()
+            set t2 = CreateTrigger()
             loop
                 exitwhen i > bj_MAX_PLAYERS
                 if Game.isPlayerInGame(i) then

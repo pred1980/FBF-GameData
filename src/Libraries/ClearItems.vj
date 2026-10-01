@@ -73,7 +73,9 @@ library ClearItems requires optional WorldBounds
             endif
             set s_code = function SweepItems
             set s_bool = Filter(function CleanItems)
-            call TimerStart(s_timer, CLEANING_PERIOD, true, s_code)
+            if (SYSTEM_ITEM_CLEANUP) then
+                call TimerStart(s_timer, CLEANING_PERIOD, true, s_code)
+            endif
         endmethod
     endstruct
    

@@ -440,6 +440,9 @@ library AnaMoveSys initializer init
     
     private function init takes nothing returns nothing
         local integer i = 0
+        if (not SYSTEM_WAYPOINT_RUNTIME) then
+            return
+        endif
         call TimerStart(MOVE_TIMER, MOVE_INT, true, function MoveOrders.checkWays)
         
         if SPELLCAST_CONTINUE then

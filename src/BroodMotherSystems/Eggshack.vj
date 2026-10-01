@@ -152,10 +152,14 @@ library Eggshack initializer init requires xefx, TimerUtils
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger(  )
+        local trigger t = null
+        call InitBSpells()
+        if (not SYSTEM_BROOD) then
+            return
+        endif
+        set t = CreateTrigger()
         call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
         call TriggerAddAction(t, function Actions )
-        call InitBSpells()
     endfunction
 
 endlibrary

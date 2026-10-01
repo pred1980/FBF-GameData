@@ -40,7 +40,11 @@ scope Infliction initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger trig = CreateTrigger()
+        local trigger trig = null
+        if (not SYSTEM_ITEMS) then
+            return
+        endif
+        set trig = CreateTrigger()
         call TriggerRegisterAnyUnitEventBJ( trig, EVENT_PLAYER_UNIT_SPELL_EFFECT )
         call TriggerAddAction( trig, function Actions )
     endfunction

@@ -507,7 +507,9 @@ library MathFunctions
         endmethod
         
         private static method onInit takes nothing returns nothing
-            call TimerStart(AutoDestroyTimer,0.05,true,function thistype.autoClear)
+            if (SYSTEM_SUPPORT) then
+                call TimerStart(AutoDestroyTimer,0.05,true,function thistype.autoClear)
+            endif
         endmethod
             
     endstruct

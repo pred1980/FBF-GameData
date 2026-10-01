@@ -214,7 +214,7 @@ scope ForsakenTeleportSystem initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
+        local trigger t = null
         local real x = 0.00
         local real y = 0.00
 
@@ -228,6 +228,10 @@ scope ForsakenTeleportSystem initializer init
         set TELEPORT_RECTS[3] = gg_rct_ForsakenTeleport1x1 //von Undead Base zu Undead Place
 
 		//create Undead-Base Teleporter
+        if (not SYSTEM_TELEPORT) then
+            return
+        endif
+        set t = CreateTrigger()
         set x = GetRectCenterX(TELEPORT_RECTS[0])
         set y = GetRectCenterY(TELEPORT_RECTS[0])
         call CreateUnit(Player(bj_PLAYER_NEUTRAL_EXTRA), ID, x, y, 0.00)

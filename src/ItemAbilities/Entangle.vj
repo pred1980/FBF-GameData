@@ -63,6 +63,9 @@ scope Entangle initializer init
     endfunction
     
     private function init takes nothing returns nothing
+        if (not SYSTEM_ITEMS) then
+            return
+        endif
         call RegisterDamageResponse( Actions )
         call XE_PreloadAbility(DUMMY_SPELL_ID)
     endfunction

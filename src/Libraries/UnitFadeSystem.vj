@@ -84,9 +84,12 @@ library UnitFadeSystem initializer Init requires ARGB, Table
     endfunction
 
     private function Init takes nothing returns nothing
-        local timer t = CreateTimer()
-        call TimerStart(t, FADE_PERIOD, true, function FadeUnits)
+        local timer t = null
         set cache = HandleTable.create()
+        if (SYSTEM_SUPPORT) then
+            set t = CreateTimer()
+            call TimerStart(t, FADE_PERIOD, true, function FadeUnits)
+        endif
     endfunction
 
 // ================================================================

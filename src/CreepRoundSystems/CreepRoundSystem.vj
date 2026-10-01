@@ -176,7 +176,9 @@ library CreepRoundSystem /* v 1.1.0.0
             //Los gehts :)
             call OnRoundStart()
             call TimerStart(.creepCountTimer, 1.0, true, function thistype.countCreeps)
-            call PlayerStats.updateResourceLog()
+            if (SYSTEM_ROUNDS) then
+                call PlayerStats.updateResourceLog()
+            endif
             
             call DestroyTimerDialog(.tiDialog)
             set .tiDialog = null
@@ -212,7 +214,9 @@ library CreepRoundSystem /* v 1.1.0.0
     
     private module Inits 
         private static method onInit takes nothing returns nothing 
-            call PlayerStats.updateResourceLog()
+            if (SYSTEM_ROUNDS) then
+                call PlayerStats.updateResourceLog()
+            endif
             call Sound.preload(SOUND_1)
 			call Sound.preload(SOUND_2)
         endmethod 

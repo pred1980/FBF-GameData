@@ -207,7 +207,11 @@ scope NetherCharge initializer init
     endfunction
         
     private function init takes nothing returns nothing
-        local trigger trg = CreateTrigger()
+        local trigger trg = null
+        if (not SYSTEM_ITEMS) then
+            return
+        endif
+        set trg = CreateTrigger()
         call XE_PreloadAbility(BANISH_ID)
         call XE_PreloadAbility(DUMMY_SPELL_ID)
         call Preload(chargeEffect)

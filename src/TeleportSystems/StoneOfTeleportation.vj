@@ -72,7 +72,9 @@ library StoneOfTeleportation uses RegisterPlayerUnitEvent, HomeBase
 		endmethod
 	
 		private static method onInit takes nothing returns nothing
-			call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function thistype.onConditions, function thistype.onAction)
+            if (SYSTEM_TELEPORT) then
+                call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function thistype.onConditions, function thistype.onAction)
+            endif
         endmethod
 	endmodule
 endlibrary

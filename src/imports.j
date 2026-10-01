@@ -76,6 +76,7 @@
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\WorldBounds.vj"
 
 /* Game Config */
+//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\SystemConfig.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\GameConfig.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\GameStart.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\Game.vj"

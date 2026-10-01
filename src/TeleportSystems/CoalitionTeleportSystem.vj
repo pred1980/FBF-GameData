@@ -247,9 +247,9 @@ scope CoalitionTeleportSystem initializer init
     endstruct
 
     private function init takes nothing returns nothing
-        local trigger orcTeleport = CreateTrigger()
-        local trigger nightelfTeleport = CreateTrigger()
-        local trigger humanTeleport = CreateTrigger()
+        local trigger orcTeleport = null
+        local trigger nightelfTeleport = null
+        local trigger humanTeleport = null
 		local real x = 0.00
         local real y = 0.00
 
@@ -266,6 +266,12 @@ scope CoalitionTeleportSystem initializer init
         set AOS_TELEPORT_RECTS[0] = gg_rct_CoalitionTeleport1x0
         set AOS_TELEPORT_RECTS[1] = gg_rct_CoalitionTeleport1x1
 
+        if (not SYSTEM_TELEPORT) then
+            return
+        endif
+        set orcTeleport = CreateTrigger()
+        set nightelfTeleport = CreateTrigger()
+        set humanTeleport = CreateTrigger()
         call CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), ID, GetRectCenterX(BASE_TELEPORTS_RECTS[0]), GetRectCenterY(BASE_TELEPORTS_RECTS[0]), 0.00)
         call CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), ID, GetRectCenterX(BASE_TELEPORTS_RECTS[2]), GetRectCenterY(BASE_TELEPORTS_RECTS[2]), 0.00)
         call CreateUnit(Player(bj_PLAYER_NEUTRAL_VICTIM), ID, GetRectCenterX(BASE_TELEPORTS_RECTS[4]), GetRectCenterY(BASE_TELEPORTS_RECTS[4]), 0.00)

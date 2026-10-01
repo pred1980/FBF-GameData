@@ -111,7 +111,11 @@ scope ConfusedSight initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
+        local trigger t = null
+        if (not SYSTEM_ITEMS) then
+            return
+        endif
+        set t = CreateTrigger()
 		
         call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )
         call TriggerAddAction( t, function Actions )

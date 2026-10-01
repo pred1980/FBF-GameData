@@ -183,7 +183,7 @@ library WayPointSystem uses AnaMoveSys, UnitMaxState
                     call WAYPOINTS[i].addWayPoint(WAY_POINTS_TD[i][j])
                     set j = j + 1
                 endloop
-                
+
                 set j = 0
                 loop
                     exitwhen j == AOS_POINTS_PER_WAY
@@ -195,20 +195,22 @@ library WayPointSystem uses AnaMoveSys, UnitMaxState
             endloop
             
             //OnEnter Event für den Final Point der TD-Ways damit die Units dann den AoS Teil ablaufen
-            set onEnter = CreateTrigger()
-            call TriggerRegisterEnterRectSimple(onEnter, gg_rct_EndOfTD)
-            call TriggerAddCondition(onEnter, Condition(function WayPointSystem.onEnterCondition))
-            call TriggerAddAction(onEnter, function WayPointSystem.onEnterAction)
-            
-            //Split Way Event
-            set onSplitWay = CreateTrigger()
-            call TriggerRegisterEnterRectSimple(onSplitWay, gg_rct_SplitWay)
-            call TriggerAddCondition(onSplitWay, Condition(function WayPointSystem.onSplitWayCondition))
-            call TriggerAddAction(onSplitWay, function WayPointSystem.onSplitWayAction)
-            
-            //attack Forsaken Heart
-            set t = NewTimer()
-            call TimerStart(t, 1.0, true, function thistype.onForsakenHeartAction)
+            if (SYSTEM_WAYPOINT_RUNTIME) then
+                set onEnter = CreateTrigger()
+                call TriggerRegisterEnterRectSimple(onEnter, gg_rct_EndOfTD)
+                call TriggerAddCondition(onEnter, Condition(function WayPointSystem.onEnterCondition))
+                call TriggerAddAction(onEnter, function WayPointSystem.onEnterAction)
+
+                //Split Way Event
+                set onSplitWay = CreateTrigger()
+                call TriggerRegisterEnterRectSimple(onSplitWay, gg_rct_SplitWay)
+                call TriggerAddCondition(onSplitWay, Condition(function WayPointSystem.onSplitWayCondition))
+                call TriggerAddAction(onSplitWay, function WayPointSystem.onSplitWayAction)
+
+                //attack Forsaken Heart
+                set t = NewTimer()
+                call TimerStart(t, 1.0, true, function thistype.onForsakenHeartAction)
+            endif
             
             //Clean Up
             set onEnter = null

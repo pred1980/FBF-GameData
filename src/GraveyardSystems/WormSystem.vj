@@ -213,8 +213,11 @@ scope WormSystem initializer onInit
     
     //===========================================================================
     private function onInit takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        
+        local trigger t = null
+        if (not SYSTEM_WORMS) then
+            return
+        endif
+        set t = CreateTrigger()
         call TriggerRegisterTimerEventPeriodic(t, GetRandomReal(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_MAX))
         call TriggerAddAction(t, function Actions)
         set t = null

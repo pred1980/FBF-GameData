@@ -64,7 +64,11 @@ scope SkullRod initializer init
     endfunction
 
     private function init takes nothing returns nothing
-        local trigger t = CreateTrigger()
+        local trigger t = null
+        if (not SYSTEM_ITEMS) then
+            return
+        endif
+        set t = CreateTrigger()
 		
 		call MainSetup()
         call TriggerRegisterAnyUnitEventBJ( t, EVENT_PLAYER_UNIT_SPELL_EFFECT )

@@ -1,0 +1,38 @@
+scope SystemConfig
+
+    globals
+        // Nur vor dem World-Editor-Build aendern; kein Umschalten im Spiel.
+        // Fuer den Isolationstest auf true setzen; vor dem normalen Build false lassen.
+        constant boolean SYSTEM_ISOLATION_TEST = false
+
+        // Start und Heldenwahl bleiben im Isolationstest aktiv.
+        // Repick, HeroData, HeroStats, Usability und CameraSystem gehoeren dazu.
+        constant boolean SYSTEM_HERO_PICK = true
+        constant boolean SYSTEM_GOLD_INCOME = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_ROUNDS = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_MULTIBOARD = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_ITEMS = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_TOWERS = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_UNITS = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_GRAVESTONES = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_SKELETONS = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_WORMS = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_SPIKE_TRAPS = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_DEFENSE = not SYSTEM_ISOLATION_TEST
+        // KI und Hero AI; TowerBuildAI gehoert zum Tower-System.
+        constant boolean SYSTEM_AI = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_BROOD = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_TITAN = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_FINAL_MODE = not SYSTEM_ISOLATION_TEST
+        constant boolean SYSTEM_TELEPORT = not SYSTEM_ISOLATION_TEST
+        // TDS, KillStreak, Assist, XP, Evaluation und Web bilden diese Gruppe.
+        constant boolean SYSTEM_SUPPORT = not SYSTEM_ISOLATION_TEST
+
+        // Automatische Laufzeitpfade; Waypoints sind zugleich Rundendaten.
+        // AutoIndex, DamageEvent und Spell-Bibliotheken bleiben fuer Helden aktiv.
+        constant boolean SYSTEM_WAYPOINT_RUNTIME = SYSTEM_ROUNDS
+        constant boolean SYSTEM_ITEM_CLEANUP = SYSTEM_ITEMS
+        constant boolean SYSTEM_REGIONAL_FOG = SYSTEM_SUPPORT
+    endglobals
+
+endscope
