@@ -98,6 +98,9 @@ scope Cleave initializer init
             local real y
             local real ang
             local real propDmg = (damage * DAMAGE[.level]) / 100 
+            local real lifeBefore = 0.0
+            local real lifeLost = 0.0
+            local integer neighborCount = 0
 			
 			call GroupClear(ENUM_GROUP)
 			call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(.caster), GetUnitY(.caster), RADIUS, function thistype.group_filter_callback)
@@ -105,6 +108,10 @@ scope Cleave initializer init
 			loop
 				set target = FirstOfGroup(ENUM_GROUP)
 				exitwhen (target == null)
+				if target != damagedUnit then
+					set neighborCount = neighborCount + 1
+					set lifeBefore = GetWidgetLife(target)
+				endif
 				
 				// Damage
 				if (GetUnitState(target, UNIT_STATE_LIFE) > propDmg) then
@@ -115,6 +122,15 @@ scope Cleave initializer init
 					call KillUnit(target) 
 				endif
 				
+				if target != damagedUnit then
+					set lifeLost = lifeBefore - GetWidgetLife(target)
+					if lifeLost > 0.0 then
+						call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave Nachbar " + GetUnitName(target) + ": -" + R2S(lifeLost) + " Lebenspunkte")
+					else
+						call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave Nachbar " + GetUnitName(target) + ": kein Lebenspunktverlust")
+					endif
+				endif
+
 				//Weak Unit?
 				if (GetUnitLifePercent(target) <= WEAKNESS_FACTOR and not SpellHelper.isUnitDead(target)) then
 					if (GetRandomInt(1, 100) <= CHANCE[.level]) then
@@ -134,6 +150,10 @@ scope Cleave initializer init
 				call GroupRemoveUnit(ENUM_GROUP, target)
 			endloop
 			
+			if neighborCount == 0 then
+				call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0, 0, 8, "G3 Cleave: kein geeignetes Nachbarziel im Umkreis")
+			endif
+
 			set target = null
 		endmethod
 		
@@ -168,14 +188,20 @@ scope Cleave initializer init
 		if ((GetUnitAbilityLevel(damageSource, BUFF_ID) > 0)	  and /*
 		*/	(SpellHelper.isValidEnemy(damagedUnit, damageSource)) and /*
 		*/	(DamageType == PHYSICAL)) then
+			call DisplayTimedTextToPlayer(GetOwningPlayer(damageSource), 0, 0, 8, "G3 Cleave: normaler Angriff erkannt")
 			if (c != 0) then
 				call c.onAttack(damageSource, damagedUnit, damage)
+			else
+				call DisplayTimedTextToPlayer(GetOwningPlayer(damageSource), 0, 0, 8, "G3 Cleave: Cleave-Daten fehlen")
 			endif
         endif
     endfunction
 	
 	private function Actions takes nothing returns nothing
-        call Cleave.create(GetTriggerUnit())
+        local unit caster = GetTriggerUnit()
+        call Cleave.create(caster)
+        call DisplayTimedTextToPlayer(GetOwningPlayer(caster), 0, 0, 8, "G3 Cleave aktiviert")
+        set caster = null
     endfunction
 	
 	private function Conditions takes nothing returns boolean
