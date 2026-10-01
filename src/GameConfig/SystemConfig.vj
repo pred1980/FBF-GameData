@@ -3,7 +3,7 @@ scope SystemConfig
     globals
         // Nur vor dem World-Editor-Build aendern; kein Umschalten im Spiel.
         // Fuer den Isolationstest auf true setzen; vor dem normalen Build false lassen.
-        constant boolean SYSTEM_ISOLATION_TEST = true
+        constant boolean SYSTEM_ISOLATION_TEST = false
 
         // Start und Heldenwahl bleiben im Isolationstest aktiv.
         // Repick, HeroData, HeroStats, Usability und CameraSystem gehoeren dazu.
