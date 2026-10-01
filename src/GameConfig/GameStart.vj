@@ -8,7 +8,7 @@ scope GameStart
         public constant string AUTHOR = "pred1980"
         public constant string VERSION = "1.0.0"
         public constant string RELEASE_DATE = "xx-xx-2025"
-        private constant string DEV_TEST_STAND = "DEV #31 T02"
+        private constant string DEV_TEST_STAND = "DEV #31 T03"
 		
 		private string SOUND_1 = "Sound\\Interface\\Rescue.wav"
         private string SOUND_2 = "Sound\\Interface\\ClanInvitation.wav"
