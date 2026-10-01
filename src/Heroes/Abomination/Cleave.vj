@@ -66,12 +66,15 @@ scope Cleave initializer init
         private unit caster
         private integer level = 0
         private static thistype tempthis = 0
+		private static unit primaryTarget = null
 		private static integer buffType = 0
 		private dbuff buff = 0
 		
 		method onDestroy takes nothing returns nothing
+			if cleaveCaster[GetUnitId(.caster)] == this then
+				set cleaveCaster[GetUnitId(.caster)] = 0
+			endif
 			set .caster = null
-			set cleaveCaster[GetUnitId(.caster)] = 0
 		endmethod
 		
 		static method getForUnit takes unit u returns thistype
@@ -83,7 +86,7 @@ scope Cleave initializer init
 			local boolean b = false
 			
 			if (SpellHelper.isValidEnemy(u, .tempthis.caster) and /*
-			*/	IsUnitType(u, UNIT_TYPE_GROUND)) then
+			*/	IsUnitType(u, UNIT_TYPE_GROUND) and u != .primaryTarget) then
 				set b = true
 			endif
 			
@@ -102,8 +105,11 @@ scope Cleave initializer init
             local real lifeLost = 0.0
             local integer neighborCount = 0
 			
+			set .tempthis = this
+			set .primaryTarget = damagedUnit
 			call GroupClear(ENUM_GROUP)
-			call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(.caster), GetUnitY(.caster), RADIUS, function thistype.group_filter_callback)
+			call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(damagedUnit), GetUnitY(damagedUnit), RADIUS, function thistype.group_filter_callback)
+			set .primaryTarget = null
             
 			loop
 				set target = FirstOfGroup(ENUM_GROUP)
