@@ -17,11 +17,35 @@ library DamageEvent initializer Init requires DamageEngine, DamageTypes, optiona
         set IsDead = false
     endfunction
 
+    // Voruebergehende Anzeige fuer den G3-Spieltest in #31. Vor dem Merge wieder entfernen.
+    // Zeigt fuer Helden menschlicher Spieler, welche Phasen der Damage Engine laufen.
+    private function IsTestSource takes unit u returns boolean
+        return u != null and IsUnitType(u, UNIT_TYPE_HERO) and GetPlayerController(GetOwningPlayer(u)) == MAP_CONTROL_USER
+    endfunction
+
+    private function ShowTestPhase takes string phase returns nothing
+        if IsTestSource(Damage.source) then
+            call DisplayTimedTextToPlayer(GetOwningPlayer(Damage.source), 0.0, 0.0, 10.0, "DE Test " + phase + ": " + GetUnitName(Damage.source) + " -> " + GetUnitName(Damage.target) + ", Schaden " + R2S(Damage.amount) + ", Typ " + I2S(Damage.index.userType) + ", Reaktionen " + I2S(responsesCount))
+        endif
+    endfunction
+
+    private function OnTestPre takes nothing returns boolean
+        call ShowTestPhase("vor Ruestung")
+        return false
+    endfunction
+
+    private function OnTestAfter takes nothing returns boolean
+        call ShowTestPhase("nach Schaden")
+        return false
+    endfunction
+
     private function OnDamage takes nothing returns boolean
         local unit damaged = Damage.target
         local unit damager = Damage.source
         local real damage = Damage.amount
         local integer i = 0
+
+        call ShowTestPhase("FBF-Reaktionen")
 
         if Damage.index.userType == DAMAGE_TAG_DUMMY then
             set damaged = null
@@ -52,5 +76,7 @@ library DamageEvent initializer Init requires DamageEngine, DamageTypes, optiona
         set udg_DamageEventAOEGroup = CreateGroup()
         call DamageEngine_DebugStr()
         call RegisterDamageEngine(function OnDamage, "Modifier", 5.0)
+        call RegisterDamageEngine(function OnTestPre, "Pre", 1.0)
+        call RegisterDamageEngine(function OnTestAfter, "After", 1.0)
     endfunction
 endlibrary
