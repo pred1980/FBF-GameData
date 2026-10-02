@@ -126,6 +126,24 @@ scope Cleave initializer init
 
 			return text
 		endmethod
+
+		private static method yesNo takes boolean b returns string
+			if b then
+				return "ja"
+			endif
+			return "nein"
+		endmethod
+
+		static method reportActivation takes unit caster, integer level returns nothing
+			call DisplayTimedTextToPlayer(GetOwningPlayer(caster), 0.0, 0.0, 10.0, "G3 Cleave: aktiviert, Stufe " + I2S(level) + ", Buff sofort " + I2S(GetUnitAbilityLevel(caster, BUFF_ID)))
+		endmethod
+
+		// Zeigt jeden Schaden einer Abomination mit Cleave-Daten oder Cleave-Buff und alle Bedingungen.
+		static method reportDamage takes unit source, unit target, real damage, integer data returns nothing
+			if data != 0 or GetUnitAbilityLevel(source, BUFF_ID) > 0 then
+				call DisplayTimedTextToPlayer(GetOwningPlayer(source), 0.0, 0.0, 10.0, "G3 Cleave: Schaden " + R2S(damage) + " an " + GetUnitName(target) + ", Buff " + I2S(GetUnitAbilityLevel(source, BUFF_ID)) + ", gueltiger Gegner " + thistype.yesNo(SpellHelper.isValidEnemy(target, source)) + ", DamageType " + I2S(DamageType) + ", Cleave-Daten " + I2S(data))
+			endif
+		endmethod
 	endstruct
 
     private struct Cleave
@@ -222,6 +240,7 @@ scope Cleave initializer init
 			set cleaveCaster[GetUnitId(.caster)] = this
 
 			set UnitAddBuff(.caster, .caster, .buffType, DURATION, .level).data = this
+			call CleaveTestLog.reportActivation(.caster, .level)
 
             return this
         endmethod
@@ -240,6 +259,8 @@ scope Cleave initializer init
 	// damagedUnit  == Target
     private function onDamageActions takes unit damagedUnit, unit damageSource, real damage returns nothing
         local Cleave c = Cleave.getForUnit(damageSource)
+
+		call CleaveTestLog.reportDamage(damageSource, damagedUnit, damage, c)
 
 		if ((GetUnitAbilityLevel(damageSource, BUFF_ID) > 0)	  and /*
 		*/	(SpellHelper.isValidEnemy(damagedUnit, damageSource)) and /*
