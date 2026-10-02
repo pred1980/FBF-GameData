@@ -8,6 +8,7 @@ scope Cleave initializer init
 	 *		06.05.2015: Integrated SpellHelper for filtering
 						Set struct members to private
 	 *		24.03.2016: Recoded, optimized and adapted for AI System
+	 *		02.10.2026: Trifft alle nicht fliegenden Gegner, auch amphibische wie den Murgul Reaver
      *
      */
 
@@ -116,8 +117,8 @@ scope Cleave initializer init
 				exitwhen u == null
 				call GroupRemoveUnit(.nearby, u)
 				if IsUnitEnemy(u, GetOwningPlayer(caster)) then
-					if not IsUnitType(u, UNIT_TYPE_GROUND) then
-						set text = text + " " + GetUnitName(u) + " (nicht am Boden)"
+					if IsUnitType(u, UNIT_TYPE_FLYING) then
+						set text = text + " " + GetUnitName(u) + " (fliegt)"
 					elseif not SpellHelper.isValidEnemy(u, caster) then
 						set text = text + " " + GetUnitName(u) + " (kein gueltiger Gegner)"
 					endif
@@ -167,7 +168,7 @@ scope Cleave initializer init
 			local boolean b = false
 
 			if (SpellHelper.isValidEnemy(u, .tempthis.caster) and /*
-			*/	IsUnitType(u, UNIT_TYPE_GROUND)) then
+			*/	not IsUnitType(u, UNIT_TYPE_FLYING)) then
 				set b = true
 			endif
 
