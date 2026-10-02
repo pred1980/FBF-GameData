@@ -1,4 +1,4 @@
-library Ignite uses DamageEvent, BonusMod
+library Ignite uses DamageEvent, BonusMod, DamageTypes
     /*
      * Description: The tower has a 30% chance on damaging a creep to ignite the target, dealing 15%/20%/25% of the tower's 
                     attack damage as spell damage per second and reducing the target' s health regeneration 
@@ -73,11 +73,17 @@ library Ignite uses DamageEvent, BonusMod
                 set ignite_flag = true
                 set DamageType = SPELL
                 if level == 1 then
+                    call TagNextDamageType()
                     call UnitDamageTarget(source, target, LEVEL_1_DAMAGE_PERCENT*amount, true, false, null, DAMAGE_TYPE_UNIVERSAL, null)
+                    set udg_NextDamageType = 0
                 elseif level == 2 then
+                    call TagNextDamageType()
                     call UnitDamageTarget(source, target, LEVEL_2_DAMAGE_PERCENT*amount, true, false, null, DAMAGE_TYPE_UNIVERSAL, null)
+                    set udg_NextDamageType = 0
                 elseif level == 3 then
+                    call TagNextDamageType()
                     call UnitDamageTarget(source, target, LEVEL_3_DAMAGE_PERCENT*amount, true, false, null, DAMAGE_TYPE_UNIVERSAL, null)
+                    set udg_NextDamageType = 0
                 endif
             endif
         endmethod

@@ -166,7 +166,9 @@ scope ReflectionOfIllidan initializer Init
                         if R[2] <= ReleasedSpeed then
                             set d.s = 0
                             call DestroyEffect(AddSpecialEffectTarget(OrbImpact,d.t,DummyAttach))
+                            call TagNextDamageType()
                             call UnitDamageTarget (d.h,d.t,d.d2,true,false,ATT,DGT,WPT)
+                            set udg_NextDamageType = 0
                         elseif GetUnitState(d.t,UNIT_STATE_LIFE) == 0 then
                             set d.s = 0
                         endif

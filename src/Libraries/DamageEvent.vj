@@ -1,17 +1,9 @@
-library DamageEvent initializer Init requires optional DamageModifiers, optional SpellDamage
+library DamageEvent initializer Init requires DamageEngine, DamageTypes, optional DamageModifiers, optional SpellDamage
 
     public function interface Response takes unit damagedUnit, unit damageSource, real damage returns nothing
 
     globals
         private constant real DAMAGE_THRESHOLD = 0.0
-
-        integer DamageType = 0
-        constant integer PHYSICAL = 0
-        constant integer SPELL = 1
-        constant integer PHYSICAL_AND_SPELL = 2
-        constant real UNIT_MIN_LIFE = 0.406
-        boolean IsDead = false
-
         private Response array responses
         private integer responsesCount = 0
     endglobals
@@ -25,27 +17,22 @@ library DamageEvent initializer Init requires optional DamageModifiers, optional
         set IsDead = false
     endfunction
 
-    private function OnDamage takes nothing returns nothing
-        local unit damaged = GetTriggerUnit()
-        local unit damager = GetEventDamageSource()
-        local real damage = GetEventDamage()
+    private function OnDamage takes nothing returns boolean
+        local unit damaged = Damage.target
+        local unit damager = Damage.source
+        local real damage = Damage.amount
         local integer i = 0
 
-        if damage > DAMAGE_THRESHOLD then
-            static if LIBRARY_SpellDamage then
-                if SpellDamage.isDummyDamage then
-                    set damaged = null
-                    set damager = null
-                    return
-                endif
-            endif
+        if Damage.index.userType == DAMAGE_TAG_DUMMY then
+            set damaged = null
+            set damager = null
+            return false
+        endif
 
+        if damage > DAMAGE_THRESHOLD then
+            set DamageType = GetDamageTypeFromTag(Damage.index.userType)
             if GetWidgetLife(damaged) - damage < UNIT_MIN_LIFE then
                 set IsDead = true
-            endif
-
-            static if LIBRARY_DamageModifiers then
-                set damage = RunDamageModifiers()
             endif
 
             loop
@@ -58,12 +45,12 @@ library DamageEvent initializer Init requires optional DamageModifiers, optional
 
         set damaged = null
         set damager = null
+        return false
     endfunction
 
     private function Init takes nothing returns nothing
-        local trigger t = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ(t, EVENT_PLAYER_UNIT_DAMAGED)
-        call TriggerAddAction(t, function OnDamage)
-        set t = null
+        set udg_DamageEventAOEGroup = CreateGroup()
+        call DamageEngine_DebugStr()
+        call RegisterDamageEngine(function OnDamage, "", 1.0)
     endfunction
 endlibrary

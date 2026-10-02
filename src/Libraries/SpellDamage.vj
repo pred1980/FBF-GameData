@@ -1,4 +1,4 @@
-library SpellDamage initializer init requires xebasic, SpellHelper
+library SpellDamage initializer init requires xebasic, SpellHelper, DamageEngine, DamageTypes
 //************************************************************************
 // FBF-API fuer Zielauswahl und ausgeloesten Schaden.
 // Basiert auf dem bereits eingebundenen XE xedamage 0.8; Filter und Faktoren bleiben erhalten.
@@ -218,7 +218,9 @@ library SpellDamage initializer init requires xebasic, SpellHelper
                  set fc = GetWidgetLife(u)-hp + EPSILON
             endif
             set isDummyDamage = true
+            set udg_NextDamageType = DAMAGE_TAG_DUMMY
 			call UnitDamageTarget(dmger,u, fc ,false,false,a,d,null)
+			set udg_NextDamageType = 0
             static if IS_DEBUG_MODE then
                 if IsUnitType(u, UNIT_TYPE_DEAD) and (hp>0.405) then
                     call BJDebugMsg("SpellDamage: For some reason, the unit being tested by getDamageTypeFactor has died. Verify MAX_DAMAGE_FACTOR is set to a correct value. ")

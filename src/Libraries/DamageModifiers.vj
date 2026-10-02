@@ -1,4 +1,4 @@
-library DamageModifiers requires Table
+library DamageModifiers initializer Init requires Table, DamageEngine, DamageTypes
 
 // Die Modifier laufen weiterhin nach absteigender Prioritaet.
 // Der berechnete Schaden wird im aktuellen Damage-Ereignis gesetzt.
@@ -89,20 +89,33 @@ library DamageModifiers requires Table
     endstruct
 
     function RunDamageModifiers takes nothing returns real
-        local unit damaged = GetTriggerUnit()
-        local unit damager = GetEventDamageSource()
-        local real damage = GetEventDamage()
-        if damaged == null then
+        local unit damaged = Damage.target
+        local unit damager = Damage.source
+        local real damage = Damage.amount
+        local integer previousType = DamageType
+
+        if damaged == null or Damage.index.userType == DAMAGE_TAG_DUMMY then
             set damager = null
             return 0.0
         endif
 
+        set DamageType = GetDamageTypeFromTag(Damage.index.userType)
         set damage = damage + DamageModifier.Evaluate(damaged, damager, damage)
-        call BlzSetEventDamage(damage)
+        set Damage.amount = damage
+        set DamageType = previousType
 
         set damaged = null
         set damager = null
         return damage
+    endfunction
+
+    private function OnDamage takes nothing returns boolean
+        call RunDamageModifiers()
+        return false
+    endfunction
+
+    private function Init takes nothing returns nothing
+        call RegisterDamageEngine(function OnDamage, "Modifier", 1.0)
     endfunction
 
     function GetUnitLife takes unit u returns real

@@ -54,6 +54,8 @@
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\AutoFly.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\BezierMissiles.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\BoundSentinel.vj"
+//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\BribeDamageEngine.vj"
+//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\DamageTypes.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\DamageEvent.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\DamageModifiers.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\IntuitiveBuffSystem.vj"

@@ -109,7 +109,9 @@ scope IceShard initializer Init
         method onHit takes nothing returns nothing
             if (damageOptions.allowedTarget(this.tower, this.target )) then
                 set DamageType = SPELL
+                call TagNextDamageType()
                 call UnitDamageTarget(this.tower, this.target, (START_DAMAGE + DAMAGE_INCREASE * this.level)/2, false, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                set udg_NextDamageType = 0
 			endif
             
             call slowUnit(this.target, this.level)
@@ -149,7 +151,9 @@ scope IceShard initializer Init
             
             if (damageOptions.allowedTarget(this.tower, this.target )) then
                 set DamageType = SPELL
+                call TagNextDamageType()
                 call UnitDamageTarget(this.tower, this.target, START_DAMAGE + DAMAGE_INCREASE * this.level, false, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                set udg_NextDamageType = 0
 				call DestroyEffect(AddSpecialEffect(ICE_EFFECT,GetUnitX(this.target),GetUnitY(this.target)))
             endif
             

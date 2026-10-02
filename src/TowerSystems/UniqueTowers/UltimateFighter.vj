@@ -93,13 +93,17 @@ scope UltimateFighter
                                 if t.critCounter >= CRIT_PROC_LEVEL1 then
                                     call TextTagCriticalStrike(damagedUnit, R2I(damage*CRIT_BONUS_LEVEL1))
                                     set DamageType = SPELL
+                                    call TagNextDamageType()
                                     call UnitDamageTarget(damageSource, damagedUnit, damage*CRIT_BONUS_LEVEL1, false, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                                    set udg_NextDamageType = 0
                                     set t.critCounter = 0
                                 endif
                                 if t.spellDCounter >= SPELL_PROC_LEVEL1 then
                                     call DestroyEffect(AddSpecialEffect(SPELL_EFFECT, GetUnitX(damagedUnit), GetUnitY(damagedUnit)))
                                     set DamageType = SPELL
+                                    call TagNextDamageType()
                                     call UnitDamageTarget(damageSource, damagedUnit, SPELL_DAMAGE_LEVEL1, false, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                                    set udg_NextDamageType = 0
                                     set t.spellDCounter = 0
                                 endif
                                 if t.stunCounter >= STUN_PROC_LEVEL1 then
@@ -115,12 +119,16 @@ scope UltimateFighter
                                 if t.critCounter >= CRIT_PROC_LEVEL2 then
                                     call TextTagCriticalStrike(damagedUnit, R2I(damage*CRIT_BONUS_LEVEL2))
                                     set DamageType = SPELL
+                                    call TagNextDamageType()
                                     call UnitDamageTarget(damageSource, damagedUnit, damage*CRIT_BONUS_LEVEL2, false, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                                    set udg_NextDamageType = 0
                                     set t.critCounter = 0
                                 endif
                                 if t.spellDCounter >= SPELL_PROC_LEVEL2 then
                                     set DamageType = SPELL
+                                    call TagNextDamageType()
                                     call UnitDamageTarget(damageSource, damagedUnit, SPELL_DAMAGE_LEVEL2, false, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                                    set udg_NextDamageType = 0
                                     set t.spellDCounter = 0
                                 endif
                                 if t.stunCounter >= STUN_PROC_LEVEL2 then
@@ -136,12 +144,16 @@ scope UltimateFighter
                                 if t.critCounter >= CRIT_PROC_LEVEL3 then
                                     call TextTagCriticalStrike(damagedUnit, R2I(damage*CRIT_PROC_LEVEL3))
                                     set DamageType = SPELL
+                                    call TagNextDamageType()
                                     call UnitDamageTarget(damageSource, damagedUnit, damage*CRIT_BONUS_LEVEL3, false, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                                    set udg_NextDamageType = 0
                                     set t.critCounter = 0
                                 endif
                                 if t.spellDCounter >= SPELL_PROC_LEVEL3 then
                                     set DamageType = SPELL
+                                    call TagNextDamageType()
                                     call UnitDamageTarget(damageSource, damagedUnit, SPELL_DAMAGE_LEVEL3, false, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                                    set udg_NextDamageType = 0
                                     set t.spellDCounter = 0
                                 endif
                                 if t.stunCounter >= STUN_PROC_LEVEL3 then
