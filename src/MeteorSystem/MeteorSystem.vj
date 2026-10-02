@@ -1,5 +1,5 @@
 //Version 1.3b
-library MeteorSystem initializer MSInit
+library MeteorSystem initializer MSInit requires DamageTypes
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //By Adiktuz                                                                                                                                                                                                                           //
 //Credits to Vexorian for Dummy.mdx                                                                                                                                                                                                    //    
@@ -144,7 +144,9 @@ library MeteorSystem initializer MSInit
             set data = INSTANCE
             set MSU = GetEnumUnit()
             if data.onHitFilter(MSU) then
+                call TagNextDamageType()
                 call UnitDamageTarget(data.caster, MSU, data.damage, false, false, data.at, data.dt, WEAPON_TYPE_WHOKNOWS)
+                set udg_NextDamageType = 0
                 call DestroyEffect(AddSpecialEffectTarget(data.mfx, MSU, "origin"))
             endif
             call GroupRemoveUnit(MSFILTERED, MSU)
@@ -154,7 +156,9 @@ library MeteorSystem initializer MSInit
             set data = INSTANCE
             set MSU = GetEnumUnit()
             if IsUnitEnemy(MSU, data.owner) and GetWidgetLife(MSU) >= .405 then
+                call TagNextDamageType()
                 call UnitDamageTarget(data.caster, MSU, data.damage, false, false, data.at, data.dt, WEAPON_TYPE_WHOKNOWS)
+                set udg_NextDamageType = 0
             endif
             call GroupRemoveUnit(MSFILTERS, MSU)
         endmethod

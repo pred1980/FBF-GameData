@@ -31,7 +31,7 @@ scope DarkObedience initializer init
 		private real array damage 
     endglobals
     
-    private function setupDamageOptions takes xedamage d returns nothing
+    private function setupDamageOptions takes SpellDamage d returns nothing
         //setup of the damage options
 		set d.atype = ATTACK_TYPE
         set d.dtype = DAMAGE_TYPE    
@@ -52,7 +52,7 @@ scope DarkObedience initializer init
     endfunction
     
     globals
-        private xedamage damageOptions 
+        private SpellDamage damageOptions
     endglobals
 
     private struct ArcaneMissile extends xecollider
@@ -109,7 +109,7 @@ scope DarkObedience initializer init
     private function init takes nothing returns nothing
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         
-		set damageOptions=xedamage.create()
+		set damageOptions=SpellDamage.create()
         call setupDamageOptions(damageOptions)
 		
         call Preload(missile)

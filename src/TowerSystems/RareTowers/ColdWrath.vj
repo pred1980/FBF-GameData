@@ -63,7 +63,9 @@ scope ColdWrath
             if GetRandomInt(0,100) <= .tempthis.chance then
                 set .tempthis.level =  TowerSystem.getTowerValue(GetUnitTypeId(damageSource), 3)
                 set DamageType = SPELL
+                call TagNextDamageType()
                 call UnitDamageTarget(damageSource, damagedUnit, DAMAGE[.tempthis.level], false, false, at, dt, WEAPON_TYPE_WHOKNOWS)
+                set udg_NextDamageType = 0
                 call Stun_UnitEx(damagedUnit, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
                 set .tempthis.chance = 0
             endif

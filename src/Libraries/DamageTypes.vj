@@ -1,0 +1,29 @@
+library DamageTypes requires DamageEngine
+    globals
+        integer DamageType = 0
+        constant integer PHYSICAL = 0
+        constant integer SPELL = 1
+        constant integer PHYSICAL_AND_SPELL = 2
+        constant real UNIT_MIN_LIFE = 0.406
+        boolean IsDead = false
+
+        // Eigene Kennungen fuer Bribes Damage Engine; 1 und 2 sind dort reserviert.
+        constant integer DAMAGE_TAG_PHYSICAL = 101
+        constant integer DAMAGE_TAG_SPELL = 102
+        constant integer DAMAGE_TAG_PHYSICAL_AND_SPELL = 103
+        constant integer DAMAGE_TAG_DUMMY = 104
+    endglobals
+
+    function TagNextDamageType takes nothing returns nothing
+        set udg_NextDamageType = DAMAGE_TAG_PHYSICAL + DamageType
+    endfunction
+
+    function GetDamageTypeFromTag takes integer userType returns integer
+        if userType == DAMAGE_TAG_SPELL then
+            return SPELL
+        elseif userType == DAMAGE_TAG_PHYSICAL_AND_SPELL then
+            return PHYSICAL_AND_SPELL
+        endif
+        return PHYSICAL
+    endfunction
+endlibrary

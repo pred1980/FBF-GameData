@@ -1,4 +1,4 @@
-scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, xedamage, GroupUtils
+scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, SpellDamage, GroupUtils
     /*
      * Description: The Death Master calls forth vile souls to help him in his fight. 
                     He summons magical ghosts over 12 seconds, flying to enemies around him and dealing damage on impact.
@@ -51,7 +51,7 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
         private real currentSpeed = MISSILE_START_SPEED
         private real currentAlpha = I2R(MISSILE_START_ALPHA)
         
-        private static delegate xedamage damager = 0
+        private static delegate SpellDamage damager = 0
         
         private method loopControl takes nothing returns nothing
             //Update Alpha
@@ -104,7 +104,7 @@ scope DeadSouls initializer init //requires SpellSystem, ListModule, xemissile, 
         endmethod
         
         private static method onInit takes nothing returns nothing
-            set damager = xedamage.create()
+            set damager = SpellDamage.create()
             set atype = ATTACK_TYPE
             set dtype = DAMAGE_TYPE
 			set wtype = WEAPON_TYPE

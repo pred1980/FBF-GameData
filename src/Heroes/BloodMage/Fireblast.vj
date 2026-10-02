@@ -36,10 +36,10 @@ scope Fireblast initializer Init
     endfunction
 
     //==================================================================================
-    // Let's set the damage options up, this function takes a xedamage object d
+    // Let's set the damage options up, this function takes a SpellDamage object d
     // which something else probably instantiated and we would like to configure.
     //
-    private function setupDamageOptions takes xedamage d returns nothing
+    private function setupDamageOptions takes SpellDamage d returns nothing
         set d.dtype = DAMAGE_TYPE   // Do spell, fire (magic) damage
         set d.atype = ATTACK_TYPE
 		set d.wtype = WEAPON_TYPE
@@ -47,12 +47,12 @@ scope Fireblast initializer Init
         set d.damageEnemies = true
         set d.damageNeutral = false
         set d.exception = UNIT_TYPE_STRUCTURE // Do not hit buildings.
-       // For everything else, the default xedamage settings should do fine.
+       // For everything else, the default SpellDamage settings should do fine.
     endfunction
 
     //**********************************************************************************
     globals
-        private xedamage damageOptions
+        private SpellDamage damageOptions
     endglobals
 
     //==================================================================================
@@ -226,7 +226,7 @@ scope Fireblast initializer Init
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 		
 		// Initializing the damage options:
-        set damageOptions=xedamage.create()    // first instanciate a xeobject.
+        set damageOptions=SpellDamage.create()    // first instanciate a xeobject.
         call setupDamageOptions(damageOptions) // now call the function we saw before.
 
         call Preload(MAIN_MODEL)

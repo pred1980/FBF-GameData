@@ -1,4 +1,4 @@
-library LightningBalls initializer init uses RegisterPlayerUnitEvent, TimerUtils, SimError, xemissile, xecast, xedamage optional BoundSentinel
+library LightningBalls initializer init uses RegisterPlayerUnitEvent, TimerUtils, SimError, xemissile, xecast, SpellDamage optional BoundSentinel
     /*
      * Description: The Farseer fires a lightning ball into the sky which explodes and scatters at the center 
                     of the point target, showering the target area and deals damage to nearby enemy units.
@@ -44,8 +44,8 @@ library LightningBalls initializer init uses RegisterPlayerUnitEvent, TimerUtils
         return 125. // collision size each ball
     endfunction
     
-    //xedamage options:
-    private function DamageOptions takes xedamage spellDamage returns nothing
+    //SpellDamage options:
+    private function DamageOptions takes SpellDamage spellDamage returns nothing
         set spellDamage.dtype = DAMAGE_TYPE
         set spellDamage.atype = ATTACK_TYPE
 		set spellDamage.wtype = WEAPON_TYPE
@@ -56,7 +56,7 @@ library LightningBalls initializer init uses RegisterPlayerUnitEvent, TimerUtils
     endfunction
         
    globals
-        xedamage xed
+        SpellDamage xed
         xecast xec
     endglobals
     
@@ -185,7 +185,7 @@ library LightningBalls initializer init uses RegisterPlayerUnitEvent, TimerUtils
             set xec.abilityid = DUMMY_SPELL_ID
             set xec.orderstring = DUMMY_ORDER
             //xe damage init:    
-            set xed = xedamage.create()
+            set xed = SpellDamage.create()
             call DamageOptions(xed)
         endmethod
             

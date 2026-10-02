@@ -397,16 +397,6 @@ scope Game
 					endif
 				endif
 				
-				if (IsUnitType(killedUnit, UNIT_TYPE_HERO)) then
-					call PlayerStats.setPlayerDeath(killedPlayer)
-					//Update Multiboard (Deaths)
-					call FBFMultiboard.onUpdateDeaths(pidKilled)
-					call FBFMultiboard.onUpdateStatus(pidKilled, killedUnit)
-					
-					//Revive the killed Hero
-					call HeroRespawn.create(killedUnit, true)
-				endif
-				
 				if (IsUnitType(killingUnit, UNIT_TYPE_HERO)) then
 					call FBFMultiboard.onUpdateHeroKills(pidKilling)
 				endif
@@ -421,6 +411,18 @@ scope Game
 				if ForsakenUnits.isForsakenUnit(killedUnit) then
 					call ForsakenUnits.remove(killedUnit)
 				endif
+			endif
+
+			// Nur der gewaehlte Held eines Spielers zaehlt als Tod und wird wiederbelebt,
+			// nicht die Auswahl-Helden der Heldenwahl oder andere neutrale Helden.
+			if (killedUnit == BaseMode.pickedHero[pidKilled]) then
+				call PlayerStats.setPlayerDeath(killedPlayer)
+				//Update Multiboard (Deaths)
+				call FBFMultiboard.onUpdateDeaths(pidKilled)
+				call FBFMultiboard.onUpdateStatus(pidKilled, killedUnit)
+
+				//Revive the killed Hero
+				call HeroRespawn.create(killedUnit, true)
 			endif
             
         endmethod

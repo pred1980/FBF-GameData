@@ -5,7 +5,7 @@ scope Endurance initializer init
      * Changelog: 
      *     	09.01.2014: Abgleich mit OE und der Exceltabelle
 	 *		21.04.2015: Integrated SpellHelper for filtering
-						Removed xedamage
+						Removed SpellDamage
 	 *
 	 * Info:
 	       BONUS_ATTACK_SPEED |-512|+511 

@@ -195,9 +195,13 @@ scope DiabolicCountdown
                 call DestroyEffect(AddSpecialEffectTarget(DMG_SFX,u,DMG_SFX_ATTACH))
                 set DamageType = SPELL
                 if GetWidgetLife(u)/GetUnitState(u,UNIT_STATE_MAX_LIFE) <= WeakPercent(temp.lvl) then
+                    call TagNextDamageType()
                     call UnitDamageTarget(temp.cast,u,KILL_DAMAGE,false,true,ATK_TYPE,DMG_TYPE,WPN_TYPE)
+                    set udg_NextDamageType = 0
                 else
+                    call TagNextDamageType()
                     call UnitDamageTarget(temp.cast,u,Damage(temp.lvl),false,true,ATK_TYPE,DMG_TYPE,WPN_TYPE)
+                    set udg_NextDamageType = 0
                 endif                
             endif
             set u = null

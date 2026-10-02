@@ -31,12 +31,12 @@ scope Snipe initializer Init
         private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_NORMAL
         private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
-        private xedamage damageOptions
+        private SpellDamage damageOptions
         private Snipe array spellForUnit
 		private integer array DAMAGE
     endglobals
     
-    private function setupDamageOptions takes xedamage d returns nothing
+    private function setupDamageOptions takes SpellDamage d returns nothing
         set d.dtype = DAMAGE_TYPE   
         set d.atype = ATTACK_TYPE 
         set d.wtype = WEAPON_TYPE
@@ -140,7 +140,7 @@ scope Snipe initializer Init
     private function Init takes nothing returns nothing
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_CHANNEL, function Conditions, function Actions)
 
-        set damageOptions = xedamage.create()
+        set damageOptions = SpellDamage.create()
         call setupDamageOptions(damageOptions)
         
         call Preload(MISSILE_MODEL)

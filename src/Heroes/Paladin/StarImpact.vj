@@ -100,7 +100,7 @@ scope StarImpact initializer init
         
         integer splitterCount = 0
         
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         
         method terminate takes Splitter s returns nothing
             set splitterCount = splitterCount - 1
@@ -135,7 +135,7 @@ scope StarImpact initializer init
         endmethod
                 
         static method onInit takes nothing returns nothing
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set dtype = DAMAGE_TYPE
             set atype = ATTACK_TYPE
 			set wtype = WEAPON_TYPE
@@ -146,7 +146,7 @@ scope StarImpact initializer init
     struct Star extends xemissile
     
         delegate Main root
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         static thistype temp = 0
         static boolexpr damageFilter = null
         xefx array indicator[IMPACT_INDICATOR_AMOUNT]
@@ -244,7 +244,7 @@ scope StarImpact initializer init
         
         
         static method onInit takes nothing returns nothing
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set dmg.dtype = DAMAGE_TYPE
             set dmg.atype = ATTACK_TYPE
             set damageFilter = Condition(function thistype.damageFilterEnum)
