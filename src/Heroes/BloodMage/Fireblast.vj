@@ -92,8 +92,21 @@ scope Fireblast initializer Init
         // In this case, we use it to deal damage to the targeted unit.
         //
         method onHit takes nothing returns nothing
+            local unit target = .targetUnit
+            local real lifeBefore = GetWidgetLife(target)
+            local real lifeAfter
+
             set DamageType = SPELL
-            call damageOptions.damageTarget(.caster, .targetUnit, Damage(.level))
+            call damageOptions.damageTarget(.caster, target, Damage(.level))
+            set lifeAfter = GetWidgetLife(target)
+
+            if lifeBefore > lifeAfter then
+                call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0.0, 0.0, 10.0, "G2 Fireblast: " + GetUnitName(target) + " verlor " + R2S(lifeBefore - lifeAfter) + " LP (" + R2S(lifeBefore) + " -> " + R2S(lifeAfter) + ")")
+            else
+                call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0.0, 0.0, 10.0, "G2 Fireblast: " + GetUnitName(target) + " verlor keine LP")
+            endif
+
+            set target = null
         endmethod
     endstruct
 
