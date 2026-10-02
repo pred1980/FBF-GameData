@@ -8,7 +8,7 @@ scope DeathPact initializer init
 	 *     	18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
 	 *     	31.03.2015: Integrated RegisterPlayerUnitEvent
 	                    Integrated SpellHelper for filtering
-			03.04.2015: Added exception units which cannot be sacrificd by the Death Marcher
+			03.04.2015: Added exception units which cannot be sacrificd by the Death Marcher 
 			02.10.2026: KILL_EFFECT haengt am Ziel und folgt ihm, statt an der Position beim Zaubern zu bleiben
      */
     globals
