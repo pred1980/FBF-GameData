@@ -8,11 +8,13 @@ scope DeathPact initializer init
 	 *     	18.03.2015: Optimized Spell-Event-Handling (Conditions/Actions)
 	 *     	31.03.2015: Integrated RegisterPlayerUnitEvent
 	                    Integrated SpellHelper for filtering
-			03.04.2015: Added exception units which cannot be sacrificd by the Death Marcher 
+			03.04.2015: Added exception units which cannot be sacrificd by the Death Marcher
+			02.10.2026: KILL_EFFECT haengt am Ziel und folgt ihm, statt an der Position beim Zaubern zu bleiben
      */
     globals
         private constant integer SPELL_ID = 'A04Z'
         private constant string KILL_EFFECT = "Models\\DarkExecution.mdx"
+        private constant string KILL_ATT_POINT = "origin"
         private constant string HEAL_EFFECT = "Abilities\\Spells\\Items\\AIre\\AIreTarget.mdl"
         private constant string ATT_POINT = "origin"
         private constant real RADIUS = 800
@@ -198,7 +200,7 @@ scope DeathPact initializer init
                 call TimerStart(.t, HEAL_INTERVAL, true, function thistype.onHeal)
                 call TimerStart(.main, HEAL_INTERVAL, true, function thistype.onMainTimer)
             endif
-            call DestroyEffect(AddSpecialEffect(KILL_EFFECT, GetUnitX(.target), GetUnitY(.target)))
+            call DestroyEffect(AddSpecialEffectTarget(KILL_EFFECT, .target, KILL_ATT_POINT))
             call Stun_UnitEx(.target, STUN_DURATION, false, STUN_EFFECT, STUN_ATT_POINT)
 			set DamageType = SPELL
             call DOT.start( this.caster , this.target , .store , DOT_TIME , ATTACK_TYPE , DAMAGE_TYPE , DOT_EFFECT , DOT_ATT_POINT )
