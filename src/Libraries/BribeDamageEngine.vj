@@ -1,166 +1,167 @@
 // Bribe Damage Engine 5.A.0.0: GUI-Variablen fuer den vJASS-Import.
 // Quelle: https://www.hiveworkshop.com/threads/damage-engine-5-a-0-0.201016/
+// Startwerte wie bei GUI-Variablen im World Editor. Ohne Startwert bricht jeder Lesezugriff den Thread ab.
 globals
-    real udg_AfterDamageEvent
-    real udg_AOEDamageEvent
-    unit udg_AOEDamageSource
-    integer udg_ARMOR_TYPE_ETHEREAL
-    integer udg_ARMOR_TYPE_FLESH
-    integer udg_ARMOR_TYPE_METAL
-    integer udg_ARMOR_TYPE_NONE
-    integer udg_ARMOR_TYPE_STONE
-    integer udg_ARMOR_TYPE_WOOD
-    real udg_ArmorDamageEvent
+    real udg_AfterDamageEvent = 0.00
+    real udg_AOEDamageEvent = 0.00
+    unit udg_AOEDamageSource = null
+    integer udg_ARMOR_TYPE_ETHEREAL = 0
+    integer udg_ARMOR_TYPE_FLESH = 0
+    integer udg_ARMOR_TYPE_METAL = 0
+    integer udg_ARMOR_TYPE_NONE = 0
+    integer udg_ARMOR_TYPE_STONE = 0
+    integer udg_ARMOR_TYPE_WOOD = 0
+    real udg_ArmorDamageEvent = 0.00
     string array udg_ArmorTypeDebugStr
-    integer udg_ATTACK_TYPE_CHAOS
-    integer udg_ATTACK_TYPE_HERO
-    integer udg_ATTACK_TYPE_MAGIC
-    integer udg_ATTACK_TYPE_NORMAL
-    integer udg_ATTACK_TYPE_PIERCE
-    integer udg_ATTACK_TYPE_SIEGE
-    integer udg_ATTACK_TYPE_SPELLS
+    integer udg_ATTACK_TYPE_CHAOS = 0
+    integer udg_ATTACK_TYPE_HERO = 0
+    integer udg_ATTACK_TYPE_MAGIC = 0
+    integer udg_ATTACK_TYPE_NORMAL = 0
+    integer udg_ATTACK_TYPE_PIERCE = 0
+    integer udg_ATTACK_TYPE_SIEGE = 0
+    integer udg_ATTACK_TYPE_SPELLS = 0
     string array udg_AttackTypeDebugStr
     attacktype array udg_CONVERTED_ATTACK_TYPE
     damagetype array udg_CONVERTED_DAMAGE_TYPE
-    integer udg_DAMAGE_TYPE_ACID
-    integer udg_DAMAGE_TYPE_COLD
-    integer udg_DAMAGE_TYPE_DEATH
-    integer udg_DAMAGE_TYPE_DEFENSIVE
-    integer udg_DAMAGE_TYPE_DEMOLITION
-    integer udg_DAMAGE_TYPE_DISEASE
-    integer udg_DAMAGE_TYPE_DIVINE
-    integer udg_DAMAGE_TYPE_ENHANCED
-    integer udg_DAMAGE_TYPE_FIRE
-    integer udg_DAMAGE_TYPE_FORCE
-    integer udg_DAMAGE_TYPE_LIGHTNING
-    integer udg_DAMAGE_TYPE_MAGIC
-    integer udg_DAMAGE_TYPE_MIND
-    integer udg_DAMAGE_TYPE_NORMAL
-    integer udg_DAMAGE_TYPE_PLANT
-    integer udg_DAMAGE_TYPE_POISON
-    integer udg_DAMAGE_TYPE_SHADOW_STRIKE
-    integer udg_DAMAGE_TYPE_SLOW_POISON
-    integer udg_DAMAGE_TYPE_SONIC
-    integer udg_DAMAGE_TYPE_SPIRIT_LINK
-    integer udg_DAMAGE_TYPE_UNIVERSAL
-    integer udg_DAMAGE_TYPE_UNKNOWN
-    real udg_DamageEvent
-    real udg_DamageEventAmount
-    integer udg_DamageEventAOE
-    group udg_DamageEventAOEGroup
-    real udg_DamageEventArmorPierced
-    integer udg_DamageEventArmorT
-    integer udg_DamageEventAttackT
-    integer udg_DamageEventDamageT
-    integer udg_DamageEventDefenseT
-    integer udg_DamageEventLevel
-    boolean udg_DamageEventOverride
-    real udg_DamageEventPrevAmt
-    unit udg_DamageEventSource
-    unit udg_DamageEventTarget
-    integer udg_DamageEventType
-    integer udg_DamageEventWeaponT
-    integer udg_DamageFilterAttackT
-    integer udg_DamageFilterDamageT
-    real udg_DamageFilterFailChance
-    real udg_DamageFilterMinAmount
-    real udg_DamageFilterRunChance
-    unit udg_DamageFilterSource
-    integer udg_DamageFilterSourceA
-    integer udg_DamageFilterSourceB
-    integer udg_DamageFilterSourceC
-    integer udg_DamageFilterSourceI
-    integer udg_DamageFilterSourceT
-    unit udg_DamageFilterTarget
-    integer udg_DamageFilterTargetA
-    integer udg_DamageFilterTargetB
-    integer udg_DamageFilterTargetC
-    integer udg_DamageFilterTargetI
-    integer udg_DamageFilterTargetT
-    integer udg_DamageFilterType
-    real udg_DamageModifierEvent
-    real udg_DamageScalingUser
-    real udg_DamageScalingWC3
+    integer udg_DAMAGE_TYPE_ACID = 0
+    integer udg_DAMAGE_TYPE_COLD = 0
+    integer udg_DAMAGE_TYPE_DEATH = 0
+    integer udg_DAMAGE_TYPE_DEFENSIVE = 0
+    integer udg_DAMAGE_TYPE_DEMOLITION = 0
+    integer udg_DAMAGE_TYPE_DISEASE = 0
+    integer udg_DAMAGE_TYPE_DIVINE = 0
+    integer udg_DAMAGE_TYPE_ENHANCED = 0
+    integer udg_DAMAGE_TYPE_FIRE = 0
+    integer udg_DAMAGE_TYPE_FORCE = 0
+    integer udg_DAMAGE_TYPE_LIGHTNING = 0
+    integer udg_DAMAGE_TYPE_MAGIC = 0
+    integer udg_DAMAGE_TYPE_MIND = 0
+    integer udg_DAMAGE_TYPE_NORMAL = 0
+    integer udg_DAMAGE_TYPE_PLANT = 0
+    integer udg_DAMAGE_TYPE_POISON = 0
+    integer udg_DAMAGE_TYPE_SHADOW_STRIKE = 0
+    integer udg_DAMAGE_TYPE_SLOW_POISON = 0
+    integer udg_DAMAGE_TYPE_SONIC = 0
+    integer udg_DAMAGE_TYPE_SPIRIT_LINK = 0
+    integer udg_DAMAGE_TYPE_UNIVERSAL = 0
+    integer udg_DAMAGE_TYPE_UNKNOWN = 0
+    real udg_DamageEvent = 0.00
+    real udg_DamageEventAmount = 0.00
+    integer udg_DamageEventAOE = 0
+    group udg_DamageEventAOEGroup = null
+    real udg_DamageEventArmorPierced = 0.00
+    integer udg_DamageEventArmorT = 0
+    integer udg_DamageEventAttackT = 0
+    integer udg_DamageEventDamageT = 0
+    integer udg_DamageEventDefenseT = 0
+    integer udg_DamageEventLevel = 0
+    boolean udg_DamageEventOverride = false
+    real udg_DamageEventPrevAmt = 0.00
+    unit udg_DamageEventSource = null
+    unit udg_DamageEventTarget = null
+    integer udg_DamageEventType = 0
+    integer udg_DamageEventWeaponT = 0
+    integer udg_DamageFilterAttackT = 0
+    integer udg_DamageFilterDamageT = 0
+    real udg_DamageFilterFailChance = 0.00
+    real udg_DamageFilterMinAmount = 0.00
+    real udg_DamageFilterRunChance = 0.00
+    unit udg_DamageFilterSource = null
+    integer udg_DamageFilterSourceA = 0
+    integer udg_DamageFilterSourceB = 0
+    integer udg_DamageFilterSourceC = 0
+    integer udg_DamageFilterSourceI = 0
+    integer udg_DamageFilterSourceT = 0
+    unit udg_DamageFilterTarget = null
+    integer udg_DamageFilterTargetA = 0
+    integer udg_DamageFilterTargetB = 0
+    integer udg_DamageFilterTargetC = 0
+    integer udg_DamageFilterTargetI = 0
+    integer udg_DamageFilterTargetT = 0
+    integer udg_DamageFilterType = 0
+    real udg_DamageModifierEvent = 0.00
+    real udg_DamageScalingUser = 0.00
+    real udg_DamageScalingWC3 = 0.00
     string array udg_DamageTypeDebugStr
-    integer udg_DEFENSE_TYPE_DIVINE
-    integer udg_DEFENSE_TYPE_FORTIFIED
-    integer udg_DEFENSE_TYPE_HEAVY
-    integer udg_DEFENSE_TYPE_HERO
-    integer udg_DEFENSE_TYPE_LIGHT
-    integer udg_DEFENSE_TYPE_MEDIUM
-    integer udg_DEFENSE_TYPE_NORMAL
-    integer udg_DEFENSE_TYPE_UNARMORED
+    integer udg_DEFENSE_TYPE_DIVINE = 0
+    integer udg_DEFENSE_TYPE_FORTIFIED = 0
+    integer udg_DEFENSE_TYPE_HEAVY = 0
+    integer udg_DEFENSE_TYPE_HERO = 0
+    integer udg_DEFENSE_TYPE_LIGHT = 0
+    integer udg_DEFENSE_TYPE_MEDIUM = 0
+    integer udg_DEFENSE_TYPE_NORMAL = 0
+    integer udg_DEFENSE_TYPE_UNARMORED = 0
     string array udg_DefenseTypeDebugStr
-    unit udg_EnhancedDamageTarget
-    boolean udg_IsDamageAttack
-    boolean udg_IsDamageCode
-    boolean udg_IsDamageMelee
-    boolean udg_IsDamageRanged
-    boolean udg_IsDamageSpell
-    real udg_LethalDamageEvent
-    real udg_LethalDamageHP
-    boolean udg_NextDamageIsAttack
-    boolean udg_NextDamageIsMelee
-    boolean udg_NextDamageIsRanged
-    integer udg_NextDamageType
-    integer udg_NextDamageWeaponT
-    real udg_OnDamageEvent
-    real udg_PreDamageEvent
-    boolean udg_RemoveDamageEvent
-    real udg_SourceDamageEvent
-    integer udg_UNIT_CLASS_ANCIENT
-    integer udg_UNIT_CLASS_ATTACKS_FLYING
-    integer udg_UNIT_CLASS_ATTACKS_GROUND
-    integer udg_UNIT_CLASS_DEAD
-    integer udg_UNIT_CLASS_ETHEREAL
-    integer udg_UNIT_CLASS_FLYING
-    integer udg_UNIT_CLASS_GIANT
-    integer udg_UNIT_CLASS_GROUND
-    integer udg_UNIT_CLASS_HERO
-    integer udg_UNIT_CLASS_MAGIC_IMMUNE
-    integer udg_UNIT_CLASS_MECHANICAL
-    integer udg_UNIT_CLASS_MELEE
-    integer udg_UNIT_CLASS_PEON
-    integer udg_UNIT_CLASS_PLAGUED
-    integer udg_UNIT_CLASS_POISONED
-    integer udg_UNIT_CLASS_POLYMORPHED
-    integer udg_UNIT_CLASS_RANGED
-    integer udg_UNIT_CLASS_RESISTANT
-    integer udg_UNIT_CLASS_SAPPER
-    integer udg_UNIT_CLASS_SLEEPING
-    integer udg_UNIT_CLASS_SNARED
-    integer udg_UNIT_CLASS_STRUCTURE
-    integer udg_UNIT_CLASS_STUNNED
-    integer udg_UNIT_CLASS_SUMMONED
-    integer udg_UNIT_CLASS_TAUREN
-    integer udg_UNIT_CLASS_TOWNHALL
-    integer udg_UNIT_CLASS_UNDEAD
-    integer udg_WEAPON_TYPE_AM_CHOP
-    integer udg_WEAPON_TYPE_CH_SLICE
-    integer udg_WEAPON_TYPE_CL_SLICE
-    integer udg_WEAPON_TYPE_CM_SLICE
-    integer udg_WEAPON_TYPE_MH_BASH
-    integer udg_WEAPON_TYPE_MH_CHOP
-    integer udg_WEAPON_TYPE_MH_SLICE
-    integer udg_WEAPON_TYPE_MH_STAB
-    integer udg_WEAPON_TYPE_ML_CHOP
-    integer udg_WEAPON_TYPE_ML_SLICE
-    integer udg_WEAPON_TYPE_MM_BASH
-    integer udg_WEAPON_TYPE_MM_CHOP
-    integer udg_WEAPON_TYPE_MM_SLICE
-    integer udg_WEAPON_TYPE_MM_STAB
-    integer udg_WEAPON_TYPE_NONE
-    integer udg_WEAPON_TYPE_RH_BASH
-    integer udg_WEAPON_TYPE_WH_BASH
-    integer udg_WEAPON_TYPE_WH_SLICE
-    integer udg_WEAPON_TYPE_WL_BASH
-    integer udg_WEAPON_TYPE_WL_SLICE
-    integer udg_WEAPON_TYPE_WL_STAB
-    integer udg_WEAPON_TYPE_WM_BASH
-    integer udg_WEAPON_TYPE_WM_SLICE
-    integer udg_WEAPON_TYPE_WM_STAB
+    unit udg_EnhancedDamageTarget = null
+    boolean udg_IsDamageAttack = false
+    boolean udg_IsDamageCode = false
+    boolean udg_IsDamageMelee = false
+    boolean udg_IsDamageRanged = false
+    boolean udg_IsDamageSpell = false
+    real udg_LethalDamageEvent = 0.00
+    real udg_LethalDamageHP = 0.00
+    boolean udg_NextDamageIsAttack = false
+    boolean udg_NextDamageIsMelee = false
+    boolean udg_NextDamageIsRanged = false
+    integer udg_NextDamageType = 0
+    integer udg_NextDamageWeaponT = 0
+    real udg_OnDamageEvent = 0.00
+    real udg_PreDamageEvent = 0.00
+    boolean udg_RemoveDamageEvent = false
+    real udg_SourceDamageEvent = 0.00
+    integer udg_UNIT_CLASS_ANCIENT = 0
+    integer udg_UNIT_CLASS_ATTACKS_FLYING = 0
+    integer udg_UNIT_CLASS_ATTACKS_GROUND = 0
+    integer udg_UNIT_CLASS_DEAD = 0
+    integer udg_UNIT_CLASS_ETHEREAL = 0
+    integer udg_UNIT_CLASS_FLYING = 0
+    integer udg_UNIT_CLASS_GIANT = 0
+    integer udg_UNIT_CLASS_GROUND = 0
+    integer udg_UNIT_CLASS_HERO = 0
+    integer udg_UNIT_CLASS_MAGIC_IMMUNE = 0
+    integer udg_UNIT_CLASS_MECHANICAL = 0
+    integer udg_UNIT_CLASS_MELEE = 0
+    integer udg_UNIT_CLASS_PEON = 0
+    integer udg_UNIT_CLASS_PLAGUED = 0
+    integer udg_UNIT_CLASS_POISONED = 0
+    integer udg_UNIT_CLASS_POLYMORPHED = 0
+    integer udg_UNIT_CLASS_RANGED = 0
+    integer udg_UNIT_CLASS_RESISTANT = 0
+    integer udg_UNIT_CLASS_SAPPER = 0
+    integer udg_UNIT_CLASS_SLEEPING = 0
+    integer udg_UNIT_CLASS_SNARED = 0
+    integer udg_UNIT_CLASS_STRUCTURE = 0
+    integer udg_UNIT_CLASS_STUNNED = 0
+    integer udg_UNIT_CLASS_SUMMONED = 0
+    integer udg_UNIT_CLASS_TAUREN = 0
+    integer udg_UNIT_CLASS_TOWNHALL = 0
+    integer udg_UNIT_CLASS_UNDEAD = 0
+    integer udg_WEAPON_TYPE_AM_CHOP = 0
+    integer udg_WEAPON_TYPE_CH_SLICE = 0
+    integer udg_WEAPON_TYPE_CL_SLICE = 0
+    integer udg_WEAPON_TYPE_CM_SLICE = 0
+    integer udg_WEAPON_TYPE_MH_BASH = 0
+    integer udg_WEAPON_TYPE_MH_CHOP = 0
+    integer udg_WEAPON_TYPE_MH_SLICE = 0
+    integer udg_WEAPON_TYPE_MH_STAB = 0
+    integer udg_WEAPON_TYPE_ML_CHOP = 0
+    integer udg_WEAPON_TYPE_ML_SLICE = 0
+    integer udg_WEAPON_TYPE_MM_BASH = 0
+    integer udg_WEAPON_TYPE_MM_CHOP = 0
+    integer udg_WEAPON_TYPE_MM_SLICE = 0
+    integer udg_WEAPON_TYPE_MM_STAB = 0
+    integer udg_WEAPON_TYPE_NONE = 0
+    integer udg_WEAPON_TYPE_RH_BASH = 0
+    integer udg_WEAPON_TYPE_WH_BASH = 0
+    integer udg_WEAPON_TYPE_WH_SLICE = 0
+    integer udg_WEAPON_TYPE_WL_BASH = 0
+    integer udg_WEAPON_TYPE_WL_SLICE = 0
+    integer udg_WEAPON_TYPE_WL_STAB = 0
+    integer udg_WEAPON_TYPE_WM_BASH = 0
+    integer udg_WEAPON_TYPE_WM_SLICE = 0
+    integer udg_WEAPON_TYPE_WM_STAB = 0
     string array udg_WeaponTypeDebugStr
-    real udg_ZeroDamageEvent
+    real udg_ZeroDamageEvent = 0.00
 endglobals
 
 /*

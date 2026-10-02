@@ -17,57 +17,18 @@ library DamageEvent initializer Init requires DamageEngine, DamageTypes, optiona
         set IsDead = false
     endfunction
 
-    // Voruebergehende Anzeige fuer den G3-Spieltest in #31. Vor dem Merge wieder entfernen.
-    // Zeigt fuer Helden menschlicher Spieler, welche Phasen der Damage Engine laufen.
-    // Alle 10 Sekunden zeigt sie ausserdem, wie viele Ereignisse Warcraft III und die Engine verarbeitet haben.
+    // Voruebergehende Anzeige fuer den Spieltest in #31. Vor dem Merge wieder entfernen.
+    // Zeigt alle 10 Sekunden, wie viele Schadensereignisse Warcraft III und die Phasen der Engine verarbeitet haben.
     globals
         private integer testNativeCount = 0
-        private integer testDamagingCount = 0
-        private integer testUnitEventCount = 0
         private integer testPreCount = 0
         private integer testReactionCount = 0
         private integer testAfterCount = 0
         private integer testSeconds = 0
-        private trigger testUnitTrigger = null
     endglobals
 
     private function OnTestNative takes nothing returns boolean
         set testNativeCount = testNativeCount + 1
-        if testNativeCount <= 8 then
-            call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 30.0, "DE Spielerereignis " + I2S(testNativeCount) + ": " + GetUnitName(GetEventDamageSource()) + " -> " + GetUnitName(GetTriggerUnit()) + " (Spieler " + I2S(GetPlayerId(GetOwningPlayer(GetTriggerUnit()))) + "), Schaden " + R2S(GetEventDamage()))
-        endif
-        return false
-    endfunction
-
-    private function OnTestDamaging takes nothing returns boolean
-        set testDamagingCount = testDamagingCount + 1
-        return false
-    endfunction
-
-    private function OnTestUnitEvent takes nothing returns boolean
-        set testUnitEventCount = testUnitEventCount + 1
-        return false
-    endfunction
-
-    private function TestRegisterUnit takes nothing returns boolean
-        call TriggerRegisterUnitEvent(testUnitTrigger, GetFilterUnit(), EVENT_UNIT_DAMAGED)
-        return false
-    endfunction
-
-    private function OnTestEnter takes nothing returns boolean
-        call TriggerRegisterUnitEvent(testUnitTrigger, GetTriggerUnit(), EVENT_UNIT_DAMAGED)
-        return false
-    endfunction
-
-    // Chatbefehle -deaus und -dean schalten die Trigger der Damage Engine fuer den Test ab und an.
-    private function OnTestChat takes nothing returns boolean
-        if GetEventPlayerChatString() == "-deaus" then
-            set Damage.enabled = false
-            call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 10.0, "DE Test: Engine-Trigger abgeschaltet")
-        elseif GetEventPlayerChatString() == "-dean" then
-            set Damage.enabled = true
-            call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 10.0, "DE Test: Engine-Trigger angeschaltet")
-        endif
         return false
     endfunction
 
@@ -78,28 +39,16 @@ library DamageEvent initializer Init requires DamageEngine, DamageTypes, optiona
         if Damage.enabled then
             set active = "ja"
         endif
-        call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 10.0, "DE Status " + I2S(testSeconds) + " s: Engine aktiv " + active + ", Spieler DAMAGED " + I2S(testNativeCount) + ", Spieler DAMAGING " + I2S(testDamagingCount) + ", Einheit DAMAGED " + I2S(testUnitEventCount) + ", vor Ruestung " + I2S(testPreCount) + ", FBF-Reaktionen " + I2S(testReactionCount) + ", nach Schaden " + I2S(testAfterCount))
-    endfunction
-
-    private function IsTestSource takes unit u returns boolean
-        return u != null and IsUnitType(u, UNIT_TYPE_HERO) and GetPlayerController(GetOwningPlayer(u)) == MAP_CONTROL_USER
-    endfunction
-
-    private function ShowTestPhase takes string phase returns nothing
-        if IsTestSource(Damage.source) then
-            call DisplayTimedTextToPlayer(GetOwningPlayer(Damage.source), 0.0, 0.0, 10.0, "DE Test " + phase + ": " + GetUnitName(Damage.source) + " -> " + GetUnitName(Damage.target) + ", Schaden " + R2S(Damage.amount) + ", Typ " + I2S(Damage.index.userType) + ", Reaktionen " + I2S(responsesCount))
-        endif
+        call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 10.0, "DE Status " + I2S(testSeconds) + " s: Engine aktiv " + active + ", Warcraft-Ereignisse " + I2S(testNativeCount) + ", vor Ruestung " + I2S(testPreCount) + ", FBF-Reaktionen " + I2S(testReactionCount) + ", nach Schaden " + I2S(testAfterCount))
     endfunction
 
     private function OnTestPre takes nothing returns boolean
         set testPreCount = testPreCount + 1
-        call ShowTestPhase("vor Ruestung")
         return false
     endfunction
 
     private function OnTestAfter takes nothing returns boolean
         set testAfterCount = testAfterCount + 1
-        call ShowTestPhase("nach Schaden")
         return false
     endfunction
 
@@ -110,7 +59,6 @@ library DamageEvent initializer Init requires DamageEngine, DamageTypes, optiona
         local integer i = 0
 
         set testReactionCount = testReactionCount + 1
-        call ShowTestPhase("FBF-Reaktionen")
 
         if Damage.index.userType == DAMAGE_TAG_DUMMY then
             set damaged = null
@@ -139,39 +87,11 @@ library DamageEvent initializer Init requires DamageEngine, DamageTypes, optiona
 
     private function Init takes nothing returns nothing
         local trigger testTrigger = CreateTrigger()
-        local region testRegion = CreateRegion()
-        local group testGroup = CreateGroup()
-        local integer i = 0
 
         call TriggerRegisterAnyUnitEventBJ(testTrigger, EVENT_PLAYER_UNIT_DAMAGED)
         call TriggerAddCondition(testTrigger, Condition(function OnTestNative))
-
-        set testTrigger = CreateTrigger()
-        call TriggerRegisterAnyUnitEventBJ(testTrigger, EVENT_PLAYER_UNIT_DAMAGING)
-        call TriggerAddCondition(testTrigger, Condition(function OnTestDamaging))
-
-        set testUnitTrigger = CreateTrigger()
-        call TriggerAddCondition(testUnitTrigger, Condition(function OnTestUnitEvent))
-        call GroupEnumUnitsInRect(testGroup, bj_mapInitialPlayableArea, Condition(function TestRegisterUnit))
-        call DestroyGroup(testGroup)
-        call RegionAddRect(testRegion, bj_mapInitialPlayableArea)
-        set testTrigger = CreateTrigger()
-        call TriggerRegisterEnterRegion(testTrigger, testRegion, null)
-        call TriggerAddCondition(testTrigger, Condition(function OnTestEnter))
-
-        set testTrigger = CreateTrigger()
-        set i = 0
-        loop
-            exitwhen i >= bj_MAX_PLAYERS
-            call TriggerRegisterPlayerChatEvent(testTrigger, Player(i), "-de", false)
-            set i = i + 1
-        endloop
-        call TriggerAddCondition(testTrigger, Condition(function OnTestChat))
-
         call TimerStart(CreateTimer(), 10.0, true, function ShowTestStatus)
         set testTrigger = null
-        set testRegion = null
-        set testGroup = null
 
         set udg_DamageEventAOEGroup = CreateGroup()
         call DamageEngine_DebugStr()
