@@ -63,90 +63,6 @@ scope Cleave initializer init
         set DAMAGE[5] = 40
     endfunction
 
-	// Voruebergehende Anzeige fuer den G3-Spieltest in #31. Vor dem Merge wieder entfernen.
-	// Die Damage Engine verarbeitet Cleave-Schaden erst nach dem ausloesenden Angriff.
-	// Deshalb werden die Lebenspunkte kurz danach verglichen.
-	private struct CleaveTestLog
-		private player owner
-		private unit target
-		private real lifeBefore
-		private boolean isMainTarget
-		private static group nearby = CreateGroup()
-
-		private static method onExpire takes nothing returns nothing
-			local timer t = GetExpiredTimer()
-			local thistype this = GetTimerData(t)
-			local real lifeAfter = GetWidgetLife(.target)
-			local string text = "G3 Cleave: " + GetUnitName(.target)
-
-			if .isMainTarget then
-				set text = text + " (angegriffen, mit normalem Treffer)"
-			endif
-			if .lifeBefore > lifeAfter then
-				set text = text + " verlor " + R2S(.lifeBefore - lifeAfter) + " LP (" + R2S(.lifeBefore) + " -> " + R2S(lifeAfter) + ")"
-			else
-				set text = text + " verlor keine LP"
-			endif
-			call DisplayTimedTextToPlayer(.owner, 0.0, 0.0, 10.0, text)
-
-			call ReleaseTimer(t)
-			set t = null
-			set .owner = null
-			set .target = null
-			call .destroy()
-		endmethod
-
-		static method watch takes unit caster, unit target, unit damagedUnit returns nothing
-			local thistype this = thistype.allocate()
-
-			set .owner = GetOwningPlayer(caster)
-			set .target = target
-			set .lifeBefore = GetWidgetLife(target)
-			set .isMainTarget = target == damagedUnit
-			call TimerStart(NewTimerEx(this), 0.05, false, function thistype.onExpire)
-		endmethod
-
-		static method excludedEnemies takes unit caster returns string
-			local unit u
-			local string text = ""
-
-			call GroupClear(.nearby)
-			call GroupEnumUnitsInRange(.nearby, GetUnitX(caster), GetUnitY(caster), RADIUS, null)
-			loop
-				set u = FirstOfGroup(.nearby)
-				exitwhen u == null
-				call GroupRemoveUnit(.nearby, u)
-				if IsUnitEnemy(u, GetOwningPlayer(caster)) then
-					if IsUnitType(u, UNIT_TYPE_FLYING) then
-						set text = text + " " + GetUnitName(u) + " (fliegt)"
-					elseif not SpellHelper.isValidEnemy(u, caster) then
-						set text = text + " " + GetUnitName(u) + " (kein gueltiger Gegner)"
-					endif
-				endif
-			endloop
-
-			return text
-		endmethod
-
-		private static method yesNo takes boolean b returns string
-			if b then
-				return "ja"
-			endif
-			return "nein"
-		endmethod
-
-		static method reportActivation takes unit caster, integer level returns nothing
-			call DisplayTimedTextToPlayer(GetOwningPlayer(caster), 0.0, 0.0, 10.0, "G3 Cleave: aktiviert, Stufe " + I2S(level) + ", Buff sofort " + I2S(GetUnitAbilityLevel(caster, BUFF_ID)))
-		endmethod
-
-		// Zeigt jeden Schaden einer Abomination mit Cleave-Daten oder Cleave-Buff und alle Bedingungen.
-		static method reportDamage takes unit source, unit target, real damage, integer data returns nothing
-			if data != 0 or GetUnitAbilityLevel(source, BUFF_ID) > 0 then
-				call DisplayTimedTextToPlayer(GetOwningPlayer(source), 0.0, 0.0, 10.0, "G3 Cleave: Schaden " + R2S(damage) + " an " + GetUnitName(target) + ", Buff " + I2S(GetUnitAbilityLevel(source, BUFF_ID)) + ", gueltiger Gegner " + thistype.yesNo(SpellHelper.isValidEnemy(target, source)) + ", DamageType " + I2S(DamageType) + ", Cleave-Daten " + I2S(data))
-			endif
-		endmethod
-	endstruct
-
     private struct Cleave
         private unit caster
         private integer level = 0
@@ -183,8 +99,6 @@ scope Cleave initializer init
             local real y
             local real ang
             local real propDmg = (damage * DAMAGE[.level]) / 100
-			local string testExcluded = CleaveTestLog.excludedEnemies(.caster)
-			local integer testCount = 0
 
 			call GroupClear(ENUM_GROUP)
 			call GroupEnumUnitsInRange(ENUM_GROUP, GetUnitX(.caster), GetUnitY(.caster), RADIUS, function thistype.group_filter_callback)
@@ -192,9 +106,6 @@ scope Cleave initializer init
 			loop
 				set target = FirstOfGroup(ENUM_GROUP)
 				exitwhen (target == null)
-
-				call CleaveTestLog.watch(.caster, target, damagedUnit)
-				set testCount = testCount + 1
 
 				// Damage
 				if (GetUnitState(target, UNIT_STATE_LIFE) > propDmg) then
@@ -224,11 +135,6 @@ scope Cleave initializer init
 				call GroupRemoveUnit(ENUM_GROUP, target)
 			endloop
 
-			call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0.0, 0.0, 10.0, "G3 Cleave: Treffer auf " + GetUnitName(damagedUnit) + ", Cleave-Schaden je Ziel vor Ruestung " + R2S(propDmg) + ", Ziele im Radius: " + I2S(testCount))
-			if testExcluded != "" then
-				call DisplayTimedTextToPlayer(GetOwningPlayer(.caster), 0.0, 0.0, 10.0, "G3 Cleave: ausgeschlossen:" + testExcluded)
-			endif
-
 			set target = null
 		endmethod
 
@@ -241,7 +147,6 @@ scope Cleave initializer init
 			set cleaveCaster[GetUnitId(.caster)] = this
 
 			set UnitAddBuff(.caster, .caster, .buffType, DURATION, .level).data = this
-			call CleaveTestLog.reportActivation(.caster, .level)
 
             return this
         endmethod
@@ -260,8 +165,6 @@ scope Cleave initializer init
 	// damagedUnit  == Target
     private function onDamageActions takes unit damagedUnit, unit damageSource, real damage returns nothing
         local Cleave c = Cleave.getForUnit(damageSource)
-
-		call CleaveTestLog.reportDamage(damageSource, damagedUnit, damage, c)
 
 		if ((GetUnitAbilityLevel(damageSource, BUFF_ID) > 0)	  and /*
 		*/	(SpellHelper.isValidEnemy(damagedUnit, damageSource)) and /*

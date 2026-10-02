@@ -17,48 +17,11 @@ library DamageEvent initializer Init requires DamageEngine, DamageTypes, optiona
         set IsDead = false
     endfunction
 
-    // Voruebergehende Anzeige fuer den Spieltest in #31. Vor dem Merge wieder entfernen.
-    // Zeigt alle 10 Sekunden, wie viele Schadensereignisse Warcraft III und die Phasen der Engine verarbeitet haben.
-    globals
-        private integer testNativeCount = 0
-        private integer testPreCount = 0
-        private integer testReactionCount = 0
-        private integer testAfterCount = 0
-        private integer testSeconds = 0
-    endglobals
-
-    private function OnTestNative takes nothing returns boolean
-        set testNativeCount = testNativeCount + 1
-        return false
-    endfunction
-
-    private function ShowTestStatus takes nothing returns nothing
-        local string active = "nein"
-
-        set testSeconds = testSeconds + 10
-        if Damage.enabled then
-            set active = "ja"
-        endif
-        call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 10.0, "DE Status " + I2S(testSeconds) + " s: Engine aktiv " + active + ", Warcraft-Ereignisse " + I2S(testNativeCount) + ", vor Ruestung " + I2S(testPreCount) + ", FBF-Reaktionen " + I2S(testReactionCount) + ", nach Schaden " + I2S(testAfterCount))
-    endfunction
-
-    private function OnTestPre takes nothing returns boolean
-        set testPreCount = testPreCount + 1
-        return false
-    endfunction
-
-    private function OnTestAfter takes nothing returns boolean
-        set testAfterCount = testAfterCount + 1
-        return false
-    endfunction
-
     private function OnDamage takes nothing returns boolean
         local unit damaged = Damage.target
         local unit damager = Damage.source
         local real damage = Damage.amount
         local integer i = 0
-
-        set testReactionCount = testReactionCount + 1
 
         if Damage.index.userType == DAMAGE_TAG_DUMMY then
             set damaged = null
@@ -86,17 +49,8 @@ library DamageEvent initializer Init requires DamageEngine, DamageTypes, optiona
     endfunction
 
     private function Init takes nothing returns nothing
-        local trigger testTrigger = CreateTrigger()
-
-        call TriggerRegisterAnyUnitEventBJ(testTrigger, EVENT_PLAYER_UNIT_DAMAGED)
-        call TriggerAddCondition(testTrigger, Condition(function OnTestNative))
-        call TimerStart(CreateTimer(), 10.0, true, function ShowTestStatus)
-        set testTrigger = null
-
         set udg_DamageEventAOEGroup = CreateGroup()
         call DamageEngine_DebugStr()
         call RegisterDamageEngine(function OnDamage, "Modifier", 5.0)
-        call RegisterDamageEngine(function OnTestPre, "Pre", 1.0)
-        call RegisterDamageEngine(function OnTestAfter, "After", 1.0)
     endfunction
 endlibrary
