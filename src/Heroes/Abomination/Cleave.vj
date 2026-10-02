@@ -9,6 +9,7 @@ scope Cleave initializer init
 						Set struct members to private
 	 *		24.03.2016: Recoded, optimized and adapted for AI System
 	 *		02.10.2026: Trifft alle nicht fliegenden Gegner, auch amphibische wie den Murgul Reaver
+	 *		02.10.2026: RADIUS von 175 auf 200, damit Gegner direkt an der Abomination erfasst werden
      *
      */
 
@@ -18,7 +19,7 @@ scope Cleave initializer init
         private constant integer SPELL_ID = 'A064'
 		private constant integer BUFF_PLACER_ID = 'A06K'
         private constant integer BUFF_ID = 'B00W'
-        private constant real RADIUS = 175
+        private constant real RADIUS = 200
         //Einheiten deren HP unter dem WEAKNESS_FACTOR sind haben ne CHANCE gestunt
         //weggestoßen zu werden
         private constant real WEAKNESS_FACTOR = 50.0
