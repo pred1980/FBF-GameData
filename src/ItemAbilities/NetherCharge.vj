@@ -133,7 +133,7 @@ scope NetherCharge initializer init
         local integer GC = 0
         local unit GU
         local Data D = Data(GetTimerData(t))
-        local real Damage = damage + (damageInc * (GetHeroLevel(D.caster)))
+        local real damageAmount = damage + (damageInc * (GetHeroLevel(D.caster)))
         local real Radius = radius + (radiusInc * (GetHeroLevel(D.caster)))
         if not D.hasbuff and GetUnitAbilityLevel(D.target, BUFF_ID) > 0 then
             set D.hasbuff = true
@@ -150,7 +150,7 @@ scope NetherCharge initializer init
                 endif
             endloop
             if GC > 1 then
-                call damageOptions.damageAOE(D.caster, GetUnitX(D.target), GetUnitY(D.target), Radius, Damage)
+                call damageOptions.damageAOE(D.caster, GetUnitX(D.target), GetUnitY(D.target), Radius, damageAmount)
                 loop
                     set GU = FirstOfGroup(EG)
                     exitwhen (GU == null)
