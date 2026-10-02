@@ -115,7 +115,7 @@ library DamageModifiers initializer Init requires Table, DamageEngine, DamageTyp
     endfunction
 
     private function Init takes nothing returns nothing
-        call RegisterDamageEngine(function OnDamage, "Modifier", 1.0)
+        call RegisterDamageEngine(function OnDamage, "Modifier", 4.0)
     endfunction
 
     function GetUnitLife takes unit u returns real

@@ -51,6 +51,6 @@ library DamageEvent initializer Init requires DamageEngine, DamageTypes, optiona
     private function Init takes nothing returns nothing
         set udg_DamageEventAOEGroup = CreateGroup()
         call DamageEngine_DebugStr()
-        call RegisterDamageEngine(function OnDamage, "", 1.0)
+        call RegisterDamageEngine(function OnDamage, "Modifier", 5.0)
     endfunction
 endlibrary
