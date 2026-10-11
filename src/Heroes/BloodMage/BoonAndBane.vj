@@ -50,11 +50,22 @@ scope BoonAndBane initializer init
 	private keyword DamageManipulator
 	private keyword Main
 	
-	// Voruebergehende Anzeige fuer die Spieltests M1 bis M4 in #31. Vor dem Merge wieder entfernen.
-	// Zeigt jede Aenderung durch BoonAndBane und den endgueltigen Schaden mit Lebenspunkteverlust.
-	// Treffer werden angezeigt, wenn Angreifer oder Ziel BoonAndBane tragen oder wenn zwei Helden
-	// kaempfen und einer davon einem menschlichen Spieler gehoert (Vergleichswerte vor dem Zaubern).
+	// Voruebergehendes Testlog fuer die Spieltests M1 bis M4 in #31. Vor dem Merge wieder entfernen.
+	// Schreibt jede Aenderung durch BoonAndBane und jeden endgueltigen Schaden mit Lebenspunkteverlust
+	// nach Dokumente\Warcraft III\CustomMapData\FBF-mtest-<Sitzung>-<Datei>.txt (Spalten mit Semikolon).
+	// Protokolliert werden Treffer von oder an einer Einheit mit BoonAndBane und Treffer zwischen zwei
+	// Helden, von denen einer einem menschlichen Spieler gehoert (Vergleichswerte vor dem Zaubern).
+	// Warcraft III kann an eine Datei nichts anhaengen. Deshalb wird die aktuelle Datei bei jeder Zeile
+	// neu geschrieben; nach MAX_LINES Zeilen beginnt eine neue Datei. Zeilen enthalten keine " oder \.
 	private struct BoonTestLog
+		private static constant integer MAX_LINES = 150
+		private static constant string HEADER = "time;event;source;target;before;change;after;hp_loss;counter;limit;dtype;bb_source;bb_target;note"
+		private static string array lines
+		private static integer lineCount = 0
+		private static integer fileIndex = 1
+		private static integer session = 0
+		private static timer clock = null
+
 		private unit hitSource
 		private unit hitTarget
 		private real finalDamage
@@ -67,32 +78,77 @@ scope BoonAndBane initializer init
 			call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 15.0, text)
 		endmethod
 
-		private static method yesNo takes boolean b returns string
+		private static method fileName takes nothing returns string
+			return "FBF-mtest-" + I2S(thistype.session) + "-" + I2S(thistype.fileIndex) + ".txt"
+		endmethod
+
+		private static method flag takes boolean b returns string
 			if b then
-				return "ja"
+				return "1"
 			endif
-			return "nein"
+			return "0"
+		endmethod
+
+		private static method unitText takes unit u returns string
+			if u == null then
+				return ""
+			endif
+			return GetUnitName(u) + "#" + I2S(GetHandleId(u)) + "(p" + I2S(GetPlayerId(GetOwningPlayer(u)) + 1) + ")"
 		endmethod
 
 		private static method isUserHero takes unit u returns boolean
 			return IsUnitType(u, UNIT_TYPE_HERO) and GetPlayerController(GetOwningPlayer(u)) == MAP_CONTROL_USER
 		endmethod
 
-		static method reportStart takes unit target, boolean isFriendly, integer level, real limit returns nothing
+		private static method flush takes nothing returns nothing
+			local integer i = 0
+
+			call PreloadGenClear()
+			call PreloadGenStart()
+			loop
+				exitwhen i >= thistype.lineCount
+				call Preload(thistype.lines[i])
+				set i = i + 1
+			endloop
+			call PreloadGenEnd(thistype.fileName())
+		endmethod
+
+		// Haengt eine Zeile mit Spielzeit an und schreibt die aktuelle Datei sofort neu.
+		private static method write takes string kind, unit source, unit target, string before, string change, string after, string hpLoss, string counter, string limit, string dtype, string bbSource, string bbTarget, string note returns nothing
+			if thistype.session == 0 then
+				set thistype.session = GetRandomInt(1000, 9999)
+				set thistype.lines[0] = HEADER
+				set thistype.lineCount = 1
+				call thistype.show("M-Test-Log: CustomMapData\\" + thistype.fileName())
+			elseif thistype.lineCount >= MAX_LINES then
+				set thistype.fileIndex = thistype.fileIndex + 1
+				set thistype.lines[0] = HEADER
+				set thistype.lineCount = 1
+				call thistype.show("M-Test-Log: neue Datei CustomMapData\\" + thistype.fileName())
+			endif
+
+			set thistype.lines[thistype.lineCount] = R2S(TimerGetElapsed(thistype.clock)) + ";" + kind + ";" + thistype.unitText(source) + ";" + thistype.unitText(target) + ";" + before + ";" + change + ";" + after + ";" + hpLoss + ";" + counter + ";" + limit + ";" + dtype + ";" + bbSource + ";" + bbTarget + ";" + note
+			set thistype.lineCount = thistype.lineCount + 1
+			call thistype.flush()
+		endmethod
+
+		static method reportStart takes unit caster, unit target, boolean isFriendly, integer level, real limit returns nothing
 			local string side = "Feind"
 			if isFriendly then
 				set side = "Verbuendeter"
 			endif
-			call thistype.show("M-Test BoonAndBane: aktiv auf " + GetUnitName(target) + " (" + side + "), Stufe " + I2S(level) + ", endet nach 15 s oder bei Zaehler " + R2S(limit))
+			call thistype.write("bb_start", caster, target, "", "", "", "", "", R2S(limit), "", "", "", side + " Stufe " + I2S(level))
+			call thistype.show("M-Test BoonAndBane: aktiv auf " + GetUnitName(target) + " (" + side + "), Stufe " + I2S(level) + ", Grenze " + R2S(limit))
 		endmethod
 
 		static method reportEnd takes unit target, string reason returns nothing
+			call thistype.write("bb_end", null, target, "", "", "", "", "", "", "", "", "", reason)
 			call thistype.show("M-Test BoonAndBane: endet auf " + GetUnitName(target) + ", " + reason)
 		endmethod
 
-		// kind ist "Angriff" (Schaden der Einheit mit BoonAndBane) oder "Treffer" (Schaden an ihr).
+		// kind ist "bb_out" (Schaden der Einheit mit BoonAndBane) oder "bb_in" (Schaden an ihr).
 		static method reportModifier takes string kind, unit source, unit target, real damage, real modification, real counter, real limit returns nothing
-			call thistype.show("M-Test BoonAndBane " + kind + ": " + GetUnitName(source) + " -> " + GetUnitName(target) + ", vor BoonAndBane " + R2S(damage) + ", Aenderung " + R2S(modification) + ", danach " + R2S(damage + modification) + ", Zaehler " + R2S(counter) + " / " + R2S(limit))
+			call thistype.write(kind, source, target, R2S(damage), R2S(modification), R2S(damage + modification), "", R2S(counter), R2S(limit), "", "", "", "")
 		endmethod
 
 		// Die Lebenspunkte werden kurz nach dem Treffer verglichen, weil der Schaden erst nach dieser Reaktion abgezogen wird.
@@ -100,7 +156,7 @@ scope BoonAndBane initializer init
 			local timer t = GetExpiredTimer()
 			local thistype this = GetTimerData(t)
 
-			call thistype.show("M-Test Treffer: " + GetUnitName(.hitSource) + " -> " + GetUnitName(.hitTarget) + ", Schaden nach Ruestung und Modifiern " + R2S(.finalDamage) + ", LP-Verlust " + R2S(.lifeBefore - GetWidgetLife(.hitTarget)) + ", DamageType " + I2S(.damageType) + ", BoonAndBane auf Angreifer " + thistype.yesNo(.sourceHasBuff) + ", auf Ziel " + thistype.yesNo(.targetHasBuff))
+			call thistype.write("hit", .hitSource, .hitTarget, "", "", R2S(.finalDamage), R2S(.lifeBefore - GetWidgetLife(.hitTarget)), "", "", I2S(.damageType), thistype.flag(.sourceHasBuff), thistype.flag(.targetHasBuff), "")
 
 			call ReleaseTimer(t)
 			set t = null
@@ -128,6 +184,8 @@ scope BoonAndBane initializer init
 		endmethod
 
 		static method initialize takes nothing returns nothing
+			set thistype.clock = CreateTimer()
+			call TimerStart(thistype.clock, 1000000.0, false, null)
 			call RegisterDamageResponse(thistype.onDamage)
 		endmethod
 	endstruct
@@ -163,7 +221,7 @@ scope BoonAndBane initializer init
 				//wenn das Ziel feindlich ist, wird sein Schaden verringert
 				set modification = damage * enemyOutgoingDamageModification
 				
-				call BoonTestLog.reportModifier("Angriff", data.target, damagedUnit, damage, modification, data.damageCounter + RAbsBJ(modification), data.testLimit())
+				call BoonTestLog.reportModifier("bb_out", data.target, damagedUnit, damage, modification, data.damageCounter + RAbsBJ(modification), data.testLimit())
 
 				//den Schaden updaten (mithilfe der RAbsBJ-Funktion den absoluten Wert nehmen!)
 				call data.updateCounter(RAbsBJ(modification))
@@ -177,7 +235,7 @@ scope BoonAndBane initializer init
 					
 				//hier brauche ich also nur den Schaden ausrechnen, um welchen er erhöht werden soll
 				//Beispiel: 100 Damage * 0.35 = 35 Damage als Rückgabewert. (Endschaden = 135)
-				call BoonTestLog.reportModifier("Angriff", data.target, damagedUnit, damage, damage * allyOutgoingDamageModification, data.damageCounter, data.testLimit())
+				call BoonTestLog.reportModifier("bb_out", data.target, damagedUnit, damage, damage * allyOutgoingDamageModification, data.damageCounter, data.testLimit())
 				return damage * allyOutgoingDamageModification
 			endif
 			
@@ -196,13 +254,13 @@ scope BoonAndBane initializer init
 				//hier brauchen wir wieder nicht die Variable benutzen, da erhöhter Schaden bei Feinden nicht in den Counter mit einfließen.
 				//wir brauchen nur den Wert zurückgeben, um welchen der Schaden erhöht werden soll
 				//Beispiel: 100 Damage * (0.30) = 30 als Rückgabewert (Endschaden = 130)
-				call BoonTestLog.reportModifier("Treffer", damageSource, data.target, damage, damage * enemyIncomingDamageModification, data.damageCounter, data.testLimit())
+				call BoonTestLog.reportModifier("bb_in", damageSource, data.target, damage, damage * enemyIncomingDamageModification, data.damageCounter, data.testLimit())
 				return damage * enemyIncomingDamageModification
 			else
 				//wenn das Ziel freundlich ist, wird sein Schaden verringert
 				set modification = damage * allyIncomingDamageModification
 				
-				call BoonTestLog.reportModifier("Treffer", damageSource, data.target, damage, modification, data.damageCounter + RAbsBJ(modification), data.testLimit())
+				call BoonTestLog.reportModifier("bb_in", damageSource, data.target, damage, modification, data.damageCounter + RAbsBJ(modification), data.testLimit())
 
 				//den Schaden updaten (mithilfe der RAbsBJ-Funktion den absoluten Wert nehmen!)
 				call data.updateCounter(RAbsBJ(modification))
@@ -327,7 +385,7 @@ scope BoonAndBane initializer init
 			set isFriendly = IsUnitAlly(target, GetOwningPlayer(caster))
             //Den DamageModificator erzeugen
             set manipulator = DamageManipulator.create(this)
-            call BoonTestLog.reportStart(target, isFriendly, lvl, .testLimit())
+            call BoonTestLog.reportStart(caster, target, isFriendly, lvl, .testLimit())
         endmethod
 	
 		//Wird von meinem Spell-Module aufgerufen und added den Buff zum Ziel
