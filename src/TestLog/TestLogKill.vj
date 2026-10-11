@@ -1,0 +1,71 @@
+library TestLogKill initializer Init requires TestLog, RegisterPlayerUnitEvent, TimerUtils, DamageEvent, KillCounter, CreepRoundSystem
+/*
+ * Beobachter Kill (#44).
+ *
+ * Schreibt bei aktivem Testfall jeden Tod als kill;death, wenn Opfer oder Taeter
+ * relevant ist (TestLog.isRelevant). Kurz danach liest er die Zaehler des Taeters
+ * mit denselben Formeln wie FBFMultiboard (Spalten HK, CK, TK).
+ * Felder: src/TestLog/README.md
+ */
+
+    private struct Death
+        private unit victim
+        private unit killer
+        private player owner
+        private string rel
+
+        private static method onSample takes nothing returns nothing
+            local timer t = GetExpiredTimer()
+            local thistype this = GetTimerData(t)
+            local TestLog r = TestLog.row("kill", "death")
+
+            call r.addUnit("victim", .victim).addId("victim_type", GetUnitTypeId(.victim)).addFlag("victim_hero", IsUnitType(.victim, UNIT_TYPE_HERO)).addFlag("victim_bld", IsUnitType(.victim, UNIT_TYPE_STRUCTURE))
+            call r.addUnit("killer", .killer).addId("killer_type", GetUnitTypeId(.killer)).addFlag("killer_hero", IsUnitType(.killer, UNIT_TYPE_HERO)).addFlag("killer_bld", IsUnitType(.killer, UNIT_TYPE_STRUCTURE))
+            call r.addText("rel", .rel)
+            if .owner != null then
+                call r.addText("owner", "p" + I2S(GetPlayerId(.owner) + 1))
+                call r.addInt("mb_hk", KillCounter.getPlayerHeroKills(.owner, PHYSICAL, ALL_ROUNDS) + KillCounter.getPlayerHeroKills(.owner, SPELL, ALL_ROUNDS))
+                call r.addInt("mb_ck", KillCounter.getPlayerUnitKills(.owner, PHYSICAL, ALL_ROUNDS) + KillCounter.getPlayerUnitKills(.owner, SPELL, ALL_ROUNDS) - KillCounter.getPlayerTowerKills(.owner, PHYSICAL, ALL_ROUNDS))
+                call r.addInt("mb_tk", KillCounter.getPlayerTowerKills(.owner, PHYSICAL, ALL_ROUNDS))
+            endif
+            call r.write()
+
+            call ReleaseTimer(t)
+            set t = null
+            set .victim = null
+            set .killer = null
+            set .owner = null
+            call .destroy()
+        endmethod
+
+        private static method onDeath takes nothing returns nothing
+            local unit dying = GetTriggerUnit()
+            local unit killing = GetKillingUnit()
+            local thistype this
+
+            if TestLog.isCaseActive() and (TestLog.isRelevant(dying) or TestLog.isRelevant(killing)) then
+                set this = thistype.allocate()
+                set .victim = dying
+                set .killer = killing
+                set .owner = null
+                if killing != null then
+                    set .owner = GetOwningPlayer(killing)
+                endif
+                set .rel = TestLog.relation(killing, dying)
+                // Die Zaehler werden erst nach allen Todes-Reaktionen gelesen.
+                call TimerStart(NewTimerEx(this), 0.0, false, function thistype.onSample)
+            endif
+            set dying = null
+            set killing = null
+        endmethod
+
+        static method initialize takes nothing returns nothing
+            call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, null, function thistype.onDeath)
+        endmethod
+    endstruct
+
+    private function Init takes nothing returns nothing
+        call Death.initialize()
+    endfunction
+
+endlibrary

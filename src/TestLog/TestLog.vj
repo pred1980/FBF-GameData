@@ -1,0 +1,638 @@
+library TestLog initializer Init
+/*
+ * TestLog (#44): dauerhafte Grundlage fuer gezielte Spieltests.
+ *
+ * Testcode und Beobachter schreiben Zeilen in Dateien unter
+ * Dokumente\Warcraft III\CustomMapData\FBF-testlog-<Sitzung>-p<Spieler>-<Teil>.txt
+ * Format, Beobachter, Testfall-Vorlage und Auswerteregeln: src/TestLog/README.md
+ *
+ * Zeile schreiben:
+ *     call TestLog.row("kanal", "ereignis").addUnit("src", u).addReal("wert", x).write()
+ * Lange Zeilen ueber eine lokale Variable aufbauen:
+ *     local TestLog r = TestLog.row("kanal", "ereignis")
+ *     call r.addUnit("src", u)
+ *     call r.write()
+ *
+ * Regeln:
+ * - Nie innerhalb eines GetLocalPlayer-Blocks aufrufen.
+ * - Ereignisse loggen, keine Timer-Ticks.
+ * - Schluessel bestehen aus Kleinbuchstaben, Ziffern und _.
+ * - Eine Library, die loggt, braucht requires TestLog; ein Scope nicht.
+ * - Testspezifische Aufrufe vor dem Merge entfernen (siehe README).
+ */
+
+    globals
+        // Grenzen. LINE_LIMIT ist die Laenge, ab der eine Zeile auf Folgezeilen weiterlaeuft.
+        private constant integer PART_LINES = 100
+        private constant integer MAX_PARTS = 100
+        private constant integer MAX_ROWS_PER_SECOND = 100
+        private constant integer LINE_LIMIT = 240
+        private constant integer MAX_ROW_LENGTH = 1200
+        private constant integer ROW_SLOTS = 32
+        private constant integer MAX_TRACKED_BUFFS = 8
+        private constant real FLUSH_INTERVAL = 1.0
+        private constant string FORMAT_VERSION = "1"
+        private constant string NO_CASE = "-"
+
+        private timer CLOCK = CreateTimer()
+        private timer FLUSH_TIMER = CreateTimer()
+        private timer SELFTEST_TIMER = CreateTimer()
+        private group WATCHED = CreateGroup()
+        private group TMP_GROUP = CreateGroup()
+
+        private string STAND = "unbekannt"
+        private string MAP_VERSION = "unbekannt"
+        private integer SEED = 0
+        private integer session = 0
+        private boolean started = false
+        private boolean stopped = false
+        private integer seq = 0
+        private string caseId = NO_CASE
+        private boolean caseActive = false
+
+        // Zeilen der aktuellen Datei; Zeile 0 und 1 sind Kopfzeilen.
+        private string array partLines
+        private integer partCount = 0
+        private integer partIndex = 0
+        private boolean dirty = false
+
+        private integer rateSecond = -1
+        private integer rateCount = 0
+        private integer rateDrops = 0
+        private integer rateFirst = 0
+        private integer rateLast = 0
+        private integer slotDrops = 0
+
+        private string array slotText
+        private boolean array slotOpen
+        private integer slotNext = 0
+
+        private integer array buffIds
+        private string array buffNames
+        private integer buffCount = 0
+
+        private integer selftestPhase = 0
+        private player selftestPlayer = null
+    endglobals
+
+    private function timeText takes nothing returns string
+        return R2S(TimerGetElapsed(CLOCK))
+    endfunction
+
+    private function show takes string text returns nothing
+        call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 15.0, "|cffffcc00TestLog:|r " + text)
+    endfunction
+
+    private function needsCleaning takes string s returns boolean
+        local integer i = 0
+        local integer n = StringLength(s)
+        local string c
+
+        loop
+            exitwhen i >= n
+            set c = SubString(s, i, i + 1)
+            if c == "\"" or c == "\\" or c == ";" or c == "\n" then
+                return true
+            endif
+            set i = i + 1
+        endloop
+        return false
+    endfunction
+
+    // Ersetzt Zeichen, die die Datei oder das Format zerstoeren wuerden.
+    private function clean takes string s returns string
+        local integer i = 0
+        local integer n
+        local string c
+        local string out = ""
+
+        if s == null then
+            return ""
+        endif
+        if not needsCleaning(s) then
+            return s
+        endif
+        set n = StringLength(s)
+        loop
+            exitwhen i >= n
+            set c = SubString(s, i, i + 1)
+            if c == "\"" then
+                set c = "'"
+            elseif c == "\\" then
+                set c = "/"
+            elseif c == ";" then
+                set c = ","
+            elseif c == "\n" then
+                set c = " "
+            endif
+            set out = out + c
+            set i = i + 1
+        endloop
+        return out
+    endfunction
+
+    private function idChar takes integer c returns string
+        if c >= 48 and c <= 57 then
+            return SubString("0123456789", c - 48, c - 47)
+        elseif c >= 65 and c <= 90 then
+            return SubString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", c - 65, c - 64)
+        elseif c >= 97 and c <= 122 then
+            return SubString("abcdefghijklmnopqrstuvwxyz", c - 97, c - 96)
+        endif
+        return "?"
+    endfunction
+
+    // Rawcode als vier Zeichen, zum Beispiel A094.
+    private function idText takes integer id returns string
+        if id == 0 then
+            return "none"
+        endif
+        return idChar(id / 16777216) + idChar(ModuloInteger(id / 65536, 256)) + idChar(ModuloInteger(id / 256, 256)) + idChar(ModuloInteger(id, 256))
+    endfunction
+
+    // Einheit als Name#HandleId(p<Spieler>).
+    private function unitText takes unit u returns string
+        if u == null then
+            return "none"
+        endif
+        return clean(GetUnitName(u)) + "#" + I2S(GetHandleId(u)) + "(p" + I2S(GetPlayerId(GetOwningPlayer(u)) + 1) + ")"
+    endfunction
+
+    private function partText takes nothing returns string
+        if partIndex < 10 then
+            return "00" + I2S(partIndex)
+        elseif partIndex < 100 then
+            return "0" + I2S(partIndex)
+        endif
+        return I2S(partIndex)
+    endfunction
+
+    // Der Spieler im Dateinamen ist lokal; er wirkt nur auf die eigene Platte.
+    private function fileName takes nothing returns string
+        return "FBF-testlog-" + I2S(session) + "-p" + I2S(GetPlayerId(GetLocalPlayer()) + 1) + "-" + partText() + ".txt"
+    endfunction
+
+    // Schreibt die aktuelle Datei komplett neu. Warcraft III kann nichts anhaengen.
+    private function flush takes nothing returns nothing
+        local integer i = 0
+
+        if partCount == 0 then
+            return
+        endif
+        call PreloadGenClear()
+        call PreloadGenStart()
+        loop
+            exitwhen i >= partCount
+            call Preload(partLines[i])
+            set i = i + 1
+        endloop
+        call PreloadGenEnd(fileName())
+        set dirty = false
+    endfunction
+
+    private function addPhysical takes string line returns nothing
+        set partLines[partCount] = line
+        set partCount = partCount + 1
+        set dirty = true
+    endfunction
+
+    private function startPart takes nothing returns nothing
+        set partLines[0] = "#FBFLOG;format=" + FORMAT_VERSION + ";stand=" + STAND + ";version=" + MAP_VERSION + ";session=" + I2S(session) + ";player=p" + I2S(GetPlayerId(GetLocalPlayer()) + 1) + ";part=" + I2S(partIndex)
+        set partLines[1] = "#cols=seq;time;case;channel;event;key=value"
+        set partCount = 2
+        set dirty = true
+    endfunction
+
+    // Schliesst die aktuelle Datei. Nach MAX_PARTS Dateien stoppt der Logger mit log;stop.
+    private function closePart takes nothing returns nothing
+        call flush()
+        set partIndex = partIndex + 1
+        call startPart()
+        if partIndex > MAX_PARTS then
+            set seq = seq + 1
+            call addPhysical(I2S(seq) + ";" + timeText() + ";" + caseId + ";log;stop;reason=max_parts")
+            call flush()
+            set stopped = true
+            call show("Grenze von " + I2S(MAX_PARTS) + " Dateien erreicht. Weitere Eintraege gehen verloren.")
+        endif
+    endfunction
+
+    // Haengt eine Zeile an. Lange Zeilen laufen auf Folgezeilen +<seq>; weiter.
+    // Eine Zeile wird nie auf zwei Dateien verteilt.
+    private function appendLine takes string line, integer rowSeq, boolean allowSplit returns nothing
+        local integer len = StringLength(line)
+        local string prefix = "+" + I2S(rowSeq) + ";"
+        local integer chunk = LINE_LIMIT - StringLength(prefix)
+        local integer needed = 1
+        local integer pos = LINE_LIMIT
+
+        if allowSplit and len > MAX_ROW_LENGTH then
+            set line = SubString(line, 0, MAX_ROW_LENGTH) + ";truncated=1"
+            set len = StringLength(line)
+        endif
+        if allowSplit and len > LINE_LIMIT then
+            set needed = 1 + (len - LINE_LIMIT + chunk - 1) / chunk
+        endif
+        if partCount + needed > PART_LINES then
+            call closePart()
+            if stopped then
+                return
+            endif
+        endif
+        if needed == 1 then
+            call addPhysical(line)
+            return
+        endif
+        call addPhysical(SubString(line, 0, LINE_LIMIT))
+        loop
+            exitwhen pos >= len
+            call addPhysical(prefix + SubString(line, pos, IMinBJ(pos + chunk, len)))
+            set pos = pos + chunk
+        endloop
+    endfunction
+
+    // Meldet verworfene Zeilen als log;drop. Diese Zeilen zaehlen nicht zur Obergrenze.
+    private function emitDrops takes nothing returns nothing
+        if stopped then
+            return
+        endif
+        if rateDrops > 0 then
+            set seq = seq + 1
+            call appendLine(I2S(seq) + ";" + timeText() + ";" + caseId + ";log;drop;reason=rate;count=" + I2S(rateDrops) + ";first_seq=" + I2S(rateFirst) + ";last_seq=" + I2S(rateLast), seq, true)
+            set rateDrops = 0
+        endif
+        if slotDrops > 0 and not stopped then
+            set seq = seq + 1
+            call appendLine(I2S(seq) + ";" + timeText() + ";" + caseId + ";log;drop;reason=slot;count=" + I2S(slotDrops), seq, true)
+            set slotDrops = 0
+        endif
+    endfunction
+
+    private function onFlushTimer takes nothing returns nothing
+        if stopped then
+            return
+        endif
+        call emitDrops()
+        if dirty then
+            call flush()
+        endif
+    endfunction
+
+    private function startSession takes nothing returns nothing
+        set started = true
+        set session = SEED * 100000 + ModuloInteger(R2I(TimerGetElapsed(CLOCK) * 1000.0), 100000)
+        set partIndex = 1
+        call startPart()
+        call TimerStart(FLUSH_TIMER, FLUSH_INTERVAL, true, function onFlushTimer)
+        call show("schreibt nach CustomMapData\\" + fileName())
+    endfunction
+
+    // Vergibt seq, prueft die Obergrenze pro Sekunde und haengt die Zeile an.
+    // Auch verworfene Zeilen verbrauchen eine seq, damit Luecken sichtbar sind.
+    private function commit takes string body, boolean allowSplit returns nothing
+        local integer second
+
+        if stopped then
+            return
+        endif
+        if not started then
+            call startSession()
+        endif
+        set second = R2I(TimerGetElapsed(CLOCK))
+        if second != rateSecond then
+            set rateSecond = second
+            set rateCount = 0
+        endif
+        if rateCount >= MAX_ROWS_PER_SECOND then
+            set seq = seq + 1
+            if rateDrops == 0 then
+                set rateFirst = seq
+            endif
+            set rateDrops = rateDrops + 1
+            set rateLast = seq
+            return
+        endif
+        set rateCount = rateCount + 1
+        call emitDrops()
+        if stopped then
+            return
+        endif
+        set seq = seq + 1
+        call appendLine(I2S(seq) + ";" + timeText() + ";" + caseId + ";" + body, seq, allowSplit)
+    endfunction
+
+    struct TestLog extends array
+
+        // Beginnt eine Zeile im naechsten freien Slot. Verschachtelte Aufrufe nutzen eigene Slots.
+        static method row takes string channel, string kind returns thistype
+            local integer s = slotNext
+
+            set slotNext = slotNext + 1
+            if slotNext >= ROW_SLOTS then
+                set slotNext = 0
+            endif
+            if slotOpen[s] then
+                set slotDrops = slotDrops + 1
+            endif
+            set slotOpen[s] = true
+            set slotText[s] = clean(channel) + ";" + clean(kind)
+            return thistype(s)
+        endmethod
+
+        private method field takes string key, string value returns thistype
+            set slotText[this] = slotText[this] + ";" + key + "=" + value
+            return this
+        endmethod
+
+        method addText takes string key, string value returns thistype
+            return .field(key, clean(value))
+        endmethod
+
+        method addUnit takes string key, unit u returns thistype
+            return .field(key, unitText(u))
+        endmethod
+
+        method addId takes string key, integer id returns thistype
+            return .field(key, idText(id))
+        endmethod
+
+        method addReal takes string key, real value returns thistype
+            return .field(key, R2S(value))
+        endmethod
+
+        method addInt takes string key, integer value returns thistype
+            return .field(key, I2S(value))
+        endmethod
+
+        method addFlag takes string key, boolean value returns thistype
+            if value then
+                return .field(key, "1")
+            endif
+            return .field(key, "0")
+        endmethod
+
+        // Haengt fertige Felder an, die von TestLog-Hilfsmethoden wie buffFields stammen.
+        method addFields takes string fields returns thistype
+            if fields != null and fields != "" then
+                set slotText[this] = slotText[this] + ";" + fields
+            endif
+            return this
+        endmethod
+
+        method write takes nothing returns nothing
+            if slotOpen[this] then
+                set slotOpen[this] = false
+                call commit(slotText[this], true)
+            endif
+        endmethod
+
+        // Beziehung des Ziels zur Quelle: self, enemy, ally, neutral oder none.
+        static method relation takes unit source, unit target returns string
+            if source == null or target == null then
+                return "none"
+            elseif source == target then
+                return "self"
+            elseif IsUnitEnemy(target, GetOwningPlayer(source)) then
+                return "enemy"
+            elseif IsUnitAlly(target, GetOwningPlayer(source)) then
+                return "ally"
+            endif
+            return "neutral"
+        endmethod
+
+        static method watch takes unit u returns nothing
+            call GroupAddUnit(WATCHED, u)
+        endmethod
+
+        static method unwatch takes unit u returns nothing
+            call GroupRemoveUnit(WATCHED, u)
+        endmethod
+
+        // Beobachter zeichnen Ereignisse von Helden, Einheiten menschlicher Spieler
+        // und per watch markierten Einheiten auf.
+        static method isRelevant takes unit u returns boolean
+            if u == null then
+                return false
+            endif
+            return IsUnitType(u, UNIT_TYPE_HERO) or GetPlayerController(GetOwningPlayer(u)) == MAP_CONTROL_USER or IsUnitInGroup(u, WATCHED)
+        endmethod
+
+        // Verfolgte Buffs erscheinen bei Beobachtern als <prefix>_<name>=<Stufe>.
+        static method trackBuff takes integer buffId, string name returns nothing
+            if buffCount < MAX_TRACKED_BUFFS then
+                set buffIds[buffCount] = buffId
+                set buffNames[buffCount] = clean(name)
+                set buffCount = buffCount + 1
+            endif
+        endmethod
+
+        static method buffFields takes string prefix, unit u returns string
+            local integer i = 0
+            local string out = ""
+
+            loop
+                exitwhen i >= buffCount
+                if i > 0 then
+                    set out = out + ";"
+                endif
+                set out = out + prefix + "_" + buffNames[i] + "=" + I2S(GetUnitAbilityLevel(u, buffIds[i]))
+                set i = i + 1
+            endloop
+            return out
+        endmethod
+
+        static method isCaseActive takes nothing returns boolean
+            return caseActive
+        endmethod
+
+        static method caseName takes nothing returns string
+            return caseId
+        endmethod
+
+        static method setStand takes string stand, string version returns nothing
+            set STAND = clean(stand)
+            set MAP_VERSION = clean(version)
+        endmethod
+
+        // Schreibt sofort, statt auf den naechsten Sekundentakt zu warten.
+        static method flushNow takes nothing returns nothing
+            if started and not stopped then
+                call emitDrops()
+                if dirty then
+                    call flush()
+                endif
+            endif
+        endmethod
+
+        static method endCase takes nothing returns nothing
+            if caseActive then
+                call thistype.row("run", "case_end").addText("id", caseId).write()
+                set caseActive = false
+                set caseId = NO_CASE
+                call thistype.flushNow()
+            endif
+        endmethod
+
+        static method beginCase takes string id returns nothing
+            call thistype.endCase()
+            set caseId = clean(id)
+            if caseId == "" then
+                set caseId = NO_CASE
+                return
+            endif
+            set caseActive = true
+            call thistype.row("run", "case").addText("id", caseId).addText("stand", STAND).write()
+            call thistype.flushNow()
+        endmethod
+
+    endstruct
+
+    // Chatbefehle, nur aktiv mit SYSTEM_TEST_LOG_COMMANDS.
+
+    // Liefert das Argument nach einem Befehl, oder null, wenn der Befehl nicht passt.
+    private function chatArgument takes string chat, string command returns string
+        local integer len = StringLength(chat)
+        local integer n = StringLength(command)
+
+        if SubString(chat, 0, n) != command then
+            return null
+        endif
+        if len == n then
+            return ""
+        endif
+        if SubString(chat, n, n + 1) != " " then
+            return null
+        endif
+        return SubString(chat, n + 1, len)
+    endfunction
+
+    private function onTestChat takes nothing returns nothing
+        local player p = GetTriggerPlayer()
+        local string arg = chatArgument(GetEventPlayerChatString(), "-test")
+
+        if arg == null then
+            set p = null
+            return
+        endif
+        if arg == "" then
+            call DisplayTimedTextToPlayer(p, 0.0, 0.0, 10.0, "TestLog: -test <ID> startet einen Testfall, -test end beendet ihn.")
+        elseif arg == "end" then
+            if TestLog.isCaseActive() then
+                call DisplayTimedTextToPlayer(p, 0.0, 0.0, 10.0, "TestLog: Testfall " + TestLog.caseName() + " beendet.")
+                call TestLog.endCase()
+            else
+                call DisplayTimedTextToPlayer(p, 0.0, 0.0, 10.0, "TestLog: Kein Testfall aktiv.")
+            endif
+        else
+            call TestLog.beginCase(arg)
+            call DisplayTimedTextToPlayer(p, 0.0, 0.0, 10.0, "TestLog: Testfall " + TestLog.caseName() + " aktiv.")
+        endif
+        set p = null
+    endfunction
+
+    private function onMarkChat takes nothing returns nothing
+        local player p = GetTriggerPlayer()
+        local string arg = chatArgument(GetEventPlayerChatString(), "-mark")
+
+        if arg != null then
+            call TestLog.row("chat", "mark").addText("player", "p" + I2S(GetPlayerId(p) + 1)).addText("text", arg).write()
+            call TestLog.flushNow()
+            call DisplayTimedTextToPlayer(p, 0.0, 0.0, 5.0, "TestLog: Markierung gespeichert.")
+        endif
+        set p = null
+    endfunction
+
+    // Selbsttest: Feldtypen, Ersetzungen, Zeilenlaengen, Obergrenze und Dateiwechsel.
+
+    private function filler takes integer length returns string
+        local string s = ""
+
+        loop
+            exitwhen StringLength(s) >= length
+            set s = s + "0123456789"
+        endloop
+        return SubString(s, 0, length)
+    endfunction
+
+    // Rohe Zeile ohne Folgezeilen, um die tatsaechliche Grenze der Zeilenlaenge zu finden.
+    private function probe takes integer length returns nothing
+        call commit("selftest;probe;len=" + I2S(length) + ";data=" + filler(length) + "END" + I2S(length), false)
+    endfunction
+
+    private function onSelftestTick takes nothing returns nothing
+        local integer i = 0
+        local unit u
+
+        set selftestPhase = selftestPhase + 1
+        if selftestPhase == 1 then
+            call GroupEnumUnitsOfPlayer(TMP_GROUP, selftestPlayer, null)
+            set u = FirstOfGroup(TMP_GROUP)
+            call GroupClear(TMP_GROUP)
+            call TestLog.row("selftest", "types").addUnit("u", u).addUnit("u_none", null).addId("id", 'A094').addReal("r", 3.14159).addReal("r_neg", -0.5).addInt("i", -42).addFlag("f1", true).addFlag("f0", false).write()
+            call TestLog.row("selftest", "chars").addText("t", "a\"b\\c;d|e:f=g").addText("nl", "x\ny").write()
+            set u = null
+        elseif selftestPhase == 2 then
+            // Mit Zeilenkopf ergeben sich etwa 50 Zeichen mehr; die Grenze liegt vermutlich bei 259.
+            call probe(150)
+            call probe(200)
+            call probe(204)
+            call probe(208)
+            call probe(212)
+            call probe(216)
+            call probe(250)
+            call probe(530)
+            call TestLog.row("selftest", "long").addText("data", filler(580)).addText("end", "END").write()
+        elseif selftestPhase == 3 then
+            loop
+                exitwhen i >= MAX_ROWS_PER_SECOND + 20
+                call TestLog.row("selftest", "flood").addInt("n", i).write()
+                set i = i + 1
+            endloop
+        else
+            call PauseTimer(SELFTEST_TIMER)
+            call TestLog.row("selftest", "done").write()
+            call TestLog.flushNow()
+            set selftestPhase = 0
+            call show("Selbsttest fertig.")
+        endif
+    endfunction
+
+    private function onSelftestChat takes nothing returns nothing
+        if selftestPhase == 0 then
+            set selftestPlayer = GetTriggerPlayer()
+            call TimerStart(SELFTEST_TIMER, 1.2, true, function onSelftestTick)
+            call DisplayTimedTextToPlayer(selftestPlayer, 0.0, 0.0, 10.0, "TestLog: Selbsttest laeuft etwa 5 Sekunden.")
+        endif
+    endfunction
+
+    private function Init takes nothing returns nothing
+        local trigger testTrigger = null
+        local trigger markTrigger = null
+        local trigger selftestTrigger = null
+        local integer i = 0
+
+        set SEED = GetRandomInt(1000, 9999)
+        call TimerStart(CLOCK, 1000000.0, false, null)
+
+        if (SYSTEM_TEST_LOG_COMMANDS) then
+            set testTrigger = CreateTrigger()
+            set markTrigger = CreateTrigger()
+            set selftestTrigger = CreateTrigger()
+            loop
+                exitwhen i >= bj_MAX_PLAYERS
+                call TriggerRegisterPlayerChatEvent(testTrigger, Player(i), "-test", false)
+                call TriggerRegisterPlayerChatEvent(markTrigger, Player(i), "-mark", false)
+                call TriggerRegisterPlayerChatEvent(selftestTrigger, Player(i), "-logtest", true)
+                set i = i + 1
+            endloop
+            call TriggerAddAction(testTrigger, function onTestChat)
+            call TriggerAddAction(markTrigger, function onMarkChat)
+            call TriggerAddAction(selftestTrigger, function onSelftestChat)
+        endif
+
+        set testTrigger = null
+        set markTrigger = null
+        set selftestTrigger = null
+    endfunction
+
+endlibrary
