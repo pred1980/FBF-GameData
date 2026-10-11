@@ -33,6 +33,10 @@ scope SystemConfig
         constant boolean SYSTEM_WAYPOINT_RUNTIME = SYSTEM_ROUNDS
         constant boolean SYSTEM_ITEM_CLEANUP = SYSTEM_ITEMS
         constant boolean SYSTEM_REGIONAL_FOG = SYSTEM_SUPPORT
+
+        // Chatbefehle -test, -mark und -logtest von TestLog (src/TestLog/README.md).
+        // Fuer Releases auf false setzen; Logaufrufe aus Testcode bleiben davon unberuehrt.
+        constant boolean SYSTEM_TEST_LOG_COMMANDS = true
     endglobals
 
 endscope

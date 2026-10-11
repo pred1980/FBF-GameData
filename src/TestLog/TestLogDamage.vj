@@ -1,0 +1,75 @@
+library TestLogDamage initializer Init requires TestLog, DamageEvent, TimerUtils
+/*
+ * Beobachter Schaden (#44).
+ *
+ * Schreibt bei aktivem Testfall jeden Treffer als dmg;hit, wenn Quelle oder Ziel
+ * relevant ist (TestLog.isRelevant). Quelle ist RegisterDamageResponse; der Wert
+ * final ist der Schaden nach Ruestung und Modifiern, wie ihn die Schadensreaktionen
+ * erhalten. Felder: src/TestLog/README.md
+ */
+
+    globals
+        // Die Lebenspunkte des Ziels werden kurz nach dem Treffer gelesen,
+        // weil der Schaden erst nach den Schadensreaktionen abgezogen wird.
+        private constant real SAMPLE_DELAY = 0.05
+    endglobals
+
+    private struct Hit
+        private unit source
+        private unit target
+        private real amount
+        private integer dtype
+        private real lifeBefore
+        private string sourceBuffs
+        private string targetBuffs
+
+        private static method onSample takes nothing returns nothing
+            local timer t = GetExpiredTimer()
+            local thistype this = GetTimerData(t)
+            local real lifeAfter = GetWidgetLife(.target)
+            local TestLog r = TestLog.row("dmg", "hit")
+
+            call r.addUnit("src", .source).addId("src_type", GetUnitTypeId(.source)).addFlag("src_hero", IsUnitType(.source, UNIT_TYPE_HERO)).addFlag("src_bld", IsUnitType(.source, UNIT_TYPE_STRUCTURE))
+            call r.addUnit("tgt", .target).addId("tgt_type", GetUnitTypeId(.target)).addFlag("tgt_hero", IsUnitType(.target, UNIT_TYPE_HERO)).addFlag("tgt_bld", IsUnitType(.target, UNIT_TYPE_STRUCTURE))
+            call r.addText("rel", TestLog.relation(.source, .target)).addReal("final", .amount).addInt("dtype", .dtype)
+            call r.addReal("hp_before", .lifeBefore).addReal("hp_after", lifeAfter).addReal("hp_loss", .lifeBefore - lifeAfter).addFlag("killed", IsUnitType(.target, UNIT_TYPE_DEAD) or lifeAfter < 0.405)
+            call r.addFields(.sourceBuffs).addFields(.targetBuffs).addFields(TestLog.buffFields("src_after", .source)).addFields(TestLog.buffFields("tgt_after", .target))
+            call r.write()
+
+            call ReleaseTimer(t)
+            set t = null
+            set .source = null
+            set .target = null
+            call .destroy()
+        endmethod
+
+        private static method onDamage takes unit damagedUnit, unit damageSource, real damage returns nothing
+            local thistype this
+
+            if not TestLog.isCaseActive() then
+                return
+            endif
+            if not (TestLog.isRelevant(damageSource) or TestLog.isRelevant(damagedUnit)) then
+                return
+            endif
+            set this = thistype.allocate()
+            set .source = damageSource
+            set .target = damagedUnit
+            set .amount = damage
+            set .dtype = DamageType
+            set .lifeBefore = GetWidgetLife(damagedUnit)
+            set .sourceBuffs = TestLog.buffFields("src", damageSource)
+            set .targetBuffs = TestLog.buffFields("tgt", damagedUnit)
+            call TimerStart(NewTimerEx(this), SAMPLE_DELAY, false, function thistype.onSample)
+        endmethod
+
+        static method initialize takes nothing returns nothing
+            call RegisterDamageResponse(thistype.onDamage)
+        endmethod
+    endstruct
+
+    private function Init takes nothing returns nothing
+        call Hit.initialize()
+    endfunction
+
+endlibrary

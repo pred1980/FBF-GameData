@@ -75,6 +75,12 @@
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\Escort.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\Libraries\WorldBounds.vj"
 
+/* Test Log */
+//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\TestLog\TestLog.vj"
+//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\TestLog\TestLogDamage.vj"
+//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\TestLog\TestLogKill.vj"
+//! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\TestLog\TestLogCast.vj"
+
 /* Game Config */
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\SystemConfig.vj"
 //! import "C:\Users\patri\IdeaProjects\Forsaken-Bastions-Fall\src\GameConfig\GameConfig.vj"
