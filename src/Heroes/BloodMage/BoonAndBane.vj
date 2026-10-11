@@ -50,146 +50,6 @@ scope BoonAndBane initializer init
 	private keyword DamageManipulator
 	private keyword Main
 	
-	// Voruebergehendes Testlog fuer die Spieltests M1 bis M4 in #31. Vor dem Merge wieder entfernen.
-	// Schreibt jede Aenderung durch BoonAndBane und jeden endgueltigen Schaden mit Lebenspunkteverlust
-	// nach Dokumente\Warcraft III\CustomMapData\FBF-mtest-<Sitzung>-<Datei>.txt (Spalten mit Semikolon).
-	// Protokolliert werden Treffer von oder an einer Einheit mit BoonAndBane und Treffer zwischen zwei
-	// Helden, von denen einer einem menschlichen Spieler gehoert (Vergleichswerte vor dem Zaubern).
-	// Warcraft III kann an eine Datei nichts anhaengen. Deshalb wird die aktuelle Datei bei jeder Zeile
-	// neu geschrieben; nach MAX_LINES Zeilen beginnt eine neue Datei. Zeilen enthalten keine " oder \.
-	private struct BoonTestLog
-		private static constant integer MAX_LINES = 150
-		private static constant string HEADER = "time;event;source;target;before;change;after;hp_loss;counter;limit;dtype;bb_source;bb_target;note"
-		private static string array lines
-		private static integer lineCount = 0
-		private static integer fileIndex = 1
-		private static integer session = 0
-		private static timer clock = null
-
-		private unit hitSource
-		private unit hitTarget
-		private real finalDamage
-		private real lifeBefore
-		private integer damageType
-		private boolean sourceHasBuff
-		private boolean targetHasBuff
-
-		static method show takes string text returns nothing
-			call DisplayTimedTextToPlayer(GetLocalPlayer(), 0.0, 0.0, 15.0, text)
-		endmethod
-
-		private static method fileName takes nothing returns string
-			return "FBF-mtest-" + I2S(thistype.session) + "-" + I2S(thistype.fileIndex) + ".txt"
-		endmethod
-
-		private static method flag takes boolean b returns string
-			if b then
-				return "1"
-			endif
-			return "0"
-		endmethod
-
-		private static method unitText takes unit u returns string
-			if u == null then
-				return ""
-			endif
-			return GetUnitName(u) + "#" + I2S(GetHandleId(u)) + "(p" + I2S(GetPlayerId(GetOwningPlayer(u)) + 1) + ")"
-		endmethod
-
-		private static method isUserHero takes unit u returns boolean
-			return IsUnitType(u, UNIT_TYPE_HERO) and GetPlayerController(GetOwningPlayer(u)) == MAP_CONTROL_USER
-		endmethod
-
-		private static method flush takes nothing returns nothing
-			local integer i = 0
-
-			call PreloadGenClear()
-			call PreloadGenStart()
-			loop
-				exitwhen i >= thistype.lineCount
-				call Preload(thistype.lines[i])
-				set i = i + 1
-			endloop
-			call PreloadGenEnd(thistype.fileName())
-		endmethod
-
-		// Haengt eine Zeile mit Spielzeit an und schreibt die aktuelle Datei sofort neu.
-		private static method write takes string kind, unit source, unit target, string before, string change, string after, string hpLoss, string counter, string limit, string dtype, string bbSource, string bbTarget, string note returns nothing
-			if thistype.session == 0 then
-				set thistype.session = GetRandomInt(1000, 9999)
-				set thistype.lines[0] = HEADER
-				set thistype.lineCount = 1
-				call thistype.show("M-Test-Log: CustomMapData\\" + thistype.fileName())
-			elseif thistype.lineCount >= MAX_LINES then
-				set thistype.fileIndex = thistype.fileIndex + 1
-				set thistype.lines[0] = HEADER
-				set thistype.lineCount = 1
-				call thistype.show("M-Test-Log: neue Datei CustomMapData\\" + thistype.fileName())
-			endif
-
-			set thistype.lines[thistype.lineCount] = R2S(TimerGetElapsed(thistype.clock)) + ";" + kind + ";" + thistype.unitText(source) + ";" + thistype.unitText(target) + ";" + before + ";" + change + ";" + after + ";" + hpLoss + ";" + counter + ";" + limit + ";" + dtype + ";" + bbSource + ";" + bbTarget + ";" + note
-			set thistype.lineCount = thistype.lineCount + 1
-			call thistype.flush()
-		endmethod
-
-		static method reportStart takes unit caster, unit target, boolean isFriendly, integer level, real limit returns nothing
-			local string side = "Feind"
-			if isFriendly then
-				set side = "Verbuendeter"
-			endif
-			call thistype.write("bb_start", caster, target, "", "", "", "", "", R2S(limit), "", "", "", side + " Stufe " + I2S(level))
-			call thistype.show("M-Test BoonAndBane: aktiv auf " + GetUnitName(target) + " (" + side + "), Stufe " + I2S(level) + ", Grenze " + R2S(limit))
-		endmethod
-
-		static method reportEnd takes unit target, string reason returns nothing
-			call thistype.write("bb_end", null, target, "", "", "", "", "", "", "", "", "", reason)
-			call thistype.show("M-Test BoonAndBane: endet auf " + GetUnitName(target) + ", " + reason)
-		endmethod
-
-		// kind ist "bb_out" (Schaden der Einheit mit BoonAndBane) oder "bb_in" (Schaden an ihr).
-		static method reportModifier takes string kind, unit source, unit target, real damage, real modification, real counter, real limit returns nothing
-			call thistype.write(kind, source, target, R2S(damage), R2S(modification), R2S(damage + modification), "", R2S(counter), R2S(limit), "", "", "", "")
-		endmethod
-
-		// Die Lebenspunkte werden kurz nach dem Treffer verglichen, weil der Schaden erst nach dieser Reaktion abgezogen wird.
-		private static method onExpire takes nothing returns nothing
-			local timer t = GetExpiredTimer()
-			local thistype this = GetTimerData(t)
-
-			call thistype.write("hit", .hitSource, .hitTarget, "", "", R2S(.finalDamage), R2S(.lifeBefore - GetWidgetLife(.hitTarget)), "", "", I2S(.damageType), thistype.flag(.sourceHasBuff), thistype.flag(.targetHasBuff), "")
-
-			call ReleaseTimer(t)
-			set t = null
-			set .hitSource = null
-			set .hitTarget = null
-			call .destroy()
-		endmethod
-
-		private static method onDamage takes unit damagedUnit, unit damageSource, real damage returns nothing
-			local thistype this
-			local boolean srcBuff = GetUnitAbilityLevel(damageSource, BUFF_PLACER_ID) > 0
-			local boolean tgtBuff = GetUnitAbilityLevel(damagedUnit, BUFF_PLACER_ID) > 0
-
-			if srcBuff or tgtBuff or (IsUnitType(damageSource, UNIT_TYPE_HERO) and IsUnitType(damagedUnit, UNIT_TYPE_HERO) and (thistype.isUserHero(damageSource) or thistype.isUserHero(damagedUnit))) then
-				set this = thistype.allocate()
-				set .hitSource = damageSource
-				set .hitTarget = damagedUnit
-				set .finalDamage = damage
-				set .lifeBefore = GetWidgetLife(damagedUnit)
-				set .damageType = DamageType
-				set .sourceHasBuff = srcBuff
-				set .targetHasBuff = tgtBuff
-				call TimerStart(NewTimerEx(this), 0.05, false, function thistype.onExpire)
-			endif
-		endmethod
-
-		static method initialize takes nothing returns nothing
-			set thistype.clock = CreateTimer()
-			call TimerStart(thistype.clock, 1000000.0, false, null)
-			call RegisterDamageResponse(thistype.onDamage)
-		endmethod
-	endstruct
-
 	//Der DamageManipulator Struct, welcher den DamageModifier extendet.
 	private struct DamageManipulator extends DamageModifier
 	
@@ -221,8 +81,6 @@ scope BoonAndBane initializer init
 				//wenn das Ziel feindlich ist, wird sein Schaden verringert
 				set modification = damage * enemyOutgoingDamageModification
 				
-				call BoonTestLog.reportModifier("bb_out", data.target, damagedUnit, damage, modification, data.damageCounter + RAbsBJ(modification), data.testLimit())
-
 				//den Schaden updaten (mithilfe der RAbsBJ-Funktion den absoluten Wert nehmen!)
 				call data.updateCounter(RAbsBJ(modification))
 				
@@ -235,7 +93,6 @@ scope BoonAndBane initializer init
 					
 				//hier brauche ich also nur den Schaden ausrechnen, um welchen er erhöht werden soll
 				//Beispiel: 100 Damage * 0.35 = 35 Damage als Rückgabewert. (Endschaden = 135)
-				call BoonTestLog.reportModifier("bb_out", data.target, damagedUnit, damage, damage * allyOutgoingDamageModification, data.damageCounter, data.testLimit())
 				return damage * allyOutgoingDamageModification
 			endif
 			
@@ -254,14 +111,11 @@ scope BoonAndBane initializer init
 				//hier brauchen wir wieder nicht die Variable benutzen, da erhöhter Schaden bei Feinden nicht in den Counter mit einfließen.
 				//wir brauchen nur den Wert zurückgeben, um welchen der Schaden erhöht werden soll
 				//Beispiel: 100 Damage * (0.30) = 30 als Rückgabewert (Endschaden = 130)
-				call BoonTestLog.reportModifier("bb_in", damageSource, data.target, damage, damage * enemyIncomingDamageModification, data.damageCounter, data.testLimit())
 				return damage * enemyIncomingDamageModification
 			else
 				//wenn das Ziel freundlich ist, wird sein Schaden verringert
 				set modification = damage * allyIncomingDamageModification
 				
-				call BoonTestLog.reportModifier("bb_in", damageSource, data.target, damage, modification, data.damageCounter + RAbsBJ(modification), data.testLimit())
-
 				//den Schaden updaten (mithilfe der RAbsBJ-Funktion den absoluten Wert nehmen!)
 				call data.updateCounter(RAbsBJ(modification))
 			
@@ -335,14 +189,6 @@ scope BoonAndBane initializer init
             call destroy()
 		endmethod
 		
-		// Nur fuer die voruebergehende Testanzeige: Grenze des Zaehlers fuer diesen Buff
-		method testLimit takes nothing returns real
-			if isFriendly then
-				return ALLY_MAX_DAMAGE_MODIF[lvl]
-			endif
-			return ENEMY_MAX_DAMAGE_MODIF[lvl]
-		endmethod
-
 		//Wird jedesmal aufgerufen, wenn der Schaden manipuliert wird
 		method updateCounter takes real damage returns nothing
 			//den DamageCounter erhöhen
@@ -351,7 +197,6 @@ scope BoonAndBane initializer init
 			//checken, ob die Grenze erreicht ist
             if (isFriendly and damageCounter >= ALLY_MAX_DAMAGE_MODIF[lvl]) or (not isFriendly and damageCounter >= ENEMY_MAX_DAMAGE_MODIF[lvl]) then
                 //falls das zutrifft, den Buff releasen (und somit auch den DamageModifier und den Struct hier selbst)
-                call BoonTestLog.reportEnd(target, "Zaehler-Grenze erreicht")
                 call releaseBuff()
 			endif
         endmethod
@@ -361,7 +206,6 @@ scope BoonAndBane initializer init
 		static method onBuffEnd takes nothing returns nothing
             local dbuff b = GetEventBuff() //Returned immer den Buff, um den es gerade geht
             if b.isExpired then
-                call BoonTestLog.reportEnd(thistype(b.data).target, "Dauer abgelaufen")
                 call thistype(b.data).destroy()
             endif
         endmethod
@@ -385,7 +229,6 @@ scope BoonAndBane initializer init
 			set isFriendly = IsUnitAlly(target, GetOwningPlayer(caster))
             //Den DamageModificator erzeugen
             set manipulator = DamageManipulator.create(this)
-            call BoonTestLog.reportStart(caster, target, isFriendly, lvl, .testLimit())
         endmethod
 	
 		//Wird von meinem Spell-Module aufgerufen und added den Buff zum Ziel
@@ -407,7 +250,6 @@ scope BoonAndBane initializer init
     private function init takes nothing returns nothing
         call MainSetup()
         call XE_PreloadAbility(BUFF_PLACER_ID)
-        call BoonTestLog.initialize()
     endfunction
 	
 endscope
