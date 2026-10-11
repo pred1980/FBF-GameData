@@ -76,6 +76,8 @@ Agents können die Map nicht nachweislich kompilieren oder starten. `git diff --
 
 Für jeden angeforderten menschlichen Spieltest steht die sichtbare Kennung einmalig in `src/GameConfig/GameStart.vj` als `DEV_TEST_STAND` im Format `DEV #<issue> T<nn>`. Das Issue beginnt bei `T01`. Erhöhe die Nummer erst, wenn nach einem bereits angeforderten Teststand eine neue Änderung einen erneuten Build und Spieltest erfordert. Dokumentation, Kommentare und andere Änderungen ohne Einfluss auf den bestätigten Spieltest erhöhen sie nicht. Committe den zu testenden Quellcode einschließlich Kennung vor der Testaufforderung. Lies die Kennung aus `GameStart.vj` im zu testenden Commit und nenne sie zusammen mit dessen SHA; leite sie nicht aus Erinnerung oder einer zweiten Definition ab. Im Spiel muss dieselbe Zeile exakt erscheinen. Eine Meldung mit anderer oder älterer Kennung bestätigt den angeforderten Stand nicht. Der Mensch nennt die sichtbare Kennung und den getesteten Commit im PR.
 
+Messwerte aus Spieltests schreibt `TestLog` (`src/TestLog/`) in Dateien. `src/TestLog/README.md` beschreibt das Logformat, die Beobachter, die Vorlage für Testfälle mit Sollwerten und die Auswerteregeln mit BESTANDEN, NICHT BESTANDEN und NICHT BEURTEILBAR. Nutze für Messwerte die Beobachter und ergänze Diagnosepunkte nur, wo Informationen fehlen. Testspezifische Aufrufe sind vorübergehend: Vor dem Merge muss `git grep -n -E "TestLog\.(row|trackBuff|watch|unwatch|beginCase|endCase|flushNow)" -- src ':!src/TestLog'` leer sein.
+
 ## Tickets und Agent-Workflow
 
 - Jedes neue GitHub Ticket muss `.github/TICKET-STANDARD.md` folgen.
