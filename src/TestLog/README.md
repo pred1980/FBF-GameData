@@ -204,6 +204,8 @@ Eine Lücke in `seq` ohne passende `log;drop`-Zeile ist ein unerklärter Verlust
 
 Die Zeilengrenze von 240 Zeichen ist vorsichtig gewählt. `-logtest` schreibt Testzeilen verschiedener Länge (`selftest;probe`, jede endet auf `END<len>`). Daran zeigt sich, ab welcher Länge Warcraft III kürzt.
 
+Gemessen mit `DEV #44 T01`: Warcraft III schreibt höchstens 259 Zeichen je Dateizeile, also je `Preload`-Aufruf. Längere Zeilen schneidet es ohne Hinweis ab. Die Zeilengrenze von 240 Zeichen lässt 19 Zeichen Abstand. Nur die Rohzeilen des Selbsttests (`selftest;probe`) laufen nicht auf Folgezeilen weiter und dürfen deshalb gekürzt erscheinen.
+
 ## Multiplayer
 
 - Jeder Rechner schreibt eigene Dateien; `p<N>` im Namen ist der lokale Spieler.
