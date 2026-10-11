@@ -130,7 +130,7 @@ Quelle ist `RegisterDamageResponse`. Die Zeile entsteht 0,05 s nach dem Treffer,
 **Hinweis zu `hp_before` und `hp_loss`:**
 
 - **Mit der Bribe Damage Engine (ab #31):** Modifier ändern den Schaden selbst. `hp_before` ist dann der Wert vor dem Treffer, und `hp_loss` entspricht `final`.
-- **Mit dem alten `DamageModifiers` (vor #31):** Ein aktiver Modifier gleicht die LP schon vor der Schadensreaktion aus (`SetWidgetLife`). `hp_before` enthält dann diesen Ausgleich, und `hp_loss` entspricht dem Schaden vor den Modifiern statt `final`. Ohne aktiven Modifier gibt es keinen Unterschied.
+- **Mit dem alten `DamageModifiers` (vor #31):** Ein aktiver Modifier gleicht die LP schon vor der Schadensreaktion aus (`SetWidgetLife`). `hp_before` enthält dann diesen Ausgleich, und `hp_loss` entspricht dem Schaden vor den Modifiern statt `final`. Auch ohne aktiven Modifier kann ein Ausgleich enthalten sein: Die Library verrechnet Restbeträge früherer Treffer im selben Moment und begrenzt die LP auf das Maximum bzw. das Minimum zum Überleben.
 
 Den Schaden vor den Modifiern gibt es in Version 1 noch nicht. Er braucht die Phasen der Bribe Damage Engine aus #31.
 
