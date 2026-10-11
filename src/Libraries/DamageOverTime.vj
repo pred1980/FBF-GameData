@@ -67,7 +67,7 @@ library DamageOverTime initializer Init requires DamageEvent
             endif
         endmethod
         
-        static method start takes unit Attacker, unit Target, real Damage, real Time, attacktype AttackType, damagetype DamageType, string Effect, string EffectAttach returns DOT
+        static method start takes unit Attacker, unit Target, real damageAmount, real Time, attacktype AttackType, damagetype DamageType, string Effect, string EffectAttach returns DOT
             local DOT dat = DOT.allocate()
             
             set dat.Attacker   = Attacker
@@ -81,7 +81,7 @@ library DamageOverTime initializer Init requires DamageEvent
                 endif
             endif
             
-            set dat.Damage   = Damage * Interval / Time
+            set dat.Damage   = damageAmount * Interval / Time
             set dat.EndCount = DOT.Count + R2I(Time / Interval)
             
             if DOT.Total == 0 then

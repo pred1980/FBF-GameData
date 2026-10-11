@@ -45,7 +45,7 @@ scope BurningSkin initializer init
 
     struct BurnBuff
     
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         static thistype temp = 0
         static integer buffType = 0
         static real damageValue = 0.00
@@ -95,7 +95,7 @@ scope BurningSkin initializer init
         
         static method onInit takes nothing returns nothing
             set buffType = DefineBuffType(BURN_BUFF_PLACER_ID, BURN_BUFF_ID, BURN_DAMAGE_INTERVAL, true, false, thistype.onBuffAdd, thistype.onLoop, thistype.onBuffEnd)
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set dmg.dtype = DAMAGE_TYPE
 			set dmg.atype = ATTACK_TYPE
 			set dmg.wtype = WEAPON_TYPE

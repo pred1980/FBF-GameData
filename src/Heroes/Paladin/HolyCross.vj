@@ -142,7 +142,7 @@ scope HolyCross initializer init
         static code checkModifier = null
         static thistype temp = 0
         static group tempGroup = null
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         
         real array cornerX[8]
         real array cornerY[8]
@@ -329,7 +329,7 @@ scope HolyCross initializer init
             set filter = Condition(function thistype.enumFilter)
             set checkModifier = function thistype.checkModifierEnum
             set tempGroup = CreateGroup()
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set atype = ATTACK_TYPE
             set dtype = DAMAGE_TYPE
 			set wtype = WEAPON_TYPE

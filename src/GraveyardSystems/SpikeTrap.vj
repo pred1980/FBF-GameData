@@ -80,7 +80,9 @@ scope SpikeTrap
                     call SetUnitY(d.caster, GetUnitY(d.victim) + 100 * Sin((GetUnitFacing(d.victim) - 180) * bj_DEGTORAD))
                     call SetUnitAnimation(d.caster, "attack")
                     set DamageType = SPELL
+                    call TagNextDamageType()
                     call UnitDamageTarget(d.caster, d.victim, d.dmg, false, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                    set udg_NextDamageType = 0
                     call d.destroy()
                     set Index[i] = Index[Count]
                     set Count = Count - 1

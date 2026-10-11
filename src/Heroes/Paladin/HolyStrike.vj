@@ -49,7 +49,7 @@ scope HolyStrike initializer init
         static constant integer spellId = SPELL_ID
         static constant boolean useDamageEvents = true
         static boolexpr unitFilter = null
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         
         boolean isReady = false
         real counter = 0.00
@@ -118,7 +118,7 @@ scope HolyStrike initializer init
             
         private static method onInit takes nothing returns nothing
             set ticker = CreateTimer()
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set atype = ATTACK_TYPE
             set dtype = DAMAGE_TYPE
 			set wtype = WEAPON_TYPE

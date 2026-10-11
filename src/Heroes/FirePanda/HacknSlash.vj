@@ -98,7 +98,7 @@ scope HacknSlash initializer init
         static boolean autoDestroy = false
         static integer spellType = SPELL_TYPE_TARGET_UNIT
         
-        static delegate xedamage dmg
+        static delegate SpellDamage dmg
         static thistype temp = 0
         static timer ticker = null
         static boolexpr groupFilter = null
@@ -232,7 +232,7 @@ scope HacknSlash initializer init
         
         static method onInit takes nothing returns nothing
             set ticker = CreateTimer()
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set atype = ATTACK_TYPE
             set dtype = DAMAGE_TYPE
 			set wtype = WEAPON_TYPE

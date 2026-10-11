@@ -69,7 +69,7 @@ scope Wave initializer init
         
         static thistype temp = 0
         static boolexpr doPushback = null
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         static HandleTable t = 0
 		
         method onDestroy takes nothing returns nothing
@@ -187,7 +187,7 @@ scope Wave initializer init
         
         static method onInit takes nothing returns nothing
             set doPushback = Condition(function thistype.doPushbackEnum)
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set dmg.atype = ATTACK_TYPE
             set dmg.dtype = DAMAGE_TYPE
 			set dmg.wtype = WEAPON_TYPE

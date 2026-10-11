@@ -1,4 +1,4 @@
-library HurlBoulder initializer Init requires xedamage, xemissile
+library HurlBoulder initializer Init requires SpellDamage, xemissile
     /*
      * Description: The Mountain Giant throws a boulder in the target area, causing damage and 
 					stunning the target for 2 seconds.
@@ -33,10 +33,10 @@ library HurlBoulder initializer Init requires xedamage, xemissile
     endfunction
 
     //==================================================================================
-    // Let's set the damage options up, this function takes a xedamage object d
+    // Let's set the damage options up, this function takes a SpellDamage object d
     // which something else probably instantiated and we would like to configure.
     //
-    private function setupDamageOptions takes xedamage d returns nothing
+    private function setupDamageOptions takes SpellDamage d returns nothing
         set d.atype = ATTACK_TYPE
 		set d.dtype = DAMAGE_TYPE
         set d.wtype = WEAPON_TYPE
@@ -44,12 +44,12 @@ library HurlBoulder initializer Init requires xedamage, xemissile
         set d.damageEnemies = true
         set d.damageNeutral = false
         set d.exception = UNIT_TYPE_STRUCTURE // Do not hit buildings.
-       // For everything else, the default xedamage settings should do fine.
+       // For everything else, the default SpellDamage settings should do fine.
     endfunction
 
     //**********************************************************************************
     globals
-        private xedamage damageOptions
+        private SpellDamage damageOptions
     endglobals
 
     //==================================================================================
@@ -140,7 +140,7 @@ library HurlBoulder initializer Init requires xedamage, xemissile
     private function Init takes nothing returns nothing
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 
-        set damageOptions=xedamage.create()
+        set damageOptions=SpellDamage.create()
         call setupDamageOptions(damageOptions)
 
         call Preload(MAIN_MODEL)

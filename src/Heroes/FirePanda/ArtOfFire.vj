@@ -1,4 +1,4 @@
-library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils, PassiveSpellSystem, IntuitiveBuffSystem, xedamage, xebasic, xefx
+library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils, PassiveSpellSystem, IntuitiveBuffSystem, SpellDamage, xebasic, xefx
     /*
      * Description: The Fire Panda enhances his weapons with fire and increases the effectiveness of his abilities. 
 	                Each enemy he attacks, hits with Hackn Slash or with Bladethrow, will be ignited, 
@@ -44,7 +44,7 @@ library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils,
     
     struct Ignition
     
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         static thistype temp = 0
         static integer buffType = 0
         
@@ -91,7 +91,7 @@ library ArtOfFire initializer init requires DamageEvent, ListModule, GroupUtils,
         
         static method onInit takes nothing returns nothing
             set buffType = DefineBuffType(IGNITION_BUFF_PLACER_ID, IGNITION_BUFF_ID, IGNITION_DAMAGE_INTERVAL, true, false, thistype.onBuffAdd, thistype.onLoop, thistype.onBuffEnd)
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
 			set dmg.atype = ATTACK_TYPE
             set dmg.dtype = DAMAGE_TYPE
 			set dmg.wtype = WEAPON_TYPE

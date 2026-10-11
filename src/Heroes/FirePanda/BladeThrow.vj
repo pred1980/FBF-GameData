@@ -46,7 +46,7 @@ scope BladeThrow initializer init
         boolean returning = false
         boolean enhanced = false
         
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         
         method onDestroy takes nothing returns nothing
             call ReleaseGroup(targetsHit)
@@ -156,7 +156,7 @@ scope BladeThrow initializer init
         endmethod
         
         static method onInit takes nothing returns nothing
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set atype = ATTACK_TYPE
             set dtype = DAMAGE_TYPE
             set wtype = WEAPON_TYPE

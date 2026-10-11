@@ -77,7 +77,7 @@ scope PlagueInfection initializer init
         static boolexpr unitFilter = null
         static integer buffType = 0
         static code doInfection = null
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         
         //Frag mich nicht, wieso ich die brauche, mach sie weg und der Spell wird um TIMER_INTERVAL langsamer!
         static constant real counterDebuger = 0.001
@@ -185,7 +185,7 @@ scope PlagueInfection initializer init
         private static method onInit takes nothing returns nothing
             call MainSetup()
             set buffType = DefineBuffType(BUFF_PLACER_ID, BUFF_ID, TIMER_INTERVAL, true, false,0, thistype.periodicActions, thistype.onBuffEnd)
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set unitFilter = Condition(function thistype.unitFilterMethod)
             set doInfection = function thistype.doInfectionEnum
             set atype = ATTACK_TYPE

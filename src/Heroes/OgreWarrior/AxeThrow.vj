@@ -1,4 +1,4 @@
-library AxeThrow initializer Init requires xedamage, xemissile
+library AxeThrow initializer Init requires SpellDamage, xemissile
     /*
      * Description: The Ogre Warrior throws his mighty axe at a target enemy, damaging and stunning anyone near where it lands.
      * Changelog: 
@@ -39,7 +39,7 @@ library AxeThrow initializer Init requires xedamage, xemissile
         return 110.0 * level 
     endfunction
 
-    private function setupDamageOptions takes xedamage d returns nothing
+    private function setupDamageOptions takes SpellDamage d returns nothing
 		set d.atype = ATTACK_TYPE
 		set d.dtype = DAMAGE_TYPE
 		set d.wtype = WEAPON_TYPE
@@ -53,7 +53,7 @@ library AxeThrow initializer Init requires xedamage, xemissile
 
     //**********************************************************************************
     globals
-        private xedamage damageOptions
+        private SpellDamage damageOptions
     endglobals
 
     struct HammerThrowMain extends xecollider
@@ -136,7 +136,7 @@ library AxeThrow initializer Init requires xedamage, xemissile
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 
         // Initializing the damage options:
-        set damageOptions = xedamage.create()
+        set damageOptions = SpellDamage.create()
         call setupDamageOptions(damageOptions)
         call Preload(MAIN_MODEL)
         call Preload(STUN_EFFECT)

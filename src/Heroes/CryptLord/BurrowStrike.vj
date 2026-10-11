@@ -103,7 +103,7 @@ scope BurrowStrike initializer init
         
         static HandleTable t = 0
         static timer ticker = null
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         static integer buffType = 0
         
         implement List
@@ -185,7 +185,7 @@ scope BurrowStrike initializer init
         static boolexpr targetFilter = null
         static timer ticker = null
         static thistype temp = 0
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         
         real cos = 0.00
         real sin = 0.00
@@ -337,7 +337,7 @@ scope BurrowStrike initializer init
             call MainSetup()
             set ticker = CreateTimer()
             set targetFilter = Condition(function thistype.targetFilterEnum)
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set dtype = DAMAGE_TYPE
             set atype = ATTACK_TYPE
 			set wtype = WEAPON_TYPE

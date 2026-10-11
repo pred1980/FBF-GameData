@@ -31,14 +31,14 @@ scope SpiritArrows initializer init
         private constant damagetype DAMAGE_TYPE = DAMAGE_TYPE_LIGHTNING
         private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
         
-        private xedamage damageOptions
+        private SpellDamage damageOptions
     endglobals
     
     private constant function Damage takes integer level returns real
         return 100.0 
     endfunction
 
-    private function setupDamageOptions takes xedamage d returns nothing
+    private function setupDamageOptions takes SpellDamage d returns nothing
        set d.dtype = DAMAGE_TYPE
        set d.atype = ATTACK_TYPE
 	   set d.wtype = WEAPON_TYPE
@@ -118,7 +118,7 @@ scope SpiritArrows initializer init
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
         
         // Initializing the damage options:
-        set damageOptions = xedamage.create()
+        set damageOptions = SpellDamage.create()
         call setupDamageOptions(damageOptions)
         
         call XE_PreloadAbility(SPELL_ID)

@@ -40,7 +40,7 @@ scope CoupDeGrace initializer Init
         private constant damagetype DAMAGE_TYPE_EXPLOSION = DAMAGE_TYPE_DEATH
         private constant weapontype WEAPON_TYPE_EXPLOSION = WEAPON_TYPE_WHOKNOWS
         
-        private xedamage damageOptions
+        private SpellDamage damageOptions
     endglobals
     
     struct CoupDeGrace extends xehomingmissile
@@ -107,7 +107,7 @@ scope CoupDeGrace initializer Init
         endmethod
     endstruct
 	
-	private function setupDamageOptions takes xedamage d returns nothing
+	private function setupDamageOptions takes SpellDamage d returns nothing
         set d.damageAllies = true
         set d.damageEnemies = false
 
@@ -135,7 +135,7 @@ scope CoupDeGrace initializer Init
     private function Init takes nothing returns nothing
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 		
-		set damageOptions = xedamage.create()
+		set damageOptions = SpellDamage.create()
         call setupDamageOptions(damageOptions)
 
         call Preload(MISSILE_MODEL)

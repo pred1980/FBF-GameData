@@ -135,7 +135,9 @@ scope WormSystem initializer onInit
                     //Damage Unit if is not eaten ^^
                     if not IsUnitDead(this.last) then
                         set DamageType = PHYSICAL
+                        call TagNextDamageType()
                         call UnitDamageTarget(this.worm, this.last, this.dmg, true, false, ATTACK_TYPE, DAMAGE_TYPE, WEAPON_TYPE)
+                        set udg_NextDamageType = 0
                         call DestroyEffect(AddSpecialEffectTarget(BLOOD_FX, this.target, "origin"))
                     endif
                 endif

@@ -3,6 +3,7 @@ scope HeroRespawnSystem
      * Changelog: 
      *     	01.10.2015: Increased the revivetime factor from 4 to 5 x Hero-Level
 	 *		12.10.2015: Removed SHORT_REVIVE from hero after revive
+	 *		02.10.2026: Restzeit im Multiboard statt im Leaderboard; entfernte Helden werden nicht wiederbelebt
      */
     globals
 		// Dark Ranger's Ulti --> Falls damit gekillt, soll der Ally Hero nur 10s warten
@@ -30,7 +31,6 @@ scope HeroRespawnSystem
     struct HeroRespawn
 		private timer t
         private real time
-        private leaderboard l
         private unit hero
         private real x
         private real y
@@ -38,7 +38,6 @@ scope HeroRespawnSystem
         private boolean eff
 		
 		method onDestroy takes nothing returns nothing
-			call DestroyLeaderboard(.l)
 			call PauseTimer(.t)
 			call DestroyTimer(.t)
 			set t = null
@@ -48,6 +47,12 @@ scope HeroRespawnSystem
         static method onPeriodic takes nothing returns nothing
             local thistype this = GetTimerData(GetExpiredTimer())
 			
+			// Der Held wurde entfernt, zum Beispiel beim Repick oder wenn der Spieler das Spiel verlassen hat.
+			if GetUnitTypeId(this.hero) == 0 then
+				call this.destroy()
+				return
+			endif
+
 			set this.time = this.time - 1.0
             
 			if this.time <= 0 then
@@ -78,7 +83,7 @@ scope HeroRespawnSystem
 				
 				call this.destroy()
 			else
-				call LeaderboardSetLabel(this.l, "Respawns in " + I2S(R2I(this.time)) + " seconds!")
+				call FBFMultiboard.onUpdateRespawnTime(GetPlayerId(this.p), R2I(this.time))
             endif
         endmethod
 		
@@ -97,10 +102,7 @@ scope HeroRespawnSystem
 				call UnitRemoveAbility(.hero, SHORT_REVIVE)
 			endif
 			
-			set .l = CreateLeaderboard()
-			call LeaderboardSetLabel(.l, "Respawns in " + I2S(R2I(reviveTime)) + " seconds!" )
-			call PlayerSetLeaderboard(.p, .l )
-			call LeaderboardDisplay(.l, true )
+			call FBFMultiboard.onUpdateRespawnTime(GetPlayerId(.p), R2I(reviveTime))
 			
 			set .t = CreateTimer()
 			set .time = reviveTime

@@ -312,6 +312,17 @@ scope FBFMultiboard
             endif
             set .board[PLAYER_IDS_2_ROW[pid]][8].text = msg
         endmethod
+
+        // Zeigt die Restzeit bis zur Wiederbelebung als m:ss in Rot, zum Beispiel 0:45
+        static method onUpdateRespawnTime takes integer pid, integer seconds returns nothing
+            local integer rest = ModuloInteger(seconds, 60)
+            local string sec = I2S(rest)
+
+            if rest < 10 then
+                set sec = "0" + sec
+            endif
+            set .board[PLAYER_IDS_2_ROW[pid]][8].text = "|cffff0000" + I2S(seconds / 60) + ":" + sec + "|r"
+        endmethod
         
         static method onUpdateRound takes integer round returns nothing
             set .board[17][0].text = "Round: " + I2S(round)

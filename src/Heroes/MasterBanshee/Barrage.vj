@@ -38,7 +38,7 @@ scope Barrage initializer Init
         private constant weapontype WEAPON_TYPE = WEAPON_TYPE_WHOKNOWS
     endglobals
 
-    private function setupDamageOptions takes xedamage d returns nothing
+    private function setupDamageOptions takes SpellDamage d returns nothing
         //setup of the damage options
 		set d.atype = ATTACK_TYPE
         set d.dtype = DAMAGE_TYPE    
@@ -53,7 +53,7 @@ scope Barrage initializer Init
     endfunction
 
     globals
-        private xedamage damageOptions
+        private SpellDamage damageOptions
     endglobals
     
     private struct Data
@@ -147,7 +147,7 @@ scope Barrage initializer Init
     private function Init takes nothing returns nothing
         call RegisterPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, function Conditions, function Actions)
 		
-        set damageOptions=xedamage.create()
+        set damageOptions=SpellDamage.create()
         call setupDamageOptions(damageOptions)
 		
         call Preload(boomEffect)

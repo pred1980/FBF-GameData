@@ -1,4 +1,4 @@
-library MiscFunctions requires GroupUtils
+library MiscFunctions requires GroupUtils, DamageTypes
     
     globals
         constant integer SPELL_DUMMY = 'e00E'
@@ -39,15 +39,21 @@ library MiscFunctions requires GroupUtils
     endfunction
 
     function DamageUnitMagic takes unit source, unit target, real damage returns nothing
-        call UnitDamageTarget(source,target,damage,true,false,ATTACK_TYPE_NORMAL,DAMAGE_TYPE_MAGIC,WEAPON_TYPE_WHOKNOWS)        
+        call TagNextDamageType()
+        call UnitDamageTarget(source,target,damage,true,false,ATTACK_TYPE_NORMAL,DAMAGE_TYPE_MAGIC,WEAPON_TYPE_WHOKNOWS)
+        set udg_NextDamageType = 0
     endfunction
 
     function DamageUnitPhysical takes unit source, unit target, real damage returns nothing
-        call UnitDamageTarget(source,target,damage,true,false,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_NORMAL,WEAPON_TYPE_WHOKNOWS)        
+        call TagNextDamageType()
+        call UnitDamageTarget(source,target,damage,true,false,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_NORMAL,WEAPON_TYPE_WHOKNOWS)
+        set udg_NextDamageType = 0
     endfunction
 
     function DamageUnitPure takes unit source, unit target, real damage returns nothing
-        call UnitDamageTarget(source,target,damage,true,false,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL,WEAPON_TYPE_WHOKNOWS)        
+        call TagNextDamageType()
+        call UnitDamageTarget(source,target,damage,true,false,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL,WEAPON_TYPE_WHOKNOWS)
+        set udg_NextDamageType = 0
     endfunction
 
     function TextOnUnit takes string whichText, unit whichUnit, real zOffset, real size, real red, real green, real blue, real transparency returns texttag
@@ -466,9 +472,13 @@ library MiscFunctions requires GroupUtils
     function DamageUnit takes unit source, unit target, real damage, boolean magic returns nothing
         set DamageType = SPELL
         if magic then
-            call UnitDamageTarget(source,target,damage,true,false,ATTACK_TYPE_NORMAL,DAMAGE_TYPE_MAGIC,WEAPON_TYPE_WHOKNOWS)        
+            call TagNextDamageType()
+            call UnitDamageTarget(source,target,damage,true,false,ATTACK_TYPE_NORMAL,DAMAGE_TYPE_MAGIC,WEAPON_TYPE_WHOKNOWS)
+            set udg_NextDamageType = 0
         else
-            call UnitDamageTarget(source,target,damage,true,false,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL,WEAPON_TYPE_WHOKNOWS)        
+            call TagNextDamageType()
+            call UnitDamageTarget(source,target,damage,true,false,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL,WEAPON_TYPE_WHOKNOWS)
+            set udg_NextDamageType = 0
         endif
     endfunction
     

@@ -90,7 +90,7 @@ scope GodsSeal initializer init
         real damageBlocked = 0.00
         dbuff buff = 0
         
-        static delegate xedamage dmg = 0
+        static delegate SpellDamage dmg = 0
         static thistype temp = 0
         static integer buffType = 0
         static timer ticker = null
@@ -174,7 +174,7 @@ scope GodsSeal initializer init
         
         private static method onInit takes nothing returns nothing
             set buffType = DefineBuffType(BUFF_PLACER_ID, BUFF_ID, TIMER_INTERVAL, true, false, thistype.onBuffAdd, thistype.periodicActions, thistype.onBuffEnd)
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set atype = ATTACK_TYPE
             set dtype = DAMAGE_TYPE
 			set wtype = WEAPON_TYPE

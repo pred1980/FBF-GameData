@@ -132,7 +132,13 @@ library GoldSystem uses GetPlayerNameColored, TextTag, CreepSystemUnits
     struct BonusGoldOnAssist
         
         private static method getAssistBonus takes unit killed returns integer
-            return ASSIST_BONI / AssistSystem.getAssistCount(GetOwningPlayer(killed))
+            local integer count = AssistSystem.getAssistCount(GetOwningPlayer(killed))
+
+            // Ohne Assist gibt es keinen Bonus. Eine Division durch 0 wuerde den Todes-Handler abbrechen.
+            if count == 0 then
+                return 0
+            endif
+            return ASSIST_BONI / count
         endmethod
         
         static method showAssistMessage takes unit killed, unit killer returns string

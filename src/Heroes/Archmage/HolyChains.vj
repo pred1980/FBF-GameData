@@ -68,7 +68,7 @@ scope HolyChains initializer init
 		private unit array U
 		private integer Un
 		private xecast Cast
-		private xedamage xeDamage = 0
+		private SpellDamage spellDamage = 0
 	endglobals
 	
 	private function MainSetup takes nothing returns nothing
@@ -80,16 +80,16 @@ scope HolyChains initializer init
 	endfunction
 	
 	private function SetupDamage takes nothing returns nothing
-		set xeDamage = xedamage.create()
+		set spellDamage = SpellDamage.create()
 	 
-		set xeDamage.damageNeutral = false
-		set xeDamage.dtype = DAMAGE_TYPE
-		set xeDamage.atype = ATTACK_TYPE
-		set xeDamage.wtype = WEAPON_TYPE
-		set xeDamage.exception = UNIT_TYPE_STRUCTURE
-		set xeDamage.tag = 666
-		set xeDamage.damageAllies = false //True if you want it to hurt allies.
-		call xeDamage.useSpecialEffect(GetAbilityEffectById('Afsh', EFFECT_TYPE_TARGET, 0), "origin") 
+		set spellDamage.damageNeutral = false
+		set spellDamage.dtype = DAMAGE_TYPE
+		set spellDamage.atype = ATTACK_TYPE
+		set spellDamage.wtype = WEAPON_TYPE
+		set spellDamage.exception = UNIT_TYPE_STRUCTURE
+		set spellDamage.tag = 666
+		set spellDamage.damageAllies = false //True if you want it to hurt allies.
+		call spellDamage.useSpecialEffect(GetAbilityEffectById('Afsh', EFFECT_TYPE_TARGET, 0), "origin")
 	 
 		set DAMAGE[0] = 15
 		set DAMAGE[1] = 25
@@ -252,7 +252,7 @@ scope HolyChains initializer init
 			loop
 			   exitwhen (j == Un)
 			   if (U[j] != m.u) and (IsUnitInRangeXY(U[j],x,y, MISSILE_COLLISION)) and not IsUnitInGroup(U[j],m.targetlog) then
-				   set fc = xeDamage.getTargetFactor(m.u, U[j])
+				   set fc = spellDamage.getTargetFactor(m.u, U[j])
 				   if(fc != 0.0) then
 						set Cast.owningplayer = GetOwningPlayer(m.u)
 						set Cast.level = m.level
@@ -261,7 +261,7 @@ scope HolyChains initializer init
 						call GroupAddUnit(m.targetlog,U[j])
 						//notice we are usign forceValue, since we already know the factor, it is also possible to
 						// call damageTarget directly, but that means the system will calculate the factor twice for no reason.
-						call xeDamage.damageTargetForceValue(m.u, U[j], fc * DAMAGE[m.level])
+						call spellDamage.damageTargetForceValue(m.u, U[j], fc * DAMAGE[m.level])
 				   endif
 			   endif
 			   set j = j + 1

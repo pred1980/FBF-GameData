@@ -29,10 +29,10 @@ scope IceShard initializer Init
         private constant real SLOW_MULTIPLIER_LEVEL2 = .12
         private constant real SLOW_MULTIPLIER_LEVEL3 = .16
         
-        private xedamage damageOptions
+        private SpellDamage damageOptions
     endglobals
     
-    private function setupDamageOptions takes xedamage d returns nothing
+    private function setupDamageOptions takes SpellDamage d returns nothing
         set d.dtype = DAMAGE_TYPE_COLD   
         set d.atype = ATTACK_TYPE_NORMAL 
         
@@ -109,7 +109,9 @@ scope IceShard initializer Init
         method onHit takes nothing returns nothing
             if (damageOptions.allowedTarget(this.tower, this.target )) then
                 set DamageType = SPELL
+                call TagNextDamageType()
                 call UnitDamageTarget(this.tower, this.target, (START_DAMAGE + DAMAGE_INCREASE * this.level)/2, false, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                set udg_NextDamageType = 0
 			endif
             
             call slowUnit(this.target, this.level)
@@ -149,7 +151,9 @@ scope IceShard initializer Init
             
             if (damageOptions.allowedTarget(this.tower, this.target )) then
                 set DamageType = SPELL
+                call TagNextDamageType()
                 call UnitDamageTarget(this.tower, this.target, START_DAMAGE + DAMAGE_INCREASE * this.level, false, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+                set udg_NextDamageType = 0
 				call DestroyEffect(AddSpecialEffect(ICE_EFFECT,GetUnitX(this.target),GetUnitY(this.target)))
             endif
             
@@ -199,7 +203,7 @@ scope IceShard initializer Init
     private function Init takes nothing returns nothing
         call RegisterDamageResponse( Actions )
 		
-        set damageOptions = xedamage.create()
+        set damageOptions = SpellDamage.create()
         call setupDamageOptions(damageOptions)
 		
         //Init Towers

@@ -1,4 +1,4 @@
-library SkeletonMageSpells initializer onInit requires xedamage, xemissile, GroupUtils, ListModule, SpellSystem, PassiveSpellSystem, Table, AutoIndex, UnitBonus
+library SkeletonMageSpells initializer onInit requires SpellDamage, xemissile, GroupUtils, ListModule, SpellSystem, PassiveSpellSystem, Table, AutoIndex, UnitBonus
     //Basic Zombie-Globals
     
     globals
@@ -121,7 +121,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             static timer ticker = null
             static thistype temp = 0
             static boolexpr damageFilter = null
-            static delegate xedamage dmg = 0
+            static delegate SpellDamage dmg = 0
             
             implement List
             
@@ -237,7 +237,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                 call XE_PreloadAbility(ZOMBIE_TIMED_LIFE_BUFF)
                 set t = HandleTable.create()
                 set ticker = CreateTimer()
-                set dmg = xedamage.create()
+                set dmg = SpellDamage.create()
                 set dtype = ZOMBIE_AURA_DAMAGE_TYPE
                 set atype = ZOMBIE_AURA_ATTACK_TYPE
 				set wtype = ZOMBIE_AURA_WEAPON_TYPE
@@ -588,7 +588,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
             
             static HandleTable t  = 0
             static timer ticker = null
-            static delegate xedamage dmg = 0
+            static delegate SpellDamage dmg = 0
             static boolexpr corpseFilter = null
             static thistype temp = 0
             
@@ -678,7 +678,7 @@ library SkeletonMageSpells initializer onInit requires xedamage, xemissile, Grou
                 set ticker = CreateTimer()
                 set t = HandleTable.create()
                 set corpseFilter = Condition(function thistype.corpseFilterMethod)
-                set dmg = xedamage.create()
+                set dmg = SpellDamage.create()
                 set dtype = SOUL_RELEASE_DAMAGE_TYPE
                 set atype = SOUL_RELEASE_ATTACK_TYPE
 				set wtype = SOUL_RELEASE_WEAPON_TYPE

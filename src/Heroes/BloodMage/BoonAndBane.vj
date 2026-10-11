@@ -68,6 +68,26 @@ scope BoonAndBane initializer init
 		
 		//Das sind die "Buff-Daten" vom Ziel
 		Main data = 0
+
+		// Voruebergehend fuer die Spieltests M3 und M4 in #31 (TestLog). Vor dem Merge entfernen.
+		// Schreibt bei aktivem Testfall bb;out (Schaden der Einheit mit BoonAndBane) bzw. bb;in (Schaden an ihr):
+		// Schaden vor BoonAndBane, Aenderung, Wert danach, Zaehlerstand vor diesem Treffer und Grenze.
+		// Die Rueckgabewerte von onDamageDealt und onDamageTaken bleiben unveraendert.
+		private static method logModifier takes string kind, unit source, unit target, Main d, real before, real change returns nothing
+			local real limit = ENEMY_MAX_DAMAGE_MODIF[d.lvl]
+			local TestLog r
+			if not TestLog.isCaseActive() then
+				return
+			endif
+			if d.isFriendly then
+				set limit = ALLY_MAX_DAMAGE_MODIF[d.lvl]
+			endif
+			set r = TestLog.row("bb", kind)
+			call r.addUnit("src", source).addUnit("tgt", target).addFlag("ally", d.isFriendly).addInt("lvl", d.lvl)
+			call r.addReal("before", before).addReal("change", change).addReal("after", before + change)
+			call r.addReal("counter", d.damageCounter).addReal("limit", limit)
+			call r.write()
+		endmethod
         
         //Es ist wirklich ganz einfach... Man muss nur diese Methode in dem Struct deklarieren, welche dann vom System aufgerufen wird
 		//Die Variablen sollten selbsterklärend sein, der Rückgabewert gibt an, um welchen Wert der Schaden manipuliert werden soll.
@@ -80,6 +100,7 @@ scope BoonAndBane initializer init
 			
 				//wenn das Ziel feindlich ist, wird sein Schaden verringert
 				set modification = damage * enemyOutgoingDamageModification
+				call thistype.logModifier("out", data.target, damagedUnit, data, damage, modification)
 				
 				//den Schaden updaten (mithilfe der RAbsBJ-Funktion den absoluten Wert nehmen!)
 				call data.updateCounter(RAbsBJ(modification))
@@ -93,6 +114,7 @@ scope BoonAndBane initializer init
 					
 				//hier brauche ich also nur den Schaden ausrechnen, um welchen er erhöht werden soll
 				//Beispiel: 100 Damage * 0.35 = 35 Damage als Rückgabewert. (Endschaden = 135)
+				call thistype.logModifier("out", data.target, damagedUnit, data, damage, damage * allyOutgoingDamageModification)
 				return damage * allyOutgoingDamageModification
 			endif
 			
@@ -111,10 +133,12 @@ scope BoonAndBane initializer init
 				//hier brauchen wir wieder nicht die Variable benutzen, da erhöhter Schaden bei Feinden nicht in den Counter mit einfließen.
 				//wir brauchen nur den Wert zurückgeben, um welchen der Schaden erhöht werden soll
 				//Beispiel: 100 Damage * (0.30) = 30 als Rückgabewert (Endschaden = 130)
+				call thistype.logModifier("in", damageSource, data.target, data, damage, damage * enemyIncomingDamageModification)
 				return damage * enemyIncomingDamageModification
 			else
 				//wenn das Ziel freundlich ist, wird sein Schaden verringert
 				set modification = damage * allyIncomingDamageModification
+				call thistype.logModifier("in", damageSource, data.target, data, damage, modification)
 				
 				//den Schaden updaten (mithilfe der RAbsBJ-Funktion den absoluten Wert nehmen!)
 				call data.updateCounter(RAbsBJ(modification))
@@ -250,6 +274,8 @@ scope BoonAndBane initializer init
     private function init takes nothing returns nothing
         call MainSetup()
         call XE_PreloadAbility(BUFF_PLACER_ID)
+        // Voruebergehend fuer M3 und M4 in #31: BoonAndBane-Status bei dmg;hit als src_bb/tgt_bb. Vor dem Merge entfernen.
+        call TestLog.trackBuff(BUFF_PLACER_ID, "bb")
     endfunction
 	
 endscope

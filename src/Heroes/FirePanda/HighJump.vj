@@ -70,8 +70,8 @@ scope HighJump initializer init
         real spd = 0.00
         boolean enhanced = false
         
-        static xedamage dmg = 0
-        static xedamage ultidmg = 0
+        static SpellDamage dmg = 0
+        static SpellDamage ultidmg = 0
         static boolexpr doKnockback = null
         static thistype temp = 0
         static timer ticker = null
@@ -151,11 +151,11 @@ scope HighJump initializer init
         
         
         static method onInit takes nothing returns nothing
-            set dmg = xedamage.create()
+            set dmg = SpellDamage.create()
             set dmg.atype = ATTACK_TYPE
             set dmg.dtype = DAMAGE_TYPE
             
-            set ultidmg = xedamage.create()
+            set ultidmg = SpellDamage.create()
             set ultidmg.atype = ULTI_IMPACT_ATTACK_TYPE
             set ultidmg.dtype = ULTI_IMPACT_DAMAGE_TYPE
             set ticker = CreateTimer()
