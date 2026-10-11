@@ -33,7 +33,7 @@ library TestLogDamage initializer Init requires TestLog, DamageEvent, TimerUtils
             call r.addUnit("tgt", .target).addId("tgt_type", GetUnitTypeId(.target)).addFlag("tgt_hero", IsUnitType(.target, UNIT_TYPE_HERO)).addFlag("tgt_bld", IsUnitType(.target, UNIT_TYPE_STRUCTURE))
             call r.addText("rel", TestLog.relation(.source, .target)).addReal("final", .amount).addInt("dtype", .dtype)
             call r.addReal("hp_before", .lifeBefore).addReal("hp_after", lifeAfter).addReal("hp_loss", .lifeBefore - lifeAfter).addFlag("killed", IsUnitType(.target, UNIT_TYPE_DEAD) or lifeAfter < 0.405)
-            call r.addFields(.sourceBuffs).addFields(.targetBuffs).addFields(TestLog.buffFields("tgt_after", .target))
+            call r.addFields(.sourceBuffs).addFields(.targetBuffs).addFields(TestLog.buffFields("src_after", .source)).addFields(TestLog.buffFields("tgt_after", .target))
             call r.write()
 
             call ReleaseTimer(t)

@@ -71,9 +71,11 @@ Danach folgen Datenzeilen:
 
 - **Folgezeilen:** Eine Zeile über 240 Zeichen läuft auf Folgezeilen `+<seq>;<Rest>` weiter. Der Rest wird ohne Trennzeichen an die Zeile mit derselben `seq` angehängt. Eine Zeile wird nie auf zwei Teile verteilt.
 - **Werte:**
-  - Zahlen mit Punkt und drei Nachkommastellen.
+  - Realzahlen mit Punkt und drei Nachkommastellen, Ganzzahlen ohne Nachkommastellen.
   - Wahrheitswerte als `1` oder `0`.
-  - Einheiten als `Name#HandleId(p<N>)`. Die HandleId bezeichnet eine Einheit während eines Spiels eindeutig. `p<N>` ist der Besitzer, gezählt ab 1. `none` steht für keine Einheit.
+  - Einheiten als `Name#HandleId(p<N>)`. `p<N>` ist der Besitzer, gezählt ab 1. `none` steht für keine Einheit.
+  - Die HandleId unterscheidet Einheiten, die gleichzeitig existieren. Nach dem Entfernen einer Einheit kann Warcraft III dieselbe Id neu vergeben, etwa bei Creep-Wellen. Für die Zuordnung zusätzlich Name und Zeit beachten.
+  - Einheitennamen können je nach Spielsprache verschieden sein.
   - Rawcodes mit vier Zeichen, z. B. `A094`. `none` steht für 0, `?` für ein Zeichen außerhalb von A–Z, a–z und 0–9.
   - In Texten wird `"` zu `'`, `\` zu `/`, `;` zu `,` und ein Zeilenumbruch zu einem Leerzeichen.
   - Ein Wert enthält nie `;`. Der Schlüssel endet am ersten `=`.
@@ -118,12 +120,17 @@ Quelle ist `RegisterDamageResponse`. Die Zeile entsteht 0,05 s nach dem Treffer,
 | `rel` | Ziel aus Sicht der Quelle: `enemy`, `ally`, `self`, `neutral` oder `none` |
 | `final` | Schaden nach Rüstung und Modifiern, so wie ihn die Schadensreaktionen erhalten |
 | `dtype` | FBF-`DamageType`: 0 `PHYSICAL`, 1 `SPELL`, 2 `PHYSICAL_AND_SPELL` |
-| `hp_before` | LP des Ziels beim Treffer, vor dem Abzug |
+| `hp_before` | LP des Ziels in der Schadensreaktion (siehe Hinweis unten) |
 | `hp_after` | LP des Ziels 0,05 s später |
 | `hp_loss` | `hp_before - hp_after`; enthält auch Regeneration und weiteren Schaden in diesen 0,05 s |
 | `killed` | Ziel ist 0,05 s später tot |
 | `src_<buff>`, `tgt_<buff>` | Stufe verfolgter Buffs beim Treffer (0 = nicht vorhanden) |
-| `tgt_after_<buff>` | Stufe verfolgter Buffs am Ziel 0,05 s später |
+| `src_after_<buff>`, `tgt_after_<buff>` | Stufe verfolgter Buffs 0,05 s später |
+
+**Hinweis zu `hp_before` und `hp_loss`:**
+
+- **Mit der Bribe Damage Engine (ab #31):** Modifier ändern den Schaden selbst. `hp_before` ist dann der Wert vor dem Treffer, und `hp_loss` entspricht `final`.
+- **Mit dem alten `DamageModifiers` (vor #31):** Ein aktiver Modifier gleicht die LP schon vor der Schadensreaktion aus (`SetWidgetLife`). `hp_before` enthält dann diesen Ausgleich, und `hp_loss` entspricht dem Schaden vor den Modifiern statt `final`. Ohne aktiven Modifier gibt es keinen Unterschied.
 
 Den Schaden vor den Modifiern gibt es in Version 1 noch nicht. Er braucht die Phasen der Bribe Damage Engine aus #31.
 
@@ -142,7 +149,7 @@ Quelle ist `EVENT_PLAYER_UNIT_DEATH`. Die Zähler werden nach allen Reaktionen a
 
 ### `cast;effect` – Zauber (`TestLogCast.vj`)
 
-Quelle ist `EVENT_PLAYER_UNIT_SPELL_EFFECT`. Auch Dummy-Einheiten relevanter Spieler erscheinen.
+Quelle ist `EVENT_PLAYER_UNIT_SPELL_EFFECT`. Aufgezeichnet wird, wenn Zauberer oder Zieleinheit relevant ist. Auch Dummy-Einheiten relevanter Spieler erscheinen.
 
 | Schlüssel | Bedeutung |
 |---|---|
@@ -214,7 +221,7 @@ Jeder Testfall steht so in der PR-Beschreibung:
 - **Vorbereitung:** <Held, Stufe, Modus, Gegner/Verbündete; nötige Diagnosepunkte oder verfolgte Buffs>
 - **Ablauf:** `-test <ID>`, <Aktionen>, `-test end`
 - **Sollwerte:**
-  - S1: <Formel mit Toleranz, z. B. `hp_loss = final ± 0,1` für jede `dmg;hit`-Zeile mit `tgt_bb >= 1`>
+  - S1: <Formel mit Toleranz, z. B. `hp_loss = final ± 0,1` für jede `dmg;hit`-Zeile mit `tgt_bb >= 1` (mit der Bribe Damage Engine)>
 - **Pflichtbeobachtungen:**
   - P1: <z. B. mindestens 3 Treffer mit aktivem Effekt>
   - P2: <Sonderfall, z. B. ein Treffer, der ohne Effekt tödlich wäre>

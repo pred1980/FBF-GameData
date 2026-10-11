@@ -2,8 +2,8 @@ library TestLogCast initializer Init requires TestLog, RegisterPlayerUnitEvent
 /*
  * Beobachter Zauber (#44).
  *
- * Schreibt bei aktivem Testfall jeden Zauber einer relevanten Einheit
- * (TestLog.isRelevant) als cast;effect, ausgeloest von EVENT_PLAYER_UNIT_SPELL_EFFECT.
+ * Schreibt bei aktivem Testfall jeden Zauber als cast;effect, wenn Zauberer oder
+ * Zieleinheit relevant ist (TestLog.isRelevant). Quelle: EVENT_PLAYER_UNIT_SPELL_EFFECT.
  * Felder: src/TestLog/README.md
  */
 
@@ -13,7 +13,7 @@ library TestLogCast initializer Init requires TestLog, RegisterPlayerUnitEvent
         local integer abil = GetSpellAbilityId()
         local TestLog r
 
-        if TestLog.isCaseActive() and TestLog.isRelevant(caster) then
+        if TestLog.isCaseActive() and (TestLog.isRelevant(caster) or TestLog.isRelevant(target)) then
             set r = TestLog.row("cast", "effect")
             call r.addUnit("caster", caster).addId("abil", abil).addInt("lvl", GetUnitAbilityLevel(caster, abil))
             call r.addUnit("tgt", target).addText("rel", TestLog.relation(caster, target)).addReal("x", GetSpellTargetX()).addReal("y", GetSpellTargetY())

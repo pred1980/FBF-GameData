@@ -449,9 +449,9 @@ library TestLog initializer Init
             return caseId
         endmethod
 
-        static method setStand takes string stand, string version returns nothing
+        static method setStand takes string stand, string mapVersion returns nothing
             set STAND = clean(stand)
-            set MAP_VERSION = clean(version)
+            set MAP_VERSION = clean(mapVersion)
         endmethod
 
         // Schreibt sofort, statt auf den naechsten Sekundentakt zu warten.
